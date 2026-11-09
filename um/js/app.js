@@ -1,0 +1,1796 @@
+/* Application code from v20.9 one-file launcher — DATA/FLOORS/NHL loaded by previous scripts. */
+var DATA = window.DATA;
+var FLOORS = window.FLOORS;
+var NHL = window.NHL;
+// ---------- bibliothèque de Classe 4 (v20.3) : exactement 8 objets, toujours présents ----------
+// Les conteneurs sont toujours là ; seuls les objets de Classe 2 imbriqués (les places) varient selon les données disponibles.
+const EC='en construction — à remplir quand les crédits le permettront';
+const FBY=ct=>Object.keys(FLOORS).filter(m=>FLOORS[m].ct===ct);
+const LIB4=[
+ {id:'AMF',name:'America Floor',boxes:[{name:'America Floor',kind:'self',fl:FBY('AMF')}]},
+ {id:'EUF',name:'Europe Floor',boxes:[{name:'Europe Floor',kind:'self',fl:FBY('EUF')}]},
+ {id:'AFF',name:'Africa Floor',boxes:[{name:'Africa Floor',kind:'self',fl:FBY('AFF')}]},
+ {id:'ASF',name:'Asia Floor',boxes:[{name:"Asie de l'Est, du Sud-Est et du Sud",kind:'sub',fl:FBY('ASF').filter(m=>!FLOORS[m].w)},{name:"Asie de l'Ouest (Moyen-Orient)",kind:'sub',fl:FBY('ASF').filter(m=>FLOORS[m].w)}]},
+ {id:'OCF',name:'Oceania Floor',boxes:[{name:'Oceania Floor',kind:'self',fl:FBY('OCF')}]},
+ {id:'WF',name:'World Floor',boxes:['AMF','EUF','AFF','ASF','OCF'].map(id=>({name:{AMF:'America Floor',EUF:'Europe Floor',AFF:'Africa Floor',ASF:'Asia Floor',OCF:'Oceania Floor'}[id],kind:'c4n',fl:FBY(id)}))},
+ {id:'NSF',name:'North-South Floor',boxes:[{name:'Hémisphère Nord',kind:'half',fl:Object.keys(FLOORS).filter(m=>FLOORS[m].lat>=0)},{name:'Hémisphère Sud',kind:'half',fl:Object.keys(FLOORS).filter(m=>FLOORS[m].lat<0)}]},
+ {id:'EWF',name:'East-West Floor',boxes:[{name:'Hémisphère Ouest',kind:'half',fl:Object.keys(FLOORS).filter(m=>FLOORS[m].lon<0)},{name:'Hémisphère Est',kind:'half',fl:Object.keys(FLOORS).filter(m=>FLOORS[m].lon>=0)}]}];
+LIB4.forEach(L4=>L4.fl=new Set(L4.boxes.flatMap(b=>b.fl)));
+const FCOL={XNYS:'#6fa8ff',XNAS:'#4fd1c5',BATS:'#ff9f5a'};
+// source : Nasdaq-100, S&P 500, ou leur union (S&P 500 prioritaire pour les 86 titres communs ; écarts d'arrondi ≤ 0,001 $)
+{const sp=new Set(DATA.SPX.objs.map(o=>o.t));DATA.ALL={dates:DATA.SPX.dates,objs:DATA.SPX.objs.concat(DATA.NDX.objs.filter(o=>!sp.has(o.t))).sort((a,b)=>a.t<b.t?-1:1)};}
+let SYS=LIB4[0],EMPTY=false;const NF={}; // NF[mic] = nombre de titres de la source sur cette place
+const SECT={"Technology":"#5fb6ff","Communication Services":"#b48cff","Consumer Cyclical":"#ff9f5a","Consumer Defensive":"#9ad66b","Healthcare":"#ff6f91","Industrials":"#e6c35c","Financial Services":"#4fd1c5","Energy":"#ff5a4f","Utilities":"#8fb3c9","Real Estate":"#d49b6a","Basic Materials":"#c7a6ff","":"#bbbbbb"};
+const COLN={volume:'volume (somme des constituants)',valeur:'valeur échangée (somme)',absret:'|rendement du jour| (moyenne)',vol20:'volatilité 20 séances (moyenne)',seance:'séance (témoin)'};
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');const $=id=>document.getElementById(id);
+function volSys(){return Math.max(0,Math.min(1,+$('volsys').value/100));}
+function volGh(){return Math.max(0,Math.min(1,+$('volgh').value/100));}
+function volGhObj(){return Math.max(0,Math.min(1,+$('volghobj').value/100));}
+let W,H,DPR=window.devicePixelRatio||1;const L=70,T=30,B=50;let R=30,PW=0;
+function size(){W=innerWidth;H=innerHeight;PW=Math.round(Math.min(480,Math.max(300,W*.3)));R=$('libon')&&!$('libon').checked?30:PW+44;cv.width=W*DPR;cv.height=H*DPR;cv.style.width=W+'px';cv.style.height=H+'px';ctx.setTransform(DPR,0,0,DPR,0,0);}
+size();
+const FLOOR=3,NS=24,SUB=8; // plancher px ; échantillons par segment cycloïdal ; sous-pas d'animation par séance
+// ---------- transition cycloïdale (canon) ----------
+// Corpus Rev3 / runs du 6 oct. : cycloïde vraie s(t)=t−sin(2πt)/(2π), « PAS une quadratique ».
+// Gouvernance du 11 oct. (G-3, §12.5) : appliquée indépendamment sur chaque axe ; ease-out pour un déplacement positif,
+// ease-in pour un déplacement négatif, immobile pour aucun. Lecture Grok : demi-arches de la cycloïde vraie.
+const CIN=t=>{const th=Math.PI*t;return (th-Math.sin(th))/Math.PI;};   // demi-arche, départ lent (ease-in)
+const COUT=t=>1-CIN(1-t);                                               // demi-arche, arrivée lente (ease-out)
+const CFULL=t=>t-Math.sin(2*Math.PI*t)/(2*Math.PI);                     // arche complète (référence Rev3)
+// v20.2 — canon Z0 : le fil Z0(T₀)→Z0(T₁) est linéaire ; toute floter = fil Z0(τ) + écart au fil, l'écart suivant la demi-arche cycloïdale axe par axe.
+// Appariement v20.2 (formules d'Éric, 5 nov) : valeur qui monte → c(t) = (πt − sin πt)/π ; valeur qui descend → 1 − c(1 − t) ; valeur inchangée → immobile.
+// (En v20.1 l'appariement était inverse : 1 − c(1 − t) à la montée. Pour y revenir : ARCH_V201 = true.)
+const ARCH_V201=false;const RISE=t=>ARCH_V201?COUT(t):CIN(t),FALL=t=>ARCH_V201?CIN(t):COUT(t);
+function arch(v0,v1,t){return v1>v0?v0+(v1-v0)*RISE(t):v1<v0?v0+(v1-v0)*FALL(t):v0;} // règle cycloïdale sur une valeur (axe, canal de couleur…)
+function cycAbs(p0,p1,t){return [arch(p0[0],p1[0],t),arch(p0[1],p1[1],t)];}
+// ---------- couleur : la règle cycloïdale s'applique aussi aux couleurs (lecture relative au fil Z0) ----------
+// Teinte = identité de l'objet (secteur), constante. Luminosité ← écart au fil Z0 sur x (rendement), saturation ← écart sur y (vol20).
+// Chaque canal qui change entre deux séances est interpolé par arch() ; un canal inchangé reste inchangé.
+function hexHue(h){const r=parseInt(h.slice(1,3),16)/255,g=parseInt(h.slice(3,5),16)/255,b=parseInt(h.slice(5,7),16)/255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn;if(!d)return 0;let hh=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;return (hh*60+360)%360;}
+const HUE={};function hueOf(hex){return HUE[hex]??(HUE[hex]=hexHue(hex));}
+function colAt(hex,i,p){if(!Z0||!p)return {h:hueOf(hex),s:70,l:62};const z=ZL(i),ox=p[0]-z[0],oy=p[1]-z[1];
+  return {h:hueOf(hex),s:Math.max(25,Math.min(98,68+30*Math.tanh(oy/0.25))),l:Math.max(35,Math.min(85,60+24*Math.tanh(ox/0.25)))};}
+function colArch(c0,c1,t){return {h:arch(c0.h,c1.h,t),s:arch(c0.s,c1.s,t),l:arch(c0.l,c1.l,t)};}
+function css(c){return 'hsl('+c.h.toFixed(0)+','+c.s.toFixed(0)+'%,'+c.l.toFixed(0)+'%)';}
+function colMove(hex,p0,p1,i0,i1,t){return css(p1&&t>0?colArch(colAt(hex,i0,p0),colAt(hex,i1,p1),t):colAt(hex,i0,p0));}
+window.__COLLOG=[];
+function cyc(p0,p1,t,i0,i1){if(!Z0||i0==null)return cycAbs(p0,p1,t);const z0=ZL(i0),z1=ZL(i1),zt=ZL(i0+(i1-i0)*t);
+  const o0=[p0[0]-z0[0],p0[1]-z0[1]],o1=[p1[0]-z1[0],p1[1]-z1[1]];const o=cycAbs(o0,o1,t);return [zt[0]+o[0],zt[1]+o[1]];}
+// ---------- moteurs (séparés ; CLAVIS n'est pas touché) ----------
+// Classe 4 = effondrement total de toutes les constituantes du système (classes 3, 2 et 1 communes).
+// Placeholder actuel : comparaison directe avec la moyenne. Point de branchement : MANIF_ENGINES.irrationalisateur = {name, collapse(points)->[x,y]}.
+const MANIF_ENGINES={class4:{name:'moyenne directe (placeholder)',collapse:pts=>{let sx=0,sy=0;for(const p of pts){sx+=p[0];sy+=p[1];}return [sx/pts.length,sy/pts.length];}},irrationalisateur:null};
+window.MANIF_ENGINES=MANIF_ENGINES;
+function collapseClass4(pts){const e=MANIF_ENGINES.irrationalisateur||MANIF_ENGINES.class4;return e.collapse(pts);}
+// « Tout » à la séance i : configuration active, en un seul ensemble — Classe 1 + (Classe 2 si cochée) + (conteneurs de Classe 3 si cochés)
+function SET(i){const pts=[],walls=new Map();let n1=0,n2=0,n3=0;
+  ds.objs.forEach((o,k)=>{const p=P1(k,i);if(!p)return;pts.push(p);n1++;
+    const sx=p[0]<bx[0]?'G':p[0]>bx[1]?'D':'',sy=p[1]<by[0]?'B':p[1]>by[1]?'H':'';if(sx||sy){const key=sx+sy;if(!walls.has(key))walls.set(key,[]);walls.get(key).push([Math.min(bx[1],Math.max(bx[0],p[0])),Math.min(by[1],Math.max(by[0],p[1]))]);}});
+  if($('z2').checked)GROUPS.forEach(g=>{const p=P2(g,i);if(p){pts.push(p);n2++;}});
+  if($('z3').checked)walls.forEach(w=>{pts.push(MANIF_ENGINES.class4.collapse(w));n3++;});
+  return {pts,n1,n2,n3};}
+let Z0=null; // {i0,i1,a,b,n0,n1,C4:[] par séance}
+// Classe 4 imbriquée (World : continents ; North-South / East-West : hémisphères) : effondrement de ses seuls constituants (Classe 1 + ses places de Classe 2 si cochées)
+function SETBOX(b,i){const pts=[],fl=new Set(b.fl);ds.objs.forEach((o,k)=>{if(!fl.has(o.f))return;const p=P1(k,i);if(p)pts.push(p);});
+  if($('z2').checked&&$('lvl').value==='f')GROUPS.forEach(g=>{if(g.mic&&fl.has(g.mic)){const p=P2(g,i);if(p)pts.push(p);}});return pts;}
+function computeZ0(){Z0=null;const C4=[];for(let i=S0;i<=S1;i++){const s=SET(i);C4[i]=s.pts.length?collapseClass4(s.pts):null;}
+  const C4N=SYS.boxes.filter(b=>b.kind==='c4n'||b.kind==='half').map(b=>{const P=[];for(let i=S0;i<=S1;i++){const q=SETBOX(b,i);P[i]=q.length?collapseClass4(q):null;}return {b,P,has:P.some(x=>x)};});
+  const s0=SET(S0),s1=SET(S1);// placeholder de moindre effort : Z0 = moyennes de T₀ et de T₁ (le vrai Z0 = triple effondrement, non calculable présentement)
+  Z0={i0:S0,i1:S1,a:MANIF_ENGINES.class4.collapse(s0.pts),b:MANIF_ENGINES.class4.collapse(s1.pts),n0:s0,n1:s1,C4,C4N};}
+function ZL(tau){const f=(tau-Z0.i0)/(Z0.i1-Z0.i0);return [Z0.a[0]+(Z0.b[0]-Z0.a[0])*f,Z0.a[1]+(Z0.b[1]-Z0.a[1])*f];}
+// ---------- données de base (positions seulement ; aucune traîne n'est calculée ici) ----------
+let ds,BASE,S0,S1,GROUPS=[],sel=null,dep=null,CACHE=new Map(),zoom=1,panX=0,panY=0,bx,by,progress=0;
+function median(a){a=a.filter(v=>v!=null&&isFinite(v)).sort((x,y)=>x-y);const n=a.length;if(!n)return NaN;return n%2?a[(n-1)/2]:(a[n/2-1]+a[n/2])/2;}
+function pct(a,p){a=a.slice().sort((x,y)=>x-y);const h=(a.length-1)*p,lo=Math.floor(h),hi=Math.ceil(h);return a[lo]+(a[hi]-a[lo])*(h-lo);}
+function base(){const n=ds.dates.length;BASE=ds.objs.map(o=>{const c=o.c,v=o.v,r=new Array(n).fill(null),vol=new Array(n).fill(null);
+  for(let i=1;i<n;i++)if(c[i]!=null&&c[i-1]!=null)r[i]=Math.log(c[i]/c[i-1]);
+  for(let i=0;i<n;i++){const w=[];for(let j=Math.max(1,i-19);j<=i;j++)if(r[j]!=null)w.push(r[j]);if(w.length>=2){const m=w.reduce((a,b)=>a+b,0)/w.length;vol[i]=Math.sqrt(w.reduce((a,b)=>a+(b-m)*(b-m),0)/(w.length-1)*252);}}
+  const col={volume:v,valeur:c.map((x,i)=>x!=null&&v[i]!=null?x*v[i]:null),absret:r.map(x=>x==null?null:Math.abs(x)),vol20:vol,seance:c.map(x=>x==null?null:1)};
+  return {r,vol,col};});}
+// positions de Classe 1 dans la fenêtre (x = rendement log depuis le T₀ du titre, y = vol20)
+let A0=[];
+function window_(){S0=+$('s').value;S1=+$('e').value;A0=ds.objs.map((o,k)=>{for(let i=S0;i<=S1;i++)if(BASE[k].vol[i]!=null&&o.c[i]!=null)return i;return -1;});
+  const X=[],Y=[];ds.objs.forEach((o,k)=>{const a=A0[k];if(a<0)return;X.push(0,Math.log(o.c[S1]/o.c[a]));Y.push(BASE[k].vol[a],BASE[k].vol[S1]);});
+  bx=[pct(X,.005),pct(X,.995)];by=[pct(Y,.005),pct(Y,.995)];}
+function P1(k,i){const a=A0[k],o=ds.objs[k];if(a<0||i<a||o.c[i]==null||BASE[k].vol[i]==null)return null;return [Math.log(o.c[i]/o.c[a]),BASE[k].vol[i]];}
+// Classe 2 : position = moyenne des attributs des constituants présents à la séance
+function groups(){const lvl=$('lvl').value,m=new Map();ds.objs.forEach((o,k)=>{const key=lvl==='x'?({NDX:'Nasdaq-100 (indice)',SPX:'S&P 500 (indice)',ALL:'Nasdaq-100 ∪ S&P 500'}[$('ds').value]):lvl==='f'?(FLOORS[o.f]?FLOORS[o.f].n+' ('+o.f+')':'(place inconnue)'):(lvl==='s'?o.s:o.i)||'(sans '+(lvl==='s'?'secteur':'industrie')+')';if(!m.has(key))m.set(key,{name:key,mem:[],sec:o.s,mic:lvl==='f'?o.f:null});m.get(key).mem.push(k);});
+  GROUPS=[...m.values()].sort((a,b)=>a.name.localeCompare(b.name,'fr'));
+  // couleur : secteur majoritaire
+  GROUPS.forEach(g=>{const cnt={};g.mem.forEach(k=>cnt[ds.objs[k].s]=(cnt[ds.objs[k].s]||0)+1);g.sec=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0][0];g.col=lvl==='x'?'#e8c872':lvl==='f'?(FCOL[g.mic]||'#bbbbbb'):(SECT[g.sec]||'#bbb');});
+  $('sel').innerHTML='<option value="">— aucun —</option>'+GROUPS.map((g,i)=>'<option value="'+i+'">'+g.name+' ('+g.mem.length+')</option>').join('');}
+function P2(g,i){let sx=0,sy=0,n=0;for(const k of g.mem){const p=P1(k,i);if(p){sx+=p[0];sy+=p[1];n++;}}return n?[sx/n,sy/n]:null;}
+function C2(g,i,col){let s=0,n=0;for(const k of g.mem){if(!P1(k,i))continue;const v=BASE[k].col[col][i];if(v==null)continue;s+=v;n++;}if(!n)return null;return (col==='volume'||col==='valeur')?s:(col==='seance'?1:s/n);}
+// ---------- vue ----------
+function vb(){const px=(bx[1]-bx[0])*.04,py=(by[1]-by[0])*.04;return {x0:bx[0]-px,x1:bx[1]+px,y0:Math.max(0,by[0]-py),y1:by[1]+py};}
+function view(){const v=vb();const cx=(v.x0+v.x1)/2,cy=(v.y0+v.y1)/2,hx=(v.x1-v.x0)/2/zoom,hy=(v.y1-v.y0)/2/zoom;return {x0:cx-hx+panX,x1:cx+hx+panX,y0:cy-hy+panY,y1:cy+hy+panY};}
+function unit(){const v=vb();return [(W-L-R)/(v.x1-v.x0),(H-T-B)/(v.y1-v.y0)];} // px par unité, vue d'origine
+// ---------- traîne v19 le long des trajets cycloïdaux (paramètre : longueur d'arc) ----------
+// pos(i) -> [x,y] ou null ; rv(i) -> valeur d'horloge / médiane ; de a à S1
+function trail(pos,rv,a,base){base=base||'#bbbbbb';const [ux,uy]=unit();const G=[],path=[];let p0=pos(a),i0=a;G.push({k:0,x:p0[0],y:p0[1],e:a,t:0,col:css(colAt(base,a,p0))});let cum=0,kk=1,S=0;
+  for(let d=a;d<S1;d++){const p1=pos(d+1);const r1=rv(d+1)||0;if(!p1){cum+=r1;S+=r1;continue;}
+    // échantillonnage de la courbe cycloïdale p0 -> p1 et longueur d'arc à l'écran
+    const smp=[[...p0,0]],len=[0];for(let j=1;j<=NS;j++){const t=j/NS,q=cyc(p0,p1,t,i0,d+1);smp.push([q[0],q[1],t]);len.push(len[j-1]+Math.hypot((q[0]-smp[j-1][0])*ux,(q[1]-smp[j-1][1])*uy));}
+    path.push({e:d+1,p0,p1,smp});const Lt=len[NS];
+    while(r1>0&&kk<=cum+r1+1e-12){const f=(kk-cum)/r1,s=f*Lt;let j=1;while(j<NS&&len[j]<s)j++;const w=len[j]>len[j-1]?(s-len[j-1])/(len[j]-len[j-1]):0;const t=(j-1+w)/NS;const q=cyc(p0,p1,t,i0,d+1);G.push({k:kk,x:q[0],y:q[1],e:d+1,t,col:colMove(base,p0,p1,i0,d+1,t)});kk++;}
+    cum+=r1;S+=r1;p0=p1;i0=d+1;}
+  G.forEach(g=>g.h=g.x<bx[0]||g.x>bx[1]||g.y<by[0]||g.y>by[1]);return {G,path,S,nh:G.filter(g=>g.h).length};}
+function gtrail(g){const col=$('col').value,key=SYS.id+'|'+$('ds').value+'|'+$('lvl').value+'|'+$('z2').checked+$('z3').checked+'|'+g.name+'|'+col+'|'+S0+'|'+S1+'|'+W+'x'+H;if(CACHE.has(key))return CACHE.get(key);
+  const t0=performance.now();const vals=[];for(let i=S0;i<=S1;i++)vals.push(C2(g,i,col));const med=median(vals);
+  let a=S0;while(a<=S1&&!P2(g,a))a++;const tr=trail(i=>P2(g,i),i=>{const v=C2(g,i,col);return v==null?0:v/med;},a,g.col);tr.med=med;tr.ms=performance.now()-t0;CACHE.set(key,tr);return tr;}
+function deploy(g,d0){const col=$('col').value;const t0=performance.now();const M=[];
+  for(const k of g.mem){if(!P1(k,d0))continue;const a=A0[k];const cc=BASE[k].col[col];const med=median(cc.slice(a,S1+1));if(!(med>0))continue;
+    const tr=trail(i=>P1(k,i),i=>cc[i]==null?0:cc[i]/med,d0,SECT[ds.objs[k].s]||'#bbbbbb');tr.k=k;M.push(tr);}
+  return {g,d0,M,ms:performance.now()-t0};}
+// diamètre commun : plus court écart consécutif (vue d'origine) parmi les traînes affichées, hors creux
+function rule(){const [ux,uy]=unit();let mn=Infinity,mx=0;const trs=[];if(sel)trs.push(sel.tr);if(dep)trs.push(...dep.M);
+  for(const tr of trs){const G=tr.G;for(let i=1;i<G.length;i++){if(G[i].h||G[i-1].h)continue;const d=Math.hypot((G[i].x-G[i-1].x)*ux,(G[i].y-G[i-1].y)*uy);if(d>0){mn=Math.min(mn,d);mx=Math.max(mx,d);}}}
+  return {mn,mx};}
+// ---------- dessin ----------
+function fmt(n){return Math.round(n).toLocaleString('fr-CA');}
+function visible(gh,c,u){return gh.e<c||(gh.e===c&&gh.t<=0)||(gh.e===c+1&&gh.t<=u)||gh.k===0&&gh.e<=c;}
+let HIT={c1:[],c2:[],c4:null,z0:null,gr:0,c:0};
+function draw(){const c=+$('c').value,u=progress;HIT={c1:[],c2:[],c4:null,c4n:[],z0:null,gr:0,c,lib:[],libR:null};GROUPS.forEach(g=>g._px=null);if(EMPTY)return drawEmpty();$('d').textContent=ds.dates[S0]+' → '+ds.dates[S1]+'  ·  instant '+ds.dates[c]+(u>0?' (+'+u.toFixed(2)+')':'');
+  const v=view();const X=x=>L+(x-v.x0)/(v.x1-v.x0)*(W-L-R),Y=y=>H-B-(y-v.y0)/(v.y1-v.y0)*(H-T-B);
+  const cl=(x,y)=>[Math.min(bx[1],Math.max(bx[0],x)),Math.min(by[1],Math.max(by[0],y))];
+  ctx.fillStyle='#07080c';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#1d2230';ctx.fillStyle='#5d6475';ctx.font='11px system-ui';ctx.lineWidth=1;
+  for(let k=-4;k<=12;k++){const xv=Math.log(1+k*0.25);if(1+k*.25<=0||xv<v.x0||xv>v.x1)continue;const px=X(xv);ctx.beginPath();ctx.moveTo(px,T);ctx.lineTo(px,H-B);ctx.stroke();ctx.fillText((k*25>0?'+':'')+(k*25)+' %',px-12,H-B+16);}
+  const st=(v.y1-v.y0)>1?0.2:(v.y1-v.y0)>.2?0.05:0.01;for(let yv=Math.ceil(v.y0/st)*st;yv<v.y1;yv+=st){const py=Y(yv);ctx.beginPath();ctx.moveTo(L,py);ctx.lineTo(W-R,py);ctx.stroke();ctx.fillText(Math.round(yv*100)+' %',L-40,py+4);}
+  ctx.fillText('rendement cumulé depuis T₀ (log) →',W-R-200,H-B+34);ctx.save();ctx.translate(18,T+170);ctx.rotate(-Math.PI/2);ctx.fillText('volatilité 20 séances →',0,0);ctx.restore();
+  ctx.strokeStyle='#3a4256';ctx.setLineDash([4,4]);ctx.strokeRect(X(bx[0]),Y(by[1]),X(bx[1])-X(bx[0]),Y(by[0])-Y(by[1]));ctx.setLineDash([]);
+  // contexte : positions courantes des objets de Classe 1 (aucune traîne)
+  const rl=(sel||dep)?rule():{mn:NaN,mx:NaN};const dr=rl.mn*zoom,r=Math.max(FLOOR,isFinite(dr)?dr:FLOOR)/2;const objR=sel?16:13;HIT.gr=objR;
+  const fadeOf=(gh,tr)=>{const vis=[];for(const g of tr.G)if(visible(g,c,u))vis.push(g);if(!vis.length)return 0;const k0=tr.G[0].k,k1=vis[vis.length-1].k,sp=k1-k0;return sp<=0?1:0.08+0.92*((gh.k-k0)/sp);};
+  const ghosts=(tr,col,isFocus,rad,noFuture)=>{ // écho volumétrique : copies de la forme de l'objet, pas une ligne
+    const ve=volGh()*volGhObj(); if(ve<=0) return;
+    const boost=(isFocus&&$('ghfocus').checked)?1.5:1;
+    const step=Math.max(1,Math.round(1+(1-Math.min(1,ve*(isFocus&&$('ghfocus').checked?1.25:1)))*8));
+    let lastK=-1; for(const g of tr.G) if(visible(g,c,u)) lastK=g.k;
+    for(const pass of [0,1]){
+      for(const gh of tr.G){const vis=visible(gh,c,u);if(pass===0&&(vis||noFuture)||pass===1&&!vis)continue;
+        if(gh.k%step&&gh.k!==0&&gh.k!==lastK) continue;
+        const q=cl(gh.x,gh.y),px=X(q[0]),py=Y(q[1]);if(px<-rad||px>W+rad||py<-rad||py>H+rad)continue;
+        const fade=fadeOf(gh,tr),a=Math.min(1,(0.05+0.95*ve)*boost*fade*(pass?1:.18));
+        const cc=gh.col||col; ctx.globalAlpha=a; ctx.beginPath(); ctx.arc(px,py,rad,0,7);
+        if(gh.h){ctx.strokeStyle=cc;ctx.lineWidth=Math.max(1.2,rad*.12);ctx.stroke();}
+        else{ctx.fillStyle=cc;ctx.fill();ctx.strokeStyle=cc;ctx.lineWidth=Math.max(1,rad*.1);ctx.globalAlpha=Math.min(1,a*1.15);ctx.stroke();}}
+    }
+    ctx.globalAlpha=1;};
+  if(dep){dep.M.forEach(tr=>{const o=ds.objs[tr.k];ghosts(tr,SECT[o.s]||'#bbb',false,dep.M.length<=60?8:4,true);});
+    const dg=dep.gh,q=cl(dg.x,dg.y);ctx.strokeStyle='#ffffff';ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(X(q[0]),Y(q[1]),Math.max(6,objR+3),0,7);ctx.stroke();}
+  if(sel) ghosts(sel.tr,sel.g.col,true,objR,false);
+  // fil Z0 (linéaire) et objet de Classe 4
+  if(Z0&&$('zt').checked){const A=Z0.a,Bz=Z0.b,zc=ZL(c+u);ctx.save();ctx.strokeStyle='#e8c872';ctx.lineWidth=2.2;ctx.globalAlpha=.95*volSys();ctx.setLineDash([9,5]);ctx.beginPath();ctx.moveTo(X(A[0]),Y(A[1]));ctx.lineTo(X(Bz[0]),Y(Bz[1]));ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#e8c872';ctx.font='600 11px system-ui';[[A,'Z0(T₀)'],[Bz,'Z0(T₁)']].forEach(([p,l])=>{ctx.beginPath();ctx.arc(X(p[0]),Y(p[1]),4,0,7);ctx.fill();ctx.fillText(l,X(p[0])+6,Y(p[1])-6);});
+    HIT.z0={px:X(zc[0]),py:Y(zc[1]),r:7+1.25,p:zc};ctx.beginPath();ctx.arc(X(zc[0]),Y(zc[1]),7,0,7);ctx.lineWidth=2.5;ctx.stroke();ctx.fillText('Z0',X(zc[0])+9,Y(zc[1])+4);
+    const c0=Z0.C4[c],c1=Z0.C4[c+1];if(c0){const p=(c1&&u>0)?cyc(c0,c1,u,c,c+1):c0;const px=X(p[0]),py=Y(p[1]);HIT.c4={px,py,r:9+0.9,p};ctx.beginPath();ctx.moveTo(px,py-9);ctx.lineTo(px+9,py);ctx.lineTo(px,py+9);ctx.lineTo(px-9,py);ctx.closePath();ctx.fillStyle='rgba(8,10,16,.9)';ctx.fill();const c4c=colMove('#ffd966',c0,c1,c,c+1,u);ctx.strokeStyle=c4c;ctx.lineWidth=1.8;ctx.stroke();ctx.fillStyle=c4c;ctx.fillText('Classe 4 — '+SYS.name,px+11,py+14);}
+    Z0.C4N.forEach((n,ni)=>{const a0=n.P[c],a1=n.P[c+1];if(!a0)return;const p=(a1&&u>0)?cyc(a0,a1,u,c,c+1):a0;const px=X(p[0]),py=Y(p[1]);const s=6;HIT.c4n.push({px,py,r:s+0.9,p,n});
+      ctx.beginPath();ctx.moveTo(px,py-s);ctx.lineTo(px+s,py);ctx.lineTo(px,py+s);ctx.lineTo(px-s,py);ctx.closePath();ctx.fillStyle='rgba(8,10,16,.9)';ctx.fill();const cc=colMove('#ffb347',a0,a1,c,c+1,u);ctx.strokeStyle=cc;ctx.lineWidth=1.4;ctx.stroke();ctx.fillStyle=cc;ctx.font='600 10px system-ui';ctx.fillText('◆ '+n.b.name+' (imbriqué)',px+9,py-8-ni*12);});
+    ctx.restore();}
+  // objets de Classe 2 à l'instant (déplacés sur leur trajet cycloïdal)
+  const many=GROUPS.length>30;GROUPS.forEach((g,gi)=>{if(sel&&sel.g!==g&&many)return;const p0=P2(g,c);if(!p0)return;const p1=P2(g,c+1);const p=(p1&&u>0)?cyc(p0,p1,u,c,c+1):p0;const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);
+    const isS=sel&&sel.g===g;const rad=isS?16:(many?7:13);const gc=colMove(g.col,p0,p1,c,c+1,u);if(isS)window.__COLLOG.push([c,u,gc]);g._px=px;g._py=py;g._r=rad;HIT.c2.push({gi,px,py,r:rad+(isS?1.1:0.7),p});
+    ctx.globalAlpha=volSys()*(sel&&!isS?.45:1);ctx.beginPath();ctx.arc(px,py,rad,0,7);ctx.fillStyle='rgba(8,10,16,.9)';ctx.fill();ctx.lineWidth=isS?2.2:1.4;ctx.strokeStyle=gc;ctx.stroke();
+    if(!many||isS){const lab=g.name.length>18?g.name.slice(0,17)+'…':g.name;ctx.font='600 10px system-ui';ctx.fillStyle=gc;ctx.fillText(lab,px+rad+3,py+3);}ctx.globalAlpha=1;});
+  // couche Classe 1, au-dessus des objets de Classe 2 : positions courantes (aucune traîne) puis constituants déployés
+  ctx.fillStyle='#aab1c0';ctx.globalAlpha=volSys()*(sel?.3:.45);ctx.beginPath();ds.objs.forEach((o,k)=>{const p=P1(k,c);if(!p)return;const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);if(px<-2||px>W+2||py<-2||py>H+2)return;HIT.c1.push({k,px,py,r:1.5,p});ctx.moveTo(px+1.5,py);ctx.arc(px,py,1.5,0,6.2832);});ctx.fill();ctx.globalAlpha=1;
+  if(dep){
+    // constituants à l'instant, déplacés sur leur trajet cycloïdal
+    const few=dep.M.length<=60;ctx.globalAlpha=volSys();dep.M.forEach(tr=>{const k=tr.k,o=ds.objs[k];if(c<dep.d0)return;const p0=P1(k,c),p1=P1(k,c+1);if(!p0)return;const p=(p1&&u>0)?cyc(p0,p1,u,c,c+1):p0;const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);const col=colMove(SECT[o.s]||'#bbbbbb',p0,p1,c,c+1,u);
+      HIT.c1.push({k,px,py,r:(few?8:4)+0.5,dep:true});ctx.beginPath();ctx.arc(px,py,few?8:4,0,7);ctx.fillStyle='rgba(8,10,16,.85)';ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=1;ctx.stroke();
+      if(few){let fs=6;ctx.font='600 '+fs+'px system-ui';while(ctx.measureText(o.t).width>14&&fs>3){fs-=.5;ctx.font='600 '+fs+'px system-ui';}ctx.fillStyle=col;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(o.t,px,py+.5);ctx.textAlign='left';ctx.textBaseline='alphabetic';}});ctx.globalAlpha=1;
+  }
+  // état
+  let h='';if(sel){const tr=sel.tr;h+='<b>'+sel.g.name+'</b> ('+sel.g.mem.length+' constituants) · '+fmt(tr.G.length)+' fantômes, dont '+fmt(tr.nh)+' creux · Σrv = '+tr.S.toFixed(2)+' · calcul '+tr.ms.toFixed(0)+' ms (cache)';}
+  else h+='Aucune traîne calculée. Choisir un objet de Classe 2.';
+  if(dep){let n=0,nh=0;dep.M.forEach(t=>{n+=t.G.length;nh+=t.nh;});h+='<br>Déploiement depuis '+ds.dates[dep.d0]+' : '+dep.M.length+' constituants, '+fmt(n)+' fantômes (dont '+fmt(nh)+' creux) · '+dep.ms.toFixed(0)+' ms';}
+  if(sel)h+='<br>Diamètre de la règle : '+rl.mn.toPrecision(3)+' px × zoom '+zoom.toFixed(1)+(dr<FLOOR?' → affiché '+FLOOR+' px (plancher)':' = '+dr.toPrecision(3)+' px')+' · règle ×1 → ×'+fmt(rl.mx/rl.mn);
+  if(Z0){const f=v=>v.toFixed(4);h+='<br><span style="color:#e8c872">Z0 (placeholder : moyennes) — T₀ ('+f(Z0.a[0])+', '+f(Z0.a[1])+') → T₁ ('+f(Z0.b[0])+', '+f(Z0.b[1])+') · ensemble T₁ : '+Z0.n1.n1+' Cl.1 + '+Z0.n1.n2+' Cl.2 + '+Z0.n1.n3+' Cl.3 = '+Z0.n1.pts.length+' · moteur Cl.4 : '+(MANIF_ENGINES.irrationalisateur||MANIF_ENGINES.class4).name+'</span>';}
+  if(sel){const vis=sel.tr.G.filter(g=>visible(g,c,u));window.__GHOST={n:vis.length,volsys:volSys(),volgh:volGh(),volghobj:volGhObj(),focus:$('ghfocus').checked,libon:$('libon').checked,R:R,W:W,objR:objR,fades:vis.length?[0,.25,.5,.75,1].map(t=>{const g=vis[Math.min(vis.length-1,Math.round(t*(vis.length-1)))];return {k:g.k,fade:+fadeOf(g,sel.tr).toFixed(4)};}):[]};}
+    else window.__GHOST={n:0,volsys:volSys(),volgh:volGh(),volghobj:volGhObj(),libon:$('libon').checked,R:R,W:W};
+  $('st').innerHTML=h;legend();drawLib();}
+function legend(){$('lg').innerHTML='<b>v20.9 — fenêtre principale dans la colonne</b> : entrée HUB — point de chute en tête de la liste gauche ; tableau d’état ACTIVE / en construction sur le hub #/.<br><b>v20.8 — cadre LNH</b> : chaque vignette de joueur (nom en attendant la photo) et chaque logo de club est une entrée cliquable vers l’objet correspondant.<br><b>v20.7 — cadre LNH</b> : logos officiels des 32 clubs sur les objets de Classe 2 ; le nom complet du joueur tient lieu de photo ; positions nommées en toutes lettres (Center, Left Wing, Right Wing, Defense, Goalie) ; liens croisés entre classes.<br><b>v20.6 — cadre LNH</b> : le système LNH s’ouvre depuis la fenêtre principale et la fenêtre des sports. Chaque joueur (Classe 1) montre une photo provisoire, une courte description et sa fiche. Les vraies photos se substituent en remplaçant photos/{id}.png.<br><b>v20.5 — fenêtre principale</b> : tout ce qui est construit s’ouvre depuis la fenêtre principale (fil d’Ariane, hash, registre). Les huit étages, le Nasdaq-100, le S&amp;P 500, les sports et la LNH y sont branchés. Le moteur financier et le fantôme-objet de la v20.4 restent en service une fois un étage ouvert.<br><b>v20.4 — fantôme-objet</b> : le fantôme est l’écho volumétrique de l’objet (copies translucides de sa forme le long de Z0(T₀)→Z0(T₁)), pas une ligne. Luminosité de 100 % à la tête jusqu’à la marque la plus faible à l’origine. <b>Deux volumes distincts</b>, jamais fusionnés : « Volume du système » (objets courants) et « Volume du fantôme » (densité et clarté, global et par objet, plus le focus). Le panneau de droite s’escamote (bouton ou ]). Un clic sur une icône d’attribut ouvre l’analyse et la gaussienne sur place, sans défilement.<br><b>Bibliothèque de Classe 4 (v20.3)</b> : 8 objets toujours présents (America, Europe, Africa, Asia, Oceania, World, North-South, East-West). Les places sont des objets de Classe 2 imbriqués ; une place sans données est un emplacement nommé vide (aucune valeur inventée) ; un conteneur sans données porte « '+EC+' ». Places affectées par la bourse de cotation primaire (annuaire Nasdaq Trader) ; noms et villes : ISO 10383 (MIC).<br><b>Canon Z0</b> : Z0 = moyenne de tout, calculée comme un seul ensemble (Classe 1 + Classe 2 et conteneurs de Classe 3 selon les cases). Fil Z0(T₀)→Z0(T₁) linéaire (pointillé or) ; chaque floter = fil Z0 + écart cycloïdal axe par axe. ◆ Classe 4 = effondrement total (placeholder : moyenne). Couleurs : teinte = identité ; luminosité et saturation suivent l\'écart au fil Z0, interpolées par la même règle cycloïdale.<br><b>Mode traîne</b><br>Une seule traîne à la fois : celle de l\'objet de Classe 2 choisi (calcul à la demande, mis en cache, effacé à la désélection).<br>Horloge : <b>'+COLN[$('col').value]+'</b> ÷ médiane de l\'objet sur la fenêtre, cumulée ; un fantôme par pas entier. La colonne ne règle <b>que l\'espacement</b> ; tous les fantômes ont la même taille ; aucun chevauchement à l\'échelle de la règle. ○ creux = au-delà des bornes 0,5 % / 99,5 % (T₀ ∪ T₁), sur la paroi.<br><b>Transition cycloïdale</b> : chaque fantôme et chaque objet passe d\'une séance à la suivante par la cycloïde vraie, axe par axe (montée : c(t) = (πt − sin πt)/π ; descente : 1 − c(1 − t) ; immobile s\'il ne bouge pas). Les fantômes sont posés le long de ce trajet, à longueur d\'arc égale.';}
+// ---------- bibliothèque de Classe 4 : dessin des 8 conteneurs structurels (toujours présents) ----------
+function wrapT(t,w){const out=[];let line='';for(const wd of t.split(' ')){const tt=line?line+' '+wd:wd;if(ctx.measureText(tt).width>w&&line){out.push(line);line=wd;}else line=tt;}if(line)out.push(line);return out;}
+function drawLib(){HIT.lib=[];HIT.libR=null;if(!$('libon').checked)return;const x0=W-PW-14,y0=10,w=PW,h=H-20;HIT.libR={x:x0,y:y0,w,h};
+  ctx.save();ctx.fillStyle='rgba(10,12,18,.94)';ctx.strokeStyle='#2a2f3a';ctx.lineWidth=1;ctx.fillRect(x0,y0,w,h);ctx.strokeRect(x0+.5,y0+.5,w-1,h-1);
+  ctx.fillStyle='#e8c872';ctx.font='700 12px system-ui';ctx.fillText('Bibliothèque de Classe 4 — 8 objets',x0+10,y0+17);
+  ctx.fillStyle='#8a91a0';ctx.font='10px system-ui';ctx.fillText('source : '+$('ds').selectedOptions[0].textContent+' · ● place avec données · ○ place vide',x0+10,y0+30);
+  const gx=x0+8,gy=y0+38,cw=(w-24)/2,ch=(h-46-12)/4;
+  LIB4.forEach((L4,li)=>{const fx=gx+(li%2)*(cw+8),fy=gy+Math.floor(li/2)*(ch+4),isS=L4===SYS;const nd=[...L4.fl].filter(m=>NF[m]>0).length;
+    HIT.lib.push({kind:'frame',sys:L4,x:fx,y:fy,w:cw,h:ch,nd});
+    ctx.fillStyle=isS?'rgba(232,200,114,.08)':'rgba(20,24,34,.7)';ctx.fillRect(fx,fy,cw,ch);ctx.strokeStyle=isS?'#e8c872':'#4a5266';ctx.lineWidth=isS?2:1;ctx.setLineDash(nd?[]:[5,3]);ctx.strokeRect(fx+.5,fy+.5,cw-1,ch-1);ctx.setLineDash([]);
+    ctx.fillStyle=isS?'#e8c872':'#dfe3ea';ctx.font='700 11px system-ui';ctx.fillText('◆ '+L4.name,fx+6,fy+14);
+    ctx.font='9px system-ui';ctx.fillStyle='#8a91a0';ctx.fillText('Classe 4 · '+L4.fl.size+' places · '+nd+' avec données',fx+6,fy+25);
+    let by=fy+30;const nb=L4.boxes.length,side=L4.boxes.every(b=>b.kind==='half');const bh=side?ch-34:(ch-34-(nb-1)*3)/nb;
+    L4.boxes.forEach((b,bi)=>{const bx_=side?fx+4+bi*((cw-8)/2+0):fx+4,bw=side?(cw-8)/2-2:cw-8,byy=side?by:by+bi*(bh+3);const bnd=b.fl.filter(m=>NF[m]>0).length;
+      if(b.kind!=='self'){ctx.strokeStyle=bnd?'#8a7a4a':'#3a4256';ctx.lineWidth=1;ctx.setLineDash(bnd?[]:[3,3]);ctx.strokeRect(bx_+.5,byy+.5,bw-1,bh-1);ctx.setLineDash([]);
+        ctx.fillStyle=bnd?'#e8c872':'#9aa1b0';ctx.font='600 9px system-ui';ctx.fillText((b.kind==='c4n'?'◆ ':'')+b.name,bx_+4,byy+10);HIT.lib.push({kind:'box',sys:L4,b,x:bx_,y:byy,w:bw,h:bh,nd:bnd});}
+      const top=b.kind==='self'?byy+2:byy+14;let cx=bx_+8,cy=top+6;const sp=11;
+      // places de données d'abord (avec étiquette), puis emplacements vides
+      const fl=b.fl.slice().sort((a,c)=>(NF[c]>0)-(NF[a]>0));
+      for(const m of fl){const has=NF[m]>0;const r=has?5:3.2;let lab=has?m+' '+NF[m]:'';const lw=has?(ctx.font='600 9px system-ui',ctx.measureText(lab).width+14):sp;
+        if(cx+lw>bx_+bw-2){cx=bx_+8;cy+=sp;}if(cy>byy+bh-3)break;
+        ctx.beginPath();ctx.arc(cx,cy,r,0,7);if(has){ctx.fillStyle=FCOL[m]||'#bbb';ctx.fill();ctx.fillStyle='#dfe3ea';ctx.font='600 9px system-ui';ctx.fillText(lab,cx+7,cy+3);}else{ctx.strokeStyle='#6b7385';ctx.lineWidth=1;ctx.setLineDash([1.5,1.5]);ctx.stroke();ctx.setLineDash([]);}
+        HIT.lib.push({kind:'slot',sys:L4,b,mic:m,px:cx,py:cy,r:r+0.8,has});cx+=lw;}
+      if(!bnd){ctx.font='italic 9px system-ui';ctx.fillStyle='#e8a872';const lines=wrapT(EC,bw-12);let ty=Math.min(byy+bh-4-(lines.length-1)*10,Math.max(cy+16,byy+bh-4-(lines.length-1)*10));lines.forEach((l,j)=>ctx.fillText(l,bx_+6,ty+j*10));}
+    });});
+  ctx.restore();}
+function hoverLib(mx,my){const R_=HIT.libR;if(!R_||mx<R_.x||mx>R_.x+R_.w||my<R_.y||my>R_.y+R_.h)return null;
+  // priorité dans la bibliothèque : place (Classe 2) → conteneur imbriqué → objet de Classe 4
+  let b=null,bd=Infinity;for(const h of HIT.lib)if(h.kind==='slot'){const d=Math.hypot(h.px-mx,h.py-my);if(d<=h.r&&d<bd){bd=d;b=h;}}
+  if(b){const f=FLOORS[b.mic];return {kind:'slot',mic:b.mic,text:'Classe 2 — place : '+f.n+' ('+b.mic+')\nISO 10383 : '+f.iso+' · '+f.city+', '+f.cc+'\nVille : '+f.lat.toFixed(2)+', '+f.lon.toFixed(2)+' → hémisphère '+(f.lat>=0?'Nord':'Sud')+' / '+(f.lon>=0?'Est':'Ouest')+'\nDans : '+b.sys.name+(b.b.kind!=='self'?' › '+b.b.name:'')+'\n'+(b.has?'Données : '+NF[b.mic]+' titres de la source (cotation primaire)':'Aucune donnée — emplacement vide, aucune valeur inventée')}};
+  const inR=h=>mx>=h.x&&mx<=h.x+h.w&&my>=h.y&&my<=h.y+h.h;
+  for(const h of HIT.lib)if(h.kind==='box'&&inR(h))return {kind:'box',sys:h.sys.id,text:(h.b.kind==='c4n'?'Classe 4 imbriquée — ':'Conteneur — ')+h.b.name+'\nDans : '+h.sys.name+' · '+h.b.fl.length+' places · '+h.nd+' avec données'+(h.nd?'':'\n'+EC)};
+  for(const h of HIT.lib)if(h.kind==='frame'&&inR(h))return {kind:'frame',sys:h.sys.id,text:'Classe 4 — '+h.sys.name+'\n'+h.sys.fl.size+' places de Classe 2 imbriquées · '+h.nd+' avec données'+(h.nd?'':'\n'+EC)+'\n(cliquer : choisir ce système)'};
+  return {kind:'lib',text:'Bibliothèque de Classe 4 — 8 objets'};}
+function clickLib(mx,my){const h=hoverLib(mx,my);if(!h)return false;
+  if(h.kind==='slot'){const f=LIB4.find(x=>x.fl.has(h.mic));if(SYS.fl.has(h.mic)&&!EMPTY&&$('lvl').value==='f'){const gi=GROUPS.findIndex(g=>g.mic===h.mic);if(gi>=0){stopPlay();select(gi);}}return true;}
+  if(h.sys&&h.sys!==SYS.id){$('sys').value=h.sys;stopPlay();clearSel();setDS();defaultSel();}return true;}
+function drawEmpty(){$('d').textContent=EMPTY?ds.dates[+$('s').value]+' → '+ds.dates[+$('e').value]:'';ctx.fillStyle='#07080c';ctx.fillRect(0,0,W,H);
+  const cx=L+(W-L-R)/2,cy=T+(H-T-B)/2;ctx.strokeStyle='#e8a872';ctx.setLineDash([8,5]);ctx.lineWidth=1.5;ctx.strokeRect(L,T,W-L-R,H-T-B);ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(cx,cy-26);ctx.lineTo(cx+26,cy);ctx.lineTo(cx,cy+26);ctx.lineTo(cx-26,cy);ctx.closePath();ctx.strokeStyle='#e8c872';ctx.lineWidth=2;ctx.setLineDash([5,3]);ctx.stroke();ctx.setLineDash([]);
+  ctx.textAlign='center';ctx.fillStyle='#e8c872';ctx.font='700 20px system-ui';ctx.fillText('Classe 4 — '+SYS.name,cx,cy+60);ctx.fillStyle='#e8a872';ctx.font='italic 15px system-ui';ctx.fillText(EC,cx,cy+84);
+  ctx.fillStyle='#8a91a0';ctx.font='12px system-ui';ctx.fillText(SYS.fl.size+' places de Classe 2 nommées, toutes vides : aucune donnée dans la source, aucune valeur inventée ; Z0 non calculable.',cx,cy+106);ctx.textAlign='left';
+  $('st').innerHTML='<b>'+SYS.name+'</b> — '+EC+'. Conteneur structurel présent ; '+SYS.fl.size+' emplacements de Classe 2 vides.';legend();drawLib();}
+// ---------- interaction ----------
+function select(gi){clearSel();if(gi===''||gi==null)return draw();const g=GROUPS[+gi];sel={g,tr:gtrail(g)};$('sel').value=gi;if(g._volgh==null)g._volgh=100;$('volghobj').value=g._volgh;$('volghobjv').textContent=g._volgh;fit();draw();}
+function clearSel(){sel=null;dep=null;CACHE.clear();$('sel').value='';zoom=1;panX=0;panY=0;}
+function hitGhost(mx,my){if(!sel)return null;const v=view();const X=x=>L+(x-v.x0)/(v.x1-v.x0)*(W-L-R),Y=y=>H-B-(y-v.y0)/(v.y1-v.y0)*(H-T-B);let best=null,bd=(HIT.gr||16)+2;for(const gh of sel.tr.G){const d=Math.hypot(X(gh.x)-mx,Y(gh.y)-my);if(d<bd){bd=d;best=gh;}}return best;}
+function doDeploy(gh,auto){const d0=gh.k===0?gh.e:(gh.t>=1?gh.e:gh.e-1);dep=deploy(sel.g,d0);dep.gh=gh;$('c').value=d0;progress=0;fit();draw();if(auto)startPlay(d0);}
+let timer=null;
+function startPlay(from){stopPlay();$('c').value=from;progress=0;$('play').textContent='❚❚ Pause';let sub=0;
+  timer=setInterval(()=>{sub++;let c=+$('c').value;if(sub>=SUB){sub=0;c++;progress=0;if(c>=S1){$('c').value=S1;stopPlay();draw();return;}$('c').value=c;}else progress=sub/SUB;draw();},28);}
+function stopPlay(){if(timer){clearInterval(timer);timer=null;}progress=0;$('play').textContent='▶ Jouer';}
+$('play').onclick=()=>{if(timer){stopPlay();draw();return;}startPlay(dep?dep.d0:S0);};
+$('c').oninput=()=>{stopPlay();draw();};
+$('sel').onchange=()=>select($('sel').value);
+$('clr').onclick=()=>{stopPlay();clearSel();draw();};
+addEventListener('keydown',e=>{if(e.key==='Escape'){if($('pop')&&$('pop').classList.contains('open')){$('pop').classList.remove('open');document.querySelectorAll('#icons button.attr').forEach(b=>b.setAttribute('aria-expanded','false'));window.__POP={open:false};return;}stopPlay();clearSel();draw();return;}if(e.key===']'||(((e.key==='b')||(e.key==='B'))&&!/^(INPUT|SELECT|TEXTAREA)$/.test((e.target&&e.target.tagName)||''))){e.preventDefault();$('libon').checked=!$('libon').checked;$('libon').dispatchEvent(new Event('change'));}});
+$('col').onchange=()=>{const gi=$('sel').value;stopPlay();clearSel();if(gi!=='')select(gi);else draw();};
+$('lvl').onchange=()=>{stopPlay();clearSel();groups();computeZ0();defaultSel();};
+function reZ0(){stopPlay();const gi=$('sel').value;const kk=dep&&dep.gh.k,d0=dep&&dep.d0;computeZ0();CACHE.clear();if(gi!==''){sel={g:GROUPS[+gi],tr:gtrail(GROUPS[+gi])};if(dep){const gh=sel.tr.G.find(g=>g.k===kk)||sel.tr.G[0];dep=deploy(sel.g,d0);dep.gh=gh;}}fit();draw();}
+for(const id of['z2','z3','zt'])$(id).onchange=reZ0;
+for(const id of['s','e'])$(id).onchange=()=>{let s=+$('s').value,e=+$('e').value;if(e<s+5){e=Math.min(ds.dates.length-1,s+5);$('e').value=e;}$('c').value=e;const gi=$('sel').value;stopPlay();clearSel();window_();computeZ0();if(gi!=='')select(gi);else draw();};
+function setDS(){SYS=LIB4.find(x=>x.id===$('sys').value)||LIB4[0];const src=DATA[$('ds').value];for(const m in FLOORS)NF[m]=0;src.objs.forEach(o=>{if(o.f in NF)NF[o.f]++;});
+  ds={dates:src.dates,objs:src.objs.filter(o=>SYS.fl.has(o.f))};EMPTY=!ds.objs.length;const n=ds.dates.length;for(const id of['s','e','c'])$(id).max=n-1;
+  for(const id of['lvl','col','z2','z3','zt','sel','s','e','c','play','clr'])$(id).disabled=EMPTY;
+  if(!$('s').dataset.init){$('s').value=Math.max(0,ds.dates.indexOf('2026-01-06'));$('e').value=ds.dates.indexOf('2026-11-04')>=0?ds.dates.indexOf('2026-11-04'):n-1;$('c').value=$('e').value;$('s').dataset.init=1;}
+  if(EMPTY){BASE=[];GROUPS=[];Z0=null;sel=null;dep=null;$('sel').innerHTML='<option value="">— aucun —</option>';return;}
+  base();window_();groups();computeZ0();}
+function defaultSel(){const gi=GROUPS.findIndex(g=>g.name==='Technology');if(gi>=0)select(gi);else if(GROUPS.length&&$('lvl').value==='f'){let b=0;GROUPS.forEach((g,i)=>{if(g.mem.length>GROUPS[b].mem.length)b=i;});select(b);}else draw();}
+$('ds').onchange=$('sys').onchange=()=>{stopPlay();clearSel();setDS();defaultSel();};
+function syncVolLabels(){$('volsysv').textContent=$('volsys').value;$('volghv').textContent=$('volgh').value;$('volghobjv').textContent=$('volghobj').value;$('panbtn').textContent=$('libon').checked?'› Bibliothèque':'‹ Bibliothèque';$('panbtn').setAttribute('aria-expanded',$('libon').checked?'true':'false');$('panbtn').title=$('libon').checked?'Escamoter le panneau de droite (raccourci ])':'Rétablir le panneau de droite (raccourci ])';}
+function applyPanel(){size();const gi=$('sel').value;CACHE.clear();if(gi!==''&&!EMPTY)select(gi);else draw();syncVolLabels();}
+function onVol(){syncVolLabels();if(sel)sel.g._volgh=+$('volghobj').value;draw();}
+for(const id of['volsys','volgh','volghobj'])$(id).oninput=onVol;
+$('ghfocus').onchange=()=>draw();
+$('libon').onchange=applyPanel;
+$('panbtn').onclick=()=>{$('libon').checked=!$('libon').checked;applyPanel();};
+const ATTRS=[{name:'X',an:'volume',mu:0,sig:1},{name:'Y',an:'volume',mu:0,sig:1},{name:'Z',an:'volume',mu:0,sig:1},{name:'Forme',an:'volume',mu:0,sig:1},{name:'Étirement-écrasement',an:'volume',mu:0,sig:1},{name:'Couleur',an:'volume',mu:0,sig:1},{name:'Inclinaison avant-arrière',an:'volume',mu:0,sig:1},{name:'Rotation',an:'volume',mu:0,sig:1},{name:'Centre-extérieur',an:'volume',mu:0,sig:1},{name:'Saturation',an:'volume',mu:0,sig:1}];
+function drawGauss(){const cv=$('popcv'),g=cv.getContext('2d'),W=cv.width,H=cv.height;const mu=+$('popmu').value,sig=Math.max(0.05,+$('popsig').value);g.clearRect(0,0,W,H);const zcol=['#151a24','#1a2230','#243044','#1a2230','#151a24'];for(let i=0;i<5;i++){g.fillStyle=zcol[i];g.fillRect(i*W/5,0,W/5,H);}g.strokeStyle='#2a2f3a';g.beginPath();for(let i=1;i<5;i++){g.moveTo(i*W/5,0);g.lineTo(i*W/5,H);}g.stroke();g.beginPath();for(let i=0;i<=W;i++){const x=-4+8*i/W,y=Math.exp(-0.5*Math.pow((x-mu)/sig,2)),py=H-14-y*(H-28);if(i===0)g.moveTo(i,py);else g.lineTo(i,py);}g.strokeStyle='#e8c872';g.lineWidth=2;g.stroke();$('popmuv').textContent=(+mu).toFixed(2);$('popsigv').textContent=(+sig).toFixed(2);}
+function closePop(){$('pop').classList.remove('open');document.querySelectorAll('#icons button.attr').forEach(b=>b.setAttribute('aria-expanded','false'));window.__POP={open:false};}
+function openPop(i,btn){const a=ATTRS[i];$('pop').dataset.i=i;$('poptitle').textContent=a.name+' — analyse et gaussienne';$('popan').value=a.an;$('popmu').value=a.mu;$('popsig').value=a.sig;$('pop').classList.add('open');document.querySelectorAll('#icons button.attr').forEach(b=>b.setAttribute('aria-expanded','false'));btn.setAttribute('aria-expanded','true');drawGauss();const r=btn.getBoundingClientRect(),pw=$('pop').offsetWidth,ph=$('pop').offsetHeight;let left=r.left,top=r.bottom+8;if(left+pw>innerWidth-10)left=Math.max(8,innerWidth-pw-10);if(top+ph>innerHeight-10)top=Math.max(8,r.top-ph-8);$('pop').style.left=left+'px';$('pop').style.top=top+'px';window.__POP={open:true,attr:a.name,i:i,scrollY:scrollY};}
+$('popx').onclick=closePop;
+$('popan').onchange=()=>{const i=+$('pop').dataset.i;if(ATTRS[i])ATTRS[i].an=$('popan').value;};
+$('popmu').oninput=$('popsig').oninput=()=>{const i=+$('pop').dataset.i;if(ATTRS[i]){ATTRS[i].mu=+$('popmu').value;ATTRS[i].sig=+$('popsig').value;}drawGauss();};
+document.querySelectorAll('#icons button.attr').forEach(btn=>{btn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();openPop(+btn.dataset.i,btn);});});
+document.addEventListener('mousedown',e=>{if(!$('pop').classList.contains('open'))return;if($('pop').contains(e.target)||(e.target.closest&&e.target.closest('#icons button.attr')))return;closePop();});
+window.closePop=closePop;window.openPop=openPop;window.__ATTRS=ATTRS;
+
+addEventListener('resize',()=>{size();const gi=$('sel').value;if(gi!==''&&!EMPTY){const kk=dep&&dep.gh.k,d0=dep&&dep.d0;CACHE.clear();sel={g:GROUPS[+gi],tr:gtrail(GROUPS[+gi])};if(dep){const gh=sel.tr.G.find(g=>g.k===kk)||sel.tr.G[0];const keep=dep;dep=deploy(sel.g,d0);dep.gh=gh;}}draw();});
+// cadrage automatique sur la traîne choisie (et le déploiement)
+function fit(){const pts=[];if(sel)pts.push(...sel.tr.G);if(dep)dep.M.forEach(t=>{const c=+$('c').value;const p=P1(t.k,c);if(p)pts.push({x:p[0],y:p[1]});});if(Z0&&$('zt').checked){pts.push({x:Z0.a[0],y:Z0.a[1]},{x:Z0.b[0],y:Z0.b[1]});}if(!pts.length)return;const cl=(x,y)=>[Math.min(bx[1],Math.max(bx[0],x)),Math.min(by[1],Math.max(by[0],y))];
+  let x0=Infinity,x1=-Infinity,y0=Infinity,y1=-Infinity;for(const g of pts){const q=cl(g.x,g.y);x0=Math.min(x0,q[0]);x1=Math.max(x1,q[0]);y0=Math.min(y0,q[1]);y1=Math.max(y1,q[1]);}
+  const v=vb();const zx=(v.x1-v.x0)/((x1-x0)*1.25||1e-9),zy=(v.y1-v.y0)/((y1-y0)*1.25||1e-9);zoom=Math.max(1,Math.min(5000,zx,zy));panX=(x0+x1)/2-(v.x0+v.x1)/2;panY=(y0+y1)/2-(v.y0+v.y1)/2;if(zoom===1){panX=0;panY=0;}}
+let drag=null,moved=false;cv.onmousedown=e=>{drag=[e.clientX,e.clientY];moved=false;};onmouseup=()=>drag=null;
+cv.onmousemove=e=>{if(!drag||EMPTY)return;if(Math.abs(e.clientX-drag[0])+Math.abs(e.clientY-drag[1])>2)moved=true;const v=view();panX-=(e.clientX-drag[0])/(W-L-R)*(v.x1-v.x0);panY+=(e.clientY-drag[1])/(H-T-B)*(v.y1-v.y0);drag=[e.clientX,e.clientY];draw();};
+// survol : test géométrique exact sur la forme dessinée (rayon affiché compris).
+// Priorité : Classe 1 (même à l'intérieur d'un objet de Classe 2) → Classe 2 → Classe 4 → marqueur Z0 → fantôme de la traîne. Aucune zone morte.
+function hoverAt(mx,my){{const lb=hoverLib(mx,my);if(lb)return lb;}if(EMPTY)return null;const inC=h=>Math.hypot(h.px-mx,h.py-my)<=h.r;const best=a=>{let b=null,bd=Infinity;for(const h of a){const d=Math.hypot(h.px-mx,h.py-my);if(d<=h.r&&d<bd){bd=d;b=h;}}return b;};
+  const pc=v=>(v*100).toFixed(1)+' %',c=HIT.c;
+  // constituants déployés dessinés au-dessus : prioritaires parmi les Classe 1
+  let h=best(HIT.c1.filter(z=>z.dep))||best(HIT.c1.filter(z=>!z.dep));
+  if(h){const o=ds.objs[h.k],p=P1(h.k,c)||h.p;return {kind:'c1',k:h.k,text:'Classe 1 — objet élémentaire\n'+o.t+' · '+(o.s||'—')+' · '+(o.i||'—')+'\nPlace de cotation : '+(FLOORS[o.f]?FLOORS[o.f].n+' ('+o.f+')':'—')+'\nSéance '+ds.dates[c]+'\nRendement cumulé depuis T₀ : '+(p?pc(Math.exp(p[0])-1):'—')+'\nVolatilité 20 séances : '+(p?pc(p[1]):'—')+'\nVolume : '+(o.v[c]!=null?o.v[c].toLocaleString('fr-CA'):'—')};}
+  h=best(HIT.c2);if(h){const g=GROUPS[h.gi];return {kind:'c2',gi:h.gi,text:'Classe 2 — '+g.name+'\n'+({s:'secteur',i:'industrie',x:'indice',f:'place (bourse)'}[$('lvl').value])+' · '+g.mem.length+' constituants\nPosition = moyenne des constituants\nRendement cumulé : '+pc(Math.exp(h.p[0])-1)+' · vol20 : '+pc(h.p[1])+'\n(cliquer : choisir sa traîne)'};}
+  if(HIT.c4&&Math.abs(HIT.c4.px-mx)+Math.abs(HIT.c4.py-my)<=HIT.c4.r)return {kind:'c4',text:'Classe 4 — effondrement total (classes 3, 2 et 1)\n'+SYS.name+' · moteur : '+(MANIF_ENGINES.irrationalisateur||MANIF_ENGINES.class4).name+'\nRendement cumulé : '+pc(Math.exp(HIT.c4.p[0])-1)+' · vol20 : '+pc(HIT.c4.p[1])};
+  {let b=null,bd=Infinity;for(const h of HIT.c4n){const d=Math.abs(h.px-mx)+Math.abs(h.py-my);if(d<=h.r&&d<bd){bd=d;b=h;}}if(b)return {kind:'c4n',text:'Classe 4 imbriquée — '+b.n.b.name+' (dans '+SYS.name+')\nEffondrement de ses constituants (placeholder : moyenne)\nRendement cumulé : '+pc(Math.exp(b.p[0])-1)+' · vol20 : '+pc(b.p[1])};}
+  if(HIT.z0&&inC(HIT.z0))return {kind:'z0',text:'Z0 — fil linéaire Z0(T₀) → Z0(T₁)\nZ0 = moyenne de tout, en un seul ensemble (placeholder : moyennes de T₀ et T₁)\nRendement cumulé : '+pc(Math.exp(HIT.z0.p[0])-1)+' · vol20 : '+pc(HIT.z0.p[1])};
+  if(sel){const v=view();const X=x=>L+(x-v.x0)/(v.x1-v.x0)*(W-L-R),Y=y=>H-B-(y-v.y0)/(v.y1-v.y0)*(H-T-B);const cl=(x,y)=>[Math.min(bx[1],Math.max(bx[0],x)),Math.min(by[1],Math.max(by[0],y))];let b=null,bd=Infinity;
+    for(const gh of sel.tr.G){const q=cl(gh.x,gh.y);const d=Math.hypot(X(q[0])-mx,Y(q[1])-my);if(d<=HIT.gr+0.5&&d<bd){bd=d;b=gh;}}
+    if(b)return {kind:'ghost',text:'Fantôme n° '+b.k+' — '+sel.g.name+'\nTrajet '+ds.dates[Math.max(S0,b.e-1)]+' → '+ds.dates[b.e]+(b.h?'\nCreux (hors règle)':'')+'\n(cliquer : déployer les constituants)'};}
+  return null;}
+window.hoverAt=hoverAt;
+cv.addEventListener('mousemove',e=>{const tip=$('tip');if(drag){tip.style.display='none';return;}const r=hoverAt(e.clientX,e.clientY);if(!r){tip.style.display='none';tip.dataset.kind='';return;}
+  tip.textContent=r.text;tip.dataset.kind=r.kind;tip.style.display='block';tip.style.left=Math.min(W-330,e.clientX+14)+'px';tip.style.top=Math.min(H-140,e.clientY+14)+'px';});
+cv.addEventListener('mouseleave',()=>{$('tip').style.display='none';});
+cv.onclick=e=>{if(moved)return;if(clickLib(e.clientX,e.clientY))return;if(EMPTY)return;const gh=hitGhost(e.clientX,e.clientY);if(gh){doDeploy(gh,true);return;}
+  for(let gi=0;gi<GROUPS.length;gi++){const g=GROUPS[gi];if(g._px!=null&&Math.hypot(g._px-e.clientX,g._py-e.clientY)<=g._r+1.1){stopPlay();select(gi);return;}}};
+cv.ondblclick=()=>{if(EMPTY)return;zoom=1;panX=0;panY=0;draw();};
+cv.addEventListener('wheel',ev=>{ev.preventDefault();if(EMPTY)return;const v=view();const mx=v.x0+(ev.clientX-L)/(W-L-R)*(v.x1-v.x0),my=v.y0+(H-B-ev.clientY)/(H-T-B)*(v.y1-v.y0);const f=ev.deltaY<0?1.25:0.8;const nz=Math.max(1,Math.min(5000,zoom*f));
+  const k=zoom/nz;const vv=vb(),cx=(vv.x0+vv.x1)/2,cy=(vv.y0+vv.y1)/2;panX=mx-(mx-(cx+panX))*k-cx;panY=my-(my-(cy+panY))*k-cy;zoom=nz;draw();},{passive:false});
+// ---------- démarrage (paramètres d'URL facultatifs : ds, lvl, col, sel, dep=AAAA-MM-JJ, at=AAAA-MM-JJ, z, noui) ----------
+LIB4.forEach(x=>{const op=document.createElement('option');op.value=x.id;op.textContent=x.name;$('sys').appendChild(op);});size();
+const U=new URLSearchParams(location.search);if(U.get('sys'))$('sys').value=U.get('sys');if(U.get('lib')==='0'){$('libon').checked=false;size();}if(U.get('ds'))$('ds').value=U.get('ds');if(U.get('lvl'))$('lvl').value=U.get('lvl');if(U.get('col'))$('col').value=U.get('col');
+/* v20.9 — fenêtre principale dans la colonne + tableau d'état, registre, LNH et sports.
+   Injecté à la fin du prototype ; n'altère pas le moteur financier des versions antérieures. */
+(function(){
+const EC='en construction — à remplir quand les crédits le permettront';
+const FLOOR_IDS=['AMF','EUF','AFF','ASF','OCF','WF','NSF','EWF'];
+const POS_FR={C:'Center (centre)',L:'Left Wing (ailier gauche)',R:'Right Wing (ailier droit)',D:'Defense (défenseur)',G:'Goalie (gardien)'};
+const SPORT_PH=[
+  {id:'football',name:'Football'},
+  {id:'american-football',name:'Football américain'},
+  {id:'soccer',name:'Soccer'},
+  {id:'basketball',name:'Basketball'}
+];
+function countMic(mic,dsKey){const src=DATA[dsKey||'ALL'];return src?src.objs.filter(o=>o.f===mic).length:0;}
+function floorFeeds(id){const L=LIB4.find(x=>x.id===id);if(!L)return {n:0,mics:[]};const mics=[...L.fl].filter(m=>countMic(m)>0);return {n:mics.length,mics};}
+
+
+function floorLiveState(id){
+  const reg=findReg(id);
+  const fd=floorFeeds(id);
+  if(fd.n>0) return 'live';
+  if(reg&&reg.status==='live') return 'live';
+  return 'empty';
+}
+function hubCategoryOf(entry){
+  if(!entry) return 'Autres';
+  if(entry.category==='finance'||entry.category==='sports'||entry.category==='Autres') return entry.category;
+  if(entry.group==='floors'||entry.group==='indices') return 'finance';
+  if(entry.group==='sports'||entry.group==='windows') return 'sports';
+  return entry.category||'Autres';
+}
+
+/* v20.9 — arbre d'ouverture à CINQ branches (Éric 16:52) + coupes */
+const TREE_BRANCHES=[
+  {id:'APAC',name:'Asie-Pacifique',floor:'ASF',includes:['ASF','OCF'],blurb:'Asie + Australie / Océanie',covered:false},
+  {id:'ME',name:'Moyen-Orient',floor:'MEF',includes:['MEF'],blurb:'Branche propre (Tadawul, etc.) — plus « Asie de l’Ouest »',covered:false},
+  {id:'EUR',name:'Europe',floor:'EUF',includes:['EUF'],blurb:'Europe Floor',covered:false},
+  {id:'AFR',name:'Afrique',floor:'AFF',includes:['AFF'],blurb:'Africa Floor',covered:false},
+  {id:'AMER',name:'Amériques',floor:'AMF',includes:['AMF'],blurb:'Amérique du Nord + du Sud · NDX · S&P 500',covered:true}
+];
+const TREE_COUPES=[
+  {id:'coupe-monde',name:'Monde',floor:'WF',route:'#/floor/WF'},
+  {id:'coupe-ns',name:'Nord-Sud',floor:'NSF',route:'#/floor/NSF'},
+  {id:'coupe-ew',name:'Est-Ouest',floor:'EWF',route:'#/floor/EWF'},
+  {id:'coupe-eurasie',name:'Eurasie',floor:'EWF',route:'#/floor/EWF',note:'Coupe Europe + Asie (via East-West) — pas une branche d’ouverture'}
+];
+function treeBranchById(id){return TREE_BRANCHES.find(b=>b.id===id)||null;}
+function treeBranchForFloor(floorId){
+  if(!floorId) return null;
+  if(floorId==='MEF') return treeBranchById('ME');
+  return TREE_BRANCHES.find(b=>b.includes.indexOf(floorId)>=0)||null;
+}
+function branchLiveState(b){
+  if(b.id==='AMER') return floorFeeds('AMF').n>0?'live':'empty';
+  if(b.id==='ME') return 'empty'; // pas encore de données Tadawul
+  if(b.id==='APAC'){
+    // Asie + Océanie data structure kept; no market titles yet
+    return (floorLiveState('ASF')==='live'||floorLiveState('OCF')==='live')?'empty':'empty';
+  }
+  return floorLiveState(b.floor)==='live' && floorFeeds(b.floor).n>0 ? 'live' : 'empty';
+}
+function branchCovered(b){
+  if(b.id==='AMER') return floorFeeds('AMF').n>0;
+  return false; // seules Amériques couvertes (NDX, S&P 500)
+}
+
+function registryBalanceRows(){
+  const rows=[];
+  // FINANCE opening = 5 tree branches only (not 8 floors)
+  for(const b of TREE_BRANCHES){
+    const st=branchLiveState(b);
+    const cov=branchCovered(b);
+    let detail=b.blurb;
+    if(b.id==='AMER'&&cov) detail='America Floor · NDX '+DATA.NDX.objs.length+' · S&P 500 '+DATA.SPX.objs.length;
+    else if(!cov) detail=b.blurb+' · '+EC;
+    rows.push({id:b.id,name:b.name,kind:'tree-branch',status:cov?'live':'empty',route:'#/tree/'+b.id,detail,children:[],group:'tree',category:'finance',floor:b.floor,branch:b.id});
+  }
+  const sportsKids=[
+    {id:'NHL',name:'Hockey — LNH',status:'live',route:'#/sports/nhl',count:NHL.players.length+' joueurs · '+Object.keys(NHL.teams).length+' clubs',category:'sports'},
+    ...SPORT_PH.map(s=>({id:s.id,name:s.name,status:'empty',route:'#/sports/'+s.id,count:EC,category:'sports'}))
+  ];
+  rows.push({id:'SPORTS',name:'Sports professionnels',kind:'window',status:'live',route:'#/sports',detail:'Hockey (LNH) en service · '+NHL.players.length+' joueurs',children:sportsKids,group:'windows',category:'sports'});
+  const covered=new Set(rows.map(r=>r.id).concat(rows.flatMap(r=>(r.children||[]).map(c=>c.id))).concat(['NDX','SPX','NHL',...SPORT_PH.map(s=>s.id),...TREE_BRANCHES.map(b=>b.id)]));
+  for(const x of REGISTRY){
+    if(covered.has(x.id)) continue;
+    // Keep floors in registry but do not list them on opening tree
+    if(FLOOR_IDS.indexOf(x.id)>=0) continue;
+    rows.push({id:x.id,name:x.name,kind:x.kind||'system',status:x.status||'empty',route:x.route||('#/'+x.id),detail:x.blurb||(x.status==='empty'?EC:'Système enregistré'),children:[],group:x.group||'other',category:hubCategoryOf(x)});
+  }
+  return rows;
+}
+function balanceCell(row, isChild){
+  const live=row.status==='live';
+  const cls=live?'bal-cell live':'bal-cell empty';
+  const badge=live?'ACTIVE':'en construction';
+  const kids=(row.children&&row.children.length)?('<div class="bal-kids">'+row.children.map(c=>balanceCell(c,true)).join('')+'</div>'):'';
+  const count=row.count?('<span class="bal-count">'+row.count+'</span>'):(row.detail&&!isChild?('<span class="bal-detail">'+row.detail+'</span>'):'');
+  return `<div role="button" tabindex="0" class="${cls}${isChild?' child':''}" data-id="${row.id}" data-route="${row.route}" data-status="${row.status}" data-branch="${row.branch||''}" aria-label="${row.name} — ${badge}">
+    <span class="bal-name">${row.name}</span>
+    <span class="bal-badge">${badge}</span>
+    ${count}
+    ${kids}
+  </div>`;
+}
+window.__HUB_CAT='finance';
+window.__HUB_TREE=null; // open branch id or null (sommet)
+function planetaryCoverageRows(){
+  const amCovered=floorFeeds('AMF').n>0;
+  const continents=TREE_BRANCHES.map(b=>{
+    const cov=branchCovered(b);
+    let note=b.blurb;
+    if(b.id==='AMER'&&cov) note='Amériques · NDX '+DATA.NDX.objs.length+' · S&P 500 '+DATA.SPX.objs.length;
+    else note=b.blurb+' · même gabarit arbre → Classe 2 → Classe 1 · '+EC;
+    return {id:'branch-'+b.id,name:b.name,floor:b.floor,branch:b.id,route:'#/tree/'+b.id,covered:cov,note,kind:'branch'};
+  });
+  const coupes=TREE_COUPES.map(c=>{
+    const st=floorLiveState(c.floor);
+    const cov=st==='live'&&amCovered;
+    return {id:c.id,name:c.name,floor:c.floor,route:c.route,covered:cov,note:(c.note||('Coupe · étage '+c.floor+' conservé comme structure'))+(cov?' · données via Amériques':' · '+EC),kind:'coupe'};
+  });
+  return continents.concat(coupes);
+}
+function renderPlanetaryCoverage(){
+  const rows=planetaryCoverageRows();
+  const branches=rows.filter(r=>r.kind==='branch');
+  const coupes=rows.filter(r=>r.kind==='coupe');
+  const nCov=branches.filter(r=>r.covered).length;
+  const item=r=>{
+    const st=r.covered?'covered':'gap';
+    const badge=r.covered?'COUVERT':'NON COUVERT — prochain chantier';
+    return `<button type="button" class="cov-row ${st}" data-id="${r.id}" data-route="${r.route}" data-floor="${r.floor||''}" data-branch="${r.branch||''}" aria-label="${r.name} — ${badge}">
+      <span class="cov-name">${r.name}</span>
+      <span class="cov-badge">${badge}</span>
+      <span class="cov-note">${r.note}</span>
+    </button>`;
+  };
+  return `<section id="planetary-coverage" aria-label="Couverture planétaire">
+    <div class="cov-head"><h2 class="cov-title">Couverture planétaire</h2>
+      <p class="cov-sum"><strong>${nCov}</strong> branche${nCov>1?'s':''} couverte${nCov>1?'s':''} sur ${branches.length} · arbre d’ouverture à 5 branches · coupes hors arbre</p></div>
+    <h3 class="cov-sub">Cinq branches d’ouverture</h3>
+    <div class="cov-list" id="cov-list">${branches.map(item).join('')}</div>
+    <h3 class="cov-sub">Coupes (super-instantiateurs hors arbre)</h3>
+    <div class="cov-list" id="cov-coupes">${coupes.map(item).join('')}</div>
+  </section>`;
+}
+
+function floorContentsForHub(branchOrFloor){
+  // Accept branch id or legacy floor id
+  const b=treeBranchById(branchOrFloor)||treeBranchForFloor(branchOrFloor);
+  const id=b?b.id:branchOrFloor;
+  if(id==='AMER'||branchOrFloor==='AMF'){
+    return [
+      {id:'NDX',name:'Nasdaq-100',status:'live',route:'#/floor/AMF/index/NDX',count:DATA.NDX.objs.length+' titres Classe 1',klass:2},
+      {id:'SPX',name:'S&P 500',status:'live',route:'#/floor/AMF/index/SPX',count:DATA.SPX.objs.length+' titres Classe 1',klass:2},
+      {id:'XNYS',name:'NYSE',status:'live',route:'#/floor/AMF/ex/XNYS',count:countMic('XNYS')+' titres',klass:2},
+      {id:'XNAS',name:'Nasdaq',status:'live',route:'#/floor/AMF/ex/XNAS',count:countMic('XNAS')+' titres',klass:2},
+      {id:'BATS',name:'Cboe BZX',status:'live',route:'#/floor/AMF/ex/BATS',count:countMic('BATS')+' titres',klass:2}
+    ];
+  }
+  if(id==='APAC'){
+    const kids=[];
+    const L=LIB4.find(x=>x.id==='ASF');
+    kids.push({id:'ASF-struct',name:'Asia Floor (structure)',status:'empty',route:'#/floor/ASF',count:(L?L.fl.size:0)+' places · '+EC,klass:2});
+    kids.push({id:'OCF-struct',name:'Océanie (sous Asie-Pacifique)',status:'empty',route:'#/floor/OCF',count:'Oceania Floor · '+EC,klass:2});
+    return kids;
+  }
+  if(id==='ME'){
+    return [
+      {id:'TADAWUL',name:'Tadawul (Arabie saoudite)',status:'empty',route:'#/tree/ME',count:EC+' · [INCOMPLET : flux non branché]',klass:2},
+      {id:'ME-other',name:'Autres places Moyen-Orient',status:'empty',route:'#/tree/ME',count:EC+' · [INCOMPLET]',klass:2}
+    ];
+  }
+  const floor=b?b.floor:branchOrFloor;
+  const L=LIB4.find(x=>x.id===floor);
+  const fd=floorFeeds(floor);
+  if(fd.n){
+    return fd.mics.map(m=>({id:m,name:(FLOORS[m]?FLOORS[m].n+' ('+m+')':m),status:'live',route:'#/floor/'+floor+'/ex/'+m,count:countMic(m)+' titres',klass:2}));
+  }
+  return [{id:(floor||id)+'-empty',name:EC,status:'empty',route:b?('#/tree/'+b.id):('#/floor/'+floor),count:'Branche → Classe 2 [INCOMPLET] → Classe 1 [INCOMPLET]',klass:2}];
+}
+function renderSuperStrip(activeBranch){
+  // Persistent strip of the FIVE opening branches — always visible
+  const atTop=!activeBranch;
+  const chips=TREE_BRANCHES.map(b=>{
+    const live=branchCovered(b);
+    const here=b.id===activeBranch;
+    const collapsed=!!activeBranch && !here;
+    return `<button type="button" class="strip-chip ${live?'live':'empty'}${here?' open':''}${collapsed?' c2':''}" data-id="${b.id}" data-branch="${b.id}" data-route="#/tree/${b.id}" title="${b.name}" aria-current="${here?'true':'false'}">
+      <span class="strip-id">${b.id}</span>
+      <span class="strip-name">${b.name}</span>
+      <span class="strip-badge">${live?'ACTIVE':'en construction'}</span>
+    </button>`;
+  }).join('');
+  const back=atTop?'':`<button type="button" class="strip-top" data-route="#/" data-hub-cat="finance" id="retour-sommet" aria-label="Retour au sommet">↑ Retour au sommet</button>`;
+  return `<nav id="super-strip" class="${atTop?'at-top':'branch-open'}" aria-label="Cinq branches d’ouverture">${back}<div class="strip-ring">${chips}</div></nav>`;
+}
+function renderOpenFloorPanel(branchId){
+  const b=treeBranchById(branchId)||treeBranchForFloor(branchId);
+  const id=b?b.id:branchId;
+  const name=b?b.name:branchId;
+  const contents=floorContentsForHub(id);
+  const cells=contents.map(c=>{
+    const live=c.status==='live';
+    return `<div role="button" tabindex="0" class="bal-cell ${live?'live':'empty'} child" data-id="${c.id}" data-route="${c.route}" data-status="${c.status}">
+      <span class="bal-name">${c.name}</span>
+      <span class="bal-badge">${live?'ACTIVE':'en construction'}</span>
+      <span class="bal-count">${c.count||''}</span>
+    </div>`;
+  }).join('');
+  const others=TREE_BRANCHES.filter(x=>x.id!==id).map(ob=>{
+    const live=branchCovered(ob);
+    return `<div role="button" tabindex="0" class="c2-collapsed ${live?'live':'empty'}" data-id="${ob.id}" data-branch="${ob.id}" data-route="#/tree/${ob.id}" aria-label="${ob.name} (Classe 2 replié)">
+      <span class="c2-id">${ob.id}</span>
+      <span class="c2-lab">${ob.name}</span>
+      <span class="c2-badge">${live?'ACTIVE':'en construction'}</span>
+    </div>`;
+  }).join('');
+  return `<section id="open-floor-panel" data-branch="${id}" data-floor="${b?b.floor:''}">
+    <div class="ofp-head"><h3>Branche ouverte — ${name}</h3>
+      <p class="ofp-note">Objets Classe 2 peuplés ici · les quatre autres branches restent visibles en objets Classe 2 repliés · bandeau permanent des 5</p></div>
+    <div class="bal-grid ofp-contents">${cells}</div>
+    <div class="c2-rail" aria-label="Autres branches en objets Classe 2">${others}</div>
+  </section>`;
+}
+
+function renderBalanceChart(activeCat){
+  const cat=activeCat||window.__HUB_CAT||'finance';
+  window.__HUB_CAT=cat;
+  const rows=registryBalanceRows();
+  const cats=[
+    {id:'finance',name:'FINANCE',blurb:'Arbre à 5 branches — Asie-Pacifique, Moyen-Orient, Europe, Afrique, Amériques'},
+    {id:'sports',name:'SPORTS PROFESSIONNELS',blurb:'Hockey (LNH) actif · soccer, football, football américain, basketball en construction'}
+  ];
+  const extras=rows.filter(r=>r.category!=='finance'&&r.category!=='sports');
+  if(extras.length) cats.push({id:'Autres',name:'AUTRES',blurb:'Systèmes enregistrés hors Finance / Sports'});
+  const doors=cats.map(c=>{
+    const subset=rows.filter(r=>r.category===c.id);
+    const nLive=subset.filter(r=>r.status==='live').length;
+    const here=c.id===cat;
+    return `<button type="button" class="hub-door ${here?'open':''}" data-hub-cat="${c.id}" data-id="HUBCAT-${c.id}" aria-pressed="${here?'true':'false'}" aria-label="${c.name}">
+      <span class="door-name">${c.name}</span>
+      <span class="door-meta">${nLive} ACTIVE · ${subset.length} systèmes</span>
+      <span class="door-blurb">${c.blurb}</span>
+    </button>`;
+  }).join('');
+  const shown=rows.filter(r=>r.category===cat);
+  const openBranch=(cat==='finance' && window.__HUB_TREE)||null;
+  const strip=cat==='finance'?renderSuperStrip(openBranch):'';
+  const topNote=cat==='finance'
+    ?(openBranch
+      ?'Branche ouverte : contenu Classe 2 peuplé · autres branches = objets Classe 2 visibles (bandeau permanent des 5)'
+      :'SOMMET — arbre-objet à cinq branches seulement (Asie-Pacifique, Moyen-Orient, Europe, Afrique, Amériques). Ouvrir une branche pour peupler.')
+    :'ACTIVE = données réelles / live · en construction = sans données inventées';
+  const body=cat==='finance'
+    ?(openBranch
+      ? renderOpenFloorPanel(openBranch)
+      : `<div class="bal-grid super-top tree-top" id="bal-floors" data-cat="finance">${shown.map(r=>balanceCell(r,false)).join('')}</div>`)
+    : `<div class="bal-grid" id="bal-floors" data-cat="${cat}">${shown.map(r=>balanceCell(r,false)).join('')}</div>`;
+  return `<section id="balance-chart" aria-label="Tableau d'état des applications">
+    <div class="bal-head"><h2 class="bal-title">Tableau d'état — applications</h2>
+      <p class="bal-lead">Portes FINANCE et SPORTS PROFESSIONNELS · ${topNote}</p></div>
+    <div class="hub-doors" id="hub-doors">${doors}</div>
+    ${strip}
+    ${body}
+  </section>`;
+}
+
+/* Ghost ↔ HUB state (session memory) — no new hub UI */
+const GHOST_HUB_KEY='um.ghost.hubState.v1';
+const GHOST_HUB_VER=2;
+function ghostHubEnsureNS(){
+  if(!window.__GHOST) window.__GHOST={};
+  if(!window.__GHOST.hub) window.__GHOST.hub={key:GHOST_HUB_KEY,version:GHOST_HUB_VER};
+  return window.__GHOST.hub;
+}
+function ghostHubCoverageSnapshot(){
+  try{ return planetaryCoverageRows().map(r=>({id:r.id,name:r.name,floor:r.floor,covered:!!r.covered,route:r.route})); }
+  catch(e){ return []; }
+}
+function ghostHubCaptureState(reason){
+  const route=typeof parseHash==='function'?parseHash():{mode:'home'};
+  const openBranch=(route.mode==='tree'&&route.branch)?route.branch:(window.__HUB_TREE||null);
+  // Legacy floor route → map to branch if possible
+  let branch=openBranch;
+  if(!branch && route.mode==='floor'&&route.sys){
+    const bb=treeBranchForFloor(route.sys); branch=bb?bb.id:null;
+  }
+  const folded=TREE_BRANCHES.filter(b=>b.id!==branch).map(b=>b.id);
+  const state={
+    v:GHOST_HUB_VER,
+    savedAt:Date.now(),
+    reason:reason||'change',
+    openBranch:branch||null,
+    openFloor:null, // deprecated — kept absent so old readers ignore
+    treePath:branch?('tree/'+branch+(route.index?('/index/'+route.index):route.ex?('/ex/'+route.ex):'')):null,
+    foldedAsClass2:folded,
+    route:{mode:route.mode||'home', hash:location.hash||'#/', sys:route.sys||null, branch:branch||null, index:route.index||null, agg:route.agg||null, key:route.key||null, player:route.player||null, sport:route.sport||null},
+    hubCat:window.__HUB_CAT||'finance',
+    coverage:ghostHubCoverageSnapshot(),
+    rightWindow:null // NEVER persist right window — always closed on restore
+  };
+  const ns=ghostHubEnsureNS();
+  ns.last=state;
+  try{ localStorage.setItem(GHOST_HUB_KEY, JSON.stringify(state)); }catch(e){ ns.saveError=String(e); }
+  return state;
+}
+function ghostHubReadSaved(){
+  try{
+    const raw=localStorage.getItem(GHOST_HUB_KEY);
+    if(!raw) return null;
+    const st=JSON.parse(raw);
+    if(!st||st.v!==GHOST_HUB_VER) return null;
+    // Migrate / ignore old 8-floor ghost paths → clean top
+    if(st.openBranch!=null && !treeBranchById(st.openBranch)) return null;
+    if(st.openFloor!=null && !st.openBranch){
+      // old format: try map floor→branch; if unmapped or obsolete multi-floor top → clean
+      const bb=treeBranchForFloor(st.openFloor);
+      if(!bb) return null;
+      st.openBranch=bb.id;
+    }
+    if(st.route && st.route.mode && ['home','floor','tree','sports','nhl','placeholder'].indexOf(st.route.mode)<0) return null;
+    return st;
+  }catch(e){ return null; }
+}
+function ghostHubRestoreOnOpen(){
+  const ns=ghostHubEnsureNS();
+  const st=ghostHubReadSaved();
+  ns.restored=null;
+  const liveCov=ghostHubCoverageSnapshot();
+  if(st&&st.coverage){
+    const prev=new Map(st.coverage.map(c=>[c.id,!!c.covered]));
+    ns.coverageDelta=liveCov.filter(c=>prev.has(c.id)&&prev.get(c.id)!==c.covered).map(c=>({id:c.id,was:prev.get(c.id),now:c.covered}));
+  } else ns.coverageDelta=[];
+  // Right window NEVER restored — always start closed
+  try{ if(typeof closeRightWindow==='function') closeRightWindow(); }catch(e){}
+  window.__RW_FORCE_CLOSED=true;
+  if(!st){ window.__HUB_TREE=null; window.__HUB_OPEN_FLOOR=null; window.__HUB_CAT='finance'; ns.restored='clean-top'; return null; }
+  window.__HUB_CAT=st.hubCat||'finance';
+  const branch=st.openBranch||null;
+  if(branch && treeBranchById(branch)){
+    window.__HUB_TREE=branch;
+    const b=treeBranchById(branch);
+    window.__HUB_OPEN_FLOOR=b.floor||null;
+    // Prefer deep treePath if present and valid
+    let hash='#/tree/'+branch;
+    if(st.treePath && st.treePath.indexOf('tree/'+branch)===0){
+      const rest=st.treePath.slice(('tree/'+branch).length);
+      if(rest.indexOf('/index/')===0||rest.indexOf('/ex/')===0){
+        // deep path into finance floor for Amériques etc.
+        if(b.floor && b.floor!=='MEF') hash='#/floor/'+b.floor+rest;
+        else hash='#/tree/'+branch;
+      }
+    } else if(st.route && st.route.mode==='floor' && st.route.sys){
+      hash='#/floor/'+st.route.sys+(st.route.index?('/index/'+st.route.index):'');
+    }
+    try{ history.replaceState(null,'',hash); }catch(e){ location.hash=hash; }
+    ns.restored='branch:'+branch;
+  } else {
+    window.__HUB_TREE=null;
+    window.__HUB_OPEN_FLOOR=null;
+    const h=location.hash||'';
+    if(!h || h==='#' || h==='#/'){ try{ history.replaceState(null,'','#/'); }catch(e){ location.hash='#/'; } }
+    ns.restored='super-top';
+  }
+  ns.last=Object.assign({}, st, {coverage:liveCov, rightWindow:null});
+  return st;
+}
+function ghostHubBindLifecycle(){
+  if(window.__GHOST_HUB_BOUND) return;
+  window.__GHOST_HUB_BOUND=true;
+  const save=()=>{ try{ ghostHubCaptureState('lifecycle'); }catch(e){} };
+  addEventListener('pagehide', save);
+  addEventListener('beforeunload', save);
+  document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') save(); });
+}
+
+function ensureMainframeNav(){
+  let nav=$('nav-mainframe');
+  if(!nav){
+    nav=document.createElement('button');
+    nav.type='button';
+    nav.id='nav-mainframe';
+    nav.className='navapp';
+    nav.setAttribute('data-route','#/');
+    nav.setAttribute('data-id','MAINFRAME');
+    nav.textContent='HUB — point de chute';
+    const home=$('homebtn');
+    const floor=$('floorctl');
+    if(home&&home.parentNode) home.insertAdjacentElement('afterend',nav);
+    else if(floor&&floor.parentNode) floor.insertAdjacentElement('beforebegin',nav);
+    else if($('ui')) $('ui').insertBefore(nav,$('ui').children[1]||null);
+  } else {
+    nav.textContent='HUB — point de chute';
+  }
+  if($('homebtn')){
+    $('homebtn').textContent='HUB — point de chute';
+    $('homebtn').setAttribute('data-route','#/');
+  }
+  const sel=$('sys');
+  if(sel && !sel.querySelector('option[value="__MAIN__"]')){
+    const op=document.createElement('option');
+    op.value='__MAIN__';
+    op.textContent='HUB — point de chute';
+    sel.insertBefore(op, sel.firstChild);
+  } else if(sel){
+    const op=sel.querySelector('option[value="__MAIN__"]');
+    if(op) op.textContent='HUB — point de chute';
+  }
+}
+function syncMainframeNavHighlight(route){
+  const on=route&&route.mode==='home';
+  const nav=$('nav-mainframe');
+  if(nav){nav.setAttribute('aria-current',on?'true':'false');nav.classList.toggle('here',!!on);}
+  if($('homebtn')){$('homebtn').setAttribute('aria-current',on?'true':'false');$('homebtn').classList.toggle('here',!!on);}
+  const sel=$('sys');
+  if(sel){
+    if(on) sel.value='__MAIN__';
+    else if(route&&route.mode==='floor'&&route.sys && [...sel.options].some(o=>o.value===route.sys)) sel.value=route.sys;
+  }
+  // Tree strip state (5 branches)
+  if(route&&route.mode==='tree'&&route.branch){
+    window.__HUB_TREE=route.branch;
+    const bb=treeBranchById(route.branch);
+    window.__HUB_OPEN_FLOOR=bb?bb.floor:null;
+    window.__HUB_CAT='finance';
+  } else if(route&&route.mode==='floor'&&route.sys){
+    const bb=treeBranchForFloor(route.sys);
+    window.__HUB_TREE=bb?bb.id:null;
+    window.__HUB_OPEN_FLOOR=route.sys;
+    window.__HUB_CAT='finance';
+  } else if(on){
+    if(!window.__HUB_KEEP_OPEN){ window.__HUB_TREE=null; window.__HUB_OPEN_FLOOR=null; }
+  }
+  syncPersistentStrip(route);
+  try{ ghostHubCaptureState('route'); }catch(e){}
+}
+function syncPersistentStrip(route){
+  let strip=$('super-strip-persist');
+  let active=null;
+  if(route&&route.mode==='tree'&&route.branch) active=route.branch;
+  else if(route&&route.mode==='floor'&&route.sys){ const bb=treeBranchForFloor(route.sys); active=bb?bb.id:null; }
+  else if(window.__HUB_TREE) active=window.__HUB_TREE;
+  const html=renderSuperStrip(active);
+  if(!strip){
+    strip=document.createElement('div');
+    strip.id='super-strip-persist';
+    document.body.appendChild(strip);
+  }
+  // Show persistent strip in floor mode (hub already embeds strip inside balance-chart)
+  if(route&&(route.mode==='floor'||route.mode==='tree')){
+    strip.style.display='block';
+    strip.innerHTML=html;
+    strip.className='persist-strip mode-floor-strip';
+  } else if(route&&route.mode==='home'){
+    // hub embeds strip inside balance-chart; hide duplicate persist
+    strip.style.display='none';
+    strip.innerHTML='';
+  } else {
+    strip.style.display='none';
+    strip.innerHTML='';
+  }
+}
+
+function seasonLab(s){return s==='20242025'?'2024-25':s==='20252026'?'2025-26':s;}
+function latestTeam(p){return (p.ts&& (p.ts['20252026']||p.ts['20242025']))||'';}
+function teamLabel(abbr){
+  const n=NHL.teams[abbr];if(!n)return abbr;
+  const a=n['20252026'],b=n['20242025'];
+  if(a&&b&&a!==b)return a+' (2025-26) · '+b+' (2024-25)';
+  return a||b||abbr;
+}
+function teamShort(abbr){const n=NHL.teams[abbr];return (n&&(n['20252026']||n['20242025']))||abbr;}
+
+const REGISTRY=[
+  {id:'AMF',kind:'class4-floor',name:'America Floor',status:'live',route:'#/floor/AMF',group:'floors',category:'finance',parent:null},
+  {id:'EUF',kind:'class4-floor',name:'Europe Floor',status:'empty',route:'#/floor/EUF',group:'floors',category:'finance',parent:null},
+  {id:'AFF',kind:'class4-floor',name:'Africa Floor',status:'empty',route:'#/floor/AFF',group:'floors',category:'finance',parent:null},
+  {id:'ASF',kind:'class4-floor',name:'Asia Floor',status:'empty',route:'#/floor/ASF',group:'floors',category:'finance',parent:null},
+  {id:'OCF',kind:'class4-floor',name:'Oceania Floor',status:'empty',route:'#/floor/OCF',group:'floors',category:'finance',parent:null},
+  {id:'WF',kind:'class4-floor',name:'World Floor',status:'live',route:'#/floor/WF',group:'floors',category:'finance',parent:null},
+  {id:'NSF',kind:'class4-floor',name:'North-South Floor',status:'live',route:'#/floor/NSF',group:'floors',category:'finance',parent:null},
+  {id:'EWF',kind:'class4-floor',name:'East-West Floor',status:'live',route:'#/floor/EWF',group:'floors',category:'finance',parent:null},
+  {id:'NDX',kind:'index',name:'Nasdaq-100',status:'live',route:'#/floor/AMF/index/NDX',group:'indices',category:'finance',parent:'AMF'},
+  {id:'SPX',kind:'index',name:'S&P 500',status:'live',route:'#/floor/AMF/index/SPX',group:'indices',category:'finance',parent:'AMF'},
+  {id:'SPORTS',kind:'window',name:'Sports professionnels',status:'live',route:'#/sports',group:'windows',category:'sports',parent:null},
+  {id:'NHL',kind:'class4-system',name:'LNH',status:'live',route:'#/sports/nhl',group:'sports',category:'sports',parent:'SPORTS',
+   hierarchy:{c1:'joueur',c2:['équipe','pays','position','année de repêchage','joueurs échangés'],c4:'système'}},
+  {id:'football',kind:'placeholder',name:'Football',status:'empty',route:'#/sports/football',group:'sports',category:'sports',parent:'SPORTS'},
+  {id:'american-football',kind:'placeholder',name:'Football américain',status:'empty',route:'#/sports/american-football',group:'sports',category:'sports',parent:'SPORTS'},
+  {id:'soccer',kind:'placeholder',name:'Soccer',status:'empty',route:'#/sports/soccer',group:'sports',category:'sports',parent:'SPORTS'},
+  {id:'basketball',kind:'placeholder',name:'Basketball',status:'empty',route:'#/sports/basketball',group:'sports',category:'sports',parent:'SPORTS'}
+];
+function registerSystem(entry){if(!entry.category)entry.category='Autres';REGISTRY.push(entry);if(document.body.classList.contains('mode-home'))renderMainframe();return entry;}
+function findReg(id){return REGISTRY.find(x=>x.id===id);}
+
+function parseHash(){
+  const raw=decodeURIComponent((location.hash||'#/').replace(/^#/,''));
+  const p=raw.split('/').filter(Boolean);
+  if(!p.length) return {mode:'home'};
+  if(p[0]==='tree'&&p[1]){
+    const b=treeBranchById(p[1]);
+    return {mode:'tree',branch:p[1],sys:b?b.floor:null, name:b?b.name:p[1]};
+  }
+  if(p[0]==='floor'&&p[1]){
+    const r={mode:'floor',sys:p[1],ds:'ALL'};
+    for(let i=2;i<p.length;i++){
+      if(p[i]==='index'&&p[i+1]){r.index=p[++i];r.ds=r.index;r.lvl='x';}
+      else if(p[i]==='ex'&&p[i+1]){r.ex=p[++i];r.lvl='f';}
+      else if(p[i]==='ds'&&p[i+1]){r.ds=p[++i];}
+    }
+    return r;
+  }
+  if(p[0]==='sports'){
+    if(!p[1]) return {mode:'sports'};
+    if(p[1]==='nhl'){
+      const r={mode:'nhl'};let i=2;
+      if(p[i]==='agg'&&p[i+1]&&p[i+2]!==undefined){r.agg=p[i+1];r.key=p[i+2];i+=3;}
+      if(p[i]==='player'&&p[i+1]) r.player=p[i+1];
+      return r;
+    }
+    return {mode:'placeholder',sport:p[1]};
+  }
+  return {mode:'home'};
+}
+function go(hash){
+  const h=hash.startsWith('#')?hash:'#'+hash;
+  if((location.hash||'#')===h || (location.hash||'')===h.replace(/^#/,'#')) {applyRoute();return;}
+  location.hash=h;
+}
+function crumbLink(href,label,here){
+  return here?`<span class="here">${label}</span>`:`<a href="${href}" data-route="${href}">${label}</a>`;
+}
+function renderCrumb(route){
+  const bits=[crumbLink('#/','HUB — point de chute',route.mode==='home')];
+  if(route.mode==='tree'){
+    const b=treeBranchById(route.branch);
+    bits.push(crumbLink('#/tree/'+route.branch,(b&&b.name)||route.branch,true));
+  } else if(route.mode==='floor'){
+    const bb=treeBranchForFloor(route.sys);
+    if(bb) bits.push(crumbLink('#/tree/'+bb.id,bb.name,false));
+    const L=LIB4.find(x=>x.id===route.sys);
+    bits.push(crumbLink('#/floor/'+route.sys,(L&&L.name)||route.sys,!route.index&&!route.ex));
+    if(route.index) bits.push(crumbLink('#/floor/'+route.sys+'/index/'+route.index,route.index==='NDX'?'Nasdaq-100':'S&P 500',true));
+    if(route.ex){const f=FLOORS[route.ex];bits.push(crumbLink('#/floor/'+route.sys+'/ex/'+route.ex,(f?f.n+' ('+route.ex+')':route.ex),true));}
+  } else if(route.mode==='sports'){
+    bits.push(crumbLink('#/sports','Sports professionnels',true));
+  } else if(route.mode==='nhl'){
+    bits.push(crumbLink('#/sports','Sports professionnels',false));
+    bits.push(crumbLink('#/sports/nhl','LNH',!route.agg&&!route.player));
+    if(route.agg) bits.push(crumbLink('#/sports/nhl/agg/'+route.agg+'/'+encodeURIComponent(route.key),aggTitle(route.agg,route.key),!route.player));
+    if(route.player){const pl=NHL.players.find(p=>p.id===route.player);bits.push(crumbLink(location.hash,pl?pl.n:route.player,true));}
+  } else if(route.mode==='placeholder'){
+    bits.push(crumbLink('#/sports','Sports professionnels',false));
+    const sp=SPORT_PH.find(x=>x.id===route.sport)||findReg(route.sport);
+    bits.push(crumbLink('#/sports/'+route.sport,(sp&&sp.name)||route.sport,true));
+  }
+  const html=bits.join('<span class="sep">›</span>');
+  const el=$('crumb'); if(el) el.innerHTML=html;
+  document.querySelectorAll('.overlay .crumb-slot').forEach(n=>n.innerHTML=html);
+}
+
+function tileHTML(id,name,sum,status,route){
+  return `<button type="button" class="tile ${status}" data-id="${id}" data-route="${route}">
+    <span class="k">${name}</span>
+    <span class="s">${sum}</span>
+    <span class="badge">${status==='live'?'accessible':'en construction'}</span>
+  </button>`;
+}
+function renderMainframe(){
+  // Opening = balance chart tree (5 branches only). Floors LIB4 kept as data structure, not shown as opening tiles.
+  const shown=new Set(['AMF','EUF','AFF','ASF','OCF','WF','NSF','EWF','NDX','SPX','SPORTS','NHL','APAC','ME','EUR','AFR','AMER']);
+  const extra=REGISTRY.filter(x=>!shown.has(x.id) && !SPORT_PH.some(s=>s.id===x.id) && FLOOR_IDS.indexOf(x.id)<0);
+  const extraBlock=extra.length?('<h2>Autres systèmes du registre</h2><div class="tiles" id="mf-extra">'+extra.map(x=>tileHTML(x.id,x.name,x.blurb||(x.status==='empty'?EC:'Système enregistré'),x.status||'empty',x.route||('#/'+x.id))).join('')+'</div>'):'';
+  $('mf').innerHTML=`<div class="ovtop"><div>
+      <h1>HUB — point de chute Universal Metaphor <span class="verpill">v20.9</span></h1>
+      <div class="crumb-slot"></div>
+      <p class="lead">Point de chute de tout le développement Universal Metaphor. Arbre-objet à cinq branches (Asie-Pacifique, Moyen-Orient, Europe, Afrique, Amériques) · portes FINANCE / SPORTS · couverture planétaire et coupes.</p>
+    </div></div>
+    ${renderBalanceChart(window.__HUB_CAT||'finance')}
+    ${renderPlanetaryCoverage()}
+    <h2>Sports professionnels</h2>
+    <div class="tiles" id="mf-sports">
+      ${tileHTML('SPORTS','Sports professionnels','Hockey (LNH) en service ; football, football américain, soccer et basketball en construction','live','#/sports')}
+      ${tileHTML('NHL','LNH — système de Classe 4',NHL.players.length+' joueurs (Classe 1) · équipes, pays, positions et années de repêchage (Classe 2)','live','#/sports/nhl')}
+    </div>
+    ${extraBlock}`;
+}
+
+function renderSports(){
+  $('spwin').innerHTML=`<div class="ovtop"><div>
+      <h1>Sports professionnels <span class="verpill">v20.9</span></h1>
+      <div class="crumb-slot"></div>
+      <p class="lead">Le hockey (LNH) est le premier système en service. Les autres sports sont des emplacements visibles, sans aucune donnée inventée.</p>
+    </div></div>
+    <div class="tiles" id="sp-tiles">
+      ${tileHTML('NHL','Hockey — LNH','Système de Classe 4 en service · '+NHL.players.length+' joueurs · saisons 2024-25 et 2025-26 · source API NHL','live','#/sports/nhl')}
+      ${SPORT_PH.map(s=>tileHTML(s.id,s.name,EC,'empty','#/sports/'+s.id)).join('')}
+    </div>`;
+}
+function renderPlaceholder(sport){
+  const sp=SPORT_PH.find(x=>x.id===sport)||findReg(sport)||{id:sport,name:sport};
+  $('phwin').innerHTML=`<div class="ovtop"><div>
+      <h1>${sp.name} <span class="verpill">v20.9</span></h1>
+      <div class="crumb-slot"></div>
+      <p class="lead" data-status="empty">${EC}</p>
+      <p>Conteneur visible dans la fenêtre des sports professionnels et dans le registre. Aucune donnée n’a été inventée pour le remplir.</p>
+      <p><button type="button" data-route="#/sports">Retour aux sports professionnels</button>
+         <button type="button" data-route="#/">Retour à la fenêtre principale</button></p>
+    </div></div>`;
+}
+
+function aggTitle(agg,key){
+  if(agg==='team') return key==='MULTI'?'Plusieurs clubs [INCOMPLET]':(teamShort(key)+' ('+key+')');
+  if(agg==='nat') return 'Nationalité '+key;
+  if(agg==='pos') return POS_FR[key]||key;
+  if(agg==='draft') return key==='UNDRAFTED'?'Non repêché':('Repêchage '+key);
+  if(agg==='players') return 'Tous les joueurs';
+  return key;
+}
+function nhlMembers(agg,key){
+  return NHL.players.filter(p=>{
+    if(agg==='players') return true;
+    if(agg==='team'){const t=latestTeam(p);return key==='MULTI'?t.includes(','):t===key;}
+    if(agg==='nat') return p.nat===key;
+    if(agg==='pos') return p.pos===key;
+    if(agg==='draft') return key==='UNDRAFTED'?!p.dy:String(p.dy)===String(key);
+    return false;
+  }).slice().sort((a,b)=>a.n<b.n?-1:1);
+}
+function fmt(v,kind){
+  if(v==null||v==='') return '—';
+  if(kind==='pct') return (Math.abs(v)<=1?(v*100):v).toFixed(1)+' %';
+  if(kind==='gaa') return Number(v).toFixed(2);
+  if(kind==='svp') return Number(v).toFixed(3);
+  if(kind==='toi'){const s=Number(v);if(!isFinite(s)) return String(v);const m=Math.floor(s/60),r=Math.round(s%60);return m+':' + String(r).padStart(2,'0');}
+  return String(v);
+}
+function playerById(id){return NHL.players.find(p=>p.id===id);}
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function initialsOf(p){
+  if(p.ini) return p.ini;
+  const parts=(p.n||'').replace(/-/g,' ').split(/\s+/).filter(Boolean);
+  if(!parts.length) return '?';
+  if(parts.length===1) return parts[0].slice(0,2).toUpperCase();
+  return (parts[0][0]+parts[parts.length-1][0]).toUpperCase();
+}
+function posLabel(code){return POS_FR[code]||code;}
+function photoBlock(p){
+  const name=esc(p.n);
+  return `<div class="photo-wrap" data-player-photo="${p.id}">
+    <div class="photo-ph" aria-hidden="true"><span class="pname">${name}</span><span class="soon">photo à venir</span></div>
+    <img class="photo-file" src="${window.__resolveAsset('photos/'+p.id+'.png')}" alt="Visuel provisoire : ${name} (photo à venir)" onload="this.classList.add('ok')" onerror="this.remove()">
+  </div>`;
+}
+function markImg(src, fallback){
+  if(!src) return fallback||'';
+  return `<img class="aggmark" src="${src}" alt="" onload="this.classList.add('ok')" onerror="this.remove()">${fallback||''}`;
+}
+function logoPath(abbr){return abbr&&abbr!=='MULTI'&&!String(abbr).includes(',')?window.__resolveAsset('logos/'+abbr+'.svg'):'';}
+function flagPath(code){return code?window.__resolveAsset('drapeaux/'+code+'.png'):'';}
+function clubLogoHTML(abbr, extraClass){
+  if(!abbr||abbr==='MULTI'||String(abbr).includes(',')) return '';
+  const name=teamShort(abbr);
+  const href=`#/sports/nhl/agg/team/${encodeURIComponent(abbr)}`;
+  const cls=extraClass?('club-thumb '+extraClass):'club-thumb';
+  return `<a class="${cls}" role="link" href="${href}" data-route="${href}" data-logo-abbr="${esc(abbr)}" aria-label="Ouvrir l'objet ${esc(name)} (${esc(abbr)})"><img class="club-logo" alt="" src="${window.__resolveAsset('logos/'+esc(abbr)+'.svg')}" data-abbr="${esc(abbr)}" onload="this.classList.add('ok');this.dataset.logoStatus='ok'" onerror="window.__logoFallback&&window.__logoFallback(this)"><span class="club-logo-text" hidden>${esc(abbr)}</span></a>`;
+}
+function playerHref(p,agg,key){
+  if(agg&&key) return `#/sports/nhl/agg/${agg}/${encodeURIComponent(key)}/player/${p.id}`;
+  return `#/sports/nhl/player/${p.id}`;
+}
+function playerThumb(p,agg,key,selId){
+  const href=playerHref(p,agg,key);
+  const name=esc(p.n);
+  return `<a class="pthumb" role="link" href="${href}" data-route="${href}" data-player="${p.id}" aria-label="Ouvrir la fiche de ${name}" aria-current="${p.id===selId?'true':'false'}"><span class="pthumb-slot"><span class="pthumb-ph">${name}</span><img src="${window.__resolveAsset('photos/'+p.id+'.png')}" alt="" onload="this.classList.add('ok')" onerror="this.remove()"></span></a>`;
+}
+window.__logoFallback=function(img){
+  const abbr=img.getAttribute('data-abbr')||'';
+  const fb=(typeof NHL!=='undefined'&&NHL.logoData&&NHL.logoData[abbr])||'';
+  if(fb&&img.dataset.tried!=='1'){img.dataset.tried='1';img.src=fb;return;}
+  img.dataset.logoStatus='fallback';
+  img.style.display='none';
+  const t=img.parentElement&&img.parentElement.querySelector('.club-logo-text');
+  if(t) t.hidden=false;
+};
+function linkClub(abbr){
+  if(!abbr) return '—';
+  if(String(abbr).includes(',')) return `<a class="c2link" href="#/sports/nhl/agg/team/MULTI" data-route="#/sports/nhl/agg/team/MULTI">${esc(abbr)}</a> <span class="incomp">[INCOMPLET : ventilation par club non faite]</span>`;
+  return `${clubLogoHTML(abbr,'inline')}<a class="c2link" href="#/sports/nhl/agg/team/${encodeURIComponent(abbr)}" data-route="#/sports/nhl/agg/team/${encodeURIComponent(abbr)}">${esc(teamShort(abbr))} (${esc(abbr)})</a>`;
+}
+function linkNat(code){
+  if(!code) return '—';
+  return `<a class="c2link" href="#/sports/nhl/agg/nat/${encodeURIComponent(code)}" data-route="#/sports/nhl/agg/nat/${encodeURIComponent(code)}">${esc(code)}</a>`;
+}
+function linkPos(code){
+  if(!code) return '—';
+  return `<a class="c2link" href="#/sports/nhl/agg/pos/${encodeURIComponent(code)}" data-route="#/sports/nhl/agg/pos/${encodeURIComponent(code)}">${esc(posLabel(code))}</a>`;
+}
+function linkDraft(p){
+  const key=p.dy?String(p.dy):'UNDRAFTED';
+  const lab=p.dy?(p.dy+' · ronde '+(p.dr??'—')+' · total '+(p.dov??'—')):'Non repêché';
+  return `<a class="c2link" href="#/sports/nhl/agg/draft/${encodeURIComponent(key)}" data-route="#/sports/nhl/agg/draft/${encodeURIComponent(key)}">${esc(lab)}</a>`;
+}
+function playerIsTraded(p){
+  return (NHL.tradedRows||[]).some(r=>r.id===p.id)||Object.values(p.ts||{}).some(t=>String(t).includes(','));
+}
+function linkTraded(p){
+  if(!playerIsTraded(p)) return '— (une seule équipe par saison connue)';
+  return `<a class="c2link" id="link-traded" href="#/sports/nhl/agg/team/MULTI" data-route="#/sports/nhl/agg/team/MULTI">Joueurs échangés — plusieurs clubs</a> <span class="incomp">[INCOMPLET : ventilation par club non faite]</span>`;
+}
+
+function renderPlayerCard(p){
+  if(!p) return `<p>Joueur introuvable.</p>`;
+  const seasons=Object.keys(p.st).sort();
+  const last=latestTeam(p);
+  const teamBits=seasons.map(s=>{
+    const t=p.ts[s];
+    if(!t) return seasonLab(s)+' : —';
+    if(t.includes(',')) return seasonLab(s)+' : '+linkClub(t);
+    const nm=NHL.teams[t]?(NHL.teams[t][s]||teamShort(t)):'';
+    return seasonLab(s)+' : '+clubLogoHTML(t,'inline')+`<a class="c2link" href="#/sports/nhl/agg/team/${encodeURIComponent(t)}" data-route="#/sports/nhl/agg/team/${encodeURIComponent(t)}">${esc(t)}${nm?' — '+esc(nm):''}</a>`;
+  }).join('<br>');
+  const isG=p.pos==='G';
+  const rows=seasons.map(s=>{
+    const st=p.st[s];
+    if(isG) return `<tr><td>${seasonLab(s)}</td><td>${fmt(st.gp)}</td><td>${fmt(st.gs)}</td><td>${fmt(st.w)}</td><td>${fmt(st.l)}</td><td>${fmt(st.ot)}</td><td>${fmt(st.gaa,'gaa')}</td><td>${fmt(st.svp,'svp')}</td><td>${fmt(st.so)}</td><td>${fmt(st.toi,'toi')}</td></tr>`;
+    return `<tr><td>${seasonLab(s)}</td><td>${fmt(st.gp)}</td><td>${fmt(st.g)}</td><td>${fmt(st.a)}</td><td>${fmt(st.p)}</td><td>${fmt(st.pm)}</td><td>${fmt(st.pim)}</td><td>${fmt(st.sog)}</td><td>${fmt(st.ppg)}</td><td>${fmt(st.ppp)}</td></tr>`;
+  }).join('');
+  const thead=isG
+    ? '<tr><th>Saison</th><th>PJ</th><th>Dém.</th><th>V</th><th>D</th><th>DP</th><th>Moy.</th><th>% arrêts</th><th>Bl</th><th>TOI</th></tr>'
+    : '<tr><th>Saison</th><th>PJ</th><th>B</th><th>A</th><th>Pts</th><th>+/−</th><th>PUN</th><th>Tirs</th><th>BAN</th><th>Pts AN</th></tr>';
+  const desc=p.d||'';
+  window.__NHL_CARD={id:p.id,name:p.n,team:last,position:p.pos,positionLabel:posLabel(p.pos),nationality:p.nat,seasons,stats:p.st,photo:window.__resolveAsset('photos/'+p.id+'.png'),photoStatus:'placeholder',photoName:p.n,description:desc,ageStatus:'INCOMPLET',traded:playerIsTraded(p)};
+  return `<div id="nhlcard" data-player="${p.id}">
+    ${photoBlock(p)}
+    <h3>${esc(p.n)}</h3>
+    ${desc?`<p class="desc" id="nhldesc">${esc(desc)}</p>`:''}
+    <p class="src">${esc(p.src||'Source : api.nhle.com/stats/rest/en · extraction 9 nov 2026')}</p>
+    <dl>
+      <dt>Classe</dt><dd>1 — point de donnée</dd>
+      <dt>Équipe</dt><dd>${teamBits}</dd>
+      <dt>Position</dt><dd>${linkPos(p.pos)}<span class="soon-note">Un symbole pourra venir plus tard.</span></dd>
+      <dt>Nationalité</dt><dd>${linkNat(p.nat)}</dd>
+      <dt>Naissance</dt><dd>${p.bd||'—'} · ${[p.city,p.br,p.bc].filter(Boolean).join(', ')||'—'}</dd>
+      <dt>Taille / poids</dt><dd>${p.hin?p.hin+' po ('+p.hcm+' cm)': '—'} · ${p.wlb?p.wlb+' lb ('+p.wkg+' kg)':'—'}</dd>
+      <dt>Repêchage</dt><dd>${linkDraft(p)}</dd>
+      <dt>Groupe échangés</dt><dd>${linkTraded(p)}</dd>
+      <dt>Âge</dt><dd class="incomp">[INCOMPLET] — date de référence du calcul d’âge à fixer.</dd>
+    </dl>
+    <table><thead>${thead}</thead><tbody>${rows}</tbody></table>
+  </div>`;
+}
+function renderAggList(agg){
+  let keys=[];
+  if(agg==='team'){keys=Object.keys(NHL.teams).sort((a,b)=>teamShort(a).localeCompare(teamShort(b),'fr'));keys.push('MULTI');}
+  else if(agg==='nat'){const s=new Set(NHL.players.map(p=>p.nat));keys=[...s].sort();}
+  else if(agg==='pos') keys=['C','L','R','D','G'];
+  else if(agg==='draft'){const s=new Set(NHL.players.map(p=>p.dy).filter(Boolean));keys=[...s].sort();keys.push('UNDRAFTED');}
+  return keys.map(k=>{
+    let n=nhlMembers(agg,k).length;
+    const extra=(k==='MULTI'||k==='UNDRAFTED')?'incomp':'';
+    let nLab=n+' joueur'+(n>1?'s':'')+' (Classe 1)';
+    let mark='';
+    if(agg==='team'&&k==='MULTI'){n=(NHL.tradedRows||[]).length;nLab=n+' lignes joueur-saison [INCOMPLET]';}
+    if(agg==='team'&&k!=='MULTI') mark=clubLogoHTML(k);
+    if(agg==='nat') mark=markImg(flagPath(k));
+    const href=`#/sports/nhl/agg/${agg}/${encodeURIComponent(k)}`;
+    if(agg==='team'&&k!=='MULTI'){
+      return `<div class="agg ${extra}" data-agg="${agg}" data-key="${k}">${mark}<a class="agg-body" href="${href}" data-route="${href}"><span class="k">${aggTitle(agg,k)}</span><span class="s">${nLab}</span></a></div>`;
+    }
+    return `<a class="agg ${extra}" data-agg="${agg}" data-key="${k}" href="${href}" data-route="${href}" role="link">
+      ${mark}<span class="k">${aggTitle(agg,k)}</span>
+      <span class="s">${nLab}</span>
+    </a>`;
+  }).join('');
+}
+function lastSeasonStats(p){const s=p.st['20252026']? '20252026':'20242025';return {s,st:p.st[s]};}
+function renderTradedMembers(selId){
+  const rows=(NHL.tradedRows||[]).slice().sort((a,b)=> (a.n+a.season)<(b.n+b.season)?-1:1);
+  const uniq=new Set(rows.map(r=>r.id)).size;
+  const tr=rows.map(r=>{
+    const p=playerById(r.id)||{id:r.id,n:r.n};
+    const href=`#/sports/nhl/agg/team/MULTI/player/${r.id}`;
+    return `<tr data-id="${r.id}" aria-current="${r.id===selId?'true':'false'}" data-route="${href}">
+      <td>${playerThumb(p,'team','MULTI',selId)}<a class="pname" href="${href}" data-route="${href}">${esc(r.n)}</a></td>
+      <td>${seasonLab(r.season)}</td><td>${linkClub(r.team)}</td><td>${linkPos(r.pos)}</td><td>${linkNat(r.nat)}</td></tr>`;
+  }).join('');
+  const head=`<h3>Joueurs échangés — plusieurs clubs [INCOMPLET]</h3>
+    <p class="lead">${rows.length} lignes joueur-saison (${uniq} joueurs distincts) dont le champ équipe contient plusieurs sigles. La ventilation par club n’est pas faite. Un même joueur peut apparaître deux fois s’il a été échangé les deux saisons. Cliquez un nom pour ouvrir sa fiche (Classe 1) à l’intérieur de l’objet.</p>`;
+  return `<p><button type="button" id="nhlback" data-route="#/sports/nhl">← Retour aux regroupements</button></p>${head}
+    <input class="filter" id="nhlfilter" placeholder="Filtrer les joueurs…">
+    <div id="nhlmembers"><table><thead><tr><th>Nom</th><th>Saison</th><th>Équipe (brut)</th><th>Pos.</th><th>Nat.</th></tr></thead>
+    <tbody id="nhltbody">${tr}</tbody></table></div>`;
+}
+function renderAllPlayers(selId){
+  const mem=nhlMembers('players','ALL');
+  const items=mem.map(p=>`<div class="pdir-item" data-id="${p.id}" aria-current="${p.id===selId?'true':'false'}">${playerThumb(p,'players','ALL',selId)}<a class="pname" href="#/sports/nhl/agg/players/ALL/player/${p.id}" data-route="#/sports/nhl/agg/players/ALL/player/${p.id}">${esc(p.n)}</a><span class="s">${esc(posLabel(p.pos))}</span></div>`).join('');
+  return `<p><button type="button" id="nhlback" data-route="#/sports/nhl">← Retour aux regroupements</button></p>
+    <h3>Tous les joueurs</h3>
+    <p class="lead">${mem.length} joueurs (Classe 1). Chaque vignette — le nom complet tant que la photo réelle n’est pas là — ouvre la fiche du joueur. Filtrez par nom.</p>
+    <input class="filter" id="nhlfilter" placeholder="Rechercher un joueur…">
+    <div id="nhlplayerdir" class="pthumb-grid">${items}</div>`;
+}
+function renderMembers(agg,key,selId){
+  if(agg==='team'&&key==='MULTI') return renderTradedMembers(selId);
+  if(agg==='players') return renderAllPlayers(selId);
+  const mem=nhlMembers(agg,key);
+  const rows=mem.map(p=>{
+    const {s,st}=lastSeasonStats(p);
+    const pts=p.pos==='G'? (st.w!=null? (st.w+' V'):'—') : (st.p!=null?st.p:'—');
+    const href=`#/sports/nhl/agg/${agg}/${encodeURIComponent(key)}/player/${p.id}`;
+    return `<tr data-id="${p.id}" aria-current="${p.id===selId?'true':'false'}" data-route="${href}">
+      <td>${playerThumb(p,agg,key,selId)}<a class="pname" href="${href}" data-route="${href}">${esc(p.n)}</a></td><td>${linkClub(latestTeam(p))}</td><td>${linkPos(p.pos)}</td><td>${linkNat(p.nat)}</td><td>${seasonLab(s)} · ${pts}</td></tr>`;
+  }).join('');
+  const mk=(agg==='team'&&key!=='MULTI')?clubLogoHTML(key):(agg==='nat'?markImg(flagPath(key)):'');
+  let head=`<h3>${mk} ${aggTitle(agg,key)}</h3><p class="lead">${mem.length} joueurs (Classe 1) dans cet objet de Classe 2.`;
+  if(agg==='pos') head+=` Les positions sont nommées en toutes lettres (Center, Left Wing, Right Wing, Defense, Goalie). Un symbole pourra venir plus tard.`;
+  if(agg==='team'&&key==='MULTI') head+=` Le champ équipe de l’API contient plusieurs sigles ; la ventilation par club n’est pas faite.`;
+  if(agg==='team'&&key!=='MULTI'&&NHL.teamStats[key]){
+    const ts=NHL.teamStats[key];
+    head+=`</p><table><thead><tr><th>Saison</th><th>Nom officiel</th><th>PJ</th><th>V</th><th>D</th><th>DP</th><th>Pts</th><th>BP</th><th>BC</th></tr></thead><tbody>`;
+    head+=Object.keys(ts).sort().map(s=>{const t=ts[s];return `<tr><td>${seasonLab(s)}</td><td>${t.name}</td><td>${fmt(t.gp)}</td><td>${fmt(t.w)}</td><td>${fmt(t.l)}</td><td>${fmt(t.ot)}</td><td>${fmt(t.pts)}</td><td>${fmt(t.gf)}</td><td>${fmt(t.ga)}</td></tr>`;}).join('');
+    head+=`</tbody></table><p class="lead">`;
+  }
+  head+=` Cliquez un joueur pour ouvrir sa fiche à l’intérieur de l’objet.</p>`;
+  return `<p><button type="button" id="nhlback" data-route="#/sports/nhl">← Retour aux regroupements</button></p>${head}
+    <input class="filter" id="nhlfilter" placeholder="Filtrer les joueurs…">
+    <div id="nhlmembers"><table><thead><tr><th>Nom</th><th>Équipe</th><th>Pos.</th><th>Nat.</th><th>Saison récente</th></tr></thead>
+    <tbody id="nhltbody">${rows}</tbody></table></div>`;
+}
+function renderNHL(route){
+  const prev=window.__NHL_STATE||{};
+  const sameList=!!(route.agg&&route.key&&prev.agg===route.agg&&prev.key===route.key&&$('nhlright')&&$('nhlleft')&&$('nhlsplit'));
+  if(sameList){
+    const plInc=route.player?playerById(route.player):null;
+    $('nhlright').innerHTML=plInc?renderPlayerCard(plInc):'<p class="lead">Cliquez la vignette d’un joueur pour ouvrir sa fiche à l’intérieur de l’objet : visuel, nom, position, club (logo), nationalité, repêchage, statistiques et liens de Classe 2.</p>';
+    document.querySelectorAll('#nhlleft [aria-current="true"]').forEach(el=>el.setAttribute('aria-current','false'));
+    if(route.player){
+      document.querySelectorAll('#nhlleft [data-player="'+route.player+'"], #nhlleft [data-id="'+route.player+'"]').forEach(el=>el.setAttribute('aria-current','true'));
+    }
+    window.__NHL_STATE={agg:route.agg,key:route.key,player:route.player||null,nPlayers:NHL.players.length,nTeams:Object.keys(NHL.teams).length,card:window.__NHL_CARD||null};
+    return;
+  }
+  const agg=route.agg||'team';
+  const tabs=['team','nat','pos','draft'].map(k=>{
+    const lab={team:'Équipes',nat:'Pays / nationalités',pos:'Positions',draft:'Années de repêchage'}[k];
+    return `<button type="button" data-agg-tab="${k}" data-route="#/sports/nhl" aria-selected="${k===agg&&!route.player? 'false': (k===agg?'true':'false')}" ${k===agg?'aria-current="true"':''}>${lab}</button>`;
+  }).join('');
+  // tabs should switch aggregate type at nhl root or keep us at grid of that type
+  const tabBar=`<div class="tabs" id="nhltabs">
+    <button type="button" data-route="#/sports/nhl" data-agg-tab="team" aria-selected="${agg==='team'&&!route.key?'true':(agg==='team'?'true':'false')}">Équipes</button>
+    <button type="button" data-route="#/sports/nhl/agg/nat/_list" data-agg-tab="nat" aria-selected="${agg==='nat'&&!route.key?'true':(agg==='nat'?'true':'false')}">Pays / nationalités</button>
+    <button type="button" data-route="#/sports/nhl/agg/pos/_list" data-agg-tab="pos" aria-selected="${agg==='pos'&&!route.key?'true':(agg==='pos'?'true':'false')}">Positions</button>
+    <button type="button" data-route="#/sports/nhl/agg/draft/_list" data-agg-tab="draft" aria-selected="${agg==='draft'&&!route.key?'true':(agg==='draft'?'true':'false')}">Années de repêchage</button>
+  </div>`;
+  // Simpler tabs: clicking a tab goes to #/sports/nhl?agg= or we use a dedicated list hash.
+  // I'll use #/sports/nhl for teams grid, and store current tab in route.agg when no key? 
+  // Cleaner: #/sports/nhl, #/sports/nhl/view/nat, #/sports/nhl/view/pos, #/sports/nhl/view/draft
+  // To avoid changing parser mid-way, treat missing key as grid of that type:
+  // #/sports/nhl → team grid
+  // I'll render team grid at root, and other grids when agg is set without intending a specific member...
+  // Problem: parseHash requires key after agg. I'll use key='*' for grid... ugly.
+  // Better approach: tabs call go with hash #/sports/nhl and set a variable NHL_TAB.
+  // For deep links of other tabs, use #/sports/nhl/agg/nat/.  (empty key)
+  // Update parser: if p[i]==='agg' && p[i+1] && (p[i+2]===undefined or p[i+2]==='player') → grid of that type? 
+  // Current parser requires p[i+2]. I'll use the key '_' to mean "list".
+  // Tabs: #/sports/nhl (teams), and for others I'll just use NHL_TAB state + hash #/sports/nhl when teams.
+  // For Playwright, team grid at #/sports/nhl is enough; other tabs can set location to #/sports/nhl and NHL_TAB.
+let showGrid=!route.key;
+  // If we came from tab buttons with data-agg-tab, handle below via click; for hash #/sports/nhl show team grid.
+  let gridAgg=route.key?null:(route.agg||'team');
+  if(!route.agg&&!route.key) gridAgg='team';
+  // When route is #/sports/nhl/agg/team/PIT, show members not grid
+  const showMembers=!!(route.agg&&route.key);
+  const pl=route.player?playerById(route.player):null;
+  const left=showMembers? renderMembers(route.agg,route.key,route.player)
+    : `<p class="lead">Objets de Classe 2 : regroupements sur les mêmes joueurs (points de Classe 1). La Classe 4 est l’ensemble du système.</p>
+       <div class="tabs" id="nhltabs">
+         <button type="button" class="tab" data-tab="team" aria-selected="${(gridAgg==='team')?'true':'false'}">Équipes</button>
+         <button type="button" class="tab" data-tab="nat" aria-selected="${gridAgg==='nat'?'true':'false'}">Pays / nationalités</button>
+         <button type="button" class="tab" data-tab="pos" aria-selected="${gridAgg==='pos'?'true':'false'}">Positions</button>
+         <button type="button" class="tab" data-tab="draft" aria-selected="${gridAgg==='draft'?'true':'false'}">Années de repêchage</button>
+         <button type="button" class="tab" data-route="#/sports/nhl/agg/players/ALL" aria-selected="false">Joueurs</button>
+         <button type="button" class="tab" data-tab="age" aria-selected="${gridAgg==='age'?'true':'false'}">Âge [INCOMPLET]</button>
+       </div>
+       <div id="nhlgrid">${renderAggList(gridAgg||'team')}</div>`;
+  $('nhlview').innerHTML=`<div class="ovtop"><div>
+      <h1>Classe 4 — LNH <span class="verpill">v20.9</span></h1>
+      <div class="crumb-slot"></div>
+      <p class="lead">Chaque joueur est un point de donnée de Classe 1. Les équipes, pays, positions et années de repêchage sont des objets de Classe 2. La Classe 4 contient tout le système. ${NHL.players.length} joueurs · saisons 2024-25 et 2025-26 · source API NHL (extraction du 9 nov. 2026). Logos officiels des 32 clubs sur les objets de Classe 2 (licence [INCOMPLET : conditions d’usage NHL non vérifiées]). En l’absence de photo réelle, le nom complet du joueur tient lieu de visuel (fichier photos/{id}.png, à remplacer plus tard). Les positions sont nommées en toutes lettres — Center, Left Wing, Right Wing, Defense, Goalie — un symbole pourra venir plus tard. Chaque fiche relie le joueur à son club, sa nationalité, sa position, son année de repêchage et, s’il y a lieu, au groupe des joueurs échangés. Chaque liste (clubs, nationalités, positions, années de repêchage, joueurs échangés, recherche Tous les joueurs) montre une vignette cliquable par joueur — le nom complet en attendant la photo réelle — qui ouvre sa fiche. Les 32 logos de clubs sont des vignettes cliquables qui ouvrent l’objet club et son effectif. L’âge reste [INCOMPLET].</p>
+    </div></div>
+    <div id="nhlsplit">
+      <div id="nhlleft">${left}</div>
+      <div id="nhlright">${pl?renderPlayerCard(pl):'<p class="lead">Cliquez la vignette d’un joueur pour ouvrir sa fiche à l’intérieur de l’objet : visuel, nom, position, club (logo), nationalité, repêchage, statistiques et liens de Classe 2.</p>'}</div>
+    </div>`;
+  window.__NHL_STATE={agg:route.agg||'team',key:route.key||null,player:route.player||null,nPlayers:NHL.players.length,nTeams:Object.keys(NHL.teams).length,card:window.__NHL_CARD||null};
+  const tabsEl=$('nhltabs');
+  if(tabsEl) tabsEl.addEventListener('click',e=>{
+    const b=e.target.closest('[data-tab]'); if(!b) return;
+    e.preventDefault();
+    // re-render grid in place without losing the NHL shell — use hash without key
+    NHL_TAB=b.dataset.tab;
+    renderNHLGridOnly(NHL_TAB);
+    tabsEl.querySelectorAll('[data-tab]').forEach(x=>x.setAttribute('aria-selected',x===b?'true':'false'));
+  });
+  const filt=$('nhlfilter');
+  if(filt) filt.addEventListener('input',()=>{
+    const q=filt.value.toLowerCase();
+    document.querySelectorAll('#nhltbody tr, #nhlplayerdir .pdir-item').forEach(el=>{
+      el.style.display=el.textContent.toLowerCase().includes(q)?'':'none';
+    });
+  });
+}
+let NHL_TAB='team';
+function renderNHLGridOnly(tab){
+  const g=$('nhlgrid'); if(!g) return;
+  if(tab==='age'){
+    g.innerHTML='<p class="incomp" id="age-incomp">Super-instanciateur Âge : [INCOMPLET : date de référence du calcul d’âge à fixer]. Aucun regroupement par âge n’a été calculé. Le champ birth_date est présent dans les données, sans calcul d’âge.</p>';
+    return;
+  }
+  g.innerHTML=renderAggList(tab);
+}
+
+function applyFloor(route){
+  document.body.className='mode-floor';
+  if(!LIB4.some(x=>x.id===route.sys)) route.sys='AMF';
+  $('sys').value=route.sys;
+  $('ds').value=route.ds||'ALL';
+  if(route.index) $('lvl').value='x';
+  else if(route.ex) $('lvl').value='f';
+  else $('lvl').value=route.lvl||'s';
+  const idxbar=$('idxbar'); if(idxbar) idxbar.style.display=route.sys==='AMF'?'block':'none';
+  stopPlay(); clearSel();
+  setDS();
+  if(route.index){
+    const want={NDX:'Nasdaq-100 (indice)',SPX:'S&P 500 (indice)'}[route.index];
+    const gi=GROUPS.findIndex(g=>g.name===want);
+    if(gi>=0) select(gi); else draw();
+  } else if(route.ex){
+    const gi=GROUPS.findIndex(g=>g.mic===route.ex);
+    if(gi>=0) select(gi); else draw();
+  } else {
+    defaultSel();
+  }
+  if($('idxbar')){
+    $('openNDX')&&$('openNDX').setAttribute('aria-current',route.index==='NDX'?'true':'false');
+    $('openSPX')&&$('openSPX').setAttribute('aria-current',route.index==='SPX'?'true':'false');
+  }
+}
+
+function applyRoute(){
+  const route=parseHash();
+  window.__NAV={mode:route.mode,route,hash:location.hash||'#/'};
+  if(route.mode==='home'){document.body.className='mode-home';stopPlay();renderMainframe();}
+  else if(route.mode==='tree'){
+    // Opening-tree branch: stay on hub, open branch panel (Amériques may deep-link to floor)
+    document.body.className='mode-home mode-tree';
+    stopPlay();
+    window.__HUB_CAT='finance';
+    window.__HUB_TREE=route.branch;
+    const bb=treeBranchById(route.branch);
+    window.__HUB_OPEN_FLOOR=bb?bb.floor:null;
+    // MEF has no LIB4 engine floor — hub panel only. Covered Amériques deep data still via #/floor/AMF/...
+    renderMainframe();
+  }
+  else if(route.mode==='sports'){document.body.className='mode-sports';stopPlay();renderSports();}
+  else if(route.mode==='nhl'){document.body.className='mode-nhl';stopPlay();renderNHL(route);}
+  else if(route.mode==='placeholder'){document.body.className='mode-placeholder';stopPlay();renderPlaceholder(route.sport);}
+  else if(route.mode==='floor'){applyFloor(route);}
+  else {document.body.className='mode-home';renderMainframe();}
+  ensureMainframeNav();
+  syncMainframeNavHighlight(route);
+  renderCrumb(route);
+  window.__NAV.crumb=($('crumb')&&$('crumb').textContent)||'';
+  window.__VERSION='v20.9';
+  // Right window: summon on object navigation; never restore from ghost
+  try{
+    if(window.__RW_FORCE_CLOSED){ closeRightWindow(); window.__RW_FORCE_CLOSED=false; }
+    else if(route.mode==='tree'&&route.branch){ summonRightWindow(rwSpecFromBranch(route.branch)); }
+    else if(route.mode==='floor'&&route.sys&&!route.index&&!route.ex){ summonRightWindow(rwSpecFromFloor(route.sys)); }
+    else if(route.mode==='nhl'&&route.player){
+      const pl=NHL.players.find(p=>p.id===route.player);
+      if(pl) summonRightWindow(rwSpecFromPlayer(pl));
+    } else if(route.mode==='nhl'&&route.agg==='team'&&route.key&&route.key!=='_list'&&route.key!=='MULTI'){
+      summonRightWindow(rwSpecFromTeam(route.key));
+    } else if(route.mode==='home'){
+      // sommet: close right window
+      closeRightWindow();
+    }
+  }catch(e){}
+}
+
+function onDelegatedClick(e){
+  const door=e.target.closest&&e.target.closest('[data-hub-cat]');
+  if(door){
+    e.preventDefault();
+    window.__HUB_CAT=door.getAttribute('data-hub-cat')||'finance';
+    if(door.id==='retour-sommet' || door.getAttribute('data-route')==='#/'){
+      window.__HUB_OPEN_FLOOR=null; window.__HUB_TREE=null; window.__HUB_KEEP_OPEN=false;
+    }
+    if(parseHash().mode==='home'){renderMainframe();renderCrumb(parseHash());}
+    else if(door.id==='retour-sommet' || door.classList.contains('strip-top')){ go('#/'); }
+    return;
+  }
+  const topBtn=e.target.closest&&e.target.closest('#retour-sommet, .strip-top');
+  if(topBtn){
+    e.preventDefault();
+    window.__HUB_OPEN_FLOOR=null; window.__HUB_TREE=null; window.__HUB_KEEP_OPEN=false; window.__HUB_CAT='finance';
+    go('#/');
+    return;
+  }
+
+  const a=e.target.closest('[data-route]');
+  if(!a) return;
+  const r=a.getAttribute('data-route');
+  if(!r) return;
+  e.preventDefault();
+  go(r);
+}
+
+function patchClicks(){
+  clickLib=function(mx,my){
+    const h=hoverLib(mx,my); if(!h) return false;
+    if(h.kind==='idx'){go('#/floor/'+SYS.id+'/index/'+h.idx);return true;}
+    if(h.kind==='slot'){
+      const owner=LIB4.find(x=>x.fl.has(h.mic));
+      go('#/floor/'+(owner?owner.id:SYS.id)+'/ex/'+h.mic);
+      return true;
+    }
+    if(h.kind==='box'){
+      const nm=h.text&&h.text.match(/Classe 4 imbriquée — ([^\n]+)/);
+      // hoverLib box does not expose b; look at HIT
+      const hit=HIT.lib.find(x=>x.kind==='box'&&mx>=x.x&&mx<=x.x+x.w&&my>=x.y&&my<=x.y+x.h);
+      if(hit&&hit.b&&hit.b.kind==='c4n'){
+        const tgt=LIB4.find(x=>x.name===hit.b.name);
+        if(tgt){go('#/floor/'+tgt.id);return true;}
+      }
+      if(h.sys){go('#/floor/'+h.sys);return true;}
+    }
+    if(h.kind==='frame'&&h.sys){go('#/floor/'+h.sys);return true;}
+    if(h.sys){go('#/floor/'+h.sys);return true;}
+    return true;
+  };
+  cv.onclick=function(e){
+    if(moved) return;
+    if(clickLib(e.clientX,e.clientY)) return;
+    if(HIT.c4n){
+      for(const h of HIT.c4n){
+        if(Math.abs(h.px-e.clientX)+Math.abs(h.py-e.clientY)<=h.r){
+          const tgt=LIB4.find(x=>x.name===h.n.b.name);
+          if(tgt){go('#/floor/'+tgt.id);return;}
+        }
+      }
+    }
+    if(EMPTY) return;
+    const gh=hitGhost(e.clientX,e.clientY);
+    if(gh){doDeploy(gh,true);return;}
+    for(let gi=0;gi<GROUPS.length;gi++){
+      const g=GROUPS[gi];
+      if(g._px!=null&&Math.hypot(g._px-e.clientX,g._py-e.clientY)<=g._r+1.1){stopPlay();select(gi);return;}
+    }
+  };
+  $('sys').onchange=()=>{const v=$('sys').value;if(v==='__MAIN__')go('#/');else go('#/floor/'+v);};
+  $('ds').onchange=()=>{
+    const v=$('ds').value, sys=$('sys').value;
+    if(v==='NDX') go('#/floor/'+sys+'/index/NDX');
+    else if(v==='SPX') go('#/floor/'+sys+'/index/SPX');
+    else go('#/floor/'+sys);
+  };
+}
+
+function initV209(U){
+  ['mf','spwin','nhlview','phwin'].forEach(id=>{
+    if(!$(id)){const d=document.createElement('div');d.id=id;d.className='overlay';document.body.appendChild(d);}
+  });
+  if(!$('crumb')){
+    const n=document.createElement('nav');n.id='crumb';n.setAttribute('aria-label',"Fil d'Ariane");
+    $('ui').insertBefore(n,$('ui').children[1]||null);
+  }
+  if(!$('homebtn')){
+    const b=document.createElement('button');b.type='button';b.id='homebtn';b.textContent='HUB — point de chute';b.setAttribute('data-route','#/');
+    $('crumb').insertAdjacentElement('afterend',b);
+  } else {
+    $('homebtn').textContent='HUB — point de chute';
+  }
+  ensureMainframeNav();
+
+
+  // v20.9 SPINE (pas un menu d'attributs) : une icône activée → champ d'opération
+  window.__SPINE={active:null, open:false};
+  function spineCloseField(){
+    if($('pop')) $('pop').classList.remove('open');
+    document.querySelectorAll('#icons button.attr').forEach(b=>{
+      b.classList.remove('spine-active');
+      b.setAttribute('aria-expanded','false');
+      b.setAttribute('aria-pressed','false');
+    });
+    window.__SPINE={active:null, open:false};
+    window.__POP={open:false};
+  }
+  function spineOpenField(i, btn){
+    const a=ATTRS[i];
+    if(!$('pop')) return;
+    // Relabel existing Gaussian bounds as F-curve thresholds (same controls, no new engine)
+    $('pop').dataset.i=i;
+    $('poptitle').textContent=(a.name)+' — champ d’opération';
+    const anLab=$('pop').querySelector('label');
+    // Ensure threshold legend
+    let thr=$('pop').querySelector('.fcurve-thresholds');
+    if(!thr){
+      thr=document.createElement('div');
+      thr.className='fcurve-thresholds';
+      thr.innerHTML='<b>Seuils — moteur courbe F</b><small>Échelle normalisée <b>−1 → +1</b> (0 au centre). Cinq niveaux : <b>−1</b>, <b>−0,5</b>, <b>0</b>, <b>+0,5</b>, <b>+1</b>. 0 = vitesse nulle (partagée) · ±0,5 = lente · ±1 = rapide. Courbe + : 0 / +0,5 / +1 · courbe − : 0 / −0,5 / −1. Mappés sur les cinq zones gaussiennes existantes (μ / σ). <em>Non branchés au calcul de Z0</em> (écart connu).</small><div class="fcurve-levels" aria-label="Cinq niveaux courbe F"><span data-lv="-1">−1</span><span data-lv="-0.5">−0,5</span><span data-lv="0">0</span><span data-lv="0.5">+0,5</span><span data-lv="1">+1</span></div>';
+      const muLab=$('popmu')&&$('popmu').closest('label');
+      if(muLab) muLab.parentNode.insertBefore(thr, muLab);
+      else $('pop').appendChild(thr);
+    }
+    // Soft-relabel analysis
+    const popanLab=[...$('pop').querySelectorAll('label')].find(l=>l.querySelector('#popan'));
+    if(popanLab && !popanLab.querySelector('.an-lab')){
+      const s=document.createElement('span'); s.className='an-lab'; s.textContent='Analyse — ';
+      popanLab.insertBefore(s, popanLab.firstChild);
+    }
+    $('popan').value=a.an;
+    if($('popmu')){ $('popmu').min='-1'; $('popmu').max='1'; $('popmu').step='0.5'; }
+    // clamp legacy ATTRS μ from −2..+2 into −1..+1
+    let mu0=Number(a.mu); if(!isFinite(mu0)) mu0=0; mu0=Math.max(-1, Math.min(1, mu0));
+    // snap to five F-curve levels
+    const FLEVELS=[-1,-0.5,0,0.5,1];
+    mu0=FLEVELS.reduce((best,v)=>Math.abs(v-mu0)<Math.abs(best-mu0)?v:best, FLEVELS[0]);
+    a.mu=mu0;
+    $('popmu').value=mu0;
+    $('popsig').value=a.sig;
+    $('pop').classList.add('open','op-field');
+    document.querySelectorAll('#icons button.attr').forEach(b=>{
+      const on=b===btn;
+      b.classList.toggle('spine-active', on);
+      b.setAttribute('aria-expanded', on?'true':'false');
+      b.setAttribute('aria-pressed', on?'true':'false');
+    });
+    if(typeof drawGauss==='function') drawGauss();
+    // Position operation field to the right of the spine, cleared region
+    const r=btn.getBoundingClientRect();
+    const pw=$('pop').offsetWidth||320, ph=$('pop').offsetHeight||280;
+    let left=Math.max(r.right+14, (document.querySelector('#icons')?.getBoundingClientRect().right||60)+14);
+    let top=Math.max(72, Math.min(innerHeight-ph-12, r.top+r.height/2-ph/2));
+    if(left+pw>innerWidth-12) left=Math.max(12, innerWidth-pw-12);
+    $('pop').style.left=left+'px';
+    $('pop').style.top=top+'px';
+    window.__SPINE={active:i, open:true};
+    window.__POP={open:true, attr:a.name, i:i, scrollY:scrollY, spine:true};
+  }
+  function spineActivate(i, btn){
+    if(window.__SPINE && window.__SPINE.open && window.__SPINE.active===i){
+      spineCloseField();
+      return;
+    }
+    spineOpenField(i, btn);
+  }
+  // Replace icon click handlers: only activated icon opens field; click other = switch; click active = close
+  document.querySelectorAll('#icons button.attr').forEach(btn=>{
+    const clone=btn.cloneNode(true);
+    btn.parentNode.replaceChild(clone, btn);
+  });
+  document.querySelectorAll('#icons button.attr').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.preventDefault(); e.stopPropagation();
+      spineActivate(+btn.dataset.i, btn);
+    });
+  });
+  // Esc closes operation field
+  // (existing Escape handler already closes #pop)
+  window.spineActivate=spineActivate;
+  window.spineCloseField=spineCloseField;
+  // Override openPop for any leftover callers → spine
+  if(typeof openPop==='function'){
+    window.openPop=openPop=function(i,btn){ spineActivate(i, btn||document.querySelector('#icons button.attr[data-i="'+i+'"]')); };
+  }
+  if(typeof closePop==='function'){
+    const _c=closePop;
+    window.closePop=closePop=function(){ spineCloseField(); };
+  }
+
+
+  
+  // F-curve scale −1..+1 : override drawGauss zone labels (keep 5 equal gaussian bands)
+  if(typeof drawGauss==='function'){
+    const _drawGaussOrig=drawGauss;
+    window.drawGauss=drawGauss=function(){
+      _drawGaussOrig();
+      const cv=$('popcv'); if(!cv) return;
+      const g=cv.getContext('2d'), W=cv.width, H=cv.height;
+      const labs=['−1','−0,5','0','+0,5','+1'];
+      g.fillStyle='#e8c872'; g.font='10px system-ui'; g.textAlign='center';
+      for(let i=0;i<5;i++){
+        g.fillText(labs[i], (i+0.5)*W/5, H-3);
+      }
+      if($('popmuv')) $('popmuv').textContent=(+$('popmu').value).toFixed(2);
+    };
+  }
+  // Force popmu range in DOM to −1..+1 (replace any −2..+2)
+  if($('popmu')){ $('popmu').min='-1'; $('popmu').max='1'; $('popmu').step='0.5'; if(+$('popmu').value>1||+$('popmu').value<-1) $('popmu').value='0'; }
+
+  document.body.addEventListener('click',onDelegatedClick);
+  addEventListener('hashchange',applyRoute);
+  addEventListener('keydown',e=>{
+    if(e.key!=='Escape') return;
+    if($('pop')&&$('pop').classList.contains('open')) return;
+    if($('right-window')){ e.preventDefault(); closeRightWindow(); return; }
+    const r=parseHash();
+    if(r.mode==='floor') return;
+    e.preventDefault();
+    if(r.mode==='nhl'&&r.player){go(r.agg? '#/sports/nhl/agg/'+r.agg+'/'+encodeURIComponent(r.key) : '#/sports/nhl');return;}
+    if(r.mode==='nhl'&&r.agg){go('#/sports/nhl');return;}
+    if(r.mode==='nhl'||r.mode==='placeholder'){go('#/sports');return;}
+    if(r.mode==='sports') go('#/');
+  });
+  patchClicks();
+  ghostHubBindLifecycle();
+  // Restore hub/floor from ghost memory unless URL already points deeper than #/
+  const hash0=location.hash||'';
+  const urlHasDeep=hash0 && hash0!=='#' && hash0!=='#/';
+  if(U.get('sys')){
+    let h='#/floor/'+U.get('sys');
+    if(U.get('ds')==='NDX'||U.get('ds')==='SPX') h+='/index/'+U.get('ds');
+    else if(U.get('lvl')==='f'&&U.get('ex')) h+='/ex/'+U.get('ex');
+    history.replaceState(null,'',h);
+  } else if(!urlHasDeep){
+    ghostHubRestoreOnOpen();
+    if(!location.hash || location.hash==='#' || location.hash==='#/'){
+      // restore may have set floor hash; if still empty → clean top
+      if(!(window.__GHOST&&window.__GHOST.hub&&String(window.__GHOST.hub.restored||'').indexOf('floor:')===0)){
+        history.replaceState(null,'','#/');
+      }
+    }
+  }
+  if(U.get('noui')) $('ui').style.display='none';
+  applyRoute();
+  try{ ghostHubCaptureState('open'); }catch(e){}
+  if(parseHash().mode==='floor' && U.get('sel') && U.get('sel')!=='Technology'){
+    const gi=GROUPS.findIndex(g=>g.name===U.get('sel'));
+    if(gi>=0) select(gi);
+  }
+  if(sel&&U.get('dep')){
+    const di=ds.dates.indexOf(U.get('dep'));
+    const gh=sel.tr.G.find(g=>g.e>=di+1)||sel.tr.G[0];
+    doDeploy(gh,false);
+    if(U.get('at')){$('c').value=ds.dates.indexOf(U.get('at'));progress=+(U.get('u')||0);draw();}
+  }
+  const dump=document.createElement('pre');dump.id='dump';dump.style.display='none';
+  dump.textContent=JSON.stringify({version:'v20.9',mode:parseHash().mode,registry:REGISTRY.map(x=>x.id)});
+  document.body.appendChild(dump);
+  window.__REGISTRY=REGISTRY;
+  window.registerSystem=registerSystem;
+  window.go=go;
+  window.applyRoute=applyRoute;
+  window.parseHash=parseHash;
+  window.__NHL=NHL;
+  window.__POS_LABELS=POS_FR;
+  syncVolLabels();
+}
+
+
+/* === RIGHT WINDOW — bureau d'assignation (myrioamphibotique) === */
+const AGENT_ASSIGN_KEY='um.agents.assign.v1';
+window.__RW={instance:0, open:false, objectId:null};
+const OFFICES_195={"source":"offices_195.csv","driveId":"132G6tp20azR9qD2IU0xaeVHIM51HKrLM","sha256":"e8f5b0d73a6b24b9ad03e750f2605276b0f5ff9fcef3d72c5bbf70577ca03a2e","n":195,"n_cohorte":88,"n_legion":82,"n_autre":25,"note_autre":"[INCOMPLET : faces Yang/Yin/Neutre/— non classées cohorte/légion — listées séparément]","members":[{"id":"E0","name":"Esmeralda (jour) / ESTHER (nuit)","face":"—","rang":"Intellect premier","group":"autre","paire":""},{"id":"R1","name":"Orifiel","face":"Ange planétaire","rang":"Régent de Saturne","group":"cohorte","paire":""},{"id":"R2","name":"Anael","face":"Ange planétaire","rang":"Régent de Vénus","group":"cohorte","paire":""},{"id":"R3","name":"Zachariel","face":"Ange planétaire","rang":"Régent de Jupiter","group":"cohorte","paire":""},{"id":"R4","name":"Raphael","face":"Ange planétaire","rang":"Régent de Mercure","group":"cohorte","paire":""},{"id":"R5","name":"Samael","face":"Ange planétaire","rang":"Régent de Mars","group":"cohorte","paire":""},{"id":"R6","name":"Gabriel","face":"Ange planétaire","rang":"Régent de Lune","group":"cohorte","paire":""},{"id":"R7","name":"Michael","face":"Ange planétaire","rang":"Régent de Soleil","group":"cohorte","paire":""},{"id":"V1","name":"1 Qián — Le Créateur","face":"Yang","rang":"Axe 1 (1↔2)","group":"autre","paire":""},{"id":"V2","name":"2 Kūn — Le Réceptif","face":"Yin","rang":"Axe 1 (1↔2)","group":"autre","paire":""},{"id":"V43","name":"43 Guài — La Percée","face":"Yang","rang":"Axe 2 (43↔23)","group":"autre","paire":""},{"id":"V23","name":"23 Bō — L'Éclatement","face":"Yin","rang":"Axe 2 (43↔23)","group":"autre","paire":""},{"id":"V44","name":"44 Gòu — Venir à la rencontre","face":"Yang","rang":"Axe 3 (44↔24)","group":"autre","paire":""},{"id":"V24","name":"24 Fù — Le Retour","face":"Yin","rang":"Axe 3 (44↔24)","group":"autre","paire":""},{"id":"V28","name":"28 Dà Guò — Prépondérance du grand","face":"Yang","rang":"Axe 4 (28↔27)","group":"autre","paire":""},{"id":"V27","name":"27 Yí — La Nourriture","face":"Yin","rang":"Axe 4 (28↔27)","group":"autre","paire":""},{"id":"V38","name":"38 Kuí — L'Opposition","face":"Yang","rang":"Axe 5 (38↔39)","group":"autre","paire":""},{"id":"V39","name":"39 Jiǎn — L'Obstacle","face":"Yin","rang":"Axe 5 (38↔39)","group":"autre","paire":""},{"id":"V37","name":"37 Jiā Rén — La Famille","face":"Yang","rang":"Axe 6 (37↔40)","group":"autre","paire":""},{"id":"V40","name":"40 Xiè — La Libération","face":"Yin","rang":"Axe 6 (37↔40)","group":"autre","paire":""},{"id":"V53","name":"53 Jiàn — Le Progrès graduel","face":"Yang","rang":"Axe 7 (53↔54)","group":"autre","paire":""},{"id":"V54","name":"54 Guī Mèi — L'Épousée","face":"Yin","rang":"Axe 7 (53↔54)","group":"autre","paire":""},{"id":"V63","name":"63 Jì Jì — Après l'accomplissement","face":"Yang","rang":"Axe 8 (63↔64)","group":"autre","paire":""},{"id":"V64","name":"64 Wèi Jì — Avant l'accomplissement","face":"Yin","rang":"Axe 8 (63↔64)","group":"autre","paire":""},{"id":"G1","name":"Qián ☰ Ciel","face":"Neutre","rang":"Air × actif (à valider)","group":"autre","paire":""},{"id":"G2","name":"Duì ☱ Lac","face":"Neutre","rang":"Eau × réceptif (à valider)","group":"autre","paire":""},{"id":"G3","name":"Lí ☲ Feu","face":"Neutre","rang":"Feu × réceptif (à valider)","group":"autre","paire":""},{"id":"G4","name":"Zhèn ☳ Tonnerre","face":"Neutre","rang":"Feu × actif (à valider)","group":"autre","paire":""},{"id":"G5","name":"Xùn ☴ Vent","face":"Neutre","rang":"Air × réceptif (à valider)","group":"autre","paire":""},{"id":"G6","name":"Kǎn ☵ Eau","face":"Neutre","rang":"Eau × actif (à valider)","group":"autre","paire":""},{"id":"G7","name":"Gèn ☶ Montagne","face":"Neutre","rang":"Terre × actif (à valider)","group":"autre","paire":""},{"id":"G8","name":"Kūn ☷ Terre","face":"Neutre","rang":"Terre × réceptif (à valider)","group":"autre","paire":""},{"id":"C1","name":"Métatron","face":"Ange","rang":"Prince des Séraphins","group":"cohorte","paire":""},{"id":"C2","name":"Raziel","face":"Ange","rang":"Prince des Chérubins","group":"cohorte","paire":""},{"id":"C3","name":"Tsaphkiel","face":"Ange","rang":"Prince des Trônes","group":"cohorte","paire":""},{"id":"C4","name":"Tsadkiel","face":"Ange","rang":"Prince des Dominations","group":"cohorte","paire":""},{"id":"C5","name":"Kamaël","face":"Ange","rang":"Prince des Puissances","group":"cohorte","paire":""},{"id":"C6","name":"Raphaël","face":"Ange","rang":"Prince des Vertus","group":"cohorte","paire":""},{"id":"C7","name":"Haniel","face":"Ange","rang":"Prince des Principautés","group":"cohorte","paire":""},{"id":"C8","name":"Michaël","face":"Ange","rang":"Prince des Archanges","group":"cohorte","paire":""},{"id":"C9","name":"Gabriel","face":"Ange","rang":"Prince des Anges","group":"cohorte","paire":""},{"id":"K1","name":"Amaymon","face":"Démon","rang":"Roi de l'Est","group":"legion","paire":""},{"id":"K2","name":"Ziminiar","face":"Démon","rang":"Roi du Nord","group":"legion","paire":""},{"id":"K3","name":"Corson","face":"Démon","rang":"Roi de l'Ouest","group":"legion","paire":""},{"id":"K4","name":"Gaap (roi du Sud)","face":"Démon","rang":"Roi du Sud","group":"legion","paire":""},{"id":"X1","name":"Lucifuge Rofocale","face":"Démon","rang":"Premier ministre","group":"legion","paire":""},{"id":"X2","name":"Satanachia","face":"Démon","rang":"Grand général","group":"legion","paire":""},{"id":"X3","name":"Agaliarept","face":"Démon","rang":"Général","group":"legion","paire":""},{"id":"X4","name":"Fleurety","face":"Démon","rang":"Lieutenant général","group":"legion","paire":""},{"id":"X5","name":"Sargatanas","face":"Démon","rang":"Brigadier","group":"legion","paire":""},{"id":"X6","name":"Nebiros","face":"Démon","rang":"Maréchal de camp","group":"legion","paire":""},{"id":"A1","name":"Vehuiah","face":"Ange","rang":"Séraphins (prince Métatron)","group":"cohorte","paire":"1"},{"id":"D1","name":"Bael","face":"Démon","rang":"Roi (Soleil) — général : Satanachia","group":"legion","paire":"1"},{"id":"A2","name":"Jeliel","face":"Ange","rang":"Séraphins (prince Métatron)","group":"cohorte","paire":"2"},{"id":"D2","name":"Agares","face":"Démon","rang":"Duc (Vénus) — général : Agaliarept","group":"legion","paire":"2"},{"id":"A3","name":"Sitael","face":"Ange","rang":"Séraphins (prince Métatron)","group":"cohorte","paire":"3"},{"id":"D3","name":"Vassago","face":"Démon","rang":"Prince (Jupiter) — général : Satanachia","group":"legion","paire":"3"},{"id":"A4","name":"Elemiah","face":"Ange","rang":"Séraphins (prince Métatron)","group":"cohorte","paire":"4"},{"id":"D4","name":"Samigina","face":"Démon","rang":"Marquis (Lune) — général : Fleurety","group":"legion","paire":"4"},{"id":"A5","name":"Mahasiah","face":"Ange","rang":"Séraphins (prince Métatron)","group":"cohorte","paire":"5"},{"id":"D5","name":"Marbas","face":"Démon","rang":"Président (Mercure) — général : Sargatanas","group":"legion","paire":"5"},{"id":"A6","name":"Lelahel","face":"Ange","rang":"Séraphins (prince Métatron)","group":"cohorte","paire":"6"},{"id":"D6","name":"Valefor","face":"Démon","rang":"Duc (Vénus) — général : Agaliarept","group":"legion","paire":"6"},{"id":"A7","name":"Achaiah","face":"Ange","rang":"Séraphins (prince Métatron)","group":"cohorte","paire":"7"},{"id":"D7","name":"Amon","face":"Démon","rang":"Marquis (Lune) — général : Fleurety","group":"legion","paire":"7"},{"id":"A8","name":"Cahetel","face":"Ange","rang":"Séraphins (prince Métatron)","group":"cohorte","paire":"8"},{"id":"D8","name":"Barbatos","face":"Démon","rang":"Duc (Vénus) — général : Agaliarept","group":"legion","paire":"8"},{"id":"A9","name":"Haziel","face":"Ange","rang":"Chérubins (prince Raziel)","group":"cohorte","paire":"9"},{"id":"D9","name":"Paimon","face":"Démon","rang":"Roi (Soleil) — général : Satanachia","group":"legion","paire":"9"},{"id":"A10","name":"Aladiah","face":"Ange","rang":"Chérubins (prince Raziel)","group":"cohorte","paire":"10"},{"id":"D10","name":"Buer","face":"Démon","rang":"Président (Mercure) — général : Sargatanas","group":"legion","paire":"10"},{"id":"A11","name":"Laoviah","face":"Ange","rang":"Chérubins (prince Raziel)","group":"cohorte","paire":"11"},{"id":"D11","name":"Gusion","face":"Démon","rang":"Duc (Vénus) — général : Agaliarept","group":"legion","paire":"11"},{"id":"A12","name":"Hahaiah","face":"Ange","rang":"Chérubins (prince Raziel)","group":"cohorte","paire":"12"},{"id":"D12","name":"Sitri","face":"Démon","rang":"Prince (Jupiter) — général : Satanachia","group":"legion","paire":"12"},{"id":"A13","name":"Iezalel","face":"Ange","rang":"Chérubins (prince Raziel)","group":"cohorte","paire":"13"},{"id":"D13","name":"Beleth","face":"Démon","rang":"Roi (Soleil) — général : Satanachia","group":"legion","paire":"13"},{"id":"A14","name":"Mebahel","face":"Ange","rang":"Chérubins (prince Raziel)","group":"cohorte","paire":"14"},{"id":"D14","name":"Leraje","face":"Démon","rang":"Marquis (Lune) — général : Fleurety","group":"legion","paire":"14"},{"id":"A15","name":"Hariel","face":"Ange","rang":"Chérubins (prince Raziel)","group":"cohorte","paire":"15"},{"id":"D15","name":"Eligos","face":"Démon","rang":"Duc (Vénus) — général : Agaliarept","group":"legion","paire":"15"},{"id":"A16","name":"Hakamiah","face":"Ange","rang":"Chérubins (prince Raziel)","group":"cohorte","paire":"16"},{"id":"D16","name":"Zepar","face":"Démon","rang":"Duc (Vénus) — général : Agaliarept","group":"legion","paire":"16"},{"id":"A17","name":"Lauviah","face":"Ange","rang":"Trônes (prince Tsaphkiel)","group":"cohorte","paire":"17"},{"id":"D17","name":"Botis","face":"Démon","rang":"Président (Mercure) — général : Sargatanas","group":"legion","paire":"17"},{"id":"A18","name":"Caliel","face":"Ange","rang":"Trônes (prince Tsaphkiel)","group":"cohorte","paire":"18"},{"id":"D18","name":"Bathin","face":"Démon","rang":"Duc (Vénus) — général : Agaliarept","group":"legion","paire":"18"},{"id":"A19","name":"Leuviah","face":"Ange","rang":"Trônes (prince Tsaphkiel)","group":"cohorte","paire":"19"},{"id":"D19","name":"Sallos","face":"Démon","rang":"Duc (Vénus) — général : Agaliarept","group":"legion","paire":"19"},{"id":"A20","name":"Pahaliah","face":"Ange","rang":"Trônes (prince Tsaphkiel)","group":"cohorte","paire":"20"},{"id":"D20","name":"Purson","face":"Démon","rang":"Roi (Soleil) — général : Satanachia","group":"legion","paire":"20"},{"id":"A21","name":"Nelchael","face":"Ange","rang":"Trônes (prince Tsaphkiel)","group":"cohorte","paire":"21"},{"id":"D21","name":"Marax","face":"Démon","rang":"Président (Mercure) — général : Sargatanas","group":"legion","paire":"21"},{"id":"A22","name":"Ieiaiel","face":"Ange","rang":"Trônes (prince Tsaphkiel)","group":"cohorte","paire":"22"},{"id":"D22","name":"Ipos","face":"Démon","rang":"Prince (Jupiter) — général : Satanachia","group":"legion","paire":"22"},{"id":"A23","name":"Melahel","face":"Ange","rang":"Trônes (prince Tsaphkiel)","group":"cohorte","paire":"23"},{"id":"D23","name":"Aim","face":"Démon","rang":"Duc (Vénus) — général : Agaliarept","group":"legion","paire":"23"},{"id":"A24","name":"Haheuiah","face":"Ange","rang":"Trônes (prince Tsaphkiel)","group":"cohorte","paire":"24"},{"id":"D24","name":"Naberius","face":"Démon","rang":"Marquis (Lune) — général : Fleurety","group":"legion","paire":"24"},{"id":"A25","name":"Nith-Haiah","face":"Ange","rang":"Dominations (prince Tsadkiel)","group":"cohorte","paire":"25"},{"id":"D25","name":"Glasya-Labolas","face":"Démon","rang":"Président (Mercure) — général : Sargatanas","group":"legion","paire":"25"},{"id":"A26","name":"Haaiah","face":"Ange","rang":"Dominations (prince Tsadkiel)","group":"cohorte","paire":"26"},{"id":"D26","name":"Bune","face":"Démon","rang":"Duc (Vénus) — général : Agaliarept","group":"legion","paire":"26"},{"id":"A27","name":"Ierathel","face":"Ange","rang":"Dominations (prince Tsadkiel)","group":"cohorte","paire":"27"},{"id":"D27","name":"Ronove","face":"Démon","rang":"Marquis (Lune) — général : Fleurety","group":"legion","paire":"27"},{"id":"A28","name":"Seheiah","face":"Ange","rang":"Dominations (prince Tsadkiel)","group":"cohorte","paire":"28"},{"id":"D28","name":"Berith","face":"Démon","rang":"Duc (Vénus) — général : Agaliarept","group":"legion","paire":"28"},{"id":"A29","name":"Reiiel","face":"Ange","rang":"Dominations (prince Tsadkiel)","group":"cohorte","paire":"29"},{"id":"D29","name":"Astaroth","face":"Démon","rang":"Duc (Vénus) — général : Agaliarept","group":"legion","paire":"29"},{"id":"A30","name":"Omael","face":"Ange","rang":"Dominations (prince Tsadkiel)","group":"cohorte","paire":"30"},{"id":"D30","name":"Forneus","face":"Démon","rang":"Marquis (Lune) — général : Fleurety","group":"legion","paire":"30"},{"id":"A31","name":"Lecabel","face":"Ange","rang":"Dominations (prince Tsadkiel)","group":"cohorte","paire":"31"},{"id":"D31","name":"Foras","face":"Démon","rang":"Président (Mercure) — général : Sargatanas","group":"legion","paire":"31"},{"id":"A32","name":"Vasariah","face":"Ange","rang":"Dominations (prince Tsadkiel)","group":"cohorte","paire":"32"},{"id":"D32","name":"Asmoday","face":"Démon","rang":"Roi (Soleil) — général : Satanachia","group":"legion","paire":"32"},{"id":"A33","name":"Iehuiah","face":"Ange","rang":"Puissances (prince Kamaël)","group":"cohorte","paire":"33"},{"id":"D33","name":"Gaap","face":"Démon","rang":"Président (Mercure) — général : Sargatanas","group":"legion","paire":"33"},{"id":"A34","name":"Lehahiah","face":"Ange","rang":"Puissances (prince Kamaël)","group":"cohorte","paire":"34"},{"id":"D34","name":"Furfur","face":"Démon","rang":"Comte (Mars) — général : Nebiros","group":"legion","paire":"34"},{"id":"A35","name":"Chavakiah","face":"Ange","rang":"Puissances (prince Kamaël)","group":"cohorte","paire":"35"},{"id":"D35","name":"Marchosias","face":"Démon","rang":"Marquis (Lune) — général : Fleurety","group":"legion","paire":"35"},{"id":"A36","name":"Menadel","face":"Ange","rang":"Puissances (prince Kamaël)","group":"cohorte","paire":"36"},{"id":"D36","name":"Stolas","face":"Démon","rang":"Prince (Jupiter) — général : Satanachia","group":"legion","paire":"36"},{"id":"A37","name":"Aniel","face":"Ange","rang":"Puissances (prince Kamaël)","group":"cohorte","paire":"37"},{"id":"D37","name":"Phenex","face":"Démon","rang":"Marquis (Lune) — général : Fleurety","group":"legion","paire":"37"},{"id":"A38","name":"Haamiah","face":"Ange","rang":"Puissances (prince Kamaël)","group":"cohorte","paire":"38"},{"id":"D38","name":"Halphas","face":"Démon","rang":"Comte (Mars) — général : Nebiros","group":"legion","paire":"38"},{"id":"A39","name":"Rehael","face":"Ange","rang":"Puissances (prince Kamaël)","group":"cohorte","paire":"39"},{"id":"D39","name":"Malphas","face":"Démon","rang":"Président (Mercure) — général : Sargatanas","group":"legion","paire":"39"},{"id":"A40","name":"Ieiazel","face":"Ange","rang":"Puissances (prince Kamaël)","group":"cohorte","paire":"40"},{"id":"D40","name":"Raum","face":"Démon","rang":"Comte (Mars) — général : Nebiros","group":"legion","paire":"40"},{"id":"A41","name":"Hahahel","face":"Ange","rang":"Vertus (prince Raphaël)","group":"cohorte","paire":"41"},{"id":"D41","name":"Focalor","face":"Démon","rang":"Duc (Vénus) — général : Agaliarept","group":"legion","paire":"41"},{"id":"A42","name":"Mikael","face":"Ange","rang":"Vertus (prince Raphaël)","group":"cohorte","paire":"42"},{"id":"D42","name":"Vepar","face":"Démon","rang":"Duc (Vénus) — général : Agaliarept","group":"legion","paire":"42"},{"id":"A43","name":"Veuliah","face":"Ange","rang":"Vertus (prince Raphaël)","group":"cohorte","paire":"43"},{"id":"D43","name":"Sabnock","face":"Démon","rang":"Marquis (Lune) — général : Fleurety","group":"legion","paire":"43"},{"id":"A44","name":"Ielahiah","face":"Ange","rang":"Vertus (prince Raphaël)","group":"cohorte","paire":"44"},{"id":"D44","name":"Shax","face":"Démon","rang":"Marquis (Lune) — général : Fleurety","group":"legion","paire":"44"},{"id":"A45","name":"Sealiah","face":"Ange","rang":"Vertus (prince Raphaël)","group":"cohorte","paire":"45"},{"id":"D45","name":"Vine","face":"Démon","rang":"Roi (Soleil) — général : Satanachia","group":"legion","paire":"45"},{"id":"A46","name":"Ariel","face":"Ange","rang":"Vertus (prince Raphaël)","group":"cohorte","paire":"46"},{"id":"D46","name":"Bifrons","face":"Démon","rang":"Comte (Mars) — général : Nebiros","group":"legion","paire":"46"},{"id":"A47","name":"Asaliah","face":"Ange","rang":"Vertus (prince Raphaël)","group":"cohorte","paire":"47"},{"id":"D47","name":"Vual","face":"Démon","rang":"Duc (Vénus) — général : Agaliarept","group":"legion","paire":"47"},{"id":"A48","name":"Mihael","face":"Ange","rang":"Vertus (prince Raphaël)","group":"cohorte","paire":"48"},{"id":"D48","name":"Haagenti","face":"Démon","rang":"Président (Mercure) — général : Sargatanas","group":"legion","paire":"48"},{"id":"A49","name":"Vehuel","face":"Ange","rang":"Principautés (prince Haniel)","group":"cohorte","paire":"49"},{"id":"D49","name":"Crocell","face":"Démon","rang":"Duc (Vénus) — général : Agaliarept","group":"legion","paire":"49"},{"id":"A50","name":"Daniel","face":"Ange","rang":"Principautés (prince Haniel)","group":"cohorte","paire":"50"},{"id":"D50","name":"Furcas","face":"Démon","rang":"Chevalier (Saturne) — général : Nebiros","group":"legion","paire":"50"},{"id":"A51","name":"Hahasiah","face":"Ange","rang":"Principautés (prince Haniel)","group":"cohorte","paire":"51"},{"id":"D51","name":"Balam","face":"Démon","rang":"Roi (Soleil) — général : Satanachia","group":"legion","paire":"51"},{"id":"A52","name":"Imamiah","face":"Ange","rang":"Principautés (prince Haniel)","group":"cohorte","paire":"52"},{"id":"D52","name":"Alloces","face":"Démon","rang":"Duc (Vénus) — général : Agaliarept","group":"legion","paire":"52"},{"id":"A53","name":"Nanael","face":"Ange","rang":"Principautés (prince Haniel)","group":"cohorte","paire":"53"},{"id":"D53","name":"Camio","face":"Démon","rang":"Président (Mercure) — général : Sargatanas","group":"legion","paire":"53"},{"id":"A54","name":"Nithael","face":"Ange","rang":"Principautés (prince Haniel)","group":"cohorte","paire":"54"},{"id":"D54","name":"Murmur","face":"Démon","rang":"Duc (Vénus) — général : Agaliarept","group":"legion","paire":"54"},{"id":"A55","name":"Mebahiah","face":"Ange","rang":"Principautés (prince Haniel)","group":"cohorte","paire":"55"},{"id":"D55","name":"Orobas","face":"Démon","rang":"Prince (Jupiter) — général : Satanachia","group":"legion","paire":"55"},{"id":"A56","name":"Poiel","face":"Ange","rang":"Principautés (prince Haniel)","group":"cohorte","paire":"56"},{"id":"D56","name":"Gremory","face":"Démon","rang":"Duc (Vénus) — général : Agaliarept","group":"legion","paire":"56"},{"id":"A57","name":"Nemamiah","face":"Ange","rang":"Archanges (prince Michaël)","group":"cohorte","paire":"57"},{"id":"D57","name":"Ose","face":"Démon","rang":"Président (Mercure) — général : Sargatanas","group":"legion","paire":"57"},{"id":"A58","name":"Ieialel","face":"Ange","rang":"Archanges (prince Michaël)","group":"cohorte","paire":"58"},{"id":"D58","name":"Amy","face":"Démon","rang":"Président (Mercure) — général : Sargatanas","group":"legion","paire":"58"},{"id":"A59","name":"Harahel","face":"Ange","rang":"Archanges (prince Michaël)","group":"cohorte","paire":"59"},{"id":"D59","name":"Orias","face":"Démon","rang":"Marquis (Lune) — général : Fleurety","group":"legion","paire":"59"},{"id":"A60","name":"Mitzrael","face":"Ange","rang":"Archanges (prince Michaël)","group":"cohorte","paire":"60"},{"id":"D60","name":"Vapula","face":"Démon","rang":"Duc (Vénus) — général : Agaliarept","group":"legion","paire":"60"},{"id":"A61","name":"Umabel","face":"Ange","rang":"Archanges (prince Michaël)","group":"cohorte","paire":"61"},{"id":"D61","name":"Zagan","face":"Démon","rang":"Roi (Soleil) — général : Satanachia","group":"legion","paire":"61"},{"id":"A62","name":"Iah-Hel","face":"Ange","rang":"Archanges (prince Michaël)","group":"cohorte","paire":"62"},{"id":"D62","name":"Volac","face":"Démon","rang":"Président (Mercure) — général : Sargatanas","group":"legion","paire":"62"},{"id":"A63","name":"Anauel","face":"Ange","rang":"Archanges (prince Michaël)","group":"cohorte","paire":"63"},{"id":"D63","name":"Andras","face":"Démon","rang":"Marquis (Lune) — général : Fleurety","group":"legion","paire":"63"},{"id":"A64","name":"Mehiel","face":"Ange","rang":"Archanges (prince Michaël)","group":"cohorte","paire":"64"},{"id":"D64","name":"Haures","face":"Démon","rang":"Duc (Vénus) — général : Agaliarept","group":"legion","paire":"64"},{"id":"A65","name":"Damabiah","face":"Ange","rang":"Anges (prince Gabriel)","group":"cohorte","paire":"65"},{"id":"D65","name":"Andrealphus","face":"Démon","rang":"Marquis (Lune) — général : Fleurety","group":"legion","paire":"65"},{"id":"A66","name":"Manakel","face":"Ange","rang":"Anges (prince Gabriel)","group":"cohorte","paire":"66"},{"id":"D66","name":"Cimejes","face":"Démon","rang":"Marquis (Lune) — général : Fleurety","group":"legion","paire":"66"},{"id":"A67","name":"Eiael","face":"Ange","rang":"Anges (prince Gabriel)","group":"cohorte","paire":"67"},{"id":"D67","name":"Amdusias","face":"Démon","rang":"Duc (Vénus) — général : Agaliarept","group":"legion","paire":"67"},{"id":"A68","name":"Habuhiah","face":"Ange","rang":"Anges (prince Gabriel)","group":"cohorte","paire":"68"},{"id":"D68","name":"Belial","face":"Démon","rang":"Roi (Soleil) — général : Satanachia","group":"legion","paire":"68"},{"id":"A69","name":"Rochel","face":"Ange","rang":"Anges (prince Gabriel)","group":"cohorte","paire":"69"},{"id":"D69","name":"Decarabia","face":"Démon","rang":"Marquis (Lune) — général : Fleurety","group":"legion","paire":"69"},{"id":"A70","name":"Jabamiah","face":"Ange","rang":"Anges (prince Gabriel)","group":"cohorte","paire":"70"},{"id":"D70","name":"Seere","face":"Démon","rang":"Prince (Jupiter) — général : Satanachia","group":"legion","paire":"70"},{"id":"A71","name":"Haiaiel","face":"Ange","rang":"Anges (prince Gabriel)","group":"cohorte","paire":"71"},{"id":"D71","name":"Dantalion","face":"Démon","rang":"Duc (Vénus) — général : Agaliarept","group":"legion","paire":"71"},{"id":"A72","name":"Mumiah","face":"Ange","rang":"Anges (prince Gabriel)","group":"cohorte","paire":"72"},{"id":"D72","name":"Andromalius","face":"Démon","rang":"Comte (Mars) — général : Nebiros","group":"legion","paire":"72"}]};
+function agentAssignRead(){
+  try{ return JSON.parse(localStorage.getItem(AGENT_ASSIGN_KEY)||'{}')||{}; }catch(e){ return {}; }
+}
+function agentAssignWrite(map){
+  try{ localStorage.setItem(AGENT_ASSIGN_KEY, JSON.stringify(map)); }catch(e){}
+}
+function agentAssignGet(objectId){
+  const m=agentAssignRead();
+  return m[objectId]||null;
+}
+function agentAssignSet(objectId, payload){
+  const m=agentAssignRead();
+  if(!payload) delete m[objectId];
+  else m[objectId]=Object.assign({savedAt:Date.now()}, payload);
+  agentAssignWrite(m);
+  return m[objectId]||null;
+}
+function closeRightWindow(){
+  const el=$('right-window');
+  if(el) el.remove();
+  window.__RW={instance:0, open:false, objectId:null, closedAt:Date.now()};
+  document.body.classList.remove('rw-open');
+}
+function officeById(id){ return (OFFICES_195.members||[]).find(m=>m.id===id)||null; }
+function renderAgentSection(objectId){
+  const asg=agentAssignGet(objectId);
+  const sourceAgent=null; // Branche 1 — aucun agent de source connu pour l'instant
+  let hostHtml='';
+  if(sourceAgent){
+    hostHtml=`<p class="rw-agent-now"><b>Branche 1 — agent de source :</b> ${esc(sourceAgent)}</p>`;
+  } else {
+    hostHtml=`<p class="rw-agent-now"><b>Branche 1 — agent de source :</b> aucun agent de source connu</p>
+      <p class="rw-agent-now"><b>Branche 2 — hôte démon :</b> ${(asg&&asg.group==='legion')?esc(asg.name)+' ('+esc(asg.officeId)+')':'non assigné — choisir ci-dessous'}</p>`;
+  }
+  const cur=asg?`<p class="rw-assigned">Assigné : <b>${esc(asg.name)}</b> · ${asg.group==='cohorte'?'Cohorte (ange)':asg.group==='legion'?'Légion (démon)':asg.group} · id ${esc(asg.officeId)}</p>`:'<p class="rw-assigned">Aucune assignation persistée pour cet objet.</p>';
+  const cohorte=OFFICES_195.members.filter(m=>m.group==='cohorte');
+  const legion=OFFICES_195.members.filter(m=>m.group==='legion');
+  const autre=OFFICES_195.members.filter(m=>m.group==='autre');
+  const opt=(m)=>`<option value="${m.id}" ${asg&&asg.officeId===m.id?'selected':''}>${esc(m.name)} · ${esc(m.face)} · ${esc(m.rang)}</option>`;
+  return `<section class="rw-agent" aria-label="Agent de l'objet">
+    <h3>Agent de l'objet</h3>
+    <p class="rw-src">Source membres : <code>${esc(OFFICES_195.source)}</code> (Drive ${esc(OFFICES_195.driveId)}) · ${OFFICES_195.n} lignes · SHA-256 ${OFFICES_195.sha256.slice(0,12)}… · Cohorte ${OFFICES_195.n_cohorte} · Légion ${OFFICES_195.n_legion} · autres ${OFFICES_195.n_autre} ${esc(OFFICES_195.note_autre)}</p>
+    ${hostHtml}
+    ${cur}
+    <label class="rw-link-lab">Lier à la Cohorte (anges) ou à la Légion (démons)
+      <select id="rw-agent-select" data-object-id="${esc(objectId)}">
+        <option value="">— choisir —</option>
+        <optgroup label="Cohorte — anges (${cohorte.length})">${cohorte.map(opt).join('')}</optgroup>
+        <optgroup label="Légion — démons (${legion.length})">${legion.map(opt).join('')}</optgroup>
+        <optgroup label="Autres faces [INCOMPLET] (${autre.length})">${autre.map(opt).join('')}</optgroup>
+      </select>
+    </label>
+    <div class="rw-agent-actions">
+      <button type="button" id="rw-agent-save">Enregistrer l'assignation</button>
+      <button type="button" id="rw-agent-clear" class="ghost">Retirer</button>
+      <button type="button" id="rw-agent-enter" class="enter" ${asg?'':'disabled'}>Entrer — agent</button>
+    </div>
+    <p class="rw-enter-note">Connectivité : l'agent est atteint directement par l'objet (porte), sans annuaire. L'assignation est une donnée d'objet (<code>${AGENT_ASSIGN_KEY}</code>), pas l'état de la fenêtre.</p>
+  </section>`;
+}
+function summonRightWindow(spec){
+  // Always REGENERATE fresh — destroy previous DOM entirely
+  closeRightWindow();
+  const inst=++window.__RW_SEQ || (window.__RW_SEQ=1);
+  window.__RW_SEQ=inst;
+  const builtAt=Date.now();
+  const objectId=spec.id;
+  const klass=spec.classNum||spec.klass||'?';
+  const el=document.createElement('aside');
+  el.id='right-window';
+  el.className='right-window open';
+  el.setAttribute('role','complementary');
+  el.setAttribute('aria-label','Fenêtre de droite — bureau d\'assignation');
+  el.dataset.instance=String(inst);
+  el.dataset.builtAt=String(builtAt);
+  el.dataset.objectId=objectId;
+  el.dataset.objectClass=String(klass);
+  el.dataset.objectName=spec.name||'';
+  const metaBits=(spec.metaLines||[]).map(t=>`<li>${t}</li>`).join('');
+  el.innerHTML=`<header class="rw-head">
+      <div class="rw-kicker">Fenêtre de droite · instance ${inst} · ${new Date(builtAt).toLocaleTimeString('fr-CA')}</div>
+      <h2 class="rw-title">${esc(spec.name||objectId)}</h2>
+      <p class="rw-class">Classe ${esc(String(klass))} · id <code>${esc(objectId)}</code></p>
+      <button type="button" id="rw-close" aria-label="Fermer la fenêtre de droite">×</button>
+    </header>
+    <div class="rw-body">
+      <section class="rw-obj">
+        <h3>Objet</h3>
+        <ul class="rw-meta">${metaBits||'<li>Spécifiques régénérés à chaque ouverture</li>'}</ul>
+      </section>
+      ${renderAgentSection(objectId)}
+    </div>`;
+  document.body.appendChild(el);
+  document.body.classList.add('rw-open');
+  window.__RW={instance:inst, open:true, objectId, builtAt};
+  el.querySelector('#rw-close').onclick=()=>closeRightWindow();
+  el.querySelector('#rw-agent-save').onclick=()=>{
+    const sel=el.querySelector('#rw-agent-select');
+    const oid=sel.value;
+    if(!oid){ agentAssignSet(objectId,null); summonRightWindow(spec); return; }
+    const off=officeById(oid);
+    if(!off) return;
+    agentAssignSet(objectId,{officeId:off.id,name:off.name,face:off.face,group:off.group,rang:off.rang});
+    summonRightWindow(spec); // regenerate fresh showing new assignment
+  };
+  el.querySelector('#rw-agent-clear').onclick=()=>{ agentAssignSet(objectId,null); summonRightWindow(spec); };
+  const enter=el.querySelector('#rw-agent-enter');
+  if(enter){
+    enter.onclick=()=>{
+      const asg=agentAssignGet(objectId);
+      if(!asg) return;
+      // Door into the agent through the object — no directory
+      let pane=el.querySelector('.rw-enter-pane');
+      if(pane) pane.remove();
+      pane=document.createElement('section');
+      pane.className='rw-enter-pane';
+      pane.dataset.builtAt=String(Date.now());
+      pane.innerHTML=`<h3>Entrer — agent</h3>
+        <p>Porte de l'objet <b>${esc(spec.name)}</b> → agent <b>${esc(asg.name)}</b> (${asg.group==='legion'?'hôte démon / Légion':asg.group==='cohorte'?'Cohorte':asg.group}).</p>
+        <p class="rw-muted">Conversation vocale et quatre règnes : [INCOMPLET — pont Esther/Esmeralda non branché dans ce prototype].</p>`;
+      el.querySelector('.rw-body').appendChild(pane);
+    };
+  }
+  return el;
+}
+window.summonRightWindow=summonRightWindow;
+window.closeRightWindow=closeRightWindow;
+window.agentAssignGet=agentAssignGet;
+window.agentAssignSet=agentAssignSet;
+window.OFFICES_195=OFFICES_195;
+
+function rwSpecFromFloor(sys){
+  const L=LIB4.find(x=>x.id===sys);
+  const b=treeBranchForFloor(sys);
+  return {id:'floor:'+sys, classNum:4, name:(L&&L.name)||sys, metaLines:[
+    'Étage / structure de Classe 4 (données conservées)',
+    b?('Branche d\'ouverture : '+b.name):'Hors arbre d\'ouverture (coupe ou structure)',
+    'Statut : '+floorLiveState(sys)
+  ]};
+}
+function rwSpecFromBranch(branchId){
+  const b=treeBranchById(branchId);
+  return {id:'branch:'+branchId, classNum:4, name:b?b.name:branchId, metaLines:[
+    'Branche d\'ouverture de l\'arbre-objet (5)',
+    b?b.blurb:'',
+    'Couvert : '+(b&&branchCovered(b)?'oui (Amériques)':'non — prochain chantier')
+  ]};
+}
+function rwSpecFromGroup(g){
+  const key=g.mic||g.id||g.name||'g';
+  return {id:'c2:'+key, classNum:2, name:g.name+(g.mic?' ('+g.mic+')':''), metaLines:[
+    'Objet de Classe 2 (secteur / place / agrégat)',
+    (g.mem?g.mem.length:0)+' constituants Classe 1',
+    g.mic?('MIC / clé : '+g.mic):'',
+    'clé interne : '+key
+  ]};
+}
+function rwSpecFromTitle(obj, idx){
+  return {id:'c1:'+(obj.t||obj.s||idx), classNum:1, name:obj.t||obj.n||('titre '+idx), metaLines:[
+    'Titre / point de donnée de Classe 1',
+    obj.s?('Secteur : '+obj.s):'',
+    obj.f?('Place : '+obj.f):''
+  ]};
+}
+function rwSpecFromPlayer(p){
+  return {id:'player:'+p.id, classNum:1, name:p.n, metaLines:[
+    'Joueur NHL — Classe 1',
+    'Position : '+posLabel(p.pos),
+    'Club : '+(latestTeam(p)||'—'),
+    'Nationalité : '+(p.nat||'—')
+  ]};
+}
+function rwSpecFromTeam(abbr){
+  return {id:'team:'+abbr, classNum:2, name:teamShort(abbr)+' ('+abbr+')', metaLines:[
+    'Club NHL — Classe 2',
+    teamLabel(abbr)
+  ]};
+}
+
+// Hook select() → summon Class 2 (always regenerate)
+(function(){
+  function wrapSelect(){
+    if(typeof select!=='function') return false;
+    if(select.__rwWrapped) return true;
+    const _select=select;
+    const wrapped=function(gi){
+      _select(gi);
+      try{
+        if(gi===''||gi==null) return;
+        const g=GROUPS[+gi];
+        if(g) summonRightWindow(rwSpecFromGroup(g));
+      }catch(e){}
+    };
+    wrapped.__rwWrapped=true;
+    window.select=select=wrapped;
+    return true;
+  }
+  if(!wrapSelect()){
+    // defer until init
+    const t=setInterval(()=>{ if(wrapSelect()) clearInterval(t); }, 50);
+    setTimeout(()=>clearInterval(t), 8000);
+  }
+})();
+
+window.renderMainframe=renderMainframe;
+window.renderBalanceChart=renderBalanceChart;
+window.renderPlanetaryCoverage=renderPlanetaryCoverage;
+window.ghostHubCaptureState=ghostHubCaptureState;
+window.ghostHubRestoreOnOpen=ghostHubRestoreOnOpen;
+window.ghostHubReadSaved=ghostHubReadSaved;
+window.initV209=initV209;
+})();
+
+
+initV209(U);
