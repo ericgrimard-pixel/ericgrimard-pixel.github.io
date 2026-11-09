@@ -1,4 +1,4 @@
-/* Application code from v20.10 HUB galaxies (SAFE Pages) — DATA/FLOORS/NHL loaded by previous scripts. */
+/* Application code from v20.11 HUB galaxies (SAFE Pages) — DATA/FLOORS/NHL loaded by previous scripts. */
 var DATA = window.DATA;
 var FLOORS = window.FLOORS;
 var NHL = window.NHL;
@@ -73,7 +73,10 @@ let Z0=null; // {i0,i1,a,b,n0,n1,C4:[] par séance}
 // Classe 4 imbriquée (World : continents ; North-South / East-West : hémisphères) : effondrement de ses seuls constituants (Classe 1 + ses places de Classe 2 si cochées)
 function SETBOX(b,i){const pts=[],fl=new Set(b.fl);ds.objs.forEach((o,k)=>{if(!fl.has(o.f))return;const p=P1(k,i);if(p)pts.push(p);});
   if($('z2').checked&&$('lvl').value==='f')GROUPS.forEach(g=>{if(g.mic&&fl.has(g.mic)){const p=P2(g,i);if(p)pts.push(p);}});return pts;}
-function computeZ0(){Z0=null;const C4=[];for(let i=S0;i<=S1;i++){const s=SET(i);C4[i]=s.pts.length?collapseClass4(s.pts):null;}
+if(typeof window.__MARKET_Z0_TWOPASS==='undefined') window.__MARKET_Z0_TWOPASS=true;
+if(typeof window.__Z0_DOMAIN==='undefined') window.__Z0_DOMAIN='finance';
+function computeZ0(){ if(window.__Z0_DOMAIN==='none'){ Z0=null; return; }
+Z0=null;const C4=[];for(let i=S0;i<=S1;i++){const s=SET(i);C4[i]=s.pts.length?collapseClass4(s.pts):null;}
   const C4N=SYS.boxes.filter(b=>b.kind==='c4n'||b.kind==='half').map(b=>{const P=[];for(let i=S0;i<=S1;i++){const q=SETBOX(b,i);P[i]=q.length?collapseClass4(q):null;}return {b,P,has:P.some(x=>x)};});
   const s0=SET(S0),s1=SET(S1);// placeholder de moindre effort : Z0 = moyennes de T₀ et de T₁ (le vrai Z0 = triple effondrement, non calculable présentement)
   Z0={i0:S0,i1:S1,a:MANIF_ENGINES.class4.collapse(s0.pts),b:MANIF_ENGINES.class4.collapse(s1.pts),n0:s0,n1:s1,C4,C4N};}
@@ -107,15 +110,46 @@ function view(){const v=vb();const cx=(v.x0+v.x1)/2,cy=(v.y0+v.y1)/2,hx=(v.x1-v.
 function unit(){const v=vb();return [(W-L-R)/(v.x1-v.x0),(H-T-B)/(v.y1-v.y0)];} // px par unité, vue d'origine
 // ---------- traîne v19 le long des trajets cycloïdaux (paramètre : longueur d'arc) ----------
 // pos(i) -> [x,y] ou null ; rv(i) -> valeur d'horloge / médiane ; de a à S1
-function trail(pos,rv,a,base){base=base||'#bbbbbb';const [ux,uy]=unit();const G=[],path=[];let p0=pos(a),i0=a;G.push({k:0,x:p0[0],y:p0[1],e:a,t:0,col:css(colAt(base,a,p0))});let cum=0,kk=1,S=0;
+function trailFullYear(pos,rv,a,base){base=base||'#bbbbbb';const [ux,uy]=unit();const G=[],path=[];let p0=pos(a),i0=a;G.push({k:0,x:p0[0],y:p0[1],e:a,t:0,col:css(colAt(base,a,p0))});let cum=0,kk=1,S=0;
   for(let d=a;d<S1;d++){const p1=pos(d+1);const r1=rv(d+1)||0;if(!p1){cum+=r1;S+=r1;continue;}
-    // échantillonnage de la courbe cycloïdale p0 -> p1 et longueur d'arc à l'écran
     const smp=[[...p0,0]],len=[0];for(let j=1;j<=NS;j++){const t=j/NS,q=cyc(p0,p1,t,i0,d+1);smp.push([q[0],q[1],t]);len.push(len[j-1]+Math.hypot((q[0]-smp[j-1][0])*ux,(q[1]-smp[j-1][1])*uy));}
     path.push({e:d+1,p0,p1,smp});const Lt=len[NS];
     while(r1>0&&kk<=cum+r1+1e-12){const f=(kk-cum)/r1,s=f*Lt;let j=1;while(j<NS&&len[j]<s)j++;const w=len[j]>len[j-1]?(s-len[j-1])/(len[j]-len[j-1]):0;const t=(j-1+w)/NS;const q=cyc(p0,p1,t,i0,d+1);G.push({k:kk,x:q[0],y:q[1],e:d+1,t,col:colMove(base,p0,p1,i0,d+1,t)});kk++;}
     cum+=r1;S+=r1;p0=p1;i0=d+1;}
   G.forEach(g=>g.h=g.x<bx[0]||g.x>bx[1]||g.y<by[0]||g.y>by[1]);return {G,path,S,nh:G.filter(g=>g.h).length};}
-function gtrail(g){const col=$('col').value,key=SYS.id+'|'+$('ds').value+'|'+$('lvl').value+'|'+$('z2').checked+$('z3').checked+'|'+g.name+'|'+col+'|'+S0+'|'+S1+'|'+W+'x'+H;if(CACHE.has(key))return CACHE.get(key);
+/* v20.11 — market Z0 transition: T0→T1 two-pass only (séance data kept; no full-year snapshot walk) */
+function trailTwoPass(pos,rv,a,base){
+  base=base||'#bbbbbb'; const [ux,uy]=unit(); const G=[],path=[];
+  let i0=a; let p0=pos(i0);
+  while(!p0 && i0<S1){ i0++; p0=pos(i0); }
+  if(!p0){ return {G:[],path:[],S:0,nh:0,twopass:true}; }
+  G.push({k:0,x:p0[0],y:p0[1],e:i0,t:0,col:css(colAt(base,i0,p0))});
+  const p1=pos(S1);
+  if(!p1){ G.forEach(g=>g.h=g.x<bx[0]||g.x>bx[1]||g.y<by[0]||g.y>by[1]); return {G,path,S:0,nh:G.filter(g=>g.h).length,twopass:true}; }
+  // Single cycloidal segment T0→T1. Column rule still spaces ghosts on THIS segment only.
+  const smp=[[...p0,0]],len=[0];
+  for(let j=1;j<=NS;j++){const t=j/NS,q=cyc(p0,p1,t,i0,S1);smp.push([q[0],q[1],t]);len.push(len[j-1]+Math.hypot((q[0]-smp[j-1][0])*ux,(q[1]-smp[j-1][1])*uy));}
+  path.push({e:S1,p0,p1,smp});
+  const Lt=len[NS];
+  const r1=Math.max(1, (rv(S1)||1)); // at least one step so T1 is reached
+  let kk=1, cum=0, S=0;
+  while(kk<=r1+1e-12){const f=kk/r1,s=f*Lt;let j=1;while(j<NS&&len[j]<s)j++;const w=len[j]>len[j-1]?(s-len[j-1])/(len[j]-len[j-1]):0;const t=(j-1+w)/NS;const q=cyc(p0,p1,t,i0,S1);G.push({k:kk,x:q[0],y:q[1],e:S1,t,col:colMove(base,p0,p1,i0,S1,t)});kk++;}
+  S=r1;
+  // Ensure T1 endpoint present
+  const last=G[G.length-1];
+  if(!last || last.e!==S1 || Math.hypot(last.x-p1[0], last.y-p1[1])>1e-6){
+    G.push({k:kk,x:p1[0],y:p1[1],e:S1,t:1,col:css(colAt(base,S1,p1))});
+  }
+  G.forEach(g=>g.h=g.x<bx[0]||g.x>bx[1]||g.y<by[0]||g.y>by[1]);
+  return {G,path,S,nh:G.filter(g=>g.h).length,twopass:true};
+}
+function trail(pos,rv,a,base){
+  if(window.__Z0_DOMAIN==='none'){ return {G:[],path:[],S:0,nh:0,skipped:'static-no-z0'}; }
+  if(window.__MARKET_Z0_TWOPASS!==false) return trailTwoPass(pos,rv,a,base);
+  return trailFullYear(pos,rv,a,base);
+}
+window.trailTwoPass=trailTwoPass; window.trailFullYear=trailFullYear;
+function gtrail(g){if(window.__Z0_DOMAIN==='none'){return {G:[],path:[],S:0,nh:0,skipped:'static-no-z0'};}const col=$('col').value,key=SYS.id+'|'+$('ds').value+'|'+$('lvl').value+'|'+$('z2').checked+$('z3').checked+'|'+g.name+'|'+col+'|'+S0+'|'+S1+'|'+W+'x'+H;if(CACHE.has(key))return CACHE.get(key);
   const t0=performance.now();const vals=[];for(let i=S0;i<=S1;i++)vals.push(C2(g,i,col));const med=median(vals);
   let a=S0;while(a<=S1&&!P2(g,a))a++;const tr=trail(i=>P2(g,i),i=>{const v=C2(g,i,col);return v==null?0:v/med;},a,g.col);tr.med=med;tr.ms=performance.now()-t0;CACHE.set(key,tr);return tr;}
 function deploy(g,d0){const col=$('col').value;const t0=performance.now();const M=[];
@@ -130,7 +164,7 @@ function rule(){const [ux,uy]=unit();let mn=Infinity,mx=0;const trs=[];if(sel)tr
 function fmt(n){return Math.round(n).toLocaleString('fr-CA');}
 function visible(gh,c,u){return gh.e<c||(gh.e===c&&gh.t<=0)||(gh.e===c+1&&gh.t<=u)||gh.k===0&&gh.e<=c;}
 let HIT={c1:[],c2:[],c4:null,z0:null,gr:0,c:0};
-function draw(){const c=+$('c').value,u=progress;HIT={c1:[],c2:[],c4:null,c4n:[],z0:null,gr:0,c,lib:[],libR:null};GROUPS.forEach(g=>g._px=null);if(EMPTY)return drawEmpty();$('d').textContent=ds.dates[S0]+' → '+ds.dates[S1]+'  ·  instant '+ds.dates[c]+(u>0?' (+'+u.toFixed(2)+')':'');
+function draw(){const c=+$('c').value,u=progress;HIT={c1:[],c2:[],c4:null,c4n:[],z0:null,gr:0,c,lib:[],libR:null};GROUPS.forEach(g=>g._px=null);if(typeof EMPTY==='undefined'||EMPTY||!ds||!ds.dates)return (typeof drawEmpty==='function'?drawEmpty():undefined);if(window.__Z0_DOMAIN==='none'&&!(document.body&&document.body.classList.contains('mode-floor')))return; $('d').textContent=ds.dates[S0]+' → '+ds.dates[S1]+'  ·  instant '+ds.dates[Math.max(0,Math.min(c,ds.dates.length-1))]+(u>0?' (+'+u.toFixed(2)+')':'');
   const v=view();const X=x=>L+(x-v.x0)/(v.x1-v.x0)*(W-L-R),Y=y=>H-B-(y-v.y0)/(v.y1-v.y0)*(H-T-B);
   const cl=(x,y)=>[Math.min(bx[1],Math.max(bx[0],x)),Math.min(by[1],Math.max(by[0],y))];
   ctx.fillStyle='#07080c';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#1d2230';ctx.fillStyle='#5d6475';ctx.font='11px system-ui';ctx.lineWidth=1;
@@ -239,8 +273,15 @@ function clearSel(){sel=null;dep=null;CACHE.clear();$('sel').value='';zoom=1;pan
 function hitGhost(mx,my){if(!sel)return null;const v=view();const X=x=>L+(x-v.x0)/(v.x1-v.x0)*(W-L-R),Y=y=>H-B-(y-v.y0)/(v.y1-v.y0)*(H-T-B);let best=null,bd=(HIT.gr||16)+2;for(const gh of sel.tr.G){const d=Math.hypot(X(gh.x)-mx,Y(gh.y)-my);if(d<bd){bd=d;best=gh;}}return best;}
 function doDeploy(gh,auto){const d0=gh.k===0?gh.e:(gh.t>=1?gh.e:gh.e-1);dep=deploy(sel.g,d0);dep.gh=gh;$('c').value=d0;progress=0;fit();draw();if(auto)startPlay(d0);}
 let timer=null;
-function startPlay(from){stopPlay();$('c').value=from;progress=0;$('play').textContent='❚❚ Pause';let sub=0;
-  timer=setInterval(()=>{sub++;let c=+$('c').value;if(sub>=SUB){sub=0;c++;progress=0;if(c>=S1){$('c').value=S1;stopPlay();draw();return;}$('c').value=c;}else progress=sub/SUB;draw();},28);}
+function startPlay(from){stopPlay();
+  // v20.11: market play = single T0→T1 transition (no full-year séance walk). Data kept.
+  const t0=(from!=null?from:S0);
+  $('c').value=t0; progress=0; $('play').textContent='❚❚ Pause'; let sub=0;
+  timer=setInterval(()=>{sub++;
+    if(sub>=SUB){ $('c').value=S1; progress=0; stopPlay(); draw(); return; }
+    progress=sub/SUB; // interpolate T0 → T1 within the single step
+    draw();
+  },28);}
 function stopPlay(){if(timer){clearInterval(timer);timer=null;}progress=0;$('play').textContent='▶ Jouer';}
 $('play').onclick=()=>{if(timer){stopPlay();draw();return;}startPlay(dep?dep.d0:S0);};
 $('c').oninput=()=>{stopPlay();draw();};
@@ -312,8 +353,8 @@ cv.addEventListener('wheel',ev=>{ev.preventDefault();if(EMPTY)return;const v=vie
 // ---------- démarrage (paramètres d'URL facultatifs : ds, lvl, col, sel, dep=AAAA-MM-JJ, at=AAAA-MM-JJ, z, noui) ----------
 LIB4.forEach(x=>{const op=document.createElement('option');op.value=x.id;op.textContent=x.name;$('sys').appendChild(op);});size();
 const U=new URLSearchParams(location.search);if(U.get('sys'))$('sys').value=U.get('sys');if(U.get('lib')==='0'){$('libon').checked=false;size();}if(U.get('ds'))$('ds').value=U.get('ds');if(U.get('lvl'))$('lvl').value=U.get('lvl');if(U.get('col'))$('col').value=U.get('col');
-/* Application overlay v20.10 — galaxies + silos sports (SAFE Pages). */
-/* v20.10 — fenêtre principale dans la colonne + tableau d'état, registre, LNH et sports.
+/* Application overlay v20.11 — galaxies hero + silos (SAFE Pages). */
+/* v20.11 — fenêtre principale dans la colonne + tableau d'état, registre, LNH et sports.
    Injecté à la fin du prototype ; n'altère pas le moteur financier des versions antérieures. */
 (function(){
 const EC='en construction — à remplir quand les crédits le permettront';
@@ -373,6 +414,29 @@ window.analysisAssertIsolation=analysisAssertIsolation;
 window.ANALYSIS_FINANCE_KEY=ANALYSIS_FINANCE_KEY;
 window.analysisSportKey=analysisSportKey;
 
+/* === Z0 domain rules (v20.11) — static sports structures: NO Z0; market = T0→T1 only === */
+window.__Z0_DOMAIN='finance'; // 'finance' | 'none'
+window.__MARKET_Z0_TWOPASS=true;
+function z0DomainForRoute(route){
+  if(!route) return 'finance';
+  if(route.mode==='nhl'||route.mode==='sports'||route.mode==='placeholder') return 'none';
+  if(route.mode==='galaxy'&&(route.galaxy==='sports'||route.galaxy==='nhl')) return 'none';
+  return 'finance';
+}
+function assertNoZ0OnStatics(){
+  // Runtime guard for tests: sports silos never hold Z0 fields
+  const sports=['nhl','football','american-football','soccer','basketball'];
+  const leaks=[];
+  sports.forEach(sp=>{
+    const st=analysisSportLoad(sp);
+    if(st && (st.Z0 || st.z0 || st.trail || st.ghosts)) leaks.push(sp);
+  });
+  return {ok:leaks.length===0, leaks, domain:window.__Z0_DOMAIN, twopass:!!window.__MARKET_Z0_TWOPASS};
+}
+window.z0DomainForRoute=z0DomainForRoute;
+window.assertNoZ0OnStatics=assertNoZ0OnStatics;
+
+
 const POS_FR={C:'Center (centre)',L:'Left Wing (ailier gauche)',R:'Right Wing (ailier droit)',D:'Defense (défenseur)',G:'Goalie (gardien)'};
 const SPORT_PH=[
   {id:'football',name:'Football'},
@@ -399,7 +463,7 @@ function hubCategoryOf(entry){
   return entry.category||'Autres';
 }
 
-/* v20.10 — arbre d'ouverture à CINQ branches (Éric 16:52) + coupes */
+/* v20.11 — arbre d'ouverture à CINQ branches (Éric 16:52) + coupes */
 const TREE_BRANCHES=[
   {id:'APAC',name:'Asie-Pacifique',floor:'ASF',includes:['ASF','OCF'],blurb:'Asie + Australie / Océanie',covered:false},
   {id:'ME',name:'Moyen-Orient',floor:'MEF',includes:['MEF'],blurb:'Branche propre (Tadawul, etc.) — plus « Asie de l’Ouest »',covered:false},
@@ -716,7 +780,7 @@ function ghostHubRestoreOnOpen(){
   if(!st){ window.__HUB_TREE=null; window.__HUB_OPEN_FLOOR=null; window.__HUB_CAT='finance'; ns.restored='clean-top'; return null; }
   window.__HUB_CAT=st.hubCat||'finance';
   const branch=st.openBranch||null;
-  // Prefer explicit galaxyPath when present (v20.10)
+  // Prefer explicit galaxyPath when present (v20.11)
   if(st.galaxyPath && typeof st.galaxyPath==='string'){
     let hash='#/'+st.galaxyPath.replace(/^#?\/?/, '');
     if(st.galaxyPath.indexOf('galaxy/')===0 || st.galaxyPath.indexOf('floor/')===0 || st.galaxyPath.indexOf('sports/')===0){
@@ -978,14 +1042,21 @@ function renderMainframe(){
   const extra=REGISTRY.filter(x=>!shown.has(x.id) && !SPORT_PH.some(s=>s.id===x.id) && FLOOR_IDS.indexOf(x.id)<0);
   const extraBlock=extra.length?('<h2>Autres systèmes du registre</h2><div class="tiles" id="mf-extra">'+extra.map(x=>tileHTML(x.id,x.name,x.blurb||(x.status==='empty'?EC:'Système enregistré'),x.status||'empty',x.route||('#/'+x.id))).join('')+'</div>'):'';
   $('mf').innerHTML=`<div class="ovtop"><div>
-      <h1>HUB — point de chute Universal Metaphor <span class="verpill">v20.10</span></h1>
+      <h1>HUB — point de chute Universal Metaphor <span class="verpill">v20.11</span></h1>
       <div class="crumb-slot"></div>
-      <p class="lead">Point de chute de tout le développement Universal Metaphor. Arbre-objet à cinq branches (Asie-Pacifique, Moyen-Orient, Europe, Afrique, Amériques) · portes FINANCE / SPORTS · galaxies planétaires · couverture et coupes.</p>
-      <p class="galaxy-actions hub-galaxy-cta">
-        <button type="button" class="open-galaxies" data-route="#/galaxy/planet" id="open-galaxies" data-id="OPEN-GALAXIES">Ouvrir les galaxies</button>
-        <button type="button" class="open-galaxies ghost" data-route="#/galaxy/sports" id="open-sports-galaxies" data-id="OPEN-SPORTS-GAL">Galaxies Sports (silos)</button>
-      </p>
+      <p class="lead">Point de chute de tout le développement Universal Metaphor. Arbre-objet à cinq branches · portes FINANCE / SPORTS · galaxies · couverture et coupes.</p>
     </div></div>
+    <a class="galaxy-hero-card" href="#/galaxy/planet" data-route="#/galaxy/planet" id="open-galaxies" data-id="OPEN-GALAXIES" role="link" aria-label="Ouvrir les galaxies — la planète">
+      <span class="galaxy-hero-emoji" aria-hidden="true">🌌</span>
+      <span class="galaxy-hero-body">
+        <span class="galaxy-hero-title">Ouvrir les galaxies — la planète</span>
+        <span class="galaxy-hero-sub">Cinq branches Classe 2 · porte Sports (silos) · un clic depuis le hub</span>
+      </span>
+      <span class="galaxy-hero-go" aria-hidden="true">→</span>
+    </a>
+    <p class="galaxy-actions hub-galaxy-cta secondary-gal-links">
+      <button type="button" class="open-galaxies ghost" data-route="#/galaxy/sports" id="open-sports-galaxies" data-id="OPEN-SPORTS-GAL">Galaxies Sports (silos isolés)</button>
+    </p>
     ${renderBalanceChart(window.__HUB_CAT||'finance')}
     ${renderPlanetaryCoverage()}
     <h2>Sports professionnels</h2>
@@ -998,7 +1069,7 @@ function renderMainframe(){
 
 function renderSports(){
   $('spwin').innerHTML=`<div class="ovtop"><div>
-      <h1>Sports professionnels <span class="verpill">v20.10</span></h1>
+      <h1>Sports professionnels <span class="verpill">v20.11</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Le hockey (LNH) est le premier système en service. Les autres sports sont des emplacements visibles, sans aucune donnée inventée. Chaque sport = silo d'analyse isolé (um.analysis.sports.&lt;sport&gt;.*) — jamais mélangé à la finance ni entre sports.</p>
       <p class="galaxy-actions"><button type="button" data-route="#/galaxy/sports" id="sports-to-galaxies">Ouvrir les galaxies Sports</button></p>
@@ -1014,7 +1085,7 @@ function renderPlaceholder(sport){
 
   const sp=SPORT_PH.find(x=>x.id===sport)||findReg(sport)||{id:sport,name:sport};
   $('phwin').innerHTML=`<div class="ovtop"><div>
-      <h1>${sp.name} <span class="verpill">v20.10</span></h1>
+      <h1>${sp.name} <span class="verpill">v20.11</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead" data-status="empty">${EC}</p>
       <p>Conteneur visible dans la fenêtre des sports professionnels et dans le registre. Aucune donnée n’a été inventée pour le remplir.</p>
@@ -1300,7 +1371,7 @@ let showGrid=!route.key;
        </div>
        <div id="nhlgrid">${renderAggList(gridAgg||'team')}</div>`;
   $('nhlview').innerHTML=`<div class="ovtop"><div>
-      <h1>Classe 4 — LNH <span class="verpill">v20.10</span></h1>
+      <h1>Classe 4 — LNH <span class="verpill">v20.11</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Chaque joueur est un point de donnée de Classe 1. Les équipes, pays, positions et années de repêchage sont des objets de Classe 2. La Classe 4 contient tout le système. ${NHL.players.length} joueurs · saisons 2024-25 et 2025-26 · source API NHL (extraction du 9 nov. 2026). Logos officiels des 32 clubs sur les objets de Classe 2 (licence [INCOMPLET : conditions d’usage NHL non vérifiées]). En l’absence de photo réelle, le nom complet du joueur tient lieu de visuel (fichier photos/{id}.png, à remplacer plus tard). Les positions sont nommées en toutes lettres — Center, Left Wing, Right Wing, Defense, Goalie — un symbole pourra venir plus tard. Chaque fiche relie le joueur à son club, sa nationalité, sa position, son année de repêchage et, s’il y a lieu, au groupe des joueurs échangés. Chaque liste (clubs, nationalités, positions, années de repêchage, joueurs échangés, recherche Tous les joueurs) montre une vignette cliquable par joueur — le nom complet en attendant la photo réelle — qui ouvre sa fiche. Les 32 logos de clubs sont des vignettes cliquables qui ouvrent l’objet club et son effectif. L’âge reste [INCOMPLET].</p>
     </div></div>
@@ -1339,7 +1410,7 @@ function renderNHLGridOnly(tab){
 }
 
 
-/* === Galaxy layer v20.10 — planet = 5 Class-2 branches; dive reuses applyFloor canvas === */
+/* === Galaxy layer v20.11 — planet = 5 Class-2 branches; dive reuses applyFloor canvas === */
 function ensureGalaxyPlanet(){
   let el=$('galaxy-planet');
   if(!el){
@@ -1373,7 +1444,7 @@ function renderGalaxyPlanet(){
       <span class="gpo-blurb">Hockey · football · soccer · football américain · basketball — silos isolés (aucune donnée finance)</span>
     </button>`;
   el.innerHTML=`<div class="ovtop"><div>
-      <h1>Galaxie planétaire <span class="verpill">v20.10</span></h1>
+      <h1>Galaxie planétaire <span class="verpill">v20.11</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Cinq branches d'ouverture en objets Classe 2 · porte Sports (galaxies par sport, silo isolé) · aucune fusion sport↔finance · données manquantes = [INCOMPLET].</p>
       <p class="galaxy-actions">
@@ -1404,7 +1475,7 @@ function renderGalaxySports(){
       <span class="gpo-blurb">Silo um.analysis.sports.${s.id}.* — aucune donnée inventée</span>
     </button>`).join('');
   el.innerHTML=`<div class="ovtop"><div>
-      <h1>Galaxies Sports <span class="verpill">v20.10</span></h1>
+      <h1>Galaxies Sports <span class="verpill">v20.11</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Chaque sport = galaxie et silo d'analyse isolés. Aucun mélange entre sports, aucun mélange avec la finance.</p>
       <p class="galaxy-actions">
@@ -1481,7 +1552,7 @@ function applyGalaxy(route){
     const el=ensureGalaxyPlanet();
     const status=b&&branchCovered(b)?'live':'empty';
     el.innerHTML=`<div class="ovtop"><div>
-        <h1>Galaxie — ${(b&&b.name)||route.branch} <span class="verpill">v20.10</span></h1>
+        <h1>Galaxie — ${(b&&b.name)||route.branch} <span class="verpill">v20.11</span></h1>
         <div class="crumb-slot"></div>
         <p class="lead">${(b&&b.blurb)||''} · ${(status==='live')?'ACTIVE':'[INCOMPLET] — aucune donnée inventée'}.</p>
         <p class="galaxy-actions">
@@ -1526,6 +1597,7 @@ function applyFloor(route){
 function applyRoute(){
   const route=parseHash();
   window.__NAV={mode:route.mode,route,hash:location.hash||'#/'};
+  window.__Z0_DOMAIN=z0DomainForRoute(route);
   // Hide galaxy planet overlay unless we are in planet/sports-galaxy empty panels
   if(!(route.mode==='galaxy' && (route.galaxy==='planet'||route.galaxy==='sports'||(route.galaxy==='branch'&&route.branch&&(!treeBranchById(route.branch)||treeBranchById(route.branch).floor==='MEF'||!LIB4.some(x=>x.id===treeBranchById(route.branch).floor)))))){
     // still let applyGalaxy manage show/hide
@@ -1574,7 +1646,7 @@ function applyRoute(){
     });
   }catch(e){}
   window.__NAV.crumb=($('crumb')&&$('crumb').textContent)||'';
-  window.__VERSION='v20.10';
+  window.__VERSION='v20.11';
   // Right window: summon on object navigation; never restore from ghost
   try{
     if(window.__RW_FORCE_CLOSED){ closeRightWindow(); window.__RW_FORCE_CLOSED=false; }
@@ -1671,7 +1743,7 @@ function patchClicks(){
   };
 }
 
-function initV210(U){
+function initV211(U){
   ['mf','spwin','nhlview','phwin'].forEach(id=>{
     if(!$(id)){const d=document.createElement('div');d.id=id;d.className='overlay';document.body.appendChild(d);}
   });
@@ -1688,7 +1760,7 @@ function initV210(U){
   ensureMainframeNav();
 
 
-  // v20.10 SPINE (pas un menu d'attributs) : une icône activée → champ d'opération
+  // v20.11 SPINE (pas un menu d'attributs) : une icône activée → champ d'opération
   window.__SPINE={active:null, open:false};
   function spineCloseField(){
     if($('pop')) $('pop').classList.remove('open');
@@ -1874,7 +1946,7 @@ function initV210(U){
     if(U.get('at')){$('c').value=ds.dates.indexOf(U.get('at'));progress=+(U.get('u')||0);draw();}
   }
   const dump=document.createElement('pre');dump.id='dump';dump.style.display='none';
-  dump.textContent=JSON.stringify({version:'v20.10',mode:parseHash().mode,registry:REGISTRY.map(x=>x.id)});
+  dump.textContent=JSON.stringify({version:'v20.11',mode:parseHash().mode,registry:REGISTRY.map(x=>x.id)});
   document.body.appendChild(dump);
   window.__REGISTRY=REGISTRY;
   window.registerSystem=registerSystem;
@@ -2110,8 +2182,11 @@ window.analysisSportSave=analysisSportSave;
 window.analysisSportLoad=analysisSportLoad;
 window.ANALYSIS_FINANCE_KEY=ANALYSIS_FINANCE_KEY;
 window.analysisSportKey=analysisSportKey;
-window.initV210=initV210;
+
+window.z0DomainForRoute=z0DomainForRoute;
+window.assertNoZ0OnStatics=assertNoZ0OnStatics;
+window.initV211=initV211;
 })();
 
 
-initV210(U);
+initV211(U);
