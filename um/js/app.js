@@ -1,4 +1,4 @@
-/* Application code from v20.9 one-file launcher — DATA/FLOORS/NHL loaded by previous scripts. */
+/* Application code from v20.10 HUB galaxies (SAFE Pages) — DATA/FLOORS/NHL loaded by previous scripts. */
 var DATA = window.DATA;
 var FLOORS = window.FLOORS;
 var NHL = window.NHL;
@@ -312,11 +312,67 @@ cv.addEventListener('wheel',ev=>{ev.preventDefault();if(EMPTY)return;const v=vie
 // ---------- démarrage (paramètres d'URL facultatifs : ds, lvl, col, sel, dep=AAAA-MM-JJ, at=AAAA-MM-JJ, z, noui) ----------
 LIB4.forEach(x=>{const op=document.createElement('option');op.value=x.id;op.textContent=x.name;$('sys').appendChild(op);});size();
 const U=new URLSearchParams(location.search);if(U.get('sys'))$('sys').value=U.get('sys');if(U.get('lib')==='0'){$('libon').checked=false;size();}if(U.get('ds'))$('ds').value=U.get('ds');if(U.get('lvl'))$('lvl').value=U.get('lvl');if(U.get('col'))$('col').value=U.get('col');
-/* v20.9 — fenêtre principale dans la colonne + tableau d'état, registre, LNH et sports.
+/* Application overlay v20.10 — galaxies + silos sports (SAFE Pages). */
+/* v20.10 — fenêtre principale dans la colonne + tableau d'état, registre, LNH et sports.
    Injecté à la fin du prototype ; n'altère pas le moteur financier des versions antérieures. */
 (function(){
 const EC='en construction — à remplir quand les crédits le permettront';
 const FLOOR_IDS=['AMF','EUF','AFF','ASF','OCF','WF','NSF','EWF'];
+
+/* === Analysis silos — Finance ⊄ Sports ; sports isolated per sport (Éric 17:49) === */
+const ANALYSIS_FINANCE_KEY='um.analysis.finance.attrs.v1';
+const ANALYSIS_SPORT_PREFIX='um.analysis.sports.';
+function analysisSportKey(sport){ return ANALYSIS_SPORT_PREFIX + sport + '.v1'; }
+function analysisFinanceLoad(){
+  try{
+    const raw=localStorage.getItem(ANALYSIS_FINANCE_KEY);
+    if(!raw) return null;
+    return JSON.parse(raw);
+  }catch(e){ return null; }
+}
+function analysisFinanceSave(){
+  try{
+    if(typeof ATTRS==='undefined') return;
+    const payload={savedAt:Date.now(), domain:'finance', attrs:ATTRS.map(a=>({name:a.name,an:a.an,mu:a.mu,sig:a.sig}))};
+    localStorage.setItem(ANALYSIS_FINANCE_KEY, JSON.stringify(payload));
+  }catch(e){}
+}
+function analysisFinanceRestore(){
+  const st=analysisFinanceLoad();
+  if(!st||!st.attrs||typeof ATTRS==='undefined') return;
+  st.attrs.forEach((a,i)=>{ if(ATTRS[i]){ if(a.an!=null) ATTRS[i].an=a.an; if(a.mu!=null) ATTRS[i].mu=a.mu; if(a.sig!=null) ATTRS[i].sig=a.sig; } });
+}
+function analysisSportLoad(sport){
+  try{ return JSON.parse(localStorage.getItem(analysisSportKey(sport))||'null'); }catch(e){ return null; }
+}
+function analysisSportSave(sport, state){
+  try{
+    localStorage.setItem(analysisSportKey(sport), JSON.stringify(Object.assign({savedAt:Date.now(), domain:'sports', sport:sport}, state||{})));
+  }catch(e){}
+}
+function analysisAssertIsolation(){
+  // Runtime guard used by tests: finance key never written by sports paths; sport keys never hold ATTRS
+  const fin=analysisFinanceLoad();
+  const sports=['nhl','football','american-football','soccer','basketball'];
+  const report={financeKey:ANALYSIS_FINANCE_KEY, sportKeys:sports.map(analysisSportKey), ok:true, leaks:[]};
+  sports.forEach(sp=>{
+    const st=analysisSportLoad(sp);
+    if(st && (st.attrs || st.domain==='finance')){ report.ok=false; report.leaks.push(sp+':finance-shaped'); }
+  });
+  if(fin && fin.domain && fin.domain!=='finance'){ report.ok=false; report.leaks.push('finance:bad-domain'); }
+  // Ensure no shared key name collision
+  const all=[ANALYSIS_FINANCE_KEY].concat(sports.map(analysisSportKey));
+  if(new Set(all).size!==all.length){ report.ok=false; report.leaks.push('key-collision'); }
+  return report;
+}
+window.analysisFinanceSave=analysisFinanceSave;
+window.analysisFinanceRestore=analysisFinanceRestore;
+window.analysisSportSave=analysisSportSave;
+window.analysisSportLoad=analysisSportLoad;
+window.analysisAssertIsolation=analysisAssertIsolation;
+window.ANALYSIS_FINANCE_KEY=ANALYSIS_FINANCE_KEY;
+window.analysisSportKey=analysisSportKey;
+
 const POS_FR={C:'Center (centre)',L:'Left Wing (ailier gauche)',R:'Right Wing (ailier droit)',D:'Defense (défenseur)',G:'Goalie (gardien)'};
 const SPORT_PH=[
   {id:'football',name:'Football'},
@@ -343,7 +399,7 @@ function hubCategoryOf(entry){
   return entry.category||'Autres';
 }
 
-/* v20.9 — arbre d'ouverture à CINQ branches (Éric 16:52) + coupes */
+/* v20.10 — arbre d'ouverture à CINQ branches (Éric 16:52) + coupes */
 const TREE_BRANCHES=[
   {id:'APAC',name:'Asie-Pacifique',floor:'ASF',includes:['ASF','OCF'],blurb:'Asie + Australie / Océanie',covered:false},
   {id:'ME',name:'Moyen-Orient',floor:'MEF',includes:['MEF'],blurb:'Branche propre (Tadawul, etc.) — plus « Asie de l’Ouest »',covered:false},
@@ -386,7 +442,7 @@ function registryBalanceRows(){
     let detail=b.blurb;
     if(b.id==='AMER'&&cov) detail='America Floor · NDX '+DATA.NDX.objs.length+' · S&P 500 '+DATA.SPX.objs.length;
     else if(!cov) detail=b.blurb+' · '+EC;
-    rows.push({id:b.id,name:b.name,kind:'tree-branch',status:cov?'live':'empty',route:'#/tree/'+b.id,detail,children:[],group:'tree',category:'finance',floor:b.floor,branch:b.id});
+    rows.push({id:b.id,name:b.name,kind:'tree-branch',status:cov?'live':'empty',route:'#/galaxy/'+b.id,detail,children:[],group:'tree',category:'finance',floor:b.floor,branch:b.id});
   }
   const sportsKids=[
     {id:'NHL',name:'Hockey — LNH',status:'live',route:'#/sports/nhl',count:NHL.players.length+' joueurs · '+Object.keys(NHL.teams).length+' clubs',category:'sports'},
@@ -424,7 +480,7 @@ function planetaryCoverageRows(){
     let note=b.blurb;
     if(b.id==='AMER'&&cov) note='Amériques · NDX '+DATA.NDX.objs.length+' · S&P 500 '+DATA.SPX.objs.length;
     else note=b.blurb+' · même gabarit arbre → Classe 2 → Classe 1 · '+EC;
-    return {id:'branch-'+b.id,name:b.name,floor:b.floor,branch:b.id,route:'#/tree/'+b.id,covered:cov,note,kind:'branch'};
+    return {id:'branch-'+b.id,name:b.name,floor:b.floor,branch:b.id,route:'#/galaxy/'+b.id,covered:cov,note,kind:'branch'};
   });
   const coupes=TREE_COUPES.map(c=>{
     const st=floorLiveState(c.floor);
@@ -479,8 +535,8 @@ function floorContentsForHub(branchOrFloor){
   }
   if(id==='ME'){
     return [
-      {id:'TADAWUL',name:'Tadawul (Arabie saoudite)',status:'empty',route:'#/tree/ME',count:EC+' · [INCOMPLET : flux non branché]',klass:2},
-      {id:'ME-other',name:'Autres places Moyen-Orient',status:'empty',route:'#/tree/ME',count:EC+' · [INCOMPLET]',klass:2}
+      {id:'TADAWUL',name:'Tadawul (Arabie saoudite)',status:'empty',route:'#/galaxy/ME',count:EC+' · [INCOMPLET : flux non branché]',klass:2},
+      {id:'ME-other',name:'Autres places Moyen-Orient',status:'empty',route:'#/galaxy/ME',count:EC+' · [INCOMPLET]',klass:2}
     ];
   }
   const floor=b?b.floor:branchOrFloor;
@@ -489,7 +545,7 @@ function floorContentsForHub(branchOrFloor){
   if(fd.n){
     return fd.mics.map(m=>({id:m,name:(FLOORS[m]?FLOORS[m].n+' ('+m+')':m),status:'live',route:'#/floor/'+floor+'/ex/'+m,count:countMic(m)+' titres',klass:2}));
   }
-  return [{id:(floor||id)+'-empty',name:EC,status:'empty',route:b?('#/tree/'+b.id):('#/floor/'+floor),count:'Branche → Classe 2 [INCOMPLET] → Classe 1 [INCOMPLET]',klass:2}];
+  return [{id:(floor||id)+'-empty',name:EC,status:'empty',route:b?('#/galaxy/'+b.id):('#/floor/'+floor),count:'Branche → Classe 2 [INCOMPLET] → Classe 1 [INCOMPLET]',klass:2}];
 }
 function renderSuperStrip(activeBranch){
   // Persistent strip of the FIVE opening branches — always visible
@@ -498,7 +554,7 @@ function renderSuperStrip(activeBranch){
     const live=branchCovered(b);
     const here=b.id===activeBranch;
     const collapsed=!!activeBranch && !here;
-    return `<button type="button" class="strip-chip ${live?'live':'empty'}${here?' open':''}${collapsed?' c2':''}" data-id="${b.id}" data-branch="${b.id}" data-route="#/tree/${b.id}" title="${b.name}" aria-current="${here?'true':'false'}">
+    return `<button type="button" class="strip-chip ${live?'live':'empty'}${here?' open':''}${collapsed?' c2':''}" data-id="${b.id}" data-branch="${b.id}" data-route="#/galaxy/${b.id}" title="${b.name}" aria-current="${here?'true':'false'}">
       <span class="strip-id">${b.id}</span>
       <span class="strip-name">${b.name}</span>
       <span class="strip-badge">${live?'ACTIVE':'en construction'}</span>
@@ -522,7 +578,7 @@ function renderOpenFloorPanel(branchId){
   }).join('');
   const others=TREE_BRANCHES.filter(x=>x.id!==id).map(ob=>{
     const live=branchCovered(ob);
-    return `<div role="button" tabindex="0" class="c2-collapsed ${live?'live':'empty'}" data-id="${ob.id}" data-branch="${ob.id}" data-route="#/tree/${ob.id}" aria-label="${ob.name} (Classe 2 replié)">
+    return `<div role="button" tabindex="0" class="c2-collapsed ${live?'live':'empty'}" data-id="${ob.id}" data-branch="${ob.id}" data-route="#/galaxy/${ob.id}" aria-label="${ob.name} (Classe 2 replié)">
       <span class="c2-id">${ob.id}</span>
       <span class="c2-lab">${ob.name}</span>
       <span class="c2-badge">${live?'ACTIVE':'en construction'}</span>
@@ -592,7 +648,7 @@ function ghostHubCoverageSnapshot(){
 }
 function ghostHubCaptureState(reason){
   const route=typeof parseHash==='function'?parseHash():{mode:'home'};
-  const openBranch=(route.mode==='tree'&&route.branch)?route.branch:(window.__HUB_TREE||null);
+  const openBranch=(route.mode==='galaxy'&&route.branch)?route.branch:((route.mode==='tree'&&route.branch)?route.branch:(window.__HUB_TREE||null));
   // Legacy floor route → map to branch if possible
   let branch=openBranch;
   if(!branch && route.mode==='floor'&&route.sys){
@@ -610,6 +666,16 @@ function ghostHubCaptureState(reason){
     route:{mode:route.mode||'home', hash:location.hash||'#/', sys:route.sys||null, branch:branch||null, index:route.index||null, agg:route.agg||null, key:route.key||null, player:route.player||null, sport:route.sport||null},
     hubCat:window.__HUB_CAT||'finance',
     coverage:ghostHubCoverageSnapshot(),
+    galaxyPath:(function(){
+      if(route.mode==='galaxy'){
+        if(route.galaxy==='planet') return 'galaxy/planet';
+        if(route.branch) return 'galaxy/'+route.branch;
+        if(route.galaxy) return 'galaxy/'+route.galaxy;
+      }
+      if(route.mode==='floor'&&route.sys) return 'floor/'+route.sys+(route.index?('/index/'+route.index):'');
+      if(route.mode==='nhl') return 'sports/nhl';
+      return null;
+    })(),
     rightWindow:null // NEVER persist right window — always closed on restore
   };
   const ns=ghostHubEnsureNS();
@@ -631,7 +697,7 @@ function ghostHubReadSaved(){
       if(!bb) return null;
       st.openBranch=bb.id;
     }
-    if(st.route && st.route.mode && ['home','floor','tree','sports','nhl','placeholder'].indexOf(st.route.mode)<0) return null;
+    if(st.route && st.route.mode && ['home','floor','tree','galaxy','sports','nhl','placeholder'].indexOf(st.route.mode)<0) return null;
     return st;
   }catch(e){ return null; }
 }
@@ -650,21 +716,33 @@ function ghostHubRestoreOnOpen(){
   if(!st){ window.__HUB_TREE=null; window.__HUB_OPEN_FLOOR=null; window.__HUB_CAT='finance'; ns.restored='clean-top'; return null; }
   window.__HUB_CAT=st.hubCat||'finance';
   const branch=st.openBranch||null;
-  if(branch && treeBranchById(branch)){
+  // Prefer explicit galaxyPath when present (v20.10)
+  if(st.galaxyPath && typeof st.galaxyPath==='string'){
+    let hash='#/'+st.galaxyPath.replace(/^#?\/?/, '');
+    if(st.galaxyPath.indexOf('galaxy/')===0 || st.galaxyPath.indexOf('floor/')===0 || st.galaxyPath.indexOf('sports/')===0){
+      try{ history.replaceState(null,'',hash.startsWith('#')?hash:'#'+hash); }catch(e){ location.hash=hash; }
+      if(st.galaxyPath.indexOf('galaxy/')===0){
+        const bid=st.galaxyPath.split('/')[1];
+        if(bid && treeBranchById(bid)){ window.__HUB_TREE=bid; window.__HUB_OPEN_FLOOR=treeBranchById(bid).floor||null; }
+        else { window.__HUB_TREE=null; window.__HUB_OPEN_FLOOR=null; }
+      }
+      ns.restored='galaxyPath:'+st.galaxyPath;
+    }
+  } else if(branch && treeBranchById(branch)){
     window.__HUB_TREE=branch;
     const b=treeBranchById(branch);
     window.__HUB_OPEN_FLOOR=b.floor||null;
-    // Prefer deep treePath if present and valid
-    let hash='#/tree/'+branch;
+    let hash='#/galaxy/'+branch;
     if(st.treePath && st.treePath.indexOf('tree/'+branch)===0){
       const rest=st.treePath.slice(('tree/'+branch).length);
       if(rest.indexOf('/index/')===0||rest.indexOf('/ex/')===0){
-        // deep path into finance floor for Amériques etc.
         if(b.floor && b.floor!=='MEF') hash='#/floor/'+b.floor+rest;
-        else hash='#/tree/'+branch;
+        else hash='#/galaxy/'+branch;
       }
     } else if(st.route && st.route.mode==='floor' && st.route.sys){
       hash='#/floor/'+st.route.sys+(st.route.index?('/index/'+st.route.index):'');
+    } else if(st.route && st.route.mode==='galaxy' && st.route.branch){
+      hash='#/galaxy/'+st.route.branch;
     }
     try{ history.replaceState(null,'',hash); }catch(e){ location.hash=hash; }
     ns.restored='branch:'+branch;
@@ -750,7 +828,8 @@ function syncMainframeNavHighlight(route){
 function syncPersistentStrip(route){
   let strip=$('super-strip-persist');
   let active=null;
-  if(route&&route.mode==='tree'&&route.branch) active=route.branch;
+  if(route&&route.mode==='galaxy'&&route.branch) active=route.branch;
+  else if(route&&route.mode==='tree'&&route.branch) active=route.branch;
   else if(route&&route.mode==='floor'&&route.sys){ const bb=treeBranchForFloor(route.sys); active=bb?bb.id:null; }
   else if(window.__HUB_TREE) active=window.__HUB_TREE;
   const html=renderSuperStrip(active);
@@ -760,7 +839,7 @@ function syncPersistentStrip(route){
     document.body.appendChild(strip);
   }
   // Show persistent strip in floor mode (hub already embeds strip inside balance-chart)
-  if(route&&(route.mode==='floor'||route.mode==='tree')){
+  if(route&&(route.mode==='floor'||route.mode==='tree'||route.mode==='galaxy')){
     strip.style.display='block';
     strip.innerHTML=html;
     strip.className='persist-strip mode-floor-strip';
@@ -810,9 +889,18 @@ function parseHash(){
   const raw=decodeURIComponent((location.hash||'#/').replace(/^#/,''));
   const p=raw.split('/').filter(Boolean);
   if(!p.length) return {mode:'home'};
-  if(p[0]==='tree'&&p[1]){
+  if(p[0]==='galaxy'){
+    if(!p[1] || p[1]==='planet') return {mode:'galaxy', galaxy:'planet', branch:null};
     const b=treeBranchById(p[1]);
-    return {mode:'tree',branch:p[1],sys:b?b.floor:null, name:b?b.name:p[1]};
+    if(b) return {mode:'galaxy', galaxy:'branch', branch:p[1], sys:b.floor||null, name:b.name};
+    if(p[1]==='sports') return {mode:'galaxy', galaxy:'sports'};
+    if(p[1]==='nhl') return {mode:'galaxy', galaxy:'nhl'};
+    return {mode:'galaxy', galaxy:'planet'};
+  }
+  if(p[0]==='tree'&&p[1]){
+    // legacy alias → galaxy branch
+    const b=treeBranchById(p[1]);
+    return {mode:'galaxy', galaxy:'branch', branch:p[1], sys:b?b.floor:null, name:b?b.name:p[1]};
   }
   if(p[0]==='floor'&&p[1]){
     const r={mode:'floor',sys:p[1],ds:'ALL'};
@@ -845,12 +933,17 @@ function crumbLink(href,label,here){
 }
 function renderCrumb(route){
   const bits=[crumbLink('#/','HUB — point de chute',route.mode==='home')];
-  if(route.mode==='tree'){
+  if(route.mode==='galaxy'){
+    bits.push(crumbLink('#/galaxy/planet','Galaxie planétaire',route.galaxy==='planet'));
+    if(route.galaxy==='sports') bits.push(crumbLink('#/galaxy/sports','Sports',true));
+    else if(route.galaxy==='nhl'){ bits.push(crumbLink('#/galaxy/sports','Sports',false)); bits.push(crumbLink('#/sports/nhl','LNH',true)); }
+    else if(route.branch){ const b=treeBranchById(route.branch); bits.push(crumbLink('#/galaxy/'+route.branch,(b&&b.name)||route.branch,true)); }
+  } else if(route.mode==='tree'){
     const b=treeBranchById(route.branch);
-    bits.push(crumbLink('#/tree/'+route.branch,(b&&b.name)||route.branch,true));
+    bits.push(crumbLink('#/galaxy/'+route.branch,(b&&b.name)||route.branch,true));
   } else if(route.mode==='floor'){
     const bb=treeBranchForFloor(route.sys);
-    if(bb) bits.push(crumbLink('#/tree/'+bb.id,bb.name,false));
+    if(bb) bits.push(crumbLink('#/galaxy/'+bb.id,bb.name,false));
     const L=LIB4.find(x=>x.id===route.sys);
     bits.push(crumbLink('#/floor/'+route.sys,(L&&L.name)||route.sys,!route.index&&!route.ex));
     if(route.index) bits.push(crumbLink('#/floor/'+route.sys+'/index/'+route.index,route.index==='NDX'?'Nasdaq-100':'S&P 500',true));
@@ -885,9 +978,13 @@ function renderMainframe(){
   const extra=REGISTRY.filter(x=>!shown.has(x.id) && !SPORT_PH.some(s=>s.id===x.id) && FLOOR_IDS.indexOf(x.id)<0);
   const extraBlock=extra.length?('<h2>Autres systèmes du registre</h2><div class="tiles" id="mf-extra">'+extra.map(x=>tileHTML(x.id,x.name,x.blurb||(x.status==='empty'?EC:'Système enregistré'),x.status||'empty',x.route||('#/'+x.id))).join('')+'</div>'):'';
   $('mf').innerHTML=`<div class="ovtop"><div>
-      <h1>HUB — point de chute Universal Metaphor <span class="verpill">v20.9</span></h1>
+      <h1>HUB — point de chute Universal Metaphor <span class="verpill">v20.10</span></h1>
       <div class="crumb-slot"></div>
-      <p class="lead">Point de chute de tout le développement Universal Metaphor. Arbre-objet à cinq branches (Asie-Pacifique, Moyen-Orient, Europe, Afrique, Amériques) · portes FINANCE / SPORTS · couverture planétaire et coupes.</p>
+      <p class="lead">Point de chute de tout le développement Universal Metaphor. Arbre-objet à cinq branches (Asie-Pacifique, Moyen-Orient, Europe, Afrique, Amériques) · portes FINANCE / SPORTS · galaxies planétaires · couverture et coupes.</p>
+      <p class="galaxy-actions hub-galaxy-cta">
+        <button type="button" class="open-galaxies" data-route="#/galaxy/planet" id="open-galaxies" data-id="OPEN-GALAXIES">Ouvrir les galaxies</button>
+        <button type="button" class="open-galaxies ghost" data-route="#/galaxy/sports" id="open-sports-galaxies" data-id="OPEN-SPORTS-GAL">Galaxies Sports (silos)</button>
+      </p>
     </div></div>
     ${renderBalanceChart(window.__HUB_CAT||'finance')}
     ${renderPlanetaryCoverage()}
@@ -901,9 +998,10 @@ function renderMainframe(){
 
 function renderSports(){
   $('spwin').innerHTML=`<div class="ovtop"><div>
-      <h1>Sports professionnels <span class="verpill">v20.9</span></h1>
+      <h1>Sports professionnels <span class="verpill">v20.10</span></h1>
       <div class="crumb-slot"></div>
-      <p class="lead">Le hockey (LNH) est le premier système en service. Les autres sports sont des emplacements visibles, sans aucune donnée inventée.</p>
+      <p class="lead">Le hockey (LNH) est le premier système en service. Les autres sports sont des emplacements visibles, sans aucune donnée inventée. Chaque sport = silo d'analyse isolé (um.analysis.sports.&lt;sport&gt;.*) — jamais mélangé à la finance ni entre sports.</p>
+      <p class="galaxy-actions"><button type="button" data-route="#/galaxy/sports" id="sports-to-galaxies">Ouvrir les galaxies Sports</button></p>
     </div></div>
     <div class="tiles" id="sp-tiles">
       ${tileHTML('NHL','Hockey — LNH','Système de Classe 4 en service · '+NHL.players.length+' joueurs · saisons 2024-25 et 2025-26 · source API NHL','live','#/sports/nhl')}
@@ -911,9 +1009,12 @@ function renderSports(){
     </div>`;
 }
 function renderPlaceholder(sport){
+  // Isolated silo per sport — no shared analysis with NHL or finance
+  try{ if(!analysisSportLoad(sport)) analysisSportSave(sport,{tab:null,silo:sport,status:'empty'}); }catch(e){}
+
   const sp=SPORT_PH.find(x=>x.id===sport)||findReg(sport)||{id:sport,name:sport};
   $('phwin').innerHTML=`<div class="ovtop"><div>
-      <h1>${sp.name} <span class="verpill">v20.9</span></h1>
+      <h1>${sp.name} <span class="verpill">v20.10</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead" data-status="empty">${EC}</p>
       <p>Conteneur visible dans la fenêtre des sports professionnels et dans le registre. Aucune donnée n’a été inventée pour le remplir.</p>
@@ -963,21 +1064,21 @@ function photoBlock(p){
   const name=esc(p.n);
   return `<div class="photo-wrap" data-player-photo="${p.id}">
     <div class="photo-ph" aria-hidden="true"><span class="pname">${name}</span><span class="soon">photo à venir</span></div>
-    <img class="photo-file" src="${window.__resolveAsset('photos/'+p.id+'.png')}" alt="Visuel provisoire : ${name} (photo à venir)" onload="this.classList.add('ok')" onerror="this.remove()">
+    <img class="photo-file" src="photos/${p.id}.png" alt="Visuel provisoire : ${name} (photo à venir)" onload="this.classList.add('ok')" onerror="this.remove()">
   </div>`;
 }
 function markImg(src, fallback){
   if(!src) return fallback||'';
   return `<img class="aggmark" src="${src}" alt="" onload="this.classList.add('ok')" onerror="this.remove()">${fallback||''}`;
 }
-function logoPath(abbr){return abbr&&abbr!=='MULTI'&&!String(abbr).includes(',')?window.__resolveAsset('logos/'+abbr+'.svg'):'';}
-function flagPath(code){return code?window.__resolveAsset('drapeaux/'+code+'.png'):'';}
+function logoPath(abbr){return abbr&&abbr!=='MULTI'&&!String(abbr).includes(',')?('logos/'+abbr+'.svg'):'';}
+function flagPath(code){return code?('drapeaux/'+code+'.png'):'';}
 function clubLogoHTML(abbr, extraClass){
   if(!abbr||abbr==='MULTI'||String(abbr).includes(',')) return '';
   const name=teamShort(abbr);
   const href=`#/sports/nhl/agg/team/${encodeURIComponent(abbr)}`;
   const cls=extraClass?('club-thumb '+extraClass):'club-thumb';
-  return `<a class="${cls}" role="link" href="${href}" data-route="${href}" data-logo-abbr="${esc(abbr)}" aria-label="Ouvrir l'objet ${esc(name)} (${esc(abbr)})"><img class="club-logo" alt="" src="${window.__resolveAsset('logos/'+esc(abbr)+'.svg')}" data-abbr="${esc(abbr)}" onload="this.classList.add('ok');this.dataset.logoStatus='ok'" onerror="window.__logoFallback&&window.__logoFallback(this)"><span class="club-logo-text" hidden>${esc(abbr)}</span></a>`;
+  return `<a class="${cls}" role="link" href="${href}" data-route="${href}" data-logo-abbr="${esc(abbr)}" aria-label="Ouvrir l'objet ${esc(name)} (${esc(abbr)})"><img class="club-logo" alt="" src="logos/${esc(abbr)}.svg" data-abbr="${esc(abbr)}" onload="this.classList.add('ok');this.dataset.logoStatus='ok'" onerror="window.__logoFallback&&window.__logoFallback(this)"><span class="club-logo-text" hidden>${esc(abbr)}</span></a>`;
 }
 function playerHref(p,agg,key){
   if(agg&&key) return `#/sports/nhl/agg/${agg}/${encodeURIComponent(key)}/player/${p.id}`;
@@ -986,7 +1087,7 @@ function playerHref(p,agg,key){
 function playerThumb(p,agg,key,selId){
   const href=playerHref(p,agg,key);
   const name=esc(p.n);
-  return `<a class="pthumb" role="link" href="${href}" data-route="${href}" data-player="${p.id}" aria-label="Ouvrir la fiche de ${name}" aria-current="${p.id===selId?'true':'false'}"><span class="pthumb-slot"><span class="pthumb-ph">${name}</span><img src="${window.__resolveAsset('photos/'+p.id+'.png')}" alt="" onload="this.classList.add('ok')" onerror="this.remove()"></span></a>`;
+  return `<a class="pthumb" role="link" href="${href}" data-route="${href}" data-player="${p.id}" aria-label="Ouvrir la fiche de ${name}" aria-current="${p.id===selId?'true':'false'}"><span class="pthumb-slot"><span class="pthumb-ph">${name}</span><img src="photos/${p.id}.png" alt="" onload="this.classList.add('ok')" onerror="this.remove()"></span></a>`;
 }
 window.__logoFallback=function(img){
   const abbr=img.getAttribute('data-abbr')||'';
@@ -1044,7 +1145,7 @@ function renderPlayerCard(p){
     ? '<tr><th>Saison</th><th>PJ</th><th>Dém.</th><th>V</th><th>D</th><th>DP</th><th>Moy.</th><th>% arrêts</th><th>Bl</th><th>TOI</th></tr>'
     : '<tr><th>Saison</th><th>PJ</th><th>B</th><th>A</th><th>Pts</th><th>+/−</th><th>PUN</th><th>Tirs</th><th>BAN</th><th>Pts AN</th></tr>';
   const desc=p.d||'';
-  window.__NHL_CARD={id:p.id,name:p.n,team:last,position:p.pos,positionLabel:posLabel(p.pos),nationality:p.nat,seasons,stats:p.st,photo:window.__resolveAsset('photos/'+p.id+'.png'),photoStatus:'placeholder',photoName:p.n,description:desc,ageStatus:'INCOMPLET',traded:playerIsTraded(p)};
+  window.__NHL_CARD={id:p.id,name:p.n,team:last,position:p.pos,positionLabel:posLabel(p.pos),nationality:p.nat,seasons,stats:p.st,photo:'photos/'+p.id+'.png',photoStatus:'placeholder',photoName:p.n,description:desc,ageStatus:'INCOMPLET',traded:playerIsTraded(p)};
   return `<div id="nhlcard" data-player="${p.id}">
     ${photoBlock(p)}
     <h3>${esc(p.n)}</h3>
@@ -1199,7 +1300,7 @@ let showGrid=!route.key;
        </div>
        <div id="nhlgrid">${renderAggList(gridAgg||'team')}</div>`;
   $('nhlview').innerHTML=`<div class="ovtop"><div>
-      <h1>Classe 4 — LNH <span class="verpill">v20.9</span></h1>
+      <h1>Classe 4 — LNH <span class="verpill">v20.10</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Chaque joueur est un point de donnée de Classe 1. Les équipes, pays, positions et années de repêchage sont des objets de Classe 2. La Classe 4 contient tout le système. ${NHL.players.length} joueurs · saisons 2024-25 et 2025-26 · source API NHL (extraction du 9 nov. 2026). Logos officiels des 32 clubs sur les objets de Classe 2 (licence [INCOMPLET : conditions d’usage NHL non vérifiées]). En l’absence de photo réelle, le nom complet du joueur tient lieu de visuel (fichier photos/{id}.png, à remplacer plus tard). Les positions sont nommées en toutes lettres — Center, Left Wing, Right Wing, Defense, Goalie — un symbole pourra venir plus tard. Chaque fiche relie le joueur à son club, sa nationalité, sa position, son année de repêchage et, s’il y a lieu, au groupe des joueurs échangés. Chaque liste (clubs, nationalités, positions, années de repêchage, joueurs échangés, recherche Tous les joueurs) montre une vignette cliquable par joueur — le nom complet en attendant la photo réelle — qui ouvre sa fiche. Les 32 logos de clubs sont des vignettes cliquables qui ouvrent l’objet club et son effectif. L’âge reste [INCOMPLET].</p>
     </div></div>
@@ -1213,7 +1314,7 @@ let showGrid=!route.key;
     const b=e.target.closest('[data-tab]'); if(!b) return;
     e.preventDefault();
     // re-render grid in place without losing the NHL shell — use hash without key
-    NHL_TAB=b.dataset.tab;
+    NHL_TAB=b.dataset.tab; nhlPersistTab();
     renderNHLGridOnly(NHL_TAB);
     tabsEl.querySelectorAll('[data-tab]').forEach(x=>x.setAttribute('aria-selected',x===b?'true':'false'));
   });
@@ -1225,7 +1326,9 @@ let showGrid=!route.key;
     });
   });
 }
-let NHL_TAB='team';
+let NHL_TAB=(function(){ const st=analysisSportLoad('nhl'); return (st&&st.tab)||'team'; })();
+function nhlPersistTab(){ analysisSportSave('nhl',{tab:NHL_TAB, silo:'nhl'}); }
+
 function renderNHLGridOnly(tab){
   const g=$('nhlgrid'); if(!g) return;
   if(tab==='age'){
@@ -1233,6 +1336,164 @@ function renderNHLGridOnly(tab){
     return;
   }
   g.innerHTML=renderAggList(tab);
+}
+
+
+/* === Galaxy layer v20.10 — planet = 5 Class-2 branches; dive reuses applyFloor canvas === */
+function ensureGalaxyPlanet(){
+  let el=$('galaxy-planet');
+  if(!el){
+    el=document.createElement('div');
+    el.id='galaxy-planet';
+    el.className='overlay galaxy-planet-ov';
+    document.body.appendChild(el);
+  }
+  return el;
+}
+function renderGalaxyPlanet(){
+  const el=ensureGalaxyPlanet();
+  const branches=TREE_BRANCHES.map(b=>{
+    const live=branchCovered(b);
+    const status=live?'live':'empty';
+    const badge=live?'ACTIVE':'[INCOMPLET]';
+    return `<button type="button" class="galaxy-planet-obj class2 ${status}" data-id="GAL-${b.id}" data-route="#/galaxy/${b.id}" data-branch="${b.id}" aria-label="${b.name}">
+      <span class="gpo-class">Classe 2</span>
+      <span class="gpo-id">${b.id}</span>
+      <span class="gpo-name">${b.name}</span>
+      <span class="gpo-badge">${badge}</span>
+      <span class="gpo-blurb">${b.blurb||''}</span>
+    </button>`;
+  }).join('');
+  // Sports door as Class 2 on planet — opens per-sport galaxies ONLY; never merges with finance
+  const sportsDoor=`<button type="button" class="galaxy-planet-obj class2 sports-door" data-id="GAL-SPORTS" data-route="#/galaxy/sports" data-hub-cat="sports" aria-label="Sports professionnels">
+      <span class="gpo-class">Classe 2 · porte Sports</span>
+      <span class="gpo-id">SPORTS</span>
+      <span class="gpo-name">Sports professionnels</span>
+      <span class="gpo-badge">galaxies par sport</span>
+      <span class="gpo-blurb">Hockey · football · soccer · football américain · basketball — silos isolés (aucune donnée finance)</span>
+    </button>`;
+  el.innerHTML=`<div class="ovtop"><div>
+      <h1>Galaxie planétaire <span class="verpill">v20.10</span></h1>
+      <div class="crumb-slot"></div>
+      <p class="lead">Cinq branches d'ouverture en objets Classe 2 · porte Sports (galaxies par sport, silo isolé) · aucune fusion sport↔finance · données manquantes = [INCOMPLET].</p>
+      <p class="galaxy-actions">
+        <button type="button" class="retour-hub" data-route="#/" id="retour-hub-galaxy">← Retour au hub</button>
+      </p>
+    </div></div>
+    <div class="galaxy-planet-field" id="galaxy-planet-field">
+      ${branches}
+      ${sportsDoor}
+    </div>`;
+  el.style.display='block';
+}
+function renderGalaxySports(){
+  // Per-sport galaxies only — no finance ATTRS, no cross-sport shared analysis
+  const el=ensureGalaxyPlanet();
+  const nhl=`<button type="button" class="galaxy-planet-obj class2 live" data-id="GAL-NHL" data-route="#/sports/nhl" aria-label="Hockey LNH">
+      <span class="gpo-class">Classe 4 · silo nhl</span>
+      <span class="gpo-id">NHL</span>
+      <span class="gpo-name">Hockey — LNH</span>
+      <span class="gpo-badge">ACTIVE</span>
+      <span class="gpo-blurb">Analyse sous um.analysis.sports.nhl.* — isolée de la finance</span>
+    </button>`;
+  const ph=(SPORT_PH||[]).map(s=>`<button type="button" class="galaxy-planet-obj class2 empty" data-id="GAL-${s.id}" data-route="#/sports/${s.id}" aria-label="${s.name}">
+      <span class="gpo-class">Classe 2 · silo ${s.id}</span>
+      <span class="gpo-id">${s.id}</span>
+      <span class="gpo-name">${s.name}</span>
+      <span class="gpo-badge">[INCOMPLET]</span>
+      <span class="gpo-blurb">Silo um.analysis.sports.${s.id}.* — aucune donnée inventée</span>
+    </button>`).join('');
+  el.innerHTML=`<div class="ovtop"><div>
+      <h1>Galaxies Sports <span class="verpill">v20.10</span></h1>
+      <div class="crumb-slot"></div>
+      <p class="lead">Chaque sport = galaxie et silo d'analyse isolés. Aucun mélange entre sports, aucun mélange avec la finance.</p>
+      <p class="galaxy-actions">
+        <button type="button" class="retour-hub" data-route="#/galaxy/planet">← Galaxie planétaire</button>
+        <button type="button" class="retour-hub" data-route="#/">← Retour au hub</button>
+      </p>
+    </div></div>
+    <div class="galaxy-planet-field" id="galaxy-sports-field">${nhl}${ph}</div>`;
+  el.style.display='block';
+}
+function hideGalaxyPlanet(){
+  const el=$('galaxy-planet');
+  if(el){ el.style.display='none'; el.innerHTML=''; }
+}
+function ensureRetourHubBar(ctx){
+  let bar=$('retour-hub-bar');
+  if(!bar){
+    bar=document.createElement('div');
+    bar.id='retour-hub-bar';
+    document.body.appendChild(bar);
+  }
+  bar.innerHTML=`<button type="button" class="retour-hub" data-route="#/" id="retour-hub-floor">← Retour au hub</button>
+    <button type="button" class="retour-hub ghost" data-route="#/galaxy/planet" id="retour-planet">Galaxie planétaire</button>
+    <span class="retour-ctx">${ctx||''}</span>`;
+  bar.style.display='flex';
+}
+function hideRetourHubBar(){
+  const bar=$('retour-hub-bar');
+  if(bar) bar.style.display='none';
+}
+function applyGalaxy(route){
+  window.__HUB_CAT = (route.galaxy==='sports'||route.galaxy==='nhl') ? 'sports' : 'finance';
+  if(route.galaxy==='planet' || !route.galaxy){
+    document.body.className='mode-home mode-galaxy mode-galaxy-planet';
+    stopPlay();
+    hideRetourHubBar();
+    window.__HUB_TREE=null; window.__HUB_OPEN_FLOOR=null;
+    renderGalaxyPlanet();
+    // hub panel stays hidden via CSS in galaxy-planet; keep mf blank-ish
+    if($('mf')) $('mf').style.display='none';
+    return;
+  }
+  if(route.galaxy==='sports'){
+    document.body.className='mode-home mode-galaxy mode-galaxy-sports';
+    stopPlay();
+    hideRetourHubBar();
+    renderGalaxySports();
+    if($('mf')) $('mf').style.display='none';
+    return;
+  }
+  if(route.galaxy==='nhl'){
+    hideGalaxyPlanet();
+    document.body.className='mode-nhl';
+    stopPlay();
+    renderNHL(route);
+    ensureRetourHubBar('Sports · LNH (silo nhl)');
+    return;
+  }
+  // Branch galaxy — dive into finance floor canvas when a LIB4 floor exists
+  const b=treeBranchById(route.branch);
+  hideGalaxyPlanet();
+  window.__HUB_TREE=route.branch||null;
+  window.__HUB_OPEN_FLOOR=b?b.floor:null;
+  window.__HUB_CAT='finance';
+  if(b && b.floor && b.floor!=='MEF' && typeof LIB4!=='undefined' && LIB4.some(x=>x.id===b.floor)){
+    // Reuse existing galaxy canvas renderer
+    applyFloor({mode:'floor', sys:b.floor, ds:'ALL'});
+    document.body.classList.add('mode-galaxy','mode-galaxy-branch');
+    ensureRetourHubBar('Finance · '+b.name+(branchCovered(b)?'':' · [INCOMPLET]'));
+  } else {
+    // No LIB4 engine floor (e.g. Moyen-Orient MEF) — Class 2 empty galaxy panel
+    document.body.className='mode-home mode-galaxy mode-galaxy-branch';
+    stopPlay();
+    const el=ensureGalaxyPlanet();
+    const status=b&&branchCovered(b)?'live':'empty';
+    el.innerHTML=`<div class="ovtop"><div>
+        <h1>Galaxie — ${(b&&b.name)||route.branch} <span class="verpill">v20.10</span></h1>
+        <div class="crumb-slot"></div>
+        <p class="lead">${(b&&b.blurb)||''} · ${(status==='live')?'ACTIVE':'[INCOMPLET] — aucune donnée inventée'}.</p>
+        <p class="galaxy-actions">
+          <button type="button" class="retour-hub" data-route="#/galaxy/planet">← Galaxie planétaire</button>
+          <button type="button" class="retour-hub" data-route="#/">← Retour au hub</button>
+        </p>
+      </div></div>
+      <div class="galaxy-empty-note" data-status="empty">${typeof EC!=='undefined'?EC:'[INCOMPLET]'}</div>`;
+    el.style.display='block';
+    if($('mf')) $('mf').style.display='none';
+    ensureRetourHubBar('Finance · '+((b&&b.name)||route.branch)+' · [INCOMPLET]');
+  }
 }
 
 function applyFloor(route){
@@ -1265,31 +1526,59 @@ function applyFloor(route){
 function applyRoute(){
   const route=parseHash();
   window.__NAV={mode:route.mode,route,hash:location.hash||'#/'};
-  if(route.mode==='home'){document.body.className='mode-home';stopPlay();renderMainframe();}
-  else if(route.mode==='tree'){
-    // Opening-tree branch: stay on hub, open branch panel (Amériques may deep-link to floor)
-    document.body.className='mode-home mode-tree';
-    stopPlay();
-    window.__HUB_CAT='finance';
-    window.__HUB_TREE=route.branch;
-    const bb=treeBranchById(route.branch);
-    window.__HUB_OPEN_FLOOR=bb?bb.floor:null;
-    // MEF has no LIB4 engine floor — hub panel only. Covered Amériques deep data still via #/floor/AMF/...
+  // Hide galaxy planet overlay unless we are in planet/sports-galaxy empty panels
+  if(!(route.mode==='galaxy' && (route.galaxy==='planet'||route.galaxy==='sports'||(route.galaxy==='branch'&&route.branch&&(!treeBranchById(route.branch)||treeBranchById(route.branch).floor==='MEF'||!LIB4.some(x=>x.id===treeBranchById(route.branch).floor)))))){
+    // still let applyGalaxy manage show/hide
+  }
+  if(route.mode==='home'){
+    hideGalaxyPlanet(); hideRetourHubBar();
+    document.body.className='mode-home';stopPlay();
+    if($('mf')) $('mf').style.display='';
     renderMainframe();
   }
-  else if(route.mode==='sports'){document.body.className='mode-sports';stopPlay();renderSports();}
-  else if(route.mode==='nhl'){document.body.className='mode-nhl';stopPlay();renderNHL(route);}
-  else if(route.mode==='placeholder'){document.body.className='mode-placeholder';stopPlay();renderPlaceholder(route.sport);}
-  else if(route.mode==='floor'){applyFloor(route);}
-  else {document.body.className='mode-home';renderMainframe();}
+  else if(route.mode==='galaxy'){
+    applyGalaxy(route);
+  }
+  else if(route.mode==='tree'){
+    // legacy → galaxy branch
+    applyGalaxy({mode:'galaxy',galaxy:'branch',branch:route.branch,sys:route.sys,name:route.name});
+  }
+  else if(route.mode==='sports'){
+    hideGalaxyPlanet(); hideRetourHubBar();
+    document.body.className='mode-sports';stopPlay();renderSports();
+  }
+  else if(route.mode==='nhl'){
+    hideGalaxyPlanet();
+    document.body.className='mode-nhl';stopPlay();renderNHL(route);
+    ensureRetourHubBar('Sports · LNH (silo nhl)');
+  }
+  else if(route.mode==='placeholder'){
+    hideGalaxyPlanet(); hideRetourHubBar();
+    document.body.className='mode-placeholder';stopPlay();renderPlaceholder(route.sport);
+  }
+  else if(route.mode==='floor'){
+    hideGalaxyPlanet();
+    applyFloor(route);
+    document.body.classList.add('mode-galaxy');
+    const bb=treeBranchForFloor(route.sys);
+    ensureRetourHubBar(bb?('Finance · '+bb.name):('Finance · '+route.sys));
+  }
+  else {hideGalaxyPlanet(); hideRetourHubBar(); document.body.className='mode-home'; if($('mf')) $('mf').style.display=''; renderMainframe();}
   ensureMainframeNav();
   syncMainframeNavHighlight(route);
   renderCrumb(route);
+  // Re-fill crumb slots inside galaxy overlays
+  try{
+    document.querySelectorAll('.crumb-slot').forEach(slot=>{
+      const c=$('crumb'); if(c) slot.innerHTML=c.innerHTML;
+    });
+  }catch(e){}
   window.__NAV.crumb=($('crumb')&&$('crumb').textContent)||'';
-  window.__VERSION='v20.9';
+  window.__VERSION='v20.10';
   // Right window: summon on object navigation; never restore from ghost
   try{
     if(window.__RW_FORCE_CLOSED){ closeRightWindow(); window.__RW_FORCE_CLOSED=false; }
+    else if(route.mode==='galaxy'&&route.galaxy==='branch'&&route.branch){ summonRightWindow(rwSpecFromBranch(route.branch)); }
     else if(route.mode==='tree'&&route.branch){ summonRightWindow(rwSpecFromBranch(route.branch)); }
     else if(route.mode==='floor'&&route.sys&&!route.index&&!route.ex){ summonRightWindow(rwSpecFromFloor(route.sys)); }
     else if(route.mode==='nhl'&&route.player){
@@ -1297,8 +1586,7 @@ function applyRoute(){
       if(pl) summonRightWindow(rwSpecFromPlayer(pl));
     } else if(route.mode==='nhl'&&route.agg==='team'&&route.key&&route.key!=='_list'&&route.key!=='MULTI'){
       summonRightWindow(rwSpecFromTeam(route.key));
-    } else if(route.mode==='home'){
-      // sommet: close right window
+    } else if(route.mode==='home'||(route.mode==='galaxy'&&route.galaxy==='planet')){
       closeRightWindow();
     }
   }catch(e){}
@@ -1383,7 +1671,7 @@ function patchClicks(){
   };
 }
 
-function initV209(U){
+function initV210(U){
   ['mf','spwin','nhlview','phwin'].forEach(id=>{
     if(!$(id)){const d=document.createElement('div');d.id=id;d.className='overlay';document.body.appendChild(d);}
   });
@@ -1400,7 +1688,7 @@ function initV209(U){
   ensureMainframeNav();
 
 
-  // v20.9 SPINE (pas un menu d'attributs) : une icône activée → champ d'opération
+  // v20.10 SPINE (pas un menu d'attributs) : une icône activée → champ d'opération
   window.__SPINE={active:null, open:false};
   function spineCloseField(){
     if($('pop')) $('pop').classList.remove('open');
@@ -1515,6 +1803,30 @@ function initV209(U){
   // Force popmu range in DOM to −1..+1 (replace any −2..+2)
   if($('popmu')){ $('popmu').min='-1'; $('popmu').max='1'; $('popmu').step='0.5'; if(+$('popmu').value>1||+$('popmu').value<-1) $('popmu').value='0'; }
 
+  // Finance analysis silo: persist ATTRS only under um.analysis.finance.* (never sports keys)
+  try{ analysisFinanceRestore(); }catch(e){}
+  ['popan','popmu','popsig'].forEach(id=>{
+    const el=$(id); if(!el) return;
+    el.addEventListener('change',()=>{
+      try{
+        const i=+$('pop').dataset.i; if(!ATTRS[i]) return;
+        if(id==='popan') ATTRS[i].an=el.value;
+        if(id==='popmu') ATTRS[i].mu=+el.value;
+        if(id==='popsig') ATTRS[i].sig=+el.value;
+        analysisFinanceSave();
+      }catch(e){}
+    });
+    el.addEventListener('input',()=>{
+      try{
+        const i=+$('pop').dataset.i; if(!ATTRS[i]) return;
+        if(id==='popmu') ATTRS[i].mu=+el.value;
+        if(id==='popsig') ATTRS[i].sig=+el.value;
+        analysisFinanceSave();
+      }catch(e){}
+    });
+  });
+
+
   document.body.addEventListener('click',onDelegatedClick);
   addEventListener('hashchange',applyRoute);
   addEventListener('keydown',e=>{
@@ -1562,12 +1874,12 @@ function initV209(U){
     if(U.get('at')){$('c').value=ds.dates.indexOf(U.get('at'));progress=+(U.get('u')||0);draw();}
   }
   const dump=document.createElement('pre');dump.id='dump';dump.style.display='none';
-  dump.textContent=JSON.stringify({version:'v20.9',mode:parseHash().mode,registry:REGISTRY.map(x=>x.id)});
+  dump.textContent=JSON.stringify({version:'v20.10',mode:parseHash().mode,registry:REGISTRY.map(x=>x.id)});
   document.body.appendChild(dump);
   window.__REGISTRY=REGISTRY;
   window.registerSystem=registerSystem;
   window.go=go;
-  window.applyRoute=applyRoute;
+  window.applyRoute=applyRoute;window.applyGalaxy=applyGalaxy;
   window.parseHash=parseHash;
   window.__NHL=NHL;
   window.__POS_LABELS=POS_FR;
@@ -1789,8 +2101,17 @@ window.renderPlanetaryCoverage=renderPlanetaryCoverage;
 window.ghostHubCaptureState=ghostHubCaptureState;
 window.ghostHubRestoreOnOpen=ghostHubRestoreOnOpen;
 window.ghostHubReadSaved=ghostHubReadSaved;
-window.initV209=initV209;
+window.applyRoute=applyRoute;
+window.applyGalaxy=applyGalaxy;
+window.analysisAssertIsolation=analysisAssertIsolation;
+window.analysisFinanceSave=analysisFinanceSave;
+window.analysisFinanceLoad=analysisFinanceLoad;
+window.analysisSportSave=analysisSportSave;
+window.analysisSportLoad=analysisSportLoad;
+window.ANALYSIS_FINANCE_KEY=ANALYSIS_FINANCE_KEY;
+window.analysisSportKey=analysisSportKey;
+window.initV210=initV210;
 })();
 
 
-initV209(U);
+initV210(U);

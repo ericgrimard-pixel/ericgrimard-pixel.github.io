@@ -398,3 +398,69 @@ body.rw-open.mode-floor #cv{ /* keep galaxy visible to the left of right window 
 #um-safe-note{position:fixed;left:0;right:0;bottom:0;z-index:80;
 background:rgba(7,8,12,.94);border-top:1px solid #2a2f3a;color:#8a91a0;
 font:11px/1.35 system-ui,sans-serif;padding:5px 12px;text-align:center}
+
+
+/* v20.10 galaxy + silos */
+/* v20.10 — galaxy planet + retour hub + isolation cues */
+#galaxy-planet{ z-index:5; }
+body.mode-galaxy-planet #mf,
+body.mode-galaxy-sports #mf{ display:none !important; }
+body.mode-galaxy-planet #galaxy-planet,
+body.mode-galaxy-sports #galaxy-planet,
+body.mode-galaxy-branch #galaxy-planet{ display:block !important; }
+body.mode-galaxy.mode-floor #galaxy-planet{ display:none !important; }
+.galaxy-planet-field{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap:12px;
+  margin-top:12px;
+}
+.galaxy-planet-obj{
+  text-align:left;
+  background:rgba(14,18,28,.92);
+  border:1px solid #2a2f3a;
+  border-radius:10px;
+  padding:12px 14px;
+  color:#cfd3dc;
+  cursor:pointer;
+  display:flex; flex-direction:column; gap:4px;
+  min-height:120px;
+}
+.galaxy-planet-obj:hover{ border-color:#e8c872; }
+.galaxy-planet-obj.live{ border-color:#3d7ea6; }
+.galaxy-planet-obj.empty{ opacity:.92; }
+.galaxy-planet-obj.sports-door{ border-color:#a67c3d; background:rgba(40,28,12,.55); }
+.galaxy-planet-obj .gpo-class{ font-size:10px; color:#8a91a0; text-transform:uppercase; letter-spacing:.04em; }
+.galaxy-planet-obj .gpo-id{ font-size:11px; color:#e8c872; font-weight:700; }
+.galaxy-planet-obj .gpo-name{ font-size:15px; font-weight:700; color:#fff; }
+.galaxy-planet-obj .gpo-badge{ font-size:10px; color:#8a91a0; }
+.galaxy-planet-obj.live .gpo-badge{ color:#6ec1e0; }
+.galaxy-planet-obj .gpo-blurb{ font-size:11px; color:#8a91a0; line-height:1.35; }
+.galaxy-actions{ display:flex; flex-wrap:wrap; gap:8px; margin:8px 0 4px; }
+.galaxy-actions button, button.open-galaxies, button.retour-hub{
+  background:#e8c872; color:#07080c; border:0; border-radius:6px;
+  padding:7px 12px; font-weight:700; cursor:pointer; font-size:12px;
+}
+.galaxy-actions button.ghost, button.open-galaxies.ghost, button.retour-hub.ghost{
+  background:transparent; color:#cfd3dc; border:1px solid #2a2f3a;
+}
+#retour-hub-bar{
+  display:none; position:fixed; z-index:6; left:12px; bottom:12px;
+  gap:8px; align-items:center;
+  background:rgba(10,12,18,.92); border:1px solid #2a2f3a; border-radius:8px;
+  padding:6px 10px;
+}
+#retour-hub-bar .retour-ctx{ font-size:11px; color:#8a91a0; margin-left:6px; }
+body.mode-floor #retour-hub-bar,
+body.mode-galaxy #retour-hub-bar,
+body.mode-nhl #retour-hub-bar{ display:flex; }
+body.mode-galaxy-planet #retour-hub-bar,
+body.mode-home #retour-hub-bar{ display:none !important; }
+body.mode-galaxy #super-strip-persist{ display:block; }
+.galaxy-empty-note{ margin-top:18px; padding:14px; border:1px dashed #e8c872; border-radius:8px; color:#cfd3dc; }
+
+body.mode-galaxy-planet #galaxy-planet.overlay,
+body.mode-galaxy-sports #galaxy-planet.overlay,
+body.mode-galaxy-branch #galaxy-planet.overlay{display:block !important}
+body.mode-galaxy-planet #cv{visibility:hidden}
+body.mode-galaxy.mode-floor #cv{visibility:visible !important}
