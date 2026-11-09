@@ -2,12 +2,12 @@
 <html lang="fr"><head>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
-<meta name="um-build" content="v20.11.1">
+<meta name="um-build" content="v20.12">
 <meta charset="utf-8">
 <link rel="icon" href="data:,">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MANIFESTATION — fantôme d'activité — prototype Grok v20.11 HUB galaxies — 9 nov 2026</title>
-<link rel="stylesheet" href="style.css?v=20.11.1">
+<link rel="stylesheet" href="style.css?v=20.12">
 </head>
 <body>
 
@@ -99,23 +99,50 @@ Niveau <select id="lvl"><option value="s">secteurs</option><option value="i">ind
 
 <div id="tip" style="position:fixed;display:none;pointer-events:none;z-index:5;background:rgba(10,14,24,.96);border:1px solid #e8c872;border-radius:6px;padding:6px 8px;font-size:12px;max-width:320px;white-space:pre-line"></div>
 <div id="um-safe-note">Prototype privé — non affilié à la LNH. Sigles d'équipes uniquement.</div>
-<script src="js/asset-resolver.js?v=20.11.1"></script>
-<script src="js/assets-00.js?v=20.11.1"></script>
-<script src="js/assets-01.js?v=20.11.1"></script>
-<script src="js/assets-02.js?v=20.11.1"></script>
-<script src="js/assets-03.js?v=20.11.1"></script>
-<script src="js/assets-04.js?v=20.11.1"></script>
-<script src="js/assets-05.js?v=20.11.1"></script>
-<script src="js/assets-06.js?v=20.11.1"></script>
-<script src="js/assets-07.js?v=20.11.1"></script>
-<script src="js/data-ndx.js?v=20.11.1"></script>
-<script src="js/data-spx-meta.js?v=20.11.1"></script>
-<script src="js/data-spx-objs-00.js?v=20.11.1"></script>
-<script src="js/data-spx-objs-01.js?v=20.11.1"></script>
-<script src="js/data-spx-objs-02.js?v=20.11.1"></script>
-<script src="js/data-floors.js?v=20.11.1"></script>
-<script src="js/data-nhl-meta.js?v=20.11.1"></script>
-<script src="js/data-nhl-players-00.js?v=20.11.1"></script>
-<script src="js/data-nhl-players-01.js?v=20.11.1"></script>
-<script src="js/app.js?v=20.11.1"></script>
+<style>
+/* v20.12 world floors + sources */
+.wf-sec{margin:16px 12px 24px}
+.wf-sec h2{font:700 15px/1.3 system-ui,sans-serif;color:#e8c872;margin:0 0 10px}
+.wf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.wf-card{background:#12151c;border:1px solid #2a3140;border-radius:10px;padding:12px 14px;color:#cfd3dc}
+.wf-card.live{border-color:#e8c872}
+.wf-card.links{border-color:#5b6b8a}
+.wf-card.empty{opacity:.75;border-style:dashed}
+.wf-card header{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline;margin-bottom:6px}
+.wf-id{font:700 11px/1 ui-monospace,monospace;color:#8b93a7}
+.wf-badge{font:700 10px/1 system-ui,sans-serif;padding:3px 6px;border-radius:999px;background:#1c2230;color:#e8c872}
+.wf-card.live .wf-badge{background:#e8c872;color:#07080c}
+.wf-count{font:500 12px/1.4 system-ui,sans-serif;margin:0 0 6px;color:#aeb6c6}
+.wf-links a,.src-list a{color:#8ec7ff}
+.wf-note,.incomp{color:#d4a27f}
+.t01-banner{margin:10px 0 0;padding:10px 12px;border-radius:8px;background:linear-gradient(90deg,#2a2410,#1a1c24);border:1px solid #6a5a2a;color:#f0d78a;font:600 13px/1.4 system-ui,sans-serif}
+.t01-banner .muted{color:#b9a56a;font-weight:500}
+.src-branch{margin:18px 12px;padding:14px;border:1px solid #2a3140;border-radius:12px;background:#0e1118}
+.src-branch h2{margin:0 0 8px;color:#e8c872;font:700 16px system-ui,sans-serif}
+.src-branch h3{margin:12px 0 6px;color:#cfd3dc;font:700 13px system-ui,sans-serif}
+.src-list{margin:0;padding-left:18px;color:#cfd3dc;font:500 13px/1.45 system-ui,sans-serif}
+.c1-list{columns:2;gap:18px;font:500 12px/1.4 system-ui,sans-serif;color:#cfd3dc}
+@media(max-width:700px){.c1-list{columns:1}.wf-grid{grid-template-columns:1fr}}
+.src-jump{color:#e8c872;font-weight:700}
+</style>
+<script src="js/asset-resolver.js?v=20.12"></script>
+<script src="js/assets-00.js?v=20.12"></script>
+<script src="js/assets-01.js?v=20.12"></script>
+<script src="js/assets-02.js?v=20.12"></script>
+<script src="js/assets-03.js?v=20.12"></script>
+<script src="js/assets-04.js?v=20.12"></script>
+<script src="js/assets-05.js?v=20.12"></script>
+<script src="js/assets-06.js?v=20.12"></script>
+<script src="js/assets-07.js?v=20.12"></script>
+<script src="js/data-ndx.js?v=20.12"></script>
+<script src="js/data-spx-meta.js?v=20.12"></script>
+<script src="js/data-spx-objs-00.js?v=20.12"></script>
+<script src="js/data-spx-objs-01.js?v=20.12"></script>
+<script src="js/data-spx-objs-02.js?v=20.12"></script>
+<script src="js/data-floors.js?v=20.12"></script>
+<script src="js/data-world-floors.js?v=20.12"></script>
+<script src="js/data-nhl-meta.js?v=20.12"></script>
+<script src="js/data-nhl-players-00.js?v=20.12"></script>
+<script src="js/data-nhl-players-01.js?v=20.12"></script>
+<script src="js/app.js?v=20.12"></script>
 </body></html>

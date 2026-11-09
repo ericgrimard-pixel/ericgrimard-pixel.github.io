@@ -73,6 +73,14 @@ let Z0=null; // {i0,i1,a,b,n0,n1,C4:[] par séance}
 // Classe 4 imbriquée (World : continents ; North-South / East-West : hémisphères) : effondrement de ses seuls constituants (Classe 1 + ses places de Classe 2 si cochées)
 function SETBOX(b,i){const pts=[],fl=new Set(b.fl);ds.objs.forEach((o,k)=>{if(!fl.has(o.f))return;const p=P1(k,i);if(p)pts.push(p);});
   if($('z2').checked&&$('lvl').value==='f')GROUPS.forEach(g=>{if(g.mic&&fl.has(g.mic)){const p=P2(g,i);if(p)pts.push(p);}});return pts;}
+
+/* v20.12 — market two frames only (proposés — à confirmer par Éric) */
+window.UM_MARKET_FRAMES={
+  label:'T0/T1 proposés — à confirmer par Éric',
+  T0:'2026-01-02',
+  T1:'2026-11-04',
+  note:'Séries embarquées NDX/S&P : 2 jan 2026 → 4 nov 2026. Une seule constante à changer.'
+};
 if(typeof window.__MARKET_Z0_TWOPASS==='undefined') window.__MARKET_Z0_TWOPASS=true;
 if(typeof window.__Z0_DOMAIN==='undefined') window.__Z0_DOMAIN='finance';
 function computeZ0(){ if(window.__Z0_DOMAIN==='none'){ Z0=null; return; }
@@ -464,6 +472,15 @@ function hubCategoryOf(entry){
 }
 
 /* v20.11 — arbre d'ouverture à CINQ branches (Éric 16:52) + coupes */
+
+/* v20.12 — merge South America MIC floors from WORLD_FLOORS */
+(function(){
+  try{
+    const extra=(window.WORLD_FLOORS&&WORLD_FLOORS.floors_extra)||{};
+    Object.keys(extra).forEach(k=>{ if(!window.FLOORS[k]) window.FLOORS[k]=extra[k]; });
+  }catch(e){}
+})();
+
 const TREE_BRANCHES=[
   {id:'APAC',name:'Asie-Pacifique',floor:'ASF',includes:['ASF','OCF'],blurb:'Asie + Australie / Océanie',covered:false},
   {id:'ME',name:'Moyen-Orient',floor:'MEF',includes:['MEF'],blurb:'Branche propre (Tadawul, etc.) — plus « Asie de l’Ouest »',covered:false},
@@ -485,16 +502,21 @@ function treeBranchForFloor(floorId){
 }
 function branchLiveState(b){
   if(b.id==='AMER') return floorFeeds('AMF').n>0?'live':'empty';
-  if(b.id==='ME') return 'empty'; // pas encore de données Tadawul
-  if(b.id==='APAC'){
-    // Asie + Océanie data structure kept; no market titles yet
-    return (floorLiveState('ASF')==='live'||floorLiveState('OCF')==='live')?'empty':'empty';
-  }
-  return floorLiveState(b.floor)==='live' && floorFeeds(b.floor).n>0 ? 'live' : 'empty';
+  return branchCovered(b)?'live':'empty';
 }
 function branchCovered(b){
-  if(b.id==='AMER') return floorFeeds('AMF').n>0;
-  return false; // seules Amériques couvertes (NDX, S&P 500)
+  // v20.12: a branch is "couverte (liens)" if WORLD_FLOORS lists exchanges/indices with verified links,
+  // or (AMER) if NDX/SPX price feeds exist. Price series beyond NDX/SPX remain [INCOMPLET].
+  if(b.id==='AMER'){
+    const sa=((window.WORLD_FLOORS||{}).branches||{}).AMER;
+    const hasSA=!!(sa&&((sa.exchanges||[]).some(e=>e.links&&e.links.exchange)||(sa.indices||[]).length));
+    return floorFeeds('AMF').n>0 || hasSA;
+  }
+  const blk=((window.WORLD_FLOORS||{}).branches||{})[b.id];
+  if(!blk) return false;
+  const nEx=(blk.exchanges||[]).filter(e=>e.links&&e.links.exchange).length;
+  const nIx=(blk.indices||[]).length;
+  return (nEx+nIx)>0;
 }
 
 function registryBalanceRows(){
@@ -578,38 +600,41 @@ function renderPlanetaryCoverage(){
 }
 
 function floorContentsForHub(branchOrFloor){
-  // Accept branch id or legacy floor id
   const b=treeBranchById(branchOrFloor)||treeBranchForFloor(branchOrFloor);
   const id=b?b.id:branchOrFloor;
+  const WF=(window.WORLD_FLOORS&&WORLD_FLOORS.branches)||{};
+  const blk=WF[id]||{};
+  const rows=[];
   if(id==='AMER'||branchOrFloor==='AMF'){
-    return [
-      {id:'NDX',name:'Nasdaq-100',status:'live',route:'#/floor/AMF/index/NDX',count:DATA.NDX.objs.length+' titres Classe 1',klass:2},
-      {id:'SPX',name:'S&P 500',status:'live',route:'#/floor/AMF/index/SPX',count:DATA.SPX.objs.length+' titres Classe 1',klass:2},
+    rows.push(
+      {id:'NDX',name:'Nasdaq-100',status:'live',route:'#/floor/AMF/index/NDX',count:DATA.NDX.objs.length+' titres Classe 1 · prix T0/T1',klass:2},
+      {id:'SPX',name:'S&P 500',status:'live',route:'#/floor/AMF/index/SPX',count:DATA.SPX.objs.length+' titres Classe 1 · prix T0/T1',klass:2},
       {id:'XNYS',name:'NYSE',status:'live',route:'#/floor/AMF/ex/XNYS',count:countMic('XNYS')+' titres',klass:2},
       {id:'XNAS',name:'Nasdaq',status:'live',route:'#/floor/AMF/ex/XNAS',count:countMic('XNAS')+' titres',klass:2},
       {id:'BATS',name:'Cboe BZX',status:'live',route:'#/floor/AMF/ex/BATS',count:countMic('BATS')+' titres',klass:2}
-    ];
+    );
   }
-  if(id==='APAC'){
-    const kids=[];
-    const L=LIB4.find(x=>x.id==='ASF');
-    kids.push({id:'ASF-struct',name:'Asia Floor (structure)',status:'empty',route:'#/floor/ASF',count:(L?L.fl.size:0)+' places · '+EC,klass:2});
-    kids.push({id:'OCF-struct',name:'Océanie (sous Asie-Pacifique)',status:'empty',route:'#/floor/OCF',count:'Oceania Floor · '+EC,klass:2});
-    return kids;
-  }
-  if(id==='ME'){
-    return [
-      {id:'TADAWUL',name:'Tadawul (Arabie saoudite)',status:'empty',route:'#/galaxy/ME',count:EC+' · [INCOMPLET : flux non branché]',klass:2},
-      {id:'ME-other',name:'Autres places Moyen-Orient',status:'empty',route:'#/galaxy/ME',count:EC+' · [INCOMPLET]',klass:2}
-    ];
-  }
-  const floor=b?b.floor:branchOrFloor;
-  const L=LIB4.find(x=>x.id===floor);
-  const fd=floorFeeds(floor);
-  if(fd.n){
-    return fd.mics.map(m=>({id:m,name:(FLOORS[m]?FLOORS[m].n+' ('+m+')':m),status:'live',route:'#/floor/'+floor+'/ex/'+m,count:countMic(m)+' titres',klass:2}));
-  }
-  return [{id:(floor||id)+'-empty',name:EC,status:'empty',route:b?('#/galaxy/'+b.id):('#/floor/'+floor),count:'Branche → Classe 2 [INCOMPLET] → Classe 1 [INCOMPLET]',klass:2}];
+  // Indices Class 2 with verified links (+ constituents when present)
+  (blk.indices||[]).forEach(ix=>{
+    const n=ix.constituents_n||0;
+    const st=n>0?'live':'links';
+    const count=n>0?(n+' constituants Classe 1 · source liée'):((ix.note||'[INCOMPLET] constituants')+' · liens vérifiés');
+    rows.push({id:ix.id,name:ix.name,status:st,route:'#/galaxy/'+id+'/index/'+ix.id,count:count,klass:2,links:ix.links,note:ix.note,constituents_n:n});
+  });
+  // Exchange Class 2
+  (blk.exchanges||[]).forEach(ex=>{
+    const has=!!(ex.links&&ex.links.exchange);
+    const micInfo=ex.mic?('MIC '+ex.mic):'';
+    rows.push({
+      id:ex.id,name:ex.name+(ex.city?(' · '+ex.city):''),
+      status:has?'links':'empty',
+      route:'#/galaxy/'+id+'/ex/'+ex.id,
+      count:(has?'liens vérifiés':'[INCOMPLET]')+' · '+micInfo+(ex.iso_name?(' · '+ex.iso_name):''),
+      klass:2,links:ex.links,note:ex.note
+    });
+  });
+  if(rows.length) return rows;
+  return [{id:(id||'x')+'-empty',name:EC,status:'empty',route:b?('#/galaxy/'+b.id):('#/'),count:'Branche → Classe 2 [INCOMPLET]',klass:2}];
 }
 function renderSuperStrip(activeBranch){
   // Persistent strip of the FIVE opening branches — always visible
@@ -955,12 +980,18 @@ function parseHash(){
   if(!p.length) return {mode:'home'};
   if(p[0]==='galaxy'){
     if(!p[1] || p[1]==='planet') return {mode:'galaxy', galaxy:'planet', branch:null};
-    const b=treeBranchById(p[1]);
-    if(b) return {mode:'galaxy', galaxy:'branch', branch:p[1], sys:b.floor||null, name:b.name};
     if(p[1]==='sports') return {mode:'galaxy', galaxy:'sports'};
     if(p[1]==='nhl') return {mode:'galaxy', galaxy:'nhl'};
+    const b=treeBranchById(p[1]);
+    if(b){
+      const r={mode:'galaxy', galaxy:'branch', branch:p[1], sys:b.floor||null, name:b.name};
+      if(p[2]==='index'&&p[3]) r.worldSub={kind:'index', id:p[3]};
+      if(p[2]==='ex'&&p[3]) r.worldSub={kind:'ex', id:p[3]};
+      return r;
+    }
     return {mode:'galaxy', galaxy:'planet'};
   }
+  if(p[0]==='sources') return {mode:'sources'};
   if(p[0]==='tree'&&p[1]){
     // legacy alias → galaxy branch
     const b=treeBranchById(p[1]);
@@ -1042,9 +1073,10 @@ function renderMainframe(){
   const extra=REGISTRY.filter(x=>!shown.has(x.id) && !SPORT_PH.some(s=>s.id===x.id) && FLOOR_IDS.indexOf(x.id)<0);
   const extraBlock=extra.length?('<h2>Autres systèmes du registre</h2><div class="tiles" id="mf-extra">'+extra.map(x=>tileHTML(x.id,x.name,x.blurb||(x.status==='empty'?EC:'Système enregistré'),x.status||'empty',x.route||('#/'+x.id))).join('')+'</div>'):'';
   $('mf').innerHTML=`<div class="ovtop"><div>
-      <h1>HUB — point de chute Universal Metaphor <span class="verpill">v20.11</span></h1>
+      <h1>HUB — point de chute Universal Metaphor <span class="verpill">v20.12</span></h1>
       <div class="crumb-slot"></div>
-      <p class="lead">Point de chute de tout le développement Universal Metaphor. Arbre-objet à cinq branches · portes FINANCE / SPORTS · galaxies · couverture et coupes.</p>
+      <p class="lead">Point de chute de tout le développement Universal Metaphor. Arbre-objet à cinq branches · portes FINANCE / SPORTS · galaxies · couverture et coupes. <a class="src-jump" href="#/sources" data-route="#/sources">Sources et liens de données</a>.</p>
+      <p class="t01-banner" id="t01-banner"><strong>${(window.UM_MARKET_FRAMES&&UM_MARKET_FRAMES.label)||'T0/T1 proposés'}</strong> — T0 = ${(UM_MARKET_FRAMES&&UM_MARKET_FRAMES.T0)||'2026-01-02'} · T1 = ${(UM_MARKET_FRAMES&&UM_MARKET_FRAMES.T1)||'2026-11-04'}</p>
     </div></div>
     <a class="galaxy-hero-card" href="#/galaxy/planet" data-route="#/galaxy/planet" id="open-galaxies" data-id="OPEN-GALAXIES" role="link" aria-label="Ouvrir les galaxies — la planète">
       <span class="galaxy-hero-emoji" aria-hidden="true">🌌</span>
@@ -1069,7 +1101,7 @@ function renderMainframe(){
 
 function renderSports(){
   $('spwin').innerHTML=`<div class="ovtop"><div>
-      <h1>Sports professionnels <span class="verpill">v20.11</span></h1>
+      <h1>Sports professionnels <span class="verpill">v20.12</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Le hockey (LNH) est le premier système en service. Les autres sports sont des emplacements visibles, sans aucune donnée inventée. Chaque sport = silo d'analyse isolé (um.analysis.sports.&lt;sport&gt;.*) — jamais mélangé à la finance ni entre sports.</p>
       <p class="galaxy-actions"><button type="button" data-route="#/galaxy/sports" id="sports-to-galaxies">Ouvrir les galaxies Sports</button></p>
@@ -1085,7 +1117,7 @@ function renderPlaceholder(sport){
 
   const sp=SPORT_PH.find(x=>x.id===sport)||findReg(sport)||{id:sport,name:sport};
   $('phwin').innerHTML=`<div class="ovtop"><div>
-      <h1>${sp.name} <span class="verpill">v20.11</span></h1>
+      <h1>${sp.name} <span class="verpill">v20.12</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead" data-status="empty">${EC}</p>
       <p>Conteneur visible dans la fenêtre des sports professionnels et dans le registre. Aucune donnée n’a été inventée pour le remplir.</p>
@@ -1371,7 +1403,7 @@ let showGrid=!route.key;
        </div>
        <div id="nhlgrid">${renderAggList(gridAgg||'team')}</div>`;
   $('nhlview').innerHTML=`<div class="ovtop"><div>
-      <h1>Classe 4 — LNH <span class="verpill">v20.11</span></h1>
+      <h1>Classe 4 — LNH <span class="verpill">v20.12</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Chaque joueur est un point de donnée de Classe 1. Les équipes, pays, positions et années de repêchage sont des objets de Classe 2. La Classe 4 contient tout le système. ${NHL.players.length} joueurs · saisons 2024-25 et 2025-26 · source API NHL (extraction du 9 nov. 2026). Logos officiels des 32 clubs sur les objets de Classe 2 (licence [INCOMPLET : conditions d’usage NHL non vérifiées]). En l’absence de photo réelle, le nom complet du joueur tient lieu de visuel (fichier photos/{id}.png, à remplacer plus tard). Les positions sont nommées en toutes lettres — Center, Left Wing, Right Wing, Defense, Goalie — un symbole pourra venir plus tard. Chaque fiche relie le joueur à son club, sa nationalité, sa position, son année de repêchage et, s’il y a lieu, au groupe des joueurs échangés. Chaque liste (clubs, nationalités, positions, années de repêchage, joueurs échangés, recherche Tous les joueurs) montre une vignette cliquable par joueur — le nom complet en attendant la photo réelle — qui ouvre sa fiche. Les 32 logos de clubs sont des vignettes cliquables qui ouvrent l’objet club et son effectif. L’âge reste [INCOMPLET].</p>
     </div></div>
@@ -1410,6 +1442,131 @@ function renderNHLGridOnly(tab){
 }
 
 
+
+/* === v20.12 planetary floors UI (links + constituents) + Sources panel === */
+function escAttr(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+function worldFloorCard(row){
+  const links=row.links||{};
+  const as=[];
+  Object.keys(links).forEach(k=>{
+    const L=links[k]; if(!L||!L.url) return;
+    as.push('<a class="wf-link" href="'+escAttr(L.url)+'" target="_blank" rel="noopener noreferrer">'+escAttr(k)+' ↗</a>');
+  });
+  const badge=row.status==='live'?'COUVERT (données)':(row.status==='links'?'LIENS':'[INCOMPLET]');
+  const bcls=row.status==='live'?'live':(row.status==='links'?'links':'empty');
+  return '<article class="wf-card '+bcls+'" data-id="'+escAttr(row.id)+'">'+
+    '<header><span class="wf-id">'+escAttr(row.id)+'</span> <strong>'+escAttr(row.name)+'</strong> <span class="wf-badge">'+badge+'</span></header>'+
+    '<p class="wf-count">'+escAttr(row.count||'')+'</p>'+
+    (as.length?'<p class="wf-links">'+as.join(' · ')+'</p>':'')+
+    (row.note?'<p class="wf-note incomp">'+escAttr(row.note)+'</p>':'')+
+    '</article>';
+}
+function renderWorldBranchPanel(branchId){
+  const b=treeBranchById(branchId);
+  const rows=floorContentsForHub(branchId);
+  const frames=window.UM_MARKET_FRAMES||{};
+  const t01=(branchId==='AMER')?('<p class="t01-banner" id="t01-banner"><strong>'+escAttr(frames.label||'T0/T1')+'</strong> — T0 = '+escAttr(frames.T0||'?')+' · T1 = '+escAttr(frames.T1||'?')+' <span class="muted">('+escAttr(frames.note||'')+')</span></p>'):'';
+  const ix=rows.filter(r=>((window.WORLD_FLOORS.branches[branchId]||{}).indices||[]).some(i=>i.id===r.id) || ['NDX','SPX'].includes(r.id));
+  const ex=rows.filter(r=>!ix.includes(r));
+  return '<div class="ovtop"><div>'+
+    '<h1>Branche — '+escAttr((b&&b.name)||branchId)+' <span class="verpill">v20.12</span></h1>'+
+    '<div class="crumb-slot"></div>'+
+    '<p class="lead">Objets Classe 2 = places / indices avec liens vérifiés (HTTP 2xx/3xx). Constituants Classe 1 sourcés quand disponibles ; sinon [INCOMPLET]. Aucune valeur inventée.</p>'+
+    t01+
+    '<p class="galaxy-actions">'+
+      '<button type="button" class="retour-hub" data-route="#/galaxy/planet">← Galaxie planétaire</button> '+
+      '<button type="button" class="retour-hub" data-route="#/">← Retour au hub</button> '+
+      '<button type="button" class="retour-hub" data-route="#/sources">Sources et liens de données</button>'+
+    '</p></div></div>'+
+    '<section class="wf-sec"><h2>Indices (Classe 2)</h2><div class="wf-grid">'+(ix.map(worldFloorCard).join('')||'<p class="incomp">[INCOMPLET]</p>')+'</div></section>'+
+    '<section class="wf-sec"><h2>Places / échanges (Classe 2)</h2><div class="wf-grid">'+(ex.map(worldFloorCard).join('')||'<p class="incomp">[INCOMPLET]</p>')+'</div></section>';
+}
+function renderSourcesPanel(){
+  const WF=window.WORLD_FLOORS||{};
+  const branches=WF.branches||{};
+  const frames=window.UM_MARKET_FRAMES||{};
+  let body='';
+  const order=['APAC','ME','EUR','AFR','AMER'];
+  order.forEach(bid=>{
+    const blk=branches[bid]; if(!blk) return;
+    const bname=(treeBranchById(bid)||{}).name||bid;
+    body+='<section class="src-branch"><h2>'+escAttr(bname)+' <span class="wf-id">'+bid+'</span></h2>';
+    body+='<h3>Indices</h3><ul class="src-list">';
+    (blk.indices||[]).forEach(ix=>{
+      const st=ix.constituents_n>0?'couvert (constituants)':(ix.links&&ix.links.factsheet?'liens seulement':'[INCOMPLET]');
+      const href=(ix.links&&ix.links.factsheet&&ix.links.factsheet.url)||'';
+      body+='<li><strong>'+escAttr(ix.name)+'</strong> — '+escAttr(st)+
+        (href?' — <a href="'+escAttr(href)+'" target="_blank" rel="noopener">fiche/source</a>':'')+
+        (ix.constituents_n?(' — '+ix.constituents_n+' C1'):'')+
+        (ix.note?(' — <span class="incomp">'+escAttr(ix.note)+'</span>'):'')+
+        '</li>';
+    });
+    if(bid==='AMER'){
+      body+='<li><strong>Nasdaq-100</strong> — couvert (prix embarqués) — route #/floor/AMF/index/NDX</li>';
+      body+='<li><strong>S&amp;P 500</strong> — couvert (prix embarqués) — route #/floor/AMF/index/SPX</li>';
+    }
+    body+='</ul><h3>Places (MIC)</h3><ul class="src-list">';
+    (blk.exchanges||[]).forEach(ex=>{
+      const href=ex.links&&ex.links.exchange&&ex.links.exchange.url;
+      const st=href?'liens seulement':'[INCOMPLET]';
+      body+='<li><strong>'+escAttr(ex.name)+'</strong> ('+escAttr(ex.mic)+') — '+st+
+        (href?' — <a href="'+escAttr(href)+'" target="_blank" rel="noopener">site</a>':'')+
+        ' — <a href="'+escAttr((ex.links.mic_iso||{}).url||'https://www.iso20022.org/market-identifier-codes')+'" target="_blank" rel="noopener">ISO 10383 MIC</a></li>';
+    });
+    body+='</ul></section>';
+  });
+  body+='<section class="src-branch"><h2>Marché — cadres T0/T1</h2><p><strong>'+escAttr(frames.label||'')+'</strong><br>T0 = '+escAttr(frames.T0||'')+' · T1 = '+escAttr(frames.T1||'')+'<br>'+escAttr(frames.note||'')+'</p></section>';
+  body+='<section class="src-branch"><h2>Sports</h2><ul class="src-list"><li><strong>Hockey LNH</strong> — couvert (silo)</li>'+
+    '<li>Football / Soccer / Football américain / Basketball — <span class="incomp">[INCOMPLET] placeholders (silos scellés, non étendus en v20.12)</span></li></ul>'+
+    '<p class="muted">Build public SAFE : sigles seulement, pas de photos/logos de marque. Un build PRIVÉ (logos/photos) existe hors site public.</p></section>';
+  return '<div class="ovtop"><div><h1>Sources et liens de données <span class="verpill">v20.12</span></h1>'+
+    '<p class="lead">Inventaire des liens par branche. Statuts : couvert / liens seulement / [INCOMPLET]. Aucune valeur inventée.</p>'+
+    '<p class="galaxy-actions"><button type="button" class="retour-hub" data-route="#/">← Retour au hub</button> '+
+    '<button type="button" class="retour-hub" data-route="#/galaxy/planet">← Galaxies</button></p></div></div>'+body;
+}
+function applySources(){
+  document.body.className='mode-home mode-sources';
+  stopPlay();
+  const el=ensureGalaxyPlanet();
+  el.innerHTML=renderSourcesPanel();
+  el.style.display='block';
+  if($('mf')) $('mf').style.display='none';
+  ensureRetourHubBar('Sources et liens de données');
+}
+function applyWorldBranch(branchId, sub){
+  document.body.className='mode-home mode-galaxy mode-galaxy-branch mode-world-floors';
+  stopPlay();
+  window.__HUB_TREE=branchId;
+  window.__HUB_CAT='finance';
+  const el=ensureGalaxyPlanet();
+  let html=renderWorldBranchPanel(branchId);
+  if(sub&&sub.kind==='index'){
+    const blk=((WORLD_FLOORS.branches||{})[branchId])||{};
+    const ix=(blk.indices||[]).find(i=>i.id===sub.id);
+    if(ix){
+      const list=(ix.constituents||[]).slice(0,500).map(c=>'<li><code>'+escAttr(c.symbol||'—')+'</code> '+escAttr(c.name)+'</li>').join('');
+      html+='<section class="wf-sec" id="wf-c1"><h2>Constituants Classe 1 — '+escAttr(ix.name)+' ('+(ix.constituents_n||0)+')</h2>'+
+        (ix.links&&ix.links.constituents_source?'<p>Source : <a href="'+escAttr(ix.links.constituents_source.url)+'" target="_blank" rel="noopener">'+escAttr(ix.links.constituents_source.url)+'</a> · récupéré '+escAttr(ix.links.constituents_source.retrieved||'')+'</p>':'')+
+        (list?'<ol class="c1-list">'+list+'</ol>':'<p class="incomp">[INCOMPLET] aucun constituant chargé</p>')+
+        '</section>';
+    }
+  }
+  if(sub&&sub.kind==='ex'){
+    const blk=((WORLD_FLOORS.branches||{})[branchId])||{};
+    const ex=(blk.exchanges||[]).find(i=>i.id===sub.id);
+    if(ex){
+      html+='<section class="wf-sec"><h2>Place '+escAttr(ex.name)+'</h2>'+
+        '<p>MIC <code>'+escAttr(ex.mic)+'</code> · '+escAttr(ex.iso_name||'')+' · '+escAttr(ex.city||'')+' ('+escAttr(ex.cc||'')+')</p>'+
+        worldFloorCard({id:ex.id,name:ex.name,status:ex.links&&ex.links.exchange?'links':'empty',count:'MIC '+ex.mic,links:ex.links,note:ex.note})+
+        '</section>';
+    }
+  }
+  el.innerHTML=html;
+  el.style.display='block';
+  if($('mf')) $('mf').style.display='none';
+  ensureRetourHubBar('Finance · '+((treeBranchById(branchId)||{}).name||branchId)+' · liens');
+}
+
 /* === Galaxy layer v20.11 — planet = 5 Class-2 branches; dive reuses applyFloor canvas === */
 function ensureGalaxyPlanet(){
   let el=$('galaxy-planet');
@@ -1444,7 +1601,7 @@ function renderGalaxyPlanet(){
       <span class="gpo-blurb">Hockey · football · soccer · football américain · basketball — silos isolés (aucune donnée finance)</span>
     </button>`;
   el.innerHTML=`<div class="ovtop"><div>
-      <h1>Galaxie planétaire <span class="verpill">v20.11</span></h1>
+      <h1>Galaxie planétaire <span class="verpill">v20.12</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Cinq branches d'ouverture en objets Classe 2 · porte Sports (galaxies par sport, silo isolé) · aucune fusion sport↔finance · données manquantes = [INCOMPLET].</p>
       <p class="galaxy-actions">
@@ -1475,7 +1632,7 @@ function renderGalaxySports(){
       <span class="gpo-blurb">Silo um.analysis.sports.${s.id}.* — aucune donnée inventée</span>
     </button>`).join('');
   el.innerHTML=`<div class="ovtop"><div>
-      <h1>Galaxies Sports <span class="verpill">v20.11</span></h1>
+      <h1>Galaxies Sports <span class="verpill">v20.12</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Chaque sport = galaxie et silo d'analyse isolés. Aucun mélange entre sports, aucun mélange avec la finance.</p>
       <p class="galaxy-actions">
@@ -1534,33 +1691,27 @@ function applyGalaxy(route){
     ensureRetourHubBar('Sports · LNH (silo nhl)');
     return;
   }
-  // Branch galaxy — dive into finance floor canvas when a LIB4 floor exists
+  // Branch galaxy — v20.12 world floors panel (links + constituents); AMER also keeps price floors
   const b=treeBranchById(route.branch);
   hideGalaxyPlanet();
   window.__HUB_TREE=route.branch||null;
   window.__HUB_OPEN_FLOOR=b?b.floor:null;
   window.__HUB_CAT='finance';
+  const sub=route.worldSub||null;
+  if(window.WORLD_FLOORS && route.branch){
+    applyWorldBranch(route.branch, sub);
+    // AMER: still expose canvas via NDX/SPX cards (routes #/floor/...)
+    return;
+  }
   if(b && b.floor && b.floor!=='MEF' && typeof LIB4!=='undefined' && LIB4.some(x=>x.id===b.floor)){
-    // Reuse existing galaxy canvas renderer
     applyFloor({mode:'floor', sys:b.floor, ds:'ALL'});
     document.body.classList.add('mode-galaxy','mode-galaxy-branch');
     ensureRetourHubBar('Finance · '+b.name+(branchCovered(b)?'':' · [INCOMPLET]'));
   } else {
-    // No LIB4 engine floor (e.g. Moyen-Orient MEF) — Class 2 empty galaxy panel
     document.body.className='mode-home mode-galaxy mode-galaxy-branch';
     stopPlay();
     const el=ensureGalaxyPlanet();
-    const status=b&&branchCovered(b)?'live':'empty';
-    el.innerHTML=`<div class="ovtop"><div>
-        <h1>Galaxie — ${(b&&b.name)||route.branch} <span class="verpill">v20.11</span></h1>
-        <div class="crumb-slot"></div>
-        <p class="lead">${(b&&b.blurb)||''} · ${(status==='live')?'ACTIVE':'[INCOMPLET] — aucune donnée inventée'}.</p>
-        <p class="galaxy-actions">
-          <button type="button" class="retour-hub" data-route="#/galaxy/planet">← Galaxie planétaire</button>
-          <button type="button" class="retour-hub" data-route="#/">← Retour au hub</button>
-        </p>
-      </div></div>
-      <div class="galaxy-empty-note" data-status="empty">${typeof EC!=='undefined'?EC:'[INCOMPLET]'}</div>`;
+    el.innerHTML='<div class="ovtop"><div><h1>Galaxie — '+((b&&b.name)||route.branch)+' <span class="verpill">v20.12</span></h1><p class="incomp">[INCOMPLET]</p></div></div>';
     el.style.display='block';
     if($('mf')) $('mf').style.display='none';
     ensureRetourHubBar('Finance · '+((b&&b.name)||route.branch)+' · [INCOMPLET]');
@@ -1608,6 +1759,9 @@ function applyRoute(){
     if($('mf')) $('mf').style.display='';
     renderMainframe();
   }
+  else if(route.mode==='sources'){
+    applySources();
+  }
   else if(route.mode==='galaxy'){
     applyGalaxy(route);
   }
@@ -1646,7 +1800,7 @@ function applyRoute(){
     });
   }catch(e){}
   window.__NAV.crumb=($('crumb')&&$('crumb').textContent)||'';
-  window.__VERSION='v20.11';
+  window.__VERSION='v20.12';
   // Right window: summon on object navigation; never restore from ghost
   try{
     if(window.__RW_FORCE_CLOSED){ closeRightWindow(); window.__RW_FORCE_CLOSED=false; }
@@ -1946,9 +2100,13 @@ function initV211(U){
     if(U.get('at')){$('c').value=ds.dates.indexOf(U.get('at'));progress=+(U.get('u')||0);draw();}
   }
   const dump=document.createElement('pre');dump.id='dump';dump.style.display='none';
-  dump.textContent=JSON.stringify({version:'v20.11',mode:parseHash().mode,registry:REGISTRY.map(x=>x.id)});
+  dump.textContent=JSON.stringify({version:'v20.12',mode:parseHash().mode,registry:REGISTRY.map(x=>x.id)});
   document.body.appendChild(dump);
   window.__REGISTRY=REGISTRY;
+  window.TREE_BRANCHES=TREE_BRANCHES;
+  window.branchCovered=branchCovered;
+  window.floorContentsForHub=floorContentsForHub;
+  window.UM_MARKET_FRAMES=window.UM_MARKET_FRAMES;
   window.registerSystem=registerSystem;
   window.go=go;
   window.applyRoute=applyRoute;window.applyGalaxy=applyGalaxy;
