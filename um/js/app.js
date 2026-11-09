@@ -1247,7 +1247,8 @@ function renderPlayerCard(p){
   const thead=isG
     ? '<tr><th>Saison</th><th>PJ</th><th>Dém.</th><th>V</th><th>D</th><th>DP</th><th>Moy.</th><th>% arrêts</th><th>Bl</th><th>TOI</th></tr>'
     : '<tr><th>Saison</th><th>PJ</th><th>B</th><th>A</th><th>Pts</th><th>+/−</th><th>PUN</th><th>Tirs</th><th>BAN</th><th>Pts AN</th></tr>';
-  const desc=p.d||'';
+  const card=(window.NHL_CARDS&&NHL_CARDS.cards||[]).find(c=>String(c.id)===String(p.id));
+  const desc=(card&&card.description)||p.d||'[INCOMPLET] description';
   window.__NHL_CARD={id:p.id,name:p.n,team:last,position:p.pos,positionLabel:posLabel(p.pos),nationality:p.nat,seasons,stats:p.st,photo:'photos/'+p.id+'.png',photoStatus:'placeholder',photoName:p.n,description:desc,ageStatus:'INCOMPLET',traded:playerIsTraded(p)};
   return `<div id="nhlcard" data-player="${p.id}">
     ${photoBlock(p)}
