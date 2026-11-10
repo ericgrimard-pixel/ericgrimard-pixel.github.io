@@ -160,7 +160,7 @@ function syncC4Panel(live){const el=$('c4panel');if(!el){window.__C4LIVE=live||n
   const market=live.space!=='static';
   const z0T0=(market&&typeof Z0!=='undefined'&&Z0&&Z0.a)?{x:Z0.a[0],y:Z0.a[1]}:null;
   const z0T1=(market&&typeof Z0!=='undefined'&&Z0&&Z0.b)?{x:Z0.b[0],y:Z0.b[1]}:null;
-  const payload={version:'v20.21',sys:sysName,space:live.space||'market',tau:live.tau,t:live.t,
+  const payload={version:'v20.22',sys:sysName,space:live.space||'market',tau:live.tau,t:live.t,
     z0:market?{x:z[0],y:z[1],ret:Math.exp(z[0])-1,vol:z[1]}:{x:z[0],y:z[1]},
     z0T0,z0T1,
     drift:{dx:d[0],dy:d[1],mag,angleDeg:ang,incomplet:!!live.driftIncomplet},
@@ -474,7 +474,7 @@ function setDS(){SYS=LIB4.find(x=>x.id===$('sys').value)||LIB4[0];const src=DATA
   ds={dates:src.dates,objs:src.objs.filter(o=>SYS.fl.has(o.f))};EMPTY=!ds.objs.length;const n=ds.dates.length;for(const id of['s','e','c'])$(id).max=n-1;
   for(const id of['lvl','col','z2','z3','zt','sel','s','e','c','play','clr'])$(id).disabled=EMPTY;
   const twopass=!!(src&&src.meta&&src.meta.T0&&src.objs&&src.objs.some(o=>o.c0!=null));
-  if(twopass){$('s').value=0;$('e').value=n-1;$('c').value=n-1;}
+  if(twopass){let i0=0;if(src.meta&&src.meta.dates&&src.meta.dates.length){const k=ds.dates.indexOf(src.meta.dates[0]);if(k>=0)i0=k;}$('s').value=i0;$('e').value=n-1;$('c').value=n-1;}
   else if(!$('s').dataset.init){$('s').value=Math.max(0,ds.dates.indexOf('2026-01-06'));$('e').value=ds.dates.indexOf('2026-11-04')>=0?ds.dates.indexOf('2026-11-04'):n-1;$('c').value=$('e').value;$('s').dataset.init=1;}
   if(EMPTY){BASE=[];GROUPS=[];Z0=null;sel=null;dep=null;$('sel').innerHTML='<option value="">— aucun —</option>';return;}
   base();window_();groups();computeZ0();}
@@ -2233,7 +2233,7 @@ function applyNhlGalaxy(){
   try{ hideNhlInfoChip(); }catch(e){}
   if(typeof window.applyNhlLeagueHooks==='function') window.applyNhlLeagueHooks();
   window.__DRAW_OVERRIDE='nhl';
-  window.__VERSION='v20.21';
+  window.__VERSION='v20.22';
   if(typeof window.nhlSummonCurrentSystem==='function' && !window.__RW_NHL_LOCK){
     try{ window.nhlSummonCurrentSystem(); }catch(e){}
   }
@@ -2470,7 +2470,7 @@ function applyRoute(){
     });
   }catch(e){}
   window.__NAV.crumb=($('crumb')&&$('crumb').textContent)||'';
-  window.__VERSION='v20.21';
+  window.__VERSION='v20.22';
   // Right window: summon on object navigation; never restore from ghost
   try{
     if(window.__RW_FORCE_CLOSED){ closeRightWindow(); window.__RW_FORCE_CLOSED=false; }
