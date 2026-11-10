@@ -1,4 +1,4 @@
-/* v20.17 — Hockey galaxy: league → conference/division → club → players.
+/* v20.18 — Hockey galaxy: league → conference/division → club → players.
    Sealed sports silo. Original conference/division glyphs (not NHL trademarks).
    Club logos self-hosted. Player mugshots are not used on the public site. */
 (function(w){
@@ -676,15 +676,19 @@ function applyNhlLeagueHooks(){
   var old = $('nhl-info-chip'); if(old) old.style.display='none';
 }
 
-/* Domain-map hub — two doors only. Finance opens Claude's real UM financial engine (S&P 500).
+/* Domain-map hub — two domain doors. Finance opens Claude's UM engine:
+   primary #sp500y (année, 2 janv. → 4 nov.), secondary #sp500 (deux séances T0/T1).
    The hub's own finance placeholder stays at #/galaxy/planet (URL only, not a tile). */
-var UM_FINANCE = w.UM_ENGINE_URL || 'https://claude.ai/artifact/Mr4cUjAuszjdrQU8U6YRig#sp500';
+var UM_ENGINE_BASE = String(w.UM_ENGINE_URL || 'https://claude.ai/artifact/Mr4cUjAuszjdrQU8U6YRig').split('#')[0];
+var UM_FINANCE_YEAR = UM_ENGINE_BASE + '#sp500y';
+var UM_FINANCE_TWO = UM_ENGINE_BASE + '#sp500';
 
 function renderDomainMap(){
   var el = $('mf');
   if(!el) return;
   document.body.classList.add('mode-home-vignette');
   hideNhlSpine();
+  var finGlyph = '<svg viewBox="0 0 32 32" aria-hidden="true"><g stroke="#e8c872" stroke-width="2" fill="none" stroke-linecap="round"><circle cx="16" cy="16" r="11"/><path d="M16 5 C20 10 20 22 16 27 M16 5 C12 10 12 22 16 27 M5 16 H27 M7 11 H25 M7 21 H25"/></g></svg>';
   el.innerHTML =
     '<div class="domain-map" id="domain-map">'
     + '<div class="dm-grid">'
@@ -692,10 +696,16 @@ function renderDomainMap(){
     +     '<span class="dm-glyph" aria-hidden="true">'+glyphSVG('nhl')+'</span>'
     +     '<span class="dm-name">Hockey</span>'
     +   '</a>'
-    +   '<a class="dm-tile dm-finance" href="'+UM_FINANCE+'" data-id="DOM-FINANCE">'
-    +     '<span class="dm-glyph" aria-hidden="true"><svg viewBox="0 0 32 32" aria-hidden="true"><g stroke="#e8c872" stroke-width="2" fill="none" stroke-linecap="round"><circle cx="16" cy="16" r="11"/><path d="M16 5 C20 10 20 22 16 27 M16 5 C12 10 12 22 16 27 M5 16 H27 M7 11 H25 M7 21 H25"/></g></svg></span>'
-    +     '<span class="dm-name">Finance</span>'
-    +   '</a>'
+    +   '<div class="dm-tile dm-finance" data-id="DOM-FINANCE">'
+    +     '<a class="dm-finance-body" href="'+UM_FINANCE_YEAR+'">'
+    +       '<span class="dm-glyph" aria-hidden="true">'+finGlyph+'</span>'
+    +       '<span class="dm-name">Finance</span>'
+    +     '</a>'
+    +     '<div class="dm-finance-modes">'
+    +       '<a class="dm-mode dm-mode-primary" href="'+UM_FINANCE_YEAR+'">S&amp;P 500 · année (2 janv. → 4 nov.)</a>'
+    +       '<a class="dm-mode dm-mode-secondary" href="'+UM_FINANCE_TWO+'">S&amp;P 500 · deux séances (T₀ / T₁)</a>'
+    +     '</div>'
+    +   '</div>'
     + '</div></div>';
 }
 
