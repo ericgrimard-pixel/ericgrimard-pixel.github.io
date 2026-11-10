@@ -202,7 +202,7 @@ function draw(){if(window.__DRAW_OVERRIDE==='nhl'){drawNhlGalaxy();return;}const
     const dg=dep.gh,q=cl(dg.x,dg.y);ctx.strokeStyle='#ffffff';ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(X(q[0]),Y(q[1]),Math.max(6,objR+3),0,7);ctx.stroke();}
   if(sel) ghosts(sel.tr,sel.g.col,true,objR,false);
   // fil Z0 (linéaire) et objet de Classe 4
-  if(Z0&&$('zt').checked){const A=Z0.a,Bz=Z0.b,zc=ZL(c+u);ctx.save();ctx.strokeStyle='#e8c872';ctx.lineWidth=2.2;ctx.globalAlpha=.95*volSys();ctx.setLineDash([9,5]);ctx.beginPath();ctx.moveTo(X(A[0]),Y(A[1]));ctx.lineTo(X(Bz[0]),Y(Bz[1]));ctx.stroke();ctx.setLineDash([]);
+  if(Z0&&$('zt').checked){const A=Z0.a,Bz=Z0.b,zc=ZL(c+u);ctx.save();ctx.strokeStyle='#e8c872';ctx.lineWidth=sel?1.2:2.2;ctx.globalAlpha=(sel?0.35:0.95)*volSys();ctx.setLineDash([9,5]);ctx.beginPath();ctx.moveTo(X(A[0]),Y(A[1]));ctx.lineTo(X(Bz[0]),Y(Bz[1]));ctx.stroke();ctx.setLineDash([]);
     ctx.fillStyle='#e8c872';ctx.font='600 11px system-ui';[[A,'Z0(T₀)'],[Bz,'Z0(T₁)']].forEach(([p,l])=>{ctx.beginPath();ctx.arc(X(p[0]),Y(p[1]),4,0,7);ctx.fill();ctx.fillText(l,X(p[0])+6,Y(p[1])-6);});
     HIT.z0={px:X(zc[0]),py:Y(zc[1]),r:7+1.25,p:zc};ctx.beginPath();ctx.arc(X(zc[0]),Y(zc[1]),7,0,7);ctx.lineWidth=2.5;ctx.stroke();ctx.fillText('Z0',X(zc[0])+9,Y(zc[1])+4);
     const c0=Z0.C4[c],c1=Z0.C4[c+1];if(c0){const p=(c1&&u>0)?cyc(c0,c1,u,c,c+1):c0;const px=X(p[0]),py=Y(p[1]);HIT.c4={px,py,r:9+0.9,p};ctx.beginPath();ctx.moveTo(px,py-9);ctx.lineTo(px+9,py);ctx.lineTo(px,py+9);ctx.lineTo(px-9,py);ctx.closePath();ctx.fillStyle='rgba(8,10,16,.9)';ctx.fill();const c4c=colMove('#ffd966',c0,c1,c,c+1,u);ctx.strokeStyle=c4c;ctx.lineWidth=1.8;ctx.stroke();ctx.fillStyle=c4c;ctx.fillText('Classe 4 — '+SYS.name,px+11,py+14);}
@@ -211,11 +211,11 @@ function draw(){if(window.__DRAW_OVERRIDE==='nhl'){drawNhlGalaxy();return;}const
     ctx.restore();}
   // objets de Classe 2 à l'instant (déplacés sur leur trajet cycloïdal)
   const many=GROUPS.length>30;GROUPS.forEach((g,gi)=>{if(sel&&sel.g!==g&&many)return;const p0=P2(g,c);if(!p0)return;const p1=P2(g,c+1);const p=(p1&&u>0)?cyc(p0,p1,u,c,c+1):p0;const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);
-    const isS=sel&&sel.g===g;const rad=isS?16:(many?7:13);const gc=colMove(g.col,p0,p1,c,c+1,u);if(isS)window.__COLLOG.push([c,u,gc]);g._px=px;g._py=py;g._r=rad;HIT.c2.push({gi,px,py,r:rad+(isS?1.1:0.7),p});
+    const isS=sel&&sel.g===g;const rad=isS?28:(many?7:13);const gc=colMove(g.col,p0,p1,c,c+1,u);if(isS)window.__COLLOG.push([c,u,gc]);g._px=px;g._py=py;g._r=rad;HIT.c2.push({gi,px,py,r:rad+(isS?1.1:0.7),p});
     ctx.globalAlpha=volSys()*(sel&&!isS?.45:1);ctx.beginPath();ctx.arc(px,py,rad,0,7);ctx.fillStyle='rgba(8,10,16,.9)';ctx.fill();ctx.lineWidth=isS?2.2:1.4;ctx.strokeStyle=gc;ctx.stroke();
     if(!many||isS){const lab=g.name.length>18?g.name.slice(0,17)+'…':g.name;ctx.font='600 10px system-ui';ctx.fillStyle=gc;ctx.fillText(lab,px+rad+3,py+3);}ctx.globalAlpha=1;});
   // couche Classe 1, au-dessus des objets de Classe 2 : positions courantes (aucune traîne) puis constituants déployés
-  ctx.fillStyle='#cfd6e4';ctx.globalAlpha=volSys()*(sel?0.85:0.7);ctx.beginPath();const _c1r=(sel&&sel.g&&sel.g.mem&&sel.g.mem.length>80)?2.6:(sel?3.2:2.4);ds.objs.forEach((o,k)=>{const p=P1(k,c);if(!p)return;if(sel&&sel.g&&sel.g.mem&&sel.g.mem.indexOf(k)<0) return;const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);if(px<-4||px>W+4||py<-4||py>H+4)return;HIT.c1.push({k,px,py,r:_c1r,p});ctx.moveTo(px+_c1r,py);ctx.arc(px,py,_c1r,0,6.2832);});ctx.fill();ctx.globalAlpha=1;
+  ctx.fillStyle='#e8eef8';ctx.globalAlpha=Math.min(1,volSys()*1.05);ctx.beginPath();const _c1r=(sel&&sel.g&&sel.g.mem&&sel.g.mem.length>200)?3.4:(sel&&sel.g&&sel.g.mem&&sel.g.mem.length>80)?4.2:(sel?5:3);ds.objs.forEach((o,k)=>{const p=P1(k,c);if(!p)return;if(sel&&sel.g&&sel.g.mem&&sel.g.mem.indexOf(k)<0) return;const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);if(px<-4||px>W+4||py<-4||py>H+4)return;HIT.c1.push({k,px,py,r:_c1r,p});ctx.moveTo(px+_c1r,py);ctx.arc(px,py,_c1r,0,6.2832);});ctx.fill();ctx.globalAlpha=1;
   if(dep){
     // constituants à l'instant, déplacés sur leur trajet cycloïdal
     const few=dep.M.length<=60;ctx.globalAlpha=volSys();dep.M.forEach(tr=>{const k=tr.k,o=ds.objs[k];if(c<dep.d0)return;const p0=P1(k,c),p1=P1(k,c+1);if(!p0)return;const p=(p1&&u>0)?cyc(p0,p1,u,c,c+1):p0;const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);const col=colMove(SECT[o.s]||'#bbbbbb',p0,p1,c,c+1,u);
@@ -334,7 +334,7 @@ window.closePop=closePop;window.openPop=openPop;window.__ATTRS=ATTRS;
 addEventListener('resize',()=>{size();const gi=$('sel').value;if(gi!==''&&!EMPTY){const kk=dep&&dep.gh.k,d0=dep&&dep.d0;CACHE.clear();sel={g:GROUPS[+gi],tr:gtrail(GROUPS[+gi])};if(dep){const gh=sel.tr.G.find(g=>g.k===kk)||sel.tr.G[0];const keep=dep;dep=deploy(sel.g,d0);dep.gh=gh;}}draw();});
 // cadrage automatique sur la traîne choisie (et le déploiement)
 function fit(){
-  // v20.14 — fit to LIVE Class 1 constituents (+ Class 2) so the galaxy fills the view.
+  // v20.14 — fit to the dense core of Class 1 (+ Class 2) so the galaxy fills the view.
   const pts=[]; const c=+$('c').value;
   const pushP=(p)=>{ if(p) pts.push({x:p[0],y:p[1]}); };
   if(sel && sel.g && sel.g.mem){
@@ -343,20 +343,23 @@ function fit(){
   } else if(ds && ds.objs){
     ds.objs.forEach((o,k)=>pushP(P1(k,c)));
   }
-  // keep a few trail anchors only as secondary (never alone)
   if(pts.length<8 && sel && sel.tr && sel.tr.G) pts.push(...sel.tr.G);
   if(pts.length<4 && dep) dep.M.forEach(t=>pushP(P1(t.k,c)));
   if(pts.length<2 && Z0 && $('zt') && $('zt').checked){ pts.push({x:Z0.a[0],y:Z0.a[1]},{x:Z0.b[0],y:Z0.b[1]}); }
   if(!pts.length) return;
-  const cl=(x,y)=>[Math.min(bx[1],Math.max(bx[0],x)),Math.min(by[1],Math.max(by[0],y))];
-  let x0=Infinity,x1=-Infinity,y0=Infinity,y1=-Infinity;
-  pts.forEach(p=>{const q=cl(p.x,p.y);x0=Math.min(x0,q[0]);x1=Math.max(x1,q[0]);y0=Math.min(y0,q[1]);y1=Math.max(y1,q[1]);});
-  if(!isFinite(x0)||x1<=x0){ x0-=0.05; x1+=0.05; }
-  if(!isFinite(y0)||y1<=y0){ y0=Math.max(0,y0-0.02); y1+=0.02; }
-  const v=vb(); const zx=(v.x1-v.x0)/((x1-x0)*1.35||1e-9), zy=(v.y1-v.y0)/((y1-y0)*1.35||1e-9);
-  zoom=Math.max(1,Math.min(5000,Math.min(zx,zy)));
+  const xs=pts.map(p=>p.x).sort((a,b)=>a-b), ys=pts.map(p=>p.y).sort((a,b)=>a-b);
+  const q=(a,p)=>{const h=(a.length-1)*p,lo=Math.floor(h),hi=Math.ceil(h);return a[lo]+(a[hi]-a[lo])*(h-lo);};
+  // 8–92% core avoids extreme outliers flattening zoom to 1
+  let x0=q(xs,.08), x1=q(xs,.92), y0=q(ys,.08), y1=q(ys,.92);
+  if(!(x1>x0)) { x0=xs[0]-0.05; x1=xs[xs.length-1]+0.05; }
+  if(!(y1>y0)) { y0=Math.max(0,ys[0]-0.02); y1=ys[ys.length-1]+0.02; }
+  // pad
+  const px=(x1-x0)*0.18||0.05, py=(y1-y0)*0.18||0.05;
+  x0-=px; x1+=px; y0=Math.max(0,y0-py); y1+=py;
+  const v=vb();
+  const zx=(v.x1-v.x0)/((x1-x0)||1e-9), zy=(v.y1-v.y0)/((y1-y0)||1e-9);
+  zoom=Math.max(1.15, Math.min(5000, Math.min(zx,zy)));
   panX=(x0+x1)/2-(v.x0+v.x1)/2; panY=(y0+y1)/2-(v.y0+v.y1)/2;
-  if(zoom===1){panX=0;panY=0;}
 }
 let drag=null,moved=false;cv.onmousedown=e=>{drag=[e.clientX,e.clientY];moved=false;};onmouseup=()=>drag=null;
 cv.onmousemove=e=>{if(!drag||EMPTY)return;if(Math.abs(e.clientX-drag[0])+Math.abs(e.clientY-drag[1])>2)moved=true;const v=view();panX-=(e.clientX-drag[0])/(W-L-R)*(v.x1-v.x0);panY+=(e.clientY-drag[1])/(H-T-B)*(v.y1-v.y0);drag=[e.clientX,e.clientY];draw();};
