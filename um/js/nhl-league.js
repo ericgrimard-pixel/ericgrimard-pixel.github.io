@@ -1,4 +1,4 @@
-/* v20.18 — Hockey galaxy: league → conference/division → club → players.
+/* v20.19 — Hockey galaxy: league → conference/division → club → players.
    Sealed sports silo. Original conference/division glyphs (not NHL trademarks).
    Club logos self-hosted. Player mugshots are not used on the public site. */
 (function(w){
@@ -676,10 +676,14 @@ function applyNhlLeagueHooks(){
   var old = $('nhl-info-chip'); if(old) old.style.display='none';
 }
 
-/* Domain-map hub — two domain doors. Finance opens Claude's UM engine:
+/* Domain-map hub — two domain doors.
+   Hockey opens Claude's real NHL galaxy (#nhl).
+   Finance opens Claude's UM engine:
    primary #sp500y (année, 2 janv. → 4 nov.), secondary #sp500 (deux séances T0/T1).
-   The hub's own finance placeholder stays at #/galaxy/planet (URL only, not a tile). */
+   The hub's own hockey route #/sports/nhl and finance placeholder #/galaxy/planet
+   stay at their URLs (not doors). */
 var UM_ENGINE_BASE = String(w.UM_ENGINE_URL || 'https://claude.ai/artifact/Mr4cUjAuszjdrQU8U6YRig').split('#')[0];
+var UM_HOCKEY = UM_ENGINE_BASE + '#nhl';
 var UM_FINANCE_YEAR = UM_ENGINE_BASE + '#sp500y';
 var UM_FINANCE_TWO = UM_ENGINE_BASE + '#sp500';
 
@@ -692,7 +696,7 @@ function renderDomainMap(){
   el.innerHTML =
     '<div class="domain-map" id="domain-map">'
     + '<div class="dm-grid">'
-    +   '<a class="dm-tile dm-hockey" href="#/sports/nhl" data-route="#/sports/nhl" data-id="DOM-HOCKEY">'
+    +   '<a class="dm-tile dm-hockey" href="'+UM_HOCKEY+'" data-id="DOM-HOCKEY">'
     +     '<span class="dm-glyph" aria-hidden="true">'+glyphSVG('nhl')+'</span>'
     +     '<span class="dm-name">Hockey</span>'
     +   '</a>'
