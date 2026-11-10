@@ -756,7 +756,15 @@ function ghostHubCaptureState(reason){
     hubCat:window.__HUB_CAT||'finance',
     coverage:ghostHubCoverageSnapshot(),
     galaxyPath:(function(){
-      if(route.mode==='galaxy'){
+      if(route.mode==='fields'){
+    bits.push(crumbLink('#/fields','Champs',route.fields==='root'));
+    if(route.fields==='sports') bits.push(crumbLink('#/fields/sports','Sports professionnels',true));
+    else if(route.fields==='finance') bits.push(crumbLink('#/fields/finance','Finance',true));
+    else if(route.fields==='finance-na'){
+      bits.push(crumbLink('#/fields/finance','Finance',false));
+      bits.push(crumbLink('#/fields/finance/NA','Amérique du Nord',true));
+    }
+  } else if(route.mode==='galaxy'){
         if(route.galaxy==='planet') return 'galaxy/planet';
         if(route.branch) return 'galaxy/'+route.branch;
         if(route.galaxy) return 'galaxy/'+route.galaxy;
@@ -978,6 +986,15 @@ function parseHash(){
   const raw=decodeURIComponent((location.hash||'#/').replace(/^#/,''));
   const p=raw.split('/').filter(Boolean);
   if(!p.length) return {mode:'home'};
+  if(p[0]==='fields'){
+    const r={mode:'fields', fields:'root'};
+    if(p[1]==='sports'){ r.fields='sports'; }
+    else if(p[1]==='finance'){
+      r.fields='finance';
+      if(p[2]==='NA' || p[2]==='AMER' || p[2]==='north-america'){ r.fields='finance-na'; }
+    }
+    return r;
+  }
   if(p[0]==='galaxy'){
     if(!p[1] || p[1]==='planet') return {mode:'galaxy', galaxy:'planet', branch:null};
     if(p[1]==='sports') return {mode:'galaxy', galaxy:'sports'};
@@ -1073,22 +1090,13 @@ function renderMainframe(){
   const extra=REGISTRY.filter(x=>!shown.has(x.id) && !SPORT_PH.some(s=>s.id===x.id) && FLOOR_IDS.indexOf(x.id)<0);
   const extraBlock=extra.length?('<h2>Autres systèmes du registre</h2><div class="tiles" id="mf-extra">'+extra.map(x=>tileHTML(x.id,x.name,x.blurb||(x.status==='empty'?EC:'Système enregistré'),x.status||'empty',x.route||('#/'+x.id))).join('')+'</div>'):'';
   $('mf').innerHTML=`<div class="ovtop"><div>
-      <h1>HUB — point de chute Universal Metaphor <span class="verpill">v20.12</span></h1>
+      <h1>HUB — point de chute Universal Metaphor <span class="verpill">v20.13</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Point de chute de tout le développement Universal Metaphor. Arbre-objet à cinq branches · portes FINANCE / SPORTS · galaxies · couverture et coupes. <a class="src-jump" href="#/sources" data-route="#/sources">Sources et liens de données</a>.</p>
       <p class="t01-banner" id="t01-banner"><strong>${(window.UM_MARKET_FRAMES&&UM_MARKET_FRAMES.label)||'T0/T1 proposés'}</strong> — T0 = ${(UM_MARKET_FRAMES&&UM_MARKET_FRAMES.T0)||'2026-01-02'} · T1 = ${(UM_MARKET_FRAMES&&UM_MARKET_FRAMES.T1)||'2026-11-04'}</p>
     </div></div>
-    <a class="galaxy-hero-card" href="#/galaxy/planet" data-route="#/galaxy/planet" id="open-galaxies" data-id="OPEN-GALAXIES" role="link" aria-label="Ouvrir les galaxies — la planète">
-      <span class="galaxy-hero-emoji" aria-hidden="true">🌌</span>
-      <span class="galaxy-hero-body">
-        <span class="galaxy-hero-title">Ouvrir les galaxies — la planète</span>
-        <span class="galaxy-hero-sub">Cinq branches Classe 2 · porte Sports (silos) · un clic depuis le hub</span>
-      </span>
-      <span class="galaxy-hero-go" aria-hidden="true">→</span>
-    </a>
-    <p class="galaxy-actions hub-galaxy-cta secondary-gal-links">
-      <button type="button" class="open-galaxies ghost" data-route="#/galaxy/sports" id="open-sports-galaxies" data-id="OPEN-SPORTS-GAL">Galaxies Sports (silos isolés)</button>
-    </p>
+    <!-- v20.13: single portal CTA is #um-galaxy-hero-static → #/fields (no duplicate button here) -->
+    <p class="fields-hint muted">Le bouton doré en haut ouvre la structure des champs (Finance · Sports professionnels).</p>
     ${renderBalanceChart(window.__HUB_CAT||'finance')}
     ${renderPlanetaryCoverage()}
     <h2>Sports professionnels</h2>
@@ -1101,7 +1109,7 @@ function renderMainframe(){
 
 function renderSports(){
   $('spwin').innerHTML=`<div class="ovtop"><div>
-      <h1>Sports professionnels <span class="verpill">v20.12</span></h1>
+      <h1>Sports professionnels <span class="verpill">v20.13</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Le hockey (LNH) est le premier système en service. Les autres sports sont des emplacements visibles, sans aucune donnée inventée. Chaque sport = silo d'analyse isolé (um.analysis.sports.&lt;sport&gt;.*) — jamais mélangé à la finance ni entre sports.</p>
       <p class="galaxy-actions"><button type="button" data-route="#/galaxy/sports" id="sports-to-galaxies">Ouvrir les galaxies Sports</button></p>
@@ -1117,7 +1125,7 @@ function renderPlaceholder(sport){
 
   const sp=SPORT_PH.find(x=>x.id===sport)||findReg(sport)||{id:sport,name:sport};
   $('phwin').innerHTML=`<div class="ovtop"><div>
-      <h1>${sp.name} <span class="verpill">v20.12</span></h1>
+      <h1>${sp.name} <span class="verpill">v20.13</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead" data-status="empty">${EC}</p>
       <p>Conteneur visible dans la fenêtre des sports professionnels et dans le registre. Aucune donnée n’a été inventée pour le remplir.</p>
@@ -1404,7 +1412,7 @@ let showGrid=!route.key;
        </div>
        <div id="nhlgrid">${renderAggList(gridAgg||'team')}</div>`;
   $('nhlview').innerHTML=`<div class="ovtop"><div>
-      <h1>Classe 4 — LNH <span class="verpill">v20.12</span></h1>
+      <h1>Classe 4 — LNH <span class="verpill">v20.13</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Chaque joueur est un point de donnée de Classe 1. Les équipes, pays, positions et années de repêchage sont des objets de Classe 2. La Classe 4 contient tout le système. ${NHL.players.length} joueurs · saisons 2024-25 et 2025-26 · source API NHL (extraction du 9 nov. 2026). Logos officiels des 32 clubs sur les objets de Classe 2 (licence [INCOMPLET : conditions d’usage NHL non vérifiées]). En l’absence de photo réelle, le nom complet du joueur tient lieu de visuel (fichier photos/{id}.png, à remplacer plus tard). Les positions sont nommées en toutes lettres — Center, Left Wing, Right Wing, Defense, Goalie — un symbole pourra venir plus tard. Chaque fiche relie le joueur à son club, sa nationalité, sa position, son année de repêchage et, s’il y a lieu, au groupe des joueurs échangés. Chaque liste (clubs, nationalités, positions, années de repêchage, joueurs échangés, recherche Tous les joueurs) montre une vignette cliquable par joueur — le nom complet en attendant la photo réelle — qui ouvre sa fiche. Les 32 logos de clubs sont des vignettes cliquables qui ouvrent l’objet club et son effectif. L’âge reste [INCOMPLET].</p>
     </div></div>
@@ -1451,11 +1459,12 @@ function worldFloorCard(row){
   const as=[];
   Object.keys(links).forEach(k=>{
     const L=links[k]; if(!L||!L.url) return;
-    as.push('<a class="wf-link" href="'+escAttr(L.url)+'" target="_blank" rel="noopener noreferrer">'+escAttr(k)+' ↗</a>');
+    as.push('<a class="wf-link" href="'+escAttr(L.url)+'" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">'+escAttr(k)+' ↗</a>');
   });
   const badge=row.status==='live'?'COUVERT (données)':(row.status==='links'?'LIENS':'[INCOMPLET]');
   const bcls=row.status==='live'?'live':(row.status==='links'?'links':'empty');
-  return '<article class="wf-card '+bcls+'" data-id="'+escAttr(row.id)+'">'+
+  const route=row.route?(' data-route="'+escAttr(row.route)+'" role="button" tabindex="0"'):'';
+  return '<article class="wf-card '+bcls+'" data-id="'+escAttr(row.id)+'"'+route+' aria-label="'+escAttr(row.name)+'">'+
     '<header><span class="wf-id">'+escAttr(row.id)+'</span> <strong>'+escAttr(row.name)+'</strong> <span class="wf-badge">'+badge+'</span></header>'+
     '<p class="wf-count">'+escAttr(row.count||'')+'</p>'+
     (as.length?'<p class="wf-links">'+as.join(' · ')+'</p>':'')+
@@ -1470,7 +1479,7 @@ function renderWorldBranchPanel(branchId){
   const ix=rows.filter(r=>((window.WORLD_FLOORS.branches[branchId]||{}).indices||[]).some(i=>i.id===r.id) || ['NDX','SPX'].includes(r.id));
   const ex=rows.filter(r=>!ix.includes(r));
   return '<div class="ovtop"><div>'+
-    '<h1>Branche — '+escAttr((b&&b.name)||branchId)+' <span class="verpill">v20.12</span></h1>'+
+    '<h1>Branche — '+escAttr((b&&b.name)||branchId)+' <span class="verpill">v20.13</span></h1>'+
     '<div class="crumb-slot"></div>'+
     '<p class="lead">Objets Classe 2 = places / indices avec liens vérifiés (HTTP 2xx/3xx). Constituants Classe 1 sourcés quand disponibles ; sinon [INCOMPLET]. Aucune valeur inventée.</p>'+
     t01+
@@ -1520,7 +1529,7 @@ function renderSourcesPanel(){
   body+='<section class="src-branch"><h2>Sports</h2><ul class="src-list"><li><strong>Hockey LNH</strong> — couvert (silo)</li>'+
     '<li>Football / Soccer / Football américain / Basketball — <span class="incomp">[INCOMPLET] placeholders (silos scellés, non étendus en v20.12)</span></li></ul>'+
     '<p class="muted">Build public SAFE : sigles seulement, pas de photos/logos de marque. Un build PRIVÉ (logos/photos) existe hors site public.</p></section>';
-  return '<div class="ovtop"><div><h1>Sources et liens de données <span class="verpill">v20.12</span></h1>'+
+  return '<div class="ovtop"><div><h1>Sources et liens de données <span class="verpill">v20.13</span></h1>'+
     '<p class="lead">Inventaire des liens par branche. Statuts : couvert / liens seulement / [INCOMPLET]. Aucune valeur inventée.</p>'+
     '<p class="galaxy-actions"><button type="button" class="retour-hub" data-route="#/">← Retour au hub</button> '+
     '<button type="button" class="retour-hub" data-route="#/galaxy/planet">← Galaxies</button></p></div></div>'+body;
@@ -1579,6 +1588,144 @@ function ensureGalaxyPlanet(){
   }
   return el;
 }
+
+/* === v20.13 — FIELDS structure (portal button lands here) === */
+function renderFieldsRoot(){
+  return `<div class="ovtop"><div>
+      <h1>Champs — structure <span class="verpill">v20.13</span></h1>
+      <div class="crumb-slot"></div>
+      <p class="lead">Deux champs d’entrée. Finance est le plus vaste. Sports professionnels ouvre le hockey en premier. Un clic par étape · aucune page morte.</p>
+      <p class="galaxy-actions"><button type="button" class="retour-hub" data-route="#/">← Retour au portail</button></p>
+    </div></div>
+    <div class="fields-grid" id="fields-root">
+      <button type="button" class="field-door finance" data-id="FIELD-FINANCE" data-route="#/fields/finance" aria-label="Finance">
+        <span class="fd-kicker">Champ</span>
+        <span class="fd-name">FINANCE</span>
+        <span class="fd-blurb">Le plus vaste · branches continentales · Amérique du Nord → S&amp;P 500, Nasdaq-100, NYSE</span>
+        <span class="fd-go">→</span>
+      </button>
+      <button type="button" class="field-door sports" data-id="FIELD-SPORTS" data-route="#/fields/sports" aria-label="Sports professionnels">
+        <span class="fd-kicker">Champ</span>
+        <span class="fd-name">SPORTS PROFESSIONNELS</span>
+        <span class="fd-blurb">Hockey (LNH) = champ n°1 · autres sports = emplacements vides</span>
+        <span class="fd-go">→</span>
+      </button>
+    </div>`;
+}
+function renderFieldsSports(){
+  const others=(SPORT_PH||[]).map(s=>`<button type="button" class="field-door empty" data-id="FIELD-${s.id}" data-route="#/sports/${s.id}" aria-label="${s.name}">
+      <span class="fd-kicker">Champ sport · silo ${s.id}</span>
+      <span class="fd-name">${s.name}</span>
+      <span class="fd-blurb">[INCOMPLET] — silo scellé, aucune donnée inventée</span>
+      <span class="fd-badge">en construction</span>
+    </button>`).join('');
+  return `<div class="ovtop"><div>
+      <h1>Sports professionnels <span class="verpill">v20.13</span></h1>
+      <div class="crumb-slot"></div>
+      <p class="lead">Hockey est le champ n°1. Un clic ouvre la galaxie LNH (équipes et joueurs). Les autres sports restent des emplacements vides.</p>
+      <p class="galaxy-actions">
+        <button type="button" class="retour-hub" data-route="#/fields">← Champs</button>
+        <button type="button" class="retour-hub" data-route="#/">← Portail</button>
+      </p>
+    </div></div>
+    <div class="fields-grid" id="fields-sports">
+      <button type="button" class="field-door live hockey-first" data-id="FIELD-HOCKEY" data-route="#/sports/nhl" aria-label="Hockey — LNH">
+        <span class="fd-kicker">Champ n°1 · silo nhl</span>
+        <span class="fd-name">HOCKEY — LNH</span>
+        <span class="fd-blurb">${NHL.players.length} joueurs · ${Object.keys(NHL.teams).length} clubs · galaxie équipes &amp; joueurs</span>
+        <span class="fd-badge">ACTIVE</span>
+        <span class="fd-go">→</span>
+      </button>
+      ${others}
+    </div>`;
+}
+function renderFieldsFinance(){
+  return `<div class="ovtop"><div>
+      <h1>Finance <span class="verpill">v20.13</span></h1>
+      <div class="crumb-slot"></div>
+      <p class="lead">Champ le plus vaste. Ouvrir Amérique du Nord pour les trois ensembles cliquables (S&amp;P 500, Nasdaq-100, NYSE).</p>
+      <p class="galaxy-actions">
+        <button type="button" class="retour-hub" data-route="#/fields">← Champs</button>
+        <button type="button" class="retour-hub" data-route="#/">← Portail</button>
+      </p>
+    </div></div>
+    <div class="fields-grid" id="fields-finance">
+      <button type="button" class="field-door live" data-id="FIELD-NA" data-route="#/fields/finance/NA" aria-label="Amérique du Nord">
+        <span class="fd-kicker">Sous-champ</span>
+        <span class="fd-name">AMÉRIQUE DU NORD</span>
+        <span class="fd-blurb">S&amp;P 500 · Nasdaq-100 · NYSE — chaque ensemble ouvre sa galaxie</span>
+        <span class="fd-badge">ACTIVE</span>
+        <span class="fd-go">→</span>
+      </button>
+      <button type="button" class="field-door" data-id="FIELD-AMER" data-route="#/galaxy/AMER" aria-label="Amériques (branche complète)">
+        <span class="fd-kicker">Branche Classe 2</span>
+        <span class="fd-name">AMÉRIQUES (branche)</span>
+        <span class="fd-blurb">Nord + Sud · places et indices liés</span>
+        <span class="fd-go">→</span>
+      </button>
+      ${TREE_BRANCHES.filter(b=>b.id!=='AMER').map(b=>`<button type="button" class="field-door ${branchCovered(b)?'live':'empty'}" data-id="FIELD-${b.id}" data-route="#/galaxy/${b.id}" aria-label="${b.name}">
+        <span class="fd-kicker">Branche Classe 2</span>
+        <span class="fd-name">${b.name.toUpperCase()}</span>
+        <span class="fd-blurb">${b.blurb||''}</span>
+        <span class="fd-badge">${branchCovered(b)?'ACTIVE':'[INCOMPLET]'}</span>
+        <span class="fd-go">→</span>
+      </button>`).join('')}
+    </div>`;
+}
+function renderFieldsFinanceNA(){
+  const nNdx=(DATA.NDX&&DATA.NDX.objs)?DATA.NDX.objs.length:0;
+  const nSpx=(DATA.SPX&&DATA.SPX.objs)?DATA.SPX.objs.length:0;
+  const nNy=typeof countMic==='function'?countMic('XNYS'):0;
+  // Third NA set = NYSE (XNYS) — Dow/TSX absent from build data
+  return `<div class="ovtop"><div>
+      <h1>Amérique du Nord <span class="verpill">v20.13</span></h1>
+      <div class="crumb-slot"></div>
+      <p class="lead">Trois ensembles cliquables. Chaque clic ouvre sa propre galaxie (objets sociétés / titres). Troisième ensemble = NYSE (le Dow et le TSX sont absents des données → non inventés).</p>
+      <p class="galaxy-actions">
+        <button type="button" class="retour-hub" data-route="#/fields/finance">← Finance</button>
+        <button type="button" class="retour-hub" data-route="#/fields">← Champs</button>
+      </p>
+    </div></div>
+    <div class="fields-grid sets-na" id="fields-na">
+      <button type="button" class="field-door live set-card" data-id="SET-SPX" data-route="#/floor/AMF/index/SPX" aria-label="S&P 500">
+        <span class="fd-kicker">Ensemble · galaxie</span>
+        <span class="fd-name">S&amp;P 500</span>
+        <span class="fd-blurb">${nSpx} titres Classe 1 · ouvre la galaxie S&amp;P</span>
+        <span class="fd-badge">ACTIVE</span>
+        <span class="fd-go">→</span>
+      </button>
+      <button type="button" class="field-door live set-card" data-id="SET-NDX" data-route="#/floor/AMF/index/NDX" aria-label="Nasdaq-100">
+        <span class="fd-kicker">Ensemble · galaxie</span>
+        <span class="fd-name">NASDAQ-100</span>
+        <span class="fd-blurb">${nNdx} titres Classe 1 · ouvre la galaxie Nasdaq</span>
+        <span class="fd-badge">ACTIVE</span>
+        <span class="fd-go">→</span>
+      </button>
+      <button type="button" class="field-door live set-card" data-id="SET-XNYS" data-route="#/floor/AMF/ex/XNYS" aria-label="NYSE">
+        <span class="fd-kicker">Ensemble · galaxie · 3<sup>e</sup> jeu NA</span>
+        <span class="fd-name">NYSE</span>
+        <span class="fd-blurb">${nNy} titres · place New York · galaxie NYSE (Dow/TSX absents des données)</span>
+        <span class="fd-badge">ACTIVE</span>
+        <span class="fd-go">→</span>
+      </button>
+    </div>`;
+}
+function applyFields(route){
+  document.body.className='mode-home mode-fields mode-fields-'+(route.fields||'root');
+  stopPlay();
+  hideRetourHubBar();
+  const el=ensureGalaxyPlanet();
+  if(route.fields==='sports') el.innerHTML=renderFieldsSports();
+  else if(route.fields==='finance-na') el.innerHTML=renderFieldsFinanceNA();
+  else if(route.fields==='finance') el.innerHTML=renderFieldsFinance();
+  else el.innerHTML=renderFieldsRoot();
+  el.style.display='block';
+  if($('mf')) $('mf').style.display='none';
+  const ctx={root:'Champs',sports:'Sports professionnels',finance:'Finance','finance-na':'Amérique du Nord'}[route.fields]||'Champs';
+  ensureRetourHubBar(ctx);
+  // hide static portal button while inside fields
+}
+
 function renderGalaxyPlanet(){
   const el=ensureGalaxyPlanet();
   const branches=TREE_BRANCHES.map(b=>{
@@ -1602,7 +1749,7 @@ function renderGalaxyPlanet(){
       <span class="gpo-blurb">Hockey · football · soccer · football américain · basketball — silos isolés (aucune donnée finance)</span>
     </button>`;
   el.innerHTML=`<div class="ovtop"><div>
-      <h1>Galaxie planétaire <span class="verpill">v20.12</span></h1>
+      <h1>Galaxie planétaire <span class="verpill">v20.13</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Cinq branches d'ouverture en objets Classe 2 · porte Sports (galaxies par sport, silo isolé) · aucune fusion sport↔finance · données manquantes = [INCOMPLET].</p>
       <p class="galaxy-actions">
@@ -1633,7 +1780,7 @@ function renderGalaxySports(){
       <span class="gpo-blurb">Silo um.analysis.sports.${s.id}.* — aucune donnée inventée</span>
     </button>`).join('');
   el.innerHTML=`<div class="ovtop"><div>
-      <h1>Galaxies Sports <span class="verpill">v20.12</span></h1>
+      <h1>Galaxies Sports <span class="verpill">v20.13</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Chaque sport = galaxie et silo d'analyse isolés. Aucun mélange entre sports, aucun mélange avec la finance.</p>
       <p class="galaxy-actions">
@@ -1712,7 +1859,7 @@ function applyGalaxy(route){
     document.body.className='mode-home mode-galaxy mode-galaxy-branch';
     stopPlay();
     const el=ensureGalaxyPlanet();
-    el.innerHTML='<div class="ovtop"><div><h1>Galaxie — '+((b&&b.name)||route.branch)+' <span class="verpill">v20.12</span></h1><p class="incomp">[INCOMPLET]</p></div></div>';
+    el.innerHTML='<div class="ovtop"><div><h1>Galaxie — '+((b&&b.name)||route.branch)+' <span class="verpill">v20.13</span></h1><p class="incomp">[INCOMPLET]</p></div></div>';
     el.style.display='block';
     if($('mf')) $('mf').style.display='none';
     ensureRetourHubBar('Finance · '+((b&&b.name)||route.branch)+' · [INCOMPLET]');
@@ -1760,6 +1907,9 @@ function applyRoute(){
     if($('mf')) $('mf').style.display='';
     renderMainframe();
   }
+  else if(route.mode==='fields'){
+    applyFields(route);
+  }
   else if(route.mode==='sources'){
     applySources();
   }
@@ -1801,7 +1951,7 @@ function applyRoute(){
     });
   }catch(e){}
   window.__NAV.crumb=($('crumb')&&$('crumb').textContent)||'';
-  window.__VERSION='v20.12';
+  window.__VERSION='v20.13';
   // Right window: summon on object navigation; never restore from ghost
   try{
     if(window.__RW_FORCE_CLOSED){ closeRightWindow(); window.__RW_FORCE_CLOSED=false; }

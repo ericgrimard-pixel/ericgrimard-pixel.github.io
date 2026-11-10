@@ -934,3 +934,86 @@ a.galaxy-hero-card:hover, .galaxy-hero-card:hover{
 }
 /* Keep hero visible at top of hub overlay */
 body.mode-home #mf .galaxy-hero-card{ position:relative; z-index:2; }
+
+
+/* === v20.13 — portal FIELDS button + fields doors === */
+a.galaxy-hero-card.portal-fields-btn,
+#um-galaxy-hero-static.portal-fields-btn{
+  min-height:96px;
+  font-size:18px;
+  z-index:40;
+  pointer-events:auto;
+  cursor:pointer;
+}
+#um-galaxy-hero-static .ght{ font-size:22px; }
+#um-galaxy-hero-static .ghs{ font-size:13px; }
+@media(max-width:480px){
+  #um-galaxy-hero-static.portal-fields-btn{ min-height:88px; padding:16px 14px; }
+  #um-galaxy-hero-static .ght{ font-size:18px; }
+}
+
+.fields-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:14px;
+  margin:12px 0 28px;
+}
+button.field-door, .field-door{
+  display:flex; flex-direction:column; align-items:flex-start; gap:6px;
+  text-align:left; cursor:pointer;
+  background:rgba(16,20,30,.96);
+  border:1px solid #e8c872;
+  border-radius:14px;
+  padding:18px 18px 16px;
+  color:#e8eef8;
+  box-shadow:0 6px 20px rgba(0,0,0,.35);
+  min-height:120px;
+}
+button.field-door:hover{ filter:brightness(1.08); border-color:#fff3c4; }
+button.field-door.sports, button.field-door.hockey-first{
+  border-width:2px;
+  background:linear-gradient(160deg, rgba(40,28,10,.95), rgba(12,14,20,.98));
+}
+button.field-door.finance{ border-width:2px; }
+button.field-door.empty{ opacity:.72; border-color:#5a6170; }
+.field-door .fd-kicker{ font:700 11px/1.2 system-ui,sans-serif; color:#e8c872; letter-spacing:.04em; text-transform:uppercase; }
+.field-door .fd-name{ font:800 20px/1.2 system-ui,sans-serif; color:#fff; }
+.field-door .fd-blurb{ font:500 12px/1.35 system-ui,sans-serif; color:#aab1c0; }
+.field-door .fd-badge{ font:700 10px/1 system-ui,sans-serif; color:#07080c; background:#e8c872; border-radius:4px; padding:3px 6px; }
+.field-door .fd-go{ margin-top:auto; align-self:flex-end; font:800 22px/1 system-ui,sans-serif; color:#e8c872; }
+.fields-hint{ margin:8px 0 12px; font-size:12px; }
+
+/* Clickable world floor cards */
+article.wf-card[data-route]{ cursor:pointer; }
+article.wf-card[data-route]:hover{ border-color:#e8c872; filter:brightness(1.05); }
+
+/* Fields mode: show galaxy-planet overlay */
+body.mode-fields #galaxy-planet.overlay{ display:block !important; }
+body.mode-fields #mf{ display:none !important; }
+
+/* Icon column: reinforce left vertical strip in floor/galaxy canvas views */
+body.mode-floor #icons{
+  position:fixed !important;
+  left:10px !important;
+  top:72px !important;
+  bottom:56px !important;
+  width:48px !important;
+  margin:0 !important;
+  padding:4px 0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  flex-wrap:nowrap !important;
+  justify-content:space-evenly !important;
+  align-items:center !important;
+  gap:0 !important;
+  z-index:5;
+  pointer-events:none;
+}
+body.mode-floor #icons button.attr{ pointer-events:auto; }
+
+/* Keep um-safe-note as footer disclaimer only — not over galaxy canvas center */
+body.mode-floor #um-safe-note,
+body.mode-nhl #um-safe-note{
+  opacity:.85;
+  pointer-events:none;
+}
