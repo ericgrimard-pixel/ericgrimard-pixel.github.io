@@ -1,6 +1,6 @@
 /* Application code from v20.11 HUB galaxies (SAFE Pages) — DATA/FLOORS/NHL loaded by previous scripts. */
 var DATA = window.DATA;
-const INDEX_GROUP_NAME={NDX:'Nasdaq-100 (indice)',SPX:'S&P 500 (indice)',ALL:'Nasdaq-100 ∪ S&P 500',STI:'Straits Times Index',IBOV:'Ibovespa',TASI:'Tadawul All-Share Index (TASI)'};
+const INDEX_GROUP_NAME={NDX:'Nasdaq-100 (indice)',SPX:'S&P 500 (indice)',ALL:'Nasdaq-100 ∪ S&P 500',STI:'Straits Times Index',IBOV:'Ibovespa',TASI:'Tadawul All-Share Index (TASI)',N225:'Nikkei 225',HSI:'Hang Seng Index',FTSE100:'FTSE 100',DAX:'DAX 40',CAC40:'CAC 40',SX5E:'EURO STOXX 50',ASX200:'S&P/ASX 200'};
 window.INDEX_GROUP_NAME=INDEX_GROUP_NAME;
 var FLOORS = window.FLOORS;
 var NHL = window.NHL;
@@ -160,7 +160,7 @@ function syncC4Panel(live){const el=$('c4panel');if(!el){window.__C4LIVE=live||n
   const market=live.space!=='static';
   const z0T0=(market&&typeof Z0!=='undefined'&&Z0&&Z0.a)?{x:Z0.a[0],y:Z0.a[1]}:null;
   const z0T1=(market&&typeof Z0!=='undefined'&&Z0&&Z0.b)?{x:Z0.b[0],y:Z0.b[1]}:null;
-  const payload={version:'v20.22',sys:sysName,space:live.space||'market',tau:live.tau,t:live.t,
+  const payload={version:'v20.23',sys:sysName,space:live.space||'market',tau:live.tau,t:live.t,
     z0:market?{x:z[0],y:z[1],ret:Math.exp(z[0])-1,vol:z[1]}:{x:z[0],y:z[1]},
     z0T0,z0T1,
     drift:{dx:d[0],dy:d[1],mag,angleDeg:ang,incomplet:!!live.driftIncomplet},
@@ -470,11 +470,39 @@ $('lvl').onchange=()=>{stopPlay();clearSel();groups();computeZ0();defaultSel();}
 function reZ0(){stopPlay();const gi=$('sel').value;const kk=dep&&dep.gh.k,d0=dep&&dep.d0;computeZ0();CACHE.clear();if(gi!==''){sel={g:GROUPS[+gi],tr:gtrail(GROUPS[+gi])};if(dep){const gh=sel.tr.G.find(g=>g.k===kk)||sel.tr.G[0];dep=deploy(sel.g,d0);dep.gh=gh;}}fit();draw();}
 for(const id of['z2','z3','zt'])$(id).onchange=reZ0;
 for(const id of['s','e'])$(id).onchange=()=>{let s=+$('s').value,e=+$('e').value;if(e<s+5){e=Math.min(ds.dates.length-1,s+5);$('e').value=e;}$('c').value=e;const gi=$('sel').value;stopPlay();clearSel();window_();computeZ0();if(gi!=='')select(gi);else draw();};
-function setDS(){SYS=LIB4.find(x=>x.id===$('sys').value)||LIB4[0];const src=DATA[$('ds').value];for(const m in FLOORS)NF[m]=0;src.objs.forEach(o=>{if(o.f in NF)NF[o.f]++;});
-  ds={dates:src.dates,objs:src.objs.filter(o=>SYS.fl.has(o.f))};EMPTY=!ds.objs.length;const n=ds.dates.length;for(const id of['s','e','c'])$(id).max=n-1;
+function worldIndexKeys(){return Object.keys(DATA).filter(k=>{const d=DATA[k];return !!(d&&d.meta&&d.meta.floor&&d.objs&&d.objs.length);});}
+function mergeFloorDatasets(floorId){
+  const keys=worldIndexKeys().filter(k=>DATA[k].meta.floor===floorId);
+  if(!keys.length) return null;
+  const dateSet=new Set();
+  keys.forEach(k=>(DATA[k].dates||[]).forEach(d=>dateSet.add(d)));
+  const dates=[...dateSet].sort();
+  const objs=[];
+  keys.forEach(k=>{
+    const src=DATA[k];
+    const imap=new Map((src.dates||[]).map((d,i)=>[d,i]));
+    (src.objs||[]).forEach(o=>{
+      const c=dates.map(d=>{const i=imap.get(d);return (i!=null&&o.c&&o.c[i]!=null)?o.c[i]:null;});
+      const v=dates.map(d=>{const i=imap.get(d);return (i!=null&&o.v&&o.v[i]!=null)?o.v[i]:null;});
+      objs.push(Object.assign({},o,{c,v}));
+    });
+  });
+  const starts=keys.map(k=>DATA[k].meta&&DATA[k].meta.dates&&DATA[k].meta.dates[0]).filter(Boolean).sort();
+  const t0s=keys.map(k=>DATA[k].meta&&DATA[k].meta.T0).filter(Boolean).sort();
+  const t1s=keys.map(k=>DATA[k].meta&&DATA[k].meta.T1).filter(Boolean).sort();
+  return {dates,objs,meta:{id:floorId,name:((typeof LIB4!=='undefined'&&LIB4.find(x=>x.id===floorId))||{}).name||floorId,floor:floorId,T0:t0s[0]||true,T1:t1s.length?t1s[t1s.length-1]:undefined,dates:starts.length?[starts[starts.length-1]]:undefined,merged:keys,n_with_prices:objs.filter(o=>o.c0!=null||(o.c&&o.c.some(x=>x!=null))).length}};
+}
+function setDS(){SYS=LIB4.find(x=>x.id===$('sys').value)||LIB4[0];const src=DATA[$('ds').value];
+  let used=src;
+  if(src&&src.objs&&!src.objs.some(o=>SYS.fl.has(o.f))){
+    const merged=mergeFloorDatasets(SYS.id);
+    if(merged&&merged.objs.some(o=>SYS.fl.has(o.f))) used=merged;
+  }
+  for(const m in FLOORS)NF[m]=0;if(used&&used.objs)used.objs.forEach(o=>{if(o.f in NF)NF[o.f]++;});
+  ds={dates:(used&&used.dates)||[],objs:((used&&used.objs)||[]).filter(o=>SYS.fl.has(o.f))};EMPTY=!ds.objs.length;const n=ds.dates.length;for(const id of['s','e','c'])$(id).max=n-1;
   for(const id of['lvl','col','z2','z3','zt','sel','s','e','c','play','clr'])$(id).disabled=EMPTY;
-  const twopass=!!(src&&src.meta&&src.meta.T0&&src.objs&&src.objs.some(o=>o.c0!=null));
-  if(twopass){let i0=0;if(src.meta&&src.meta.dates&&src.meta.dates.length){const k=ds.dates.indexOf(src.meta.dates[0]);if(k>=0)i0=k;}$('s').value=i0;$('e').value=n-1;$('c').value=n-1;}
+  const twopass=!!(used&&used.meta&&used.meta.T0&&used.objs&&used.objs.some(o=>o.c0!=null));
+  if(twopass){let i0=0;if(used.meta&&used.meta.dates&&used.meta.dates.length){const k=ds.dates.indexOf(used.meta.dates[0]);if(k>=0)i0=k;}$('s').value=i0;$('e').value=n-1;$('c').value=n-1;}
   else if(!$('s').dataset.init){$('s').value=Math.max(0,ds.dates.indexOf('2026-01-06'));$('e').value=ds.dates.indexOf('2026-11-04')>=0?ds.dates.indexOf('2026-11-04'):n-1;$('c').value=$('e').value;$('s').dataset.init=1;}
   if(EMPTY){BASE=[];GROUPS=[];Z0=null;sel=null;dep=null;$('sel').innerHTML='<option value="">— aucun —</option>';return;}
   base();window_();groups();computeZ0();}
@@ -1968,9 +1996,9 @@ function worldIndexCardsForBranch(branchId){
 }
 function renderFieldsFinanceRegion(code){
   const map={
-    APAC:{title:'Asie-Pacifique',branch:'APAC',lead:'Straits Times Index ouvre sa galaxie (30 titres, prix T0/T1). Nikkei 225, Hang Seng et S&amp;P/ASX 200 ont leurs listes de constituants ; les prix T0/T1 restent [INCOMPLET].'},
+    APAC:{title:'Asie-Pacifique',branch:'APAC',lead:'Nikkei 225, Hang Seng Index, Straits Times Index et S&amp;P/ASX 200 ouvrent leurs galaxies (prix T0/T1). Les constituants sans cours restent [INCOMPLET].'},
     ME:{title:'Moyen-Orient',branch:'ME',lead:'TASI ouvre une galaxie à partir des sociétés Wikidata pourvues d’un symbole et d’un prix Yahoo. La liste officielle complète (~250) et 17 symboles sans prix restent [INCOMPLET]. T0 saoudien = 4 jan 2026 (le 2 jan est un vendredi, week-end local).'},
-    EUR:{title:'Europe',branch:'EUR',lead:'FTSE 100, DAX 40, CAC 40 et EURO STOXX 50 : constituants liés. Prix T0/T1 [INCOMPLET] — pas de galaxie inventée.'},
+    EUR:{title:'Europe',branch:'EUR',lead:'FTSE 100, DAX 40, CAC 40 et EURO STOXX 50 ouvrent leurs galaxies (prix T0/T1). Les constituants sans cours restent [INCOMPLET].'},
     AFR:{title:'Afrique',branch:'AFR',lead:'FTSE/JSE Top 40 : constituants liés. Symboles et prix T0/T1 en partie [INCOMPLET].'},
     LATAM:{title:'Amérique du Sud',branch:'AMER',lead:'Ibovespa (B3, carteira officielle au 9 nov 2026) : 76 titres Classe 1, galaxie T0/T1.'}
   };
@@ -2233,7 +2261,7 @@ function applyNhlGalaxy(){
   try{ hideNhlInfoChip(); }catch(e){}
   if(typeof window.applyNhlLeagueHooks==='function') window.applyNhlLeagueHooks();
   window.__DRAW_OVERRIDE='nhl';
-  window.__VERSION='v20.22';
+  window.__VERSION='v20.23';
   if(typeof window.nhlSummonCurrentSystem==='function' && !window.__RW_NHL_LOCK){
     try{ window.nhlSummonCurrentSystem(); }catch(e){}
   }
@@ -2355,7 +2383,7 @@ function applyGalaxy(route){
 function applyFloor(route){
   document.body.className='mode-floor';
   document.body.classList.remove('ui-collapsed'); // will re-apply collapse below
-  // v20.15 — world index floors (STI/TASI/IBOV) keep the NDX/SPX applyFloor path intact
+  // v20.15/v20.23 — world index floors keep the NDX/SPX applyFloor path intact
   if(route.index && DATA[route.index] && DATA[route.index].meta && DATA[route.index].meta.floor){
     route.sys=DATA[route.index].meta.floor;
     route.ds=route.index;
@@ -2376,7 +2404,7 @@ function applyFloor(route){
   // v20.14 — land on T1 so the constellation is dense, then fit to Class 1
   try{ if($('c') && $('e')) $('c').value=$('e').value; }catch(e){}
   if(route.index){
-    const want=(window.INDEX_GROUP_NAME||{})[route.index]||({NDX:'Nasdaq-100 (indice)',SPX:'S&P 500 (indice)'}[route.index]);
+    const want=(window.INDEX_GROUP_NAME||{})[route.index]||(DATA[route.index]&&DATA[route.index].meta&&DATA[route.index].meta.name)||({NDX:'Nasdaq-100 (indice)',SPX:'S&P 500 (indice)'}[route.index]);
     const gi=GROUPS.findIndex(g=>g.name===want);
     if(gi>=0){
       select(gi);
@@ -2470,7 +2498,7 @@ function applyRoute(){
     });
   }catch(e){}
   window.__NAV.crumb=($('crumb')&&$('crumb').textContent)||'';
-  window.__VERSION='v20.22';
+  window.__VERSION='v20.23';
   // Right window: summon on object navigation; never restore from ghost
   try{
     if(window.__RW_FORCE_CLOSED){ closeRightWindow(); window.__RW_FORCE_CLOSED=false; }
