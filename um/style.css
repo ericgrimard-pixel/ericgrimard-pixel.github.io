@@ -1080,3 +1080,7 @@ body.mode-floor:not(.ui-collapsed) #ui{
 body.mode-nhl-galaxy #homebtn,
 body.mode-nhl-galaxy #nav-mainframe{display:none !important;}
 body.mode-nhl-galaxy #floorctl{display:none !important;}
+
+/* v20.14 — finance floors: hide LNH-only footer note */
+body.mode-floor:not(.mode-nhl-galaxy) #um-safe-note{display:none !important;}
+body.mode-nhl-galaxy #um-safe-note{display:block !important; z-index:3;}

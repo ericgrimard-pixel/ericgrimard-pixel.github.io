@@ -26,7 +26,7 @@ const cv=document.getElementById('cv'),ctx=cv.getContext('2d');const $=id=>docum
 function volSys(){return Math.max(0,Math.min(1,+$('volsys').value/100));}
 function volGh(){return Math.max(0,Math.min(1,+$('volgh').value/100));}
 function volGhObj(){return Math.max(0,Math.min(1,+$('volghobj').value/100));}
-let W,H,DPR=window.devicePixelRatio||1;const L=70,T=30,B=50;let R=30,PW=0;
+let W,H,DPR=window.devicePixelRatio||1;const L=96,T=30,B=50;let R=30,PW=0; // v20.14 — room for left icon rail
 function size(){W=innerWidth;H=innerHeight;PW=Math.round(Math.min(480,Math.max(300,W*.3)));R=$('libon')&&!$('libon').checked?30:PW+44;cv.width=W*DPR;cv.height=H*DPR;cv.style.width=W+'px';cv.style.height=H+'px';ctx.setTransform(DPR,0,0,DPR,0,0);}
 size();
 const FLOOR=3,NS=24,SUB=8; // plancher px ; échantillons par segment cycloïdal ; sous-pas d'animation par séance
@@ -2121,6 +2121,7 @@ function applyFloor(route){
   }
   // collapse long control panel by default — galaxy dominates
   try{ collapseUiPanel(true); }catch(e){}
+  try{ fit(); draw(); }catch(e){}
 }
 
 function applyRoute(){
