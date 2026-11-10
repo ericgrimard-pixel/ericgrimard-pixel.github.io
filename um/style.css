@@ -936,7 +936,7 @@ a.galaxy-hero-card:hover, .galaxy-hero-card:hover{
 body.mode-home #mf .galaxy-hero-card{ position:relative; z-index:2; }
 
 
-/* === v20.13 — portal FIELDS button + fields doors === */
+/* === v20.14 — portal FIELDS button + fields doors === */
 a.galaxy-hero-card.portal-fields-btn,
 #um-galaxy-hero-static.portal-fields-btn{
   min-height:96px;
@@ -1017,3 +1017,66 @@ body.mode-nhl #um-safe-note{
   opacity:.85;
   pointer-events:none;
 }
+
+
+/* === v20.14 — galaxy-first chrome === */
+#lg{display:none !important;} /* changelog never over galaxy */
+body.mode-floor.ui-collapsed #ui,
+body.mode-nhl-galaxy.ui-collapsed #ui{
+  display:none !important;
+}
+#ui-toggle{
+  position:fixed; left:8px; top:10px; z-index:8;
+  width:36px; height:36px; border-radius:8px;
+  border:1px solid #39404f; background:rgba(14,18,28,.92); color:#e8c872;
+  font-size:16px; cursor:pointer;
+}
+#ui-toggle:hover{border-color:#e8c872;}
+body:not(.mode-floor):not(.mode-nhl-galaxy) #ui-toggle{display:none;}
+/* icons: own left rail, never overlapping panel text */
+body.mode-floor #icons,
+body.mode-nhl-galaxy #icons{
+  position:fixed !important;
+  left:8px !important;
+  top:56px !important;
+  bottom:56px !important;
+  width:48px !important;
+  margin:0 !important;
+  padding:6px 0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  flex-wrap:nowrap !important;
+  justify-content:space-evenly !important;
+  align-items:center !important;
+  gap:0 !important;
+  z-index:6 !important;
+  background:rgba(8,10,16,.55) !important;
+  border:1px solid #2a2f3a !important;
+  border-radius:10px !important;
+  pointer-events:none !important;
+}
+body.mode-floor #icons button.attr,
+body.mode-nhl-galaxy #icons button.attr{pointer-events:auto !important;}
+body.mode-floor:not(.ui-collapsed) #icons{
+  left:8px !important; /* stay in own rail; panel sits to the right via margin */
+}
+body.mode-floor:not(.ui-collapsed) #ui{
+  left:64px !important; /* make room for icon rail */
+  max-width:min(380px, calc(100vw - 80px));
+}
+#nhl-info-chip{
+  position:fixed; right:16px; top:52px; z-index:7;
+  display:none; flex-direction:row; gap:6px; align-items:flex-start;
+}
+#nhl-info-chip button{
+  border:1px solid #39404f; background:rgba(14,18,28,.92); color:#e8c872;
+  border-radius:8px; padding:6px 10px; cursor:pointer; font:600 12px system-ui;
+}
+#nhl-info-panel{
+  position:absolute; top:40px; right:0; width:min(360px,70vw);
+  background:rgba(10,12,18,.96); border:1px solid #e8c872; border-radius:8px;
+  padding:12px; color:#cfd3dc; font:13px/1.45 system-ui;
+}
+body.mode-nhl-galaxy #homebtn,
+body.mode-nhl-galaxy #nav-mainframe{display:none !important;}
+body.mode-nhl-galaxy #floorctl{display:none !important;}
