@@ -1084,3 +1084,22 @@ body.mode-nhl-galaxy #floorctl{display:none !important;}
 /* v20.14 — finance floors: hide LNH-only footer note */
 body.mode-floor:not(.mode-nhl-galaxy) #um-safe-note{display:none !important;}
 body.mode-nhl-galaxy #um-safe-note{display:block !important; z-index:3;}
+
+/* === v20.14.1 — gear must not overlap « Retour au sommet » === */
+#ui-toggle{
+  position:fixed !important;
+  left:8px !important;
+  top:52px !important; /* under persist strip (top ~8–44), above/at head of icon rail */
+  z-index:8 !important;
+  width:36px; height:36px;
+}
+body.mode-floor #super-strip-persist.persist-strip,
+body.mode-nhl-galaxy #super-strip-persist.persist-strip{
+  left:52px !important; /* clear gear column */
+  right:12px;
+  top:8px;
+}
+body.mode-floor #icons,
+body.mode-nhl-galaxy #icons{
+  top:96px !important; /* room for gear at 52–88 */
+}

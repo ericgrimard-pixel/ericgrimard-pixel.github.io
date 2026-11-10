@@ -1120,7 +1120,7 @@ function renderMainframe(){
   const extra=REGISTRY.filter(x=>!shown.has(x.id) && !SPORT_PH.some(s=>s.id===x.id) && FLOOR_IDS.indexOf(x.id)<0);
   const extraBlock=extra.length?('<h2>Autres systèmes du registre</h2><div class="tiles" id="mf-extra">'+extra.map(x=>tileHTML(x.id,x.name,x.blurb||(x.status==='empty'?EC:'Système enregistré'),x.status||'empty',x.route||('#/'+x.id))).join('')+'</div>'):'';
   $('mf').innerHTML=`<div class="ovtop"><div>
-      <h1>HUB — point de chute Universal Metaphor <span class="verpill">v20.14</span></h1>
+      <h1>HUB — point de chute Universal Metaphor <span class="verpill">v20.14.1</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Point de chute de tout le développement Universal Metaphor. Arbre-objet à cinq branches · portes FINANCE / SPORTS · galaxies · couverture et coupes. <a class="src-jump" href="#/sources" data-route="#/sources">Sources et liens de données</a>.</p>
       <p class="t01-banner" id="t01-banner"><strong>${(window.UM_MARKET_FRAMES&&UM_MARKET_FRAMES.label)||'T0/T1 proposés'}</strong> — T0 = ${(UM_MARKET_FRAMES&&UM_MARKET_FRAMES.T0)||'2026-01-02'} · T1 = ${(UM_MARKET_FRAMES&&UM_MARKET_FRAMES.T1)||'2026-11-04'}</p>
@@ -1139,7 +1139,7 @@ function renderMainframe(){
 
 function renderSports(){
   $('spwin').innerHTML=`<div class="ovtop"><div>
-      <h1>Sports professionnels <span class="verpill">v20.14</span></h1>
+      <h1>Sports professionnels <span class="verpill">v20.14.1</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Le hockey (LNH) est le premier système en service. Les autres sports sont des emplacements visibles, sans aucune donnée inventée. Chaque sport = silo d'analyse isolé (um.analysis.sports.&lt;sport&gt;.*) — jamais mélangé à la finance ni entre sports.</p>
       <p class="galaxy-actions"><button type="button" data-route="#/galaxy/sports" id="sports-to-galaxies">Ouvrir les galaxies Sports</button></p>
@@ -1155,7 +1155,7 @@ function renderPlaceholder(sport){
 
   const sp=SPORT_PH.find(x=>x.id===sport)||findReg(sport)||{id:sport,name:sport};
   $('phwin').innerHTML=`<div class="ovtop"><div>
-      <h1>${sp.name} <span class="verpill">v20.14</span></h1>
+      <h1>${sp.name} <span class="verpill">v20.14.1</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead" data-status="empty">${EC}</p>
       <p>Conteneur visible dans la fenêtre des sports professionnels et dans le registre. Aucune donnée n’a été inventée pour le remplir.</p>
@@ -1442,7 +1442,7 @@ let showGrid=!route.key;
        </div>
        <div id="nhlgrid">${renderAggList(gridAgg||'team')}</div>`;
   $('nhlview').innerHTML=`<div class="ovtop"><div>
-      <h1>Classe 4 — LNH <span class="verpill">v20.14</span></h1>
+      <h1>Classe 4 — LNH <span class="verpill">v20.14.1</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Chaque joueur est un point de donnée de Classe 1. Les équipes, pays, positions et années de repêchage sont des objets de Classe 2. La Classe 4 contient tout le système. ${NHL.players.length} joueurs · saisons 2024-25 et 2025-26 · source API NHL (extraction du 9 nov. 2026). Logos officiels des 32 clubs sur les objets de Classe 2 (licence [INCOMPLET : conditions d’usage NHL non vérifiées]). En l’absence de photo réelle, le nom complet du joueur tient lieu de visuel (fichier photos/{id}.png, à remplacer plus tard). Les positions sont nommées en toutes lettres — Center, Left Wing, Right Wing, Defense, Goalie — un symbole pourra venir plus tard. Chaque fiche relie le joueur à son club, sa nationalité, sa position, son année de repêchage et, s’il y a lieu, au groupe des joueurs échangés. Chaque liste (clubs, nationalités, positions, années de repêchage, joueurs échangés, recherche Tous les joueurs) montre une vignette cliquable par joueur — le nom complet en attendant la photo réelle — qui ouvre sa fiche. Les 32 logos de clubs sont des vignettes cliquables qui ouvrent l’objet club et son effectif. L’âge reste [INCOMPLET].</p>
     </div></div>
@@ -1509,7 +1509,7 @@ function renderWorldBranchPanel(branchId){
   const ix=rows.filter(r=>((window.WORLD_FLOORS.branches[branchId]||{}).indices||[]).some(i=>i.id===r.id) || ['NDX','SPX'].includes(r.id));
   const ex=rows.filter(r=>!ix.includes(r));
   return '<div class="ovtop"><div>'+
-    '<h1>Branche — '+escAttr((b&&b.name)||branchId)+' <span class="verpill">v20.14</span></h1>'+
+    '<h1>Branche — '+escAttr((b&&b.name)||branchId)+' <span class="verpill">v20.14.1</span></h1>'+
     '<div class="crumb-slot"></div>'+
     '<p class="lead">Objets Classe 2 = places / indices avec liens vérifiés (HTTP 2xx/3xx). Constituants Classe 1 sourcés quand disponibles ; sinon [INCOMPLET]. Aucune valeur inventée.</p>'+
     t01+
@@ -1560,7 +1560,7 @@ function renderSourcesPanel(){
   body+='<section class="src-branch"><h2>Sports</h2><ul class="src-list"><li><strong>Hockey LNH</strong> — couvert (silo)</li>'+
     '<li>Football / Soccer / Football américain / Basketball — <span class="incomp">[INCOMPLET] placeholders (silos scellés, non étendus en v20.12)</span></li></ul>'+
     '<p class="muted">Build public SAFE : sigles seulement, pas de photos/logos de marque. Un build PRIVÉ (logos/photos) existe hors site public.</p></section>';
-  return '<div class="ovtop"><div><h1>Sources et liens de données <span class="verpill">v20.14</span></h1>'+
+  return '<div class="ovtop"><div><h1>Sources et liens de données <span class="verpill">v20.14.1</span></h1>'+
     '<p class="lead">Inventaire des liens par branche. Statuts : couvert / liens seulement / [INCOMPLET]. Aucune valeur inventée.</p>'+
     '<p class="galaxy-actions"><button type="button" class="retour-hub" data-route="#/">← Retour au hub</button> '+
     '<button type="button" class="retour-hub" data-route="#/galaxy/planet">← Galaxies</button></p></div></div>'+body;
@@ -1623,7 +1623,7 @@ function ensureGalaxyPlanet(){
 /* === v20.13 — FIELDS structure (portal button lands here) === */
 function renderFieldsRoot(){
   return `<div class="ovtop"><div>
-      <h1>Champs — structure <span class="verpill">v20.14</span></h1>
+      <h1>Champs — structure <span class="verpill">v20.14.1</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Deux champs d’entrée. Finance est le plus vaste. Sports professionnels ouvre le hockey en premier. Un clic par étape · aucune page morte.</p>
       <p class="galaxy-actions"><button type="button" class="retour-hub" data-route="#/">← Retour au portail</button></p>
@@ -1651,7 +1651,7 @@ function renderFieldsSports(){
       <span class="fd-badge">en construction</span>
     </button>`).join('');
   return `<div class="ovtop"><div>
-      <h1>Sports professionnels <span class="verpill">v20.14</span></h1>
+      <h1>Sports professionnels <span class="verpill">v20.14.1</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Hockey est le champ n°1. Un clic ouvre la galaxie LNH (équipes et joueurs). Les autres sports restent des emplacements vides.</p>
       <p class="galaxy-actions">
@@ -1672,7 +1672,7 @@ function renderFieldsSports(){
 }
 function renderFieldsFinance(){
   return `<div class="ovtop"><div>
-      <h1>Finance <span class="verpill">v20.14</span></h1>
+      <h1>Finance <span class="verpill">v20.14.1</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Champ le plus vaste. Ouvrir Amérique du Nord pour les trois ensembles cliquables (S&amp;P 500, Nasdaq-100, NYSE).</p>
       <p class="galaxy-actions">
@@ -1709,7 +1709,7 @@ function renderFieldsFinanceNA(){
   const nNy=typeof countMic==='function'?countMic('XNYS'):0;
   // Third NA set = NYSE (XNYS) — Dow/TSX absent from build data
   return `<div class="ovtop"><div>
-      <h1>Amérique du Nord <span class="verpill">v20.14</span></h1>
+      <h1>Amérique du Nord <span class="verpill">v20.14.1</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Trois ensembles cliquables. Chaque clic ouvre sa propre galaxie (objets sociétés / titres). Troisième ensemble = NYSE (le Dow et le TSX sont absents des données → non inventés).</p>
       <p class="galaxy-actions">
@@ -1780,7 +1780,7 @@ function renderGalaxyPlanet(){
       <span class="gpo-blurb">Hockey · football · soccer · football américain · basketball — silos isolés (aucune donnée finance)</span>
     </button>`;
   el.innerHTML=`<div class="ovtop"><div>
-      <h1>Galaxie planétaire <span class="verpill">v20.14</span></h1>
+      <h1>Galaxie planétaire <span class="verpill">v20.14.1</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Cinq branches d'ouverture en objets Classe 2 · porte Sports (galaxies par sport, silo isolé) · aucune fusion sport↔finance · données manquantes = [INCOMPLET].</p>
       <p class="galaxy-actions">
@@ -1811,7 +1811,7 @@ function renderGalaxySports(){
       <span class="gpo-blurb">Silo um.analysis.sports.${s.id}.* — aucune donnée inventée</span>
     </button>`).join('');
   el.innerHTML=`<div class="ovtop"><div>
-      <h1>Galaxies Sports <span class="verpill">v20.14</span></h1>
+      <h1>Galaxies Sports <span class="verpill">v20.14.1</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Chaque sport = galaxie et silo d'analyse isolés. Aucun mélange entre sports, aucun mélange avec la finance.</p>
       <p class="galaxy-actions">
@@ -1948,7 +1948,7 @@ function drawNhlGalaxy(){
   try{
     if(!window.__RW_NHL_LOCK){
       summonRightWindow({
-        id:'nhl:system', classNum:4, name:'LNH — système de Classe 4',
+        id:'nhl:system', silo:'sports', classNum:4, name:'LNH — système de Classe 4',
         metaLines:[
           G.nTeams+' clubs Classe 2',
           G.nPlayers+' joueurs Classe 1',
@@ -1973,7 +1973,7 @@ function applyNhlGalaxy(){
   ensureNhlInfoChip();
   size(); drawNhlGalaxy();
   window.__DRAW_OVERRIDE='nhl';
-  window.__VERSION='v20.14';
+  window.__VERSION='v20.14.1';
 }
 function ensureNhlInfoChip(){
   let chip=$('nhl-info-chip');
@@ -2074,7 +2074,7 @@ function applyGalaxy(route){
     document.body.className='mode-home mode-galaxy mode-galaxy-branch';
     stopPlay();
     const el=ensureGalaxyPlanet();
-    el.innerHTML='<div class="ovtop"><div><h1>Galaxie — '+((b&&b.name)||route.branch)+' <span class="verpill">v20.14</span></h1><p class="incomp">[INCOMPLET]</p></div></div>';
+    el.innerHTML='<div class="ovtop"><div><h1>Galaxie — '+((b&&b.name)||route.branch)+' <span class="verpill">v20.14.1</span></h1><p class="incomp">[INCOMPLET]</p></div></div>';
     el.style.display='block';
     if($('mf')) $('mf').style.display='none';
     ensureRetourHubBar('Finance · '+((b&&b.name)||route.branch)+' · [INCOMPLET]');
@@ -2190,7 +2190,7 @@ function applyRoute(){
     });
   }catch(e){}
   window.__NAV.crumb=($('crumb')&&$('crumb').textContent)||'';
-  window.__VERSION='v20.14';
+  window.__VERSION='v20.14.1';
   // Right window: summon on object navigation; never restore from ghost
   try{
     if(window.__RW_FORCE_CLOSED){ closeRightWindow(); window.__RW_FORCE_CLOSED=false; }
@@ -2251,7 +2251,7 @@ function patchNhlClicks(){
         const t=best.team;
         try{
           summonRightWindow({
-            id:'team:'+t.abbr, classNum:2, name:t.name+' ('+t.abbr+')',
+            id:'team:'+t.abbr, silo:'sports', classNum:2, name:t.name+' ('+t.abbr+')',
             metaLines:[
               'Club NHL — Classe 2',
               t.members.length+' joueurs Classe 1',
@@ -2269,7 +2269,7 @@ function patchNhlClicks(){
         const pl=best.pl;
         try{
           summonRightWindow({
-            id:'player:'+pl.id, classNum:1, name:pl.n,
+            id:'player:'+pl.id, silo:'sports', classNum:1, name:pl.n,
             metaLines:[
               'Joueur NHL — Classe 1',
               'Club '+pl.abbr,
@@ -2587,8 +2587,18 @@ function closeRightWindow(){
   document.body.classList.remove('rw-open');
 }
 function officeById(id){ return (OFFICES_195.members||[]).find(m=>m.id===id)||null; }
-function renderAgentSection(objectId){
+function siloOfObjectId(objectId, spec){
+  if(spec && spec.silo) return spec.silo;
+  const id=String(objectId||'');
+  if(/^nhl:|^team:|^player:|^sport:/.test(id)) return 'sports';
+  if(/^floor:|^branch:|^c1:|^c2:|^index:/.test(id)) return 'finance';
+  // body mode fallback
+  if(document.body && (document.body.classList.contains('mode-nhl-galaxy') || document.body.classList.contains('mode-nhl'))) return 'sports';
+  return 'finance';
+}
+function renderAgentSection(objectId, spec){
   const asg=agentAssignGet(objectId);
+  const silo=siloOfObjectId(objectId, spec);
   const sourceAgent=null; // Branche 1 — aucun agent de source connu pour l'instant
   let hostHtml='';
   if(sourceAgent){
@@ -2602,9 +2612,20 @@ function renderAgentSection(objectId){
   const legion=OFFICES_195.members.filter(m=>m.group==='legion');
   const autre=OFFICES_195.members.filter(m=>m.group==='autre');
   const opt=(m)=>`<option value="${m.id}" ${asg&&asg.officeId===m.id?'selected':''}>${esc(m.name)} · ${esc(m.face)} · ${esc(m.rang)}</option>`;
-  return `<section class="rw-agent" aria-label="Agent de l'objet">
+  // v20.14.1 — sealed silos: never show finance office CSV on sports objects, nor NHL API on finance
+  let srcLine='';
+  if(silo==='sports'){
+    const extracted=(window.NHL&&NHL.extracted)||'2026-11-09';
+    const nP=(window.NHL&&NHL.players&&NHL.players.length)||0;
+    const nT=(window.NHL&&NHL.teams&&Object.keys(NHL.teams).length)||0;
+    const srcApi=(window.NHL&&NHL.src)||'api.nhle.com/stats/rest/en';
+    srcLine=`<p class="rw-src">Source silo sports : API NHL <code>${esc(srcApi)}</code> · extraction du ${esc(extracted)} · ${nT} clubs · ${nP} joueurs · saisons 2024-25 et 2025-26. Aucune source finance dans ce silo.</p>`;
+  } else {
+    srcLine=`<p class="rw-src">Source silo finance : <code>${esc(OFFICES_195.source)}</code> (Drive ${esc(OFFICES_195.driveId)}) · ${OFFICES_195.n} lignes · SHA-256 ${OFFICES_195.sha256.slice(0,12)}… · Cohorte ${OFFICES_195.n_cohorte} · Légion ${OFFICES_195.n_legion} · autres ${OFFICES_195.n_autre} ${esc(OFFICES_195.note_autre)}</p>`;
+  }
+  return `<section class="rw-agent" aria-label="Agent de l'objet" data-silo="${esc(silo)}">
     <h3>Agent de l'objet</h3>
-    <p class="rw-src">Source membres : <code>${esc(OFFICES_195.source)}</code> (Drive ${esc(OFFICES_195.driveId)}) · ${OFFICES_195.n} lignes · SHA-256 ${OFFICES_195.sha256.slice(0,12)}… · Cohorte ${OFFICES_195.n_cohorte} · Légion ${OFFICES_195.n_legion} · autres ${OFFICES_195.n_autre} ${esc(OFFICES_195.note_autre)}</p>
+    ${srcLine}
     ${hostHtml}
     ${cur}
     <label class="rw-link-lab">Lier à la Cohorte (anges) ou à la Légion (démons)
@@ -2653,7 +2674,7 @@ function summonRightWindow(spec){
         <h3>Objet</h3>
         <ul class="rw-meta">${metaBits||'<li>Spécifiques régénérés à chaque ouverture</li>'}</ul>
       </section>
-      ${renderAgentSection(objectId)}
+      ${renderAgentSection(objectId, spec)}
     </div>`;
   document.body.appendChild(el);
   document.body.classList.add('rw-open');
@@ -2697,7 +2718,7 @@ window.OFFICES_195=OFFICES_195;
 function rwSpecFromFloor(sys){
   const L=LIB4.find(x=>x.id===sys);
   const b=treeBranchForFloor(sys);
-  return {id:'floor:'+sys, classNum:4, name:(L&&L.name)||sys, metaLines:[
+  return {silo:'finance', id:'floor:'+sys, classNum:4, name:(L&&L.name)||sys, metaLines:[
     'Étage / structure de Classe 4 (données conservées)',
     b?('Branche d\'ouverture : '+b.name):'Hors arbre d\'ouverture (coupe ou structure)',
     'Statut : '+floorLiveState(sys)
@@ -2705,7 +2726,7 @@ function rwSpecFromFloor(sys){
 }
 function rwSpecFromBranch(branchId){
   const b=treeBranchById(branchId);
-  return {id:'branch:'+branchId, classNum:4, name:b?b.name:branchId, metaLines:[
+  return {silo:'finance', id:'branch:'+branchId, classNum:4, name:b?b.name:branchId, metaLines:[
     'Branche d\'ouverture de l\'arbre-objet (5)',
     b?b.blurb:'',
     'Couvert : '+(b&&branchCovered(b)?'oui (Amériques)':'non — prochain chantier')
@@ -2713,7 +2734,7 @@ function rwSpecFromBranch(branchId){
 }
 function rwSpecFromGroup(g){
   const key=g.mic||g.id||g.name||'g';
-  return {id:'c2:'+key, classNum:2, name:g.name+(g.mic?' ('+g.mic+')':''), metaLines:[
+  return {silo:'finance', id:'c2:'+key, classNum:2, name:g.name+(g.mic?' ('+g.mic+')':''), metaLines:[
     'Objet de Classe 2 (secteur / place / agrégat)',
     (g.mem?g.mem.length:0)+' constituants Classe 1',
     g.mic?('MIC / clé : '+g.mic):'',
@@ -2721,24 +2742,26 @@ function rwSpecFromGroup(g){
   ]};
 }
 function rwSpecFromTitle(obj, idx){
-  return {id:'c1:'+(obj.t||obj.s||idx), classNum:1, name:obj.t||obj.n||('titre '+idx), metaLines:[
+  return {silo:'finance', id:'c1:'+(obj.t||obj.s||idx), classNum:1, name:obj.t||obj.n||('titre '+idx), metaLines:[
     'Titre / point de donnée de Classe 1',
     obj.s?('Secteur : '+obj.s):'',
     obj.f?('Place : '+obj.f):''
   ]};
 }
 function rwSpecFromPlayer(p){
-  return {id:'player:'+p.id, classNum:1, name:p.n, metaLines:[
+  return {id:'player:'+p.id, silo:'sports', classNum:1, name:p.n, metaLines:[
     'Joueur NHL — Classe 1',
     'Position : '+posLabel(p.pos),
     'Club : '+(latestTeam(p)||'—'),
-    'Nationalité : '+(p.nat||'—')
+    'Nationalité : '+(p.nat||'—'),
+    'Source : API NHL · extraction '+((window.NHL&&NHL.extracted)||'2026-11-09')
   ]};
 }
 function rwSpecFromTeam(abbr){
-  return {id:'team:'+abbr, classNum:2, name:teamShort(abbr)+' ('+abbr+')', metaLines:[
+  return {id:'team:'+abbr, silo:'sports', classNum:2, name:teamShort(abbr)+' ('+abbr+')', metaLines:[
     'Club NHL — Classe 2',
-    teamLabel(abbr)
+    teamLabel(abbr),
+    'Source : API NHL · extraction '+((window.NHL&&NHL.extracted)||'2026-11-09')
   ]};
 }
 
