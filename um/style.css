@@ -1315,7 +1315,7 @@ body.mode-nhl-galaxy #tip{
 }
 
 
-/* ===== v20.20 living Class 4 panel ===== */
+/* ===== v20.21 living Class 4 panel (core, every engine view) ===== */
 #c4panel{
   position:fixed; z-index:8;
   left:64px; bottom:64px; top:auto; right:auto;
@@ -1345,11 +1345,15 @@ body:not(.mode-floor) #c4panel{display:none !important;}
 #c4panel table.c4-attrs td{color:#fff;padding:2px 0;font-variant-numeric:tabular-nums;}
 @media (max-width:520px){
   #c4panel{
-    left:56px; right:auto; top:auto; bottom:58px;
-    width:min(280px, calc(100vw - 72px));
-    max-height:30vh; font-size:11px;
+    left:8px; right:auto; top:auto; bottom:56px;
+    width:min(280px, calc(100vw - 16px));
+    max-height:32vh; font-size:11px;
   }
   body.rw-open.mode-floor #c4panel{
-    width:min(220px, calc(100vw - min(380px, 42vw) - 72px));
+    left:8px;
+    width:calc(100vw - min(380px, 42vw) - 16px);
+    max-width:calc(100vw - min(380px, 42vw) - 16px);
+    bottom:8px;
+    max-height:36vh;
   }
 }
