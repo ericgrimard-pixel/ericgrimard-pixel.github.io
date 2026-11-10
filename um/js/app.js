@@ -1,5 +1,7 @@
 /* Application code from v20.11 HUB galaxies (SAFE Pages) — DATA/FLOORS/NHL loaded by previous scripts. */
 var DATA = window.DATA;
+const INDEX_GROUP_NAME={NDX:'Nasdaq-100 (indice)',SPX:'S&P 500 (indice)',ALL:'Nasdaq-100 ∪ S&P 500',STI:'Straits Times Index',IBOV:'Ibovespa',TASI:'Tadawul All-Share Index (TASI)'};
+window.INDEX_GROUP_NAME=INDEX_GROUP_NAME;
 var FLOORS = window.FLOORS;
 var NHL = window.NHL;
 // ---------- bibliothèque de Classe 4 (v20.3) : exactement 8 objets, toujours présents ----------
@@ -101,11 +103,15 @@ function base(){const n=ds.dates.length;BASE=ds.objs.map(o=>{const c=o.c,v=o.v,r
 // positions de Classe 1 dans la fenêtre (x = rendement log depuis le T₀ du titre, y = vol20)
 let A0=[];
 function window_(){S0=+$('s').value;S1=+$('e').value;A0=ds.objs.map((o,k)=>{for(let i=S0;i<=S1;i++)if(BASE[k].vol[i]!=null&&o.c[i]!=null)return i;return -1;});
-  const X=[],Y=[];ds.objs.forEach((o,k)=>{const a=A0[k];if(a<0)return;X.push(0,Math.log(o.c[S1]/o.c[a]));Y.push(BASE[k].vol[a],BASE[k].vol[S1]);});
+  const X=[],Y=[];ds.objs.forEach((o,k)=>{const a=A0[k];if(a<0)return;const p0=(o.c0!=null&&o.c0>0)?o.c0:o.c[a];if(!(p0>0)||o.c[S1]==null)return;X.push(0,Math.log(o.c[S1]/p0));Y.push(BASE[k].vol[a],BASE[k].vol[S1]);});
   bx=[pct(X,.005),pct(X,.995)];by=[pct(Y,.005),pct(Y,.995)];}
-function P1(k,i){const a=A0[k],o=ds.objs[k];if(a<0||i<a||o.c[i]==null||BASE[k].vol[i]==null)return null;return [Math.log(o.c[i]/o.c[a]),BASE[k].vol[i]];}
+function P1(k,i){const a=A0[k],o=ds.objs[k];if(o.c[i]==null||!BASE[k]||BASE[k].vol[i]==null)return null;
+  const c0=(o.c0!=null)?o.c0:((a>=0)?o.c[a]:null);
+  if(c0==null||!(c0>0))return null;
+  if(o.c0==null&&(a<0||i<a))return null;
+  return [Math.log(o.c[i]/c0),BASE[k].vol[i]];}
 // Classe 2 : position = moyenne des attributs des constituants présents à la séance
-function groups(){const lvl=$('lvl').value,m=new Map();ds.objs.forEach((o,k)=>{const key=lvl==='x'?({NDX:'Nasdaq-100 (indice)',SPX:'S&P 500 (indice)',ALL:'Nasdaq-100 ∪ S&P 500'}[$('ds').value]):lvl==='f'?(FLOORS[o.f]?FLOORS[o.f].n+' ('+o.f+')':'(place inconnue)'):(lvl==='s'?o.s:o.i)||'(sans '+(lvl==='s'?'secteur':'industrie')+')';if(!m.has(key))m.set(key,{name:key,mem:[],sec:o.s,mic:lvl==='f'?o.f:null});m.get(key).mem.push(k);});
+function groups(){const lvl=$('lvl').value,m=new Map();ds.objs.forEach((o,k)=>{const key=lvl==='x'?((window.INDEX_GROUP_NAME||{NDX:'Nasdaq-100 (indice)',SPX:'S&P 500 (indice)',ALL:'Nasdaq-100 ∪ S&P 500',STI:'Straits Times Index',IBOV:'Ibovespa',TASI:'Tadawul All-Share Index (TASI)'})[$('ds').value]):lvl==='f'?(FLOORS[o.f]?FLOORS[o.f].n+' ('+o.f+')':'(place inconnue)'):(lvl==='s'?o.s:o.i)||'(sans '+(lvl==='s'?'secteur':'industrie')+')';if(!m.has(key))m.set(key,{name:key,mem:[],sec:o.s,mic:lvl==='f'?o.f:null});m.get(key).mem.push(k);});
   GROUPS=[...m.values()].sort((a,b)=>a.name.localeCompare(b.name,'fr'));
   // couleur : secteur majoritaire
   GROUPS.forEach(g=>{const cnt={};g.mem.forEach(k=>cnt[ds.objs[k].s]=(cnt[ds.objs[k].s]||0)+1);g.sec=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0][0];g.col=lvl==='x'?'#e8c872':lvl==='f'?(FCOL[g.mic]||'#bbbbbb'):(SECT[g.sec]||'#bbb');});
@@ -226,8 +232,8 @@ function draw(){if(window.__DRAW_OVERRIDE==='nhl'){drawNhlGalaxy();return;}const
   let h='';if(sel){const tr=sel.tr;h+='<b>'+sel.g.name+'</b> ('+sel.g.mem.length+' constituants) · '+fmt(tr.G.length)+' fantômes, dont '+fmt(tr.nh)+' creux · Σrv = '+tr.S.toFixed(2)+' · calcul '+tr.ms.toFixed(0)+' ms (cache)';}
   else h+='Aucune traîne calculée. Choisir un objet de Classe 2.';
   if(dep){let n=0,nh=0;dep.M.forEach(t=>{n+=t.G.length;nh+=t.nh;});h+='<br>Déploiement depuis '+ds.dates[dep.d0]+' : '+dep.M.length+' constituants, '+fmt(n)+' fantômes (dont '+fmt(nh)+' creux) · '+dep.ms.toFixed(0)+' ms';}
-  if(sel)h+='<br>Diamètre de la règle : '+rl.mn.toPrecision(3)+' px × zoom '+zoom.toFixed(1)+(dr<FLOOR?' → affiché '+FLOOR+' px (plancher)':' = '+dr.toPrecision(3)+' px')+' · règle ×1 → ×'+fmt(rl.mx/rl.mn);
-  if(Z0){const f=v=>v.toFixed(4);h+='<br><span style="color:#e8c872">Z0 (placeholder : moyennes) — T₀ ('+f(Z0.a[0])+', '+f(Z0.a[1])+') → T₁ ('+f(Z0.b[0])+', '+f(Z0.b[1])+') · ensemble T₁ : '+Z0.n1.n1+' Cl.1 + '+Z0.n1.n2+' Cl.2 + '+Z0.n1.n3+' Cl.3 = '+Z0.n1.pts.length+' · moteur Cl.4 : '+(MANIF_ENGINES.irrationalisateur||MANIF_ENGINES.class4).name+'</span>';}
+  if(sel){if(isFinite(rl.mn)&&rl.mn>0&&isFinite(rl.mx)){h+='<br>Diamètre de la règle : '+rl.mn.toPrecision(3)+' px × zoom '+zoom.toFixed(1)+(dr<FLOOR?' → affiché '+FLOOR+' px (plancher)':' = '+dr.toPrecision(3)+' px')+' · règle ×1 → ×'+fmt(rl.mx/rl.mn);}else{h+='<br>Diamètre de la règle : [INCOMPLET] (écart T0→T1 non mesurable — vol20 à T0 absente de la fenêtre courte)';}}
+  if(Z0){const f=v=>(v!=null&&isFinite(v))?v.toFixed(4):'[INCOMPLET]';const aok=Z0.a&&isFinite(Z0.a[0])&&isFinite(Z0.a[1]);const bok=Z0.b&&isFinite(Z0.b[0])&&isFinite(Z0.b[1]);h+='<br><span style="color:#e8c872">Z0 (placeholder : moyennes) — T₀ '+(aok?('('+f(Z0.a[0])+', '+f(Z0.a[1])+')'):'[INCOMPLET] (vol20 à T0 hors fenêtre courte)')+' → T₁ '+(bok?('('+f(Z0.b[0])+', '+f(Z0.b[1])+')'):'[INCOMPLET]')+' · ensemble T₁ : '+Z0.n1.n1+' Cl.1 + '+Z0.n1.n2+' Cl.2 + '+Z0.n1.n3+' Cl.3 = '+Z0.n1.pts.length+' · moteur Cl.4 : '+(MANIF_ENGINES.irrationalisateur||MANIF_ENGINES.class4).name+'</span>';}
   if(sel){const vis=sel.tr.G.filter(g=>visible(g,c,u));window.__GHOST={n:vis.length,volsys:volSys(),volgh:volGh(),volghobj:volGhObj(),focus:$('ghfocus').checked,libon:$('libon').checked,R:R,W:W,objR:objR,fades:vis.length?[0,.25,.5,.75,1].map(t=>{const g=vis[Math.min(vis.length-1,Math.round(t*(vis.length-1)))];return {k:g.k,fade:+fadeOf(g,sel.tr).toFixed(4)};}):[]};}
     else window.__GHOST={n:0,volsys:volSys(),volgh:volGh(),volghobj:volGhObj(),libon:$('libon').checked,R:R,W:W};
   $('st').innerHTML=h;legend();drawLib();}
@@ -308,7 +314,9 @@ for(const id of['s','e'])$(id).onchange=()=>{let s=+$('s').value,e=+$('e').value
 function setDS(){SYS=LIB4.find(x=>x.id===$('sys').value)||LIB4[0];const src=DATA[$('ds').value];for(const m in FLOORS)NF[m]=0;src.objs.forEach(o=>{if(o.f in NF)NF[o.f]++;});
   ds={dates:src.dates,objs:src.objs.filter(o=>SYS.fl.has(o.f))};EMPTY=!ds.objs.length;const n=ds.dates.length;for(const id of['s','e','c'])$(id).max=n-1;
   for(const id of['lvl','col','z2','z3','zt','sel','s','e','c','play','clr'])$(id).disabled=EMPTY;
-  if(!$('s').dataset.init){$('s').value=Math.max(0,ds.dates.indexOf('2026-01-06'));$('e').value=ds.dates.indexOf('2026-11-04')>=0?ds.dates.indexOf('2026-11-04'):n-1;$('c').value=$('e').value;$('s').dataset.init=1;}
+  const twopass=!!(src&&src.meta&&src.meta.T0&&src.objs&&src.objs.some(o=>o.c0!=null));
+  if(twopass){$('s').value=0;$('e').value=n-1;$('c').value=n-1;}
+  else if(!$('s').dataset.init){$('s').value=Math.max(0,ds.dates.indexOf('2026-01-06'));$('e').value=ds.dates.indexOf('2026-11-04')>=0?ds.dates.indexOf('2026-11-04'):n-1;$('c').value=$('e').value;$('s').dataset.init=1;}
   if(EMPTY){BASE=[];GROUPS=[];Z0=null;sel=null;dep=null;$('sel').innerHTML='<option value="">— aucun —</option>';return;}
   base();window_();groups();computeZ0();}
 function defaultSel(){const gi=GROUPS.findIndex(g=>g.name==='Technology');if(gi>=0)select(gi);else if(GROUPS.length&&$('lvl').value==='f'){let b=0;GROUPS.forEach((g,i)=>{if(g.mem.length>GROUPS[b].mem.length)b=i;});select(b);}else draw();}
@@ -646,9 +654,12 @@ function floorContentsForHub(branchOrFloor){
   // Indices Class 2 with verified links (+ constituents when present)
   (blk.indices||[]).forEach(ix=>{
     const n=ix.constituents_n||0;
-    const st=n>0?'live':'links';
-    const count=n>0?(n+' constituants Classe 1 · source liée'):((ix.note||'[INCOMPLET] constituants')+' · liens vérifiés');
-    rows.push({id:ix.id,name:ix.name,status:st,route:'#/galaxy/'+id+'/index/'+ix.id,count:count,klass:2,links:ix.links,note:ix.note,constituents_n:n});
+    const priced=!!(DATA[ix.id]&&DATA[ix.id].meta&&DATA[ix.id].meta.n_with_prices);
+    const floor=(DATA[ix.id]&&DATA[ix.id].meta&&DATA[ix.id].meta.floor)||ix.floor||((id==='AMER')?'AMF':(id==='EUR')?'EUF':(id==='AFR')?'AFF':(id==='APAC'||id==='ME')?'ASF':null);
+    const st=priced?'live':(n>0?'links':'links');
+    const count=priced?(DATA[ix.id].meta.n_with_prices+' titres Classe 1 · prix T0/T1'):(n>0?(n+' constituants Classe 1 · [INCOMPLET] prix T0/T1'):((ix.note||'[INCOMPLET] constituants')+' · liens vérifiés'));
+    const route=priced?('#/floor/'+floor+'/index/'+ix.id):('#/galaxy/'+id+'/index/'+ix.id);
+    rows.push({id:ix.id,name:ix.name,status:st,route:route,count:count,klass:2,links:ix.links,note:ix.note,constituents_n:n});
   });
   // Exchange Class 2
   (blk.exchanges||[]).forEach(ex=>{
@@ -1020,7 +1031,9 @@ function parseHash(){
     if(p[1]==='sports'){ r.fields='sports'; }
     else if(p[1]==='finance'){
       r.fields='finance';
-      if(p[2]==='NA' || p[2]==='AMER' || p[2]==='north-america'){ r.fields='finance-na'; }
+      if(p[2]==='NA' || p[2]==='north-america'){ r.fields='finance-na'; }
+      else if(p[2]==='AMER'){ r.fields='finance-na'; } // alias historique (Amérique du Nord) — ne pas casser
+      else if(p[2]==='APAC'||p[2]==='ME'||p[2]==='EUR'||p[2]==='AFR'||p[2]==='LATAM'){ r.fields='finance-'+p[2]; r.branch=p[2]; }
     }
     return r;
   }
@@ -1088,7 +1101,7 @@ function renderCrumb(route){
     if(bb) bits.push(crumbLink('#/galaxy/'+bb.id,bb.name,false));
     const L=LIB4.find(x=>x.id===route.sys);
     bits.push(crumbLink('#/floor/'+route.sys,(L&&L.name)||route.sys,!route.index&&!route.ex));
-    if(route.index) bits.push(crumbLink('#/floor/'+route.sys+'/index/'+route.index,route.index==='NDX'?'Nasdaq-100':'S&P 500',true));
+    if(route.index) bits.push(crumbLink('#/floor/'+route.sys+'/index/'+route.index,(INDEX_GROUP_NAME[route.index]||(route.index==='NDX'?'Nasdaq-100':'S&P 500')),true));
     if(route.ex){const f=FLOORS[route.ex];bits.push(crumbLink('#/floor/'+route.sys+'/ex/'+route.ex,(f?f.n+' ('+route.ex+')':route.ex),true));}
   } else if(route.mode==='sports'){
     bits.push(crumbLink('#/sports','Sports professionnels',true));
@@ -1120,7 +1133,7 @@ function renderMainframe(){
   const extra=REGISTRY.filter(x=>!shown.has(x.id) && !SPORT_PH.some(s=>s.id===x.id) && FLOOR_IDS.indexOf(x.id)<0);
   const extraBlock=extra.length?('<h2>Autres systèmes du registre</h2><div class="tiles" id="mf-extra">'+extra.map(x=>tileHTML(x.id,x.name,x.blurb||(x.status==='empty'?EC:'Système enregistré'),x.status||'empty',x.route||('#/'+x.id))).join('')+'</div>'):'';
   $('mf').innerHTML=`<div class="ovtop"><div>
-      <h1>HUB — point de chute Universal Metaphor <span class="verpill">v20.14.1</span></h1>
+      <h1>HUB — point de chute Universal Metaphor <span class="verpill">v20.15</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Point de chute de tout le développement Universal Metaphor. Arbre-objet à cinq branches · portes FINANCE / SPORTS · galaxies · couverture et coupes. <a class="src-jump" href="#/sources" data-route="#/sources">Sources et liens de données</a>.</p>
       <p class="t01-banner" id="t01-banner"><strong>${(window.UM_MARKET_FRAMES&&UM_MARKET_FRAMES.label)||'T0/T1 proposés'}</strong> — T0 = ${(UM_MARKET_FRAMES&&UM_MARKET_FRAMES.T0)||'2026-01-02'} · T1 = ${(UM_MARKET_FRAMES&&UM_MARKET_FRAMES.T1)||'2026-11-04'}</p>
@@ -1139,7 +1152,7 @@ function renderMainframe(){
 
 function renderSports(){
   $('spwin').innerHTML=`<div class="ovtop"><div>
-      <h1>Sports professionnels <span class="verpill">v20.14.1</span></h1>
+      <h1>Sports professionnels <span class="verpill">v20.15</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Le hockey (LNH) est le premier système en service. Les autres sports sont des emplacements visibles, sans aucune donnée inventée. Chaque sport = silo d'analyse isolé (um.analysis.sports.&lt;sport&gt;.*) — jamais mélangé à la finance ni entre sports.</p>
       <p class="galaxy-actions"><button type="button" data-route="#/galaxy/sports" id="sports-to-galaxies">Ouvrir les galaxies Sports</button></p>
@@ -1155,7 +1168,7 @@ function renderPlaceholder(sport){
 
   const sp=SPORT_PH.find(x=>x.id===sport)||findReg(sport)||{id:sport,name:sport};
   $('phwin').innerHTML=`<div class="ovtop"><div>
-      <h1>${sp.name} <span class="verpill">v20.14.1</span></h1>
+      <h1>${sp.name} <span class="verpill">v20.15</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead" data-status="empty">${EC}</p>
       <p>Conteneur visible dans la fenêtre des sports professionnels et dans le registre. Aucune donnée n’a été inventée pour le remplir.</p>
@@ -1442,7 +1455,7 @@ let showGrid=!route.key;
        </div>
        <div id="nhlgrid">${renderAggList(gridAgg||'team')}</div>`;
   $('nhlview').innerHTML=`<div class="ovtop"><div>
-      <h1>Classe 4 — LNH <span class="verpill">v20.14.1</span></h1>
+      <h1>Classe 4 — LNH <span class="verpill">v20.15</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Chaque joueur est un point de donnée de Classe 1. Les équipes, pays, positions et années de repêchage sont des objets de Classe 2. La Classe 4 contient tout le système. ${NHL.players.length} joueurs · saisons 2024-25 et 2025-26 · source API NHL (extraction du 9 nov. 2026). Logos officiels des 32 clubs sur les objets de Classe 2 (licence [INCOMPLET : conditions d’usage NHL non vérifiées]). En l’absence de photo réelle, le nom complet du joueur tient lieu de visuel (fichier photos/{id}.png, à remplacer plus tard). Les positions sont nommées en toutes lettres — Center, Left Wing, Right Wing, Defense, Goalie — un symbole pourra venir plus tard. Chaque fiche relie le joueur à son club, sa nationalité, sa position, son année de repêchage et, s’il y a lieu, au groupe des joueurs échangés. Chaque liste (clubs, nationalités, positions, années de repêchage, joueurs échangés, recherche Tous les joueurs) montre une vignette cliquable par joueur — le nom complet en attendant la photo réelle — qui ouvre sa fiche. Les 32 logos de clubs sont des vignettes cliquables qui ouvrent l’objet club et son effectif. L’âge reste [INCOMPLET].</p>
     </div></div>
@@ -1509,7 +1522,7 @@ function renderWorldBranchPanel(branchId){
   const ix=rows.filter(r=>((window.WORLD_FLOORS.branches[branchId]||{}).indices||[]).some(i=>i.id===r.id) || ['NDX','SPX'].includes(r.id));
   const ex=rows.filter(r=>!ix.includes(r));
   return '<div class="ovtop"><div>'+
-    '<h1>Branche — '+escAttr((b&&b.name)||branchId)+' <span class="verpill">v20.14.1</span></h1>'+
+    '<h1>Branche — '+escAttr((b&&b.name)||branchId)+' <span class="verpill">v20.15</span></h1>'+
     '<div class="crumb-slot"></div>'+
     '<p class="lead">Objets Classe 2 = places / indices avec liens vérifiés (HTTP 2xx/3xx). Constituants Classe 1 sourcés quand disponibles ; sinon [INCOMPLET]. Aucune valeur inventée.</p>'+
     t01+
@@ -1560,7 +1573,7 @@ function renderSourcesPanel(){
   body+='<section class="src-branch"><h2>Sports</h2><ul class="src-list"><li><strong>Hockey LNH</strong> — couvert (silo)</li>'+
     '<li>Football / Soccer / Football américain / Basketball — <span class="incomp">[INCOMPLET] placeholders (silos scellés, non étendus en v20.12)</span></li></ul>'+
     '<p class="muted">Build public SAFE : sigles seulement, pas de photos/logos de marque. Un build PRIVÉ (logos/photos) existe hors site public.</p></section>';
-  return '<div class="ovtop"><div><h1>Sources et liens de données <span class="verpill">v20.14.1</span></h1>'+
+  return '<div class="ovtop"><div><h1>Sources et liens de données <span class="verpill">v20.15</span></h1>'+
     '<p class="lead">Inventaire des liens par branche. Statuts : couvert / liens seulement / [INCOMPLET]. Aucune valeur inventée.</p>'+
     '<p class="galaxy-actions"><button type="button" class="retour-hub" data-route="#/">← Retour au hub</button> '+
     '<button type="button" class="retour-hub" data-route="#/galaxy/planet">← Galaxies</button></p></div></div>'+body;
@@ -1623,7 +1636,7 @@ function ensureGalaxyPlanet(){
 /* === v20.13 — FIELDS structure (portal button lands here) === */
 function renderFieldsRoot(){
   return `<div class="ovtop"><div>
-      <h1>Champs — structure <span class="verpill">v20.14.1</span></h1>
+      <h1>Champs — structure <span class="verpill">v20.15</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Deux champs d’entrée. Finance est le plus vaste. Sports professionnels ouvre le hockey en premier. Un clic par étape · aucune page morte.</p>
       <p class="galaxy-actions"><button type="button" class="retour-hub" data-route="#/">← Retour au portail</button></p>
@@ -1651,7 +1664,7 @@ function renderFieldsSports(){
       <span class="fd-badge">en construction</span>
     </button>`).join('');
   return `<div class="ovtop"><div>
-      <h1>Sports professionnels <span class="verpill">v20.14.1</span></h1>
+      <h1>Sports professionnels <span class="verpill">v20.15</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Hockey est le champ n°1. Un clic ouvre la galaxie LNH (équipes et joueurs). Les autres sports restent des emplacements vides.</p>
       <p class="galaxy-actions">
@@ -1672,9 +1685,9 @@ function renderFieldsSports(){
 }
 function renderFieldsFinance(){
   return `<div class="ovtop"><div>
-      <h1>Finance <span class="verpill">v20.14.1</span></h1>
+      <h1>Finance <span class="verpill">v20.15</span></h1>
       <div class="crumb-slot"></div>
-      <p class="lead">Champ le plus vaste. Ouvrir Amérique du Nord pour les trois ensembles cliquables (S&amp;P 500, Nasdaq-100, NYSE).</p>
+      <p class="lead">Champ le plus vaste. Amérique du Nord ouvre S&amp;P 500, Nasdaq-100 et NYSE. Les autres branches ouvrent leurs indices (galaxie quand les prix T0/T1 sont disponibles).</p>
       <p class="galaxy-actions">
         <button type="button" class="retour-hub" data-route="#/fields">← Champs</button>
         <button type="button" class="retour-hub" data-route="#/">← Portail</button>
@@ -1688,19 +1701,47 @@ function renderFieldsFinance(){
         <span class="fd-badge">ACTIVE</span>
         <span class="fd-go">→</span>
       </button>
+      <button type="button" class="field-door live" data-id="FIELD-LATAM" data-route="#/fields/finance/LATAM" aria-label="Amérique du Sud">
+        <span class="fd-kicker">Sous-champ</span>
+        <span class="fd-name">AMÉRIQUE DU SUD</span>
+        <span class="fd-blurb">Ibovespa — 76 titres Classe 1 · galaxie T0/T1</span>
+        <span class="fd-badge">ACTIVE</span>
+        <span class="fd-go">→</span>
+      </button>
+      <button type="button" class="field-door live" data-id="FIELD-APAC" data-route="#/fields/finance/APAC" aria-label="Asie-Pacifique">
+        <span class="fd-kicker">Sous-champ</span>
+        <span class="fd-name">ASIE-PACIFIQUE</span>
+        <span class="fd-blurb">Straits Times Index (galaxie) · Nikkei 225, Hang Seng, S&amp;P/ASX 200 (listes)</span>
+        <span class="fd-badge">ACTIVE</span>
+        <span class="fd-go">→</span>
+      </button>
+      <button type="button" class="field-door live" data-id="FIELD-ME" data-route="#/fields/finance/ME" aria-label="Moyen-Orient">
+        <span class="fd-kicker">Sous-champ</span>
+        <span class="fd-name">MOYEN-ORIENT</span>
+        <span class="fd-blurb">TASI — constituants Wikidata + galaxie T0/T1 (liste partielle)</span>
+        <span class="fd-badge">ACTIVE</span>
+        <span class="fd-go">→</span>
+      </button>
+      <button type="button" class="field-door live" data-id="FIELD-EUR" data-route="#/fields/finance/EUR" aria-label="Europe">
+        <span class="fd-kicker">Sous-champ</span>
+        <span class="fd-name">EUROPE</span>
+        <span class="fd-blurb">FTSE 100 · DAX 40 · CAC 40 · EURO STOXX 50 — constituants liés, prix T0/T1 [INCOMPLET]</span>
+        <span class="fd-badge">ACTIVE</span>
+        <span class="fd-go">→</span>
+      </button>
+      <button type="button" class="field-door live" data-id="FIELD-AFR" data-route="#/fields/finance/AFR" aria-label="Afrique">
+        <span class="fd-kicker">Sous-champ</span>
+        <span class="fd-name">AFRIQUE</span>
+        <span class="fd-blurb">FTSE/JSE Top 40 — constituants liés, prix T0/T1 [INCOMPLET]</span>
+        <span class="fd-badge">ACTIVE</span>
+        <span class="fd-go">→</span>
+      </button>
       <button type="button" class="field-door" data-id="FIELD-AMER" data-route="#/galaxy/AMER" aria-label="Amériques (branche complète)">
         <span class="fd-kicker">Branche Classe 2</span>
         <span class="fd-name">AMÉRIQUES (branche)</span>
         <span class="fd-blurb">Nord + Sud · places et indices liés</span>
         <span class="fd-go">→</span>
       </button>
-      ${TREE_BRANCHES.filter(b=>b.id!=='AMER').map(b=>`<button type="button" class="field-door ${branchCovered(b)?'live':'empty'}" data-id="FIELD-${b.id}" data-route="#/galaxy/${b.id}" aria-label="${b.name}">
-        <span class="fd-kicker">Branche Classe 2</span>
-        <span class="fd-name">${b.name.toUpperCase()}</span>
-        <span class="fd-blurb">${b.blurb||''}</span>
-        <span class="fd-badge">${branchCovered(b)?'ACTIVE':'[INCOMPLET]'}</span>
-        <span class="fd-go">→</span>
-      </button>`).join('')}
     </div>`;
 }
 function renderFieldsFinanceNA(){
@@ -1709,7 +1750,7 @@ function renderFieldsFinanceNA(){
   const nNy=typeof countMic==='function'?countMic('XNYS'):0;
   // Third NA set = NYSE (XNYS) — Dow/TSX absent from build data
   return `<div class="ovtop"><div>
-      <h1>Amérique du Nord <span class="verpill">v20.14.1</span></h1>
+      <h1>Amérique du Nord <span class="verpill">v20.15</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Trois ensembles cliquables. Chaque clic ouvre sa propre galaxie (objets sociétés / titres). Troisième ensemble = NYSE (le Dow et le TSX sont absents des données → non inventés).</p>
       <p class="galaxy-actions">
@@ -1741,6 +1782,44 @@ function renderFieldsFinanceNA(){
       </button>
     </div>`;
 }
+function worldIndexCardsForBranch(branchId){
+  const blk=((window.WORLD_FLOORS&&WORLD_FLOORS.branches)||{})[branchId]||{};
+  return (blk.indices||[]).map(ix=>{
+    const priced=!!(DATA[ix.id]&&DATA[ix.id].meta&&DATA[ix.id].meta.n_with_prices);
+    const n=priced?DATA[ix.id].meta.n_with_prices:(ix.constituents_n||0);
+    const floor=(DATA[ix.id]&&DATA[ix.id].meta&&DATA[ix.id].meta.floor)||(branchId==='AMER'||branchId==='LATAM'?'AMF':branchId==='EUR'?'EUF':branchId==='AFR'?'AFF':'ASF');
+    const route=priced?('#/floor/'+floor+'/index/'+ix.id):('#/galaxy/'+branchId+'/index/'+ix.id);
+    const blurb=priced?(n+' titres Classe 1 · galaxie T0/T1'):((ix.constituents_n||0)?((ix.constituents_n||0)+' constituants · [INCOMPLET] prix T0/T1 — liste liée'):(ix.note||'[INCOMPLET]'));
+    return `<button type="button" class="field-door ${priced?'live set-card':'empty'}" data-id="SET-${ix.id}" data-route="${route}" aria-label="${ix.name}">
+        <span class="fd-kicker">Ensemble · ${priced?'galaxie':'liste'}</span>
+        <span class="fd-name">${ix.name.toUpperCase()}</span>
+        <span class="fd-blurb">${blurb}</span>
+        <span class="fd-badge">${priced?'ACTIVE':'[INCOMPLET]'}</span>
+        <span class="fd-go">→</span>
+      </button>`;
+  }).join('');
+}
+function renderFieldsFinanceRegion(code){
+  const map={
+    APAC:{title:'Asie-Pacifique',branch:'APAC',lead:'Straits Times Index ouvre sa galaxie (30 titres, prix T0/T1). Nikkei 225, Hang Seng et S&amp;P/ASX 200 ont leurs listes de constituants ; les prix T0/T1 restent [INCOMPLET].'},
+    ME:{title:'Moyen-Orient',branch:'ME',lead:'TASI ouvre une galaxie à partir des sociétés Wikidata pourvues d’un symbole et d’un prix Yahoo. La liste officielle complète (~250) et 17 symboles sans prix restent [INCOMPLET]. T0 saoudien = 4 jan 2026 (le 2 jan est un vendredi, week-end local).'},
+    EUR:{title:'Europe',branch:'EUR',lead:'FTSE 100, DAX 40, CAC 40 et EURO STOXX 50 : constituants liés. Prix T0/T1 [INCOMPLET] — pas de galaxie inventée.'},
+    AFR:{title:'Afrique',branch:'AFR',lead:'FTSE/JSE Top 40 : constituants liés. Symboles et prix T0/T1 en partie [INCOMPLET].'},
+    LATAM:{title:'Amérique du Sud',branch:'AMER',lead:'Ibovespa (B3, carteira officielle au 9 nov 2026) : 76 titres Classe 1, galaxie T0/T1.'}
+  };
+  const cfg=map[code]||map.APAC;
+  const cards=worldIndexCardsForBranch(cfg.branch);
+  return `<div class="ovtop"><div>
+      <h1>${cfg.title} <span class="verpill">v20.15</span></h1>
+      <div class="crumb-slot"></div>
+      <p class="lead">${cfg.lead}</p>
+      <p class="galaxy-actions">
+        <button type="button" class="retour-hub" data-route="#/fields/finance">← Finance</button>
+        <button type="button" class="retour-hub" data-route="#/fields">← Champs</button>
+      </p>
+    </div></div>
+    <div class="fields-grid sets-na" id="fields-${code}">${cards}</div>`;
+}
 function applyFields(route){
   document.body.className='mode-home mode-fields mode-fields-'+(route.fields||'root');
   stopPlay();
@@ -1749,10 +1828,14 @@ function applyFields(route){
   if(route.fields==='sports') el.innerHTML=renderFieldsSports();
   else if(route.fields==='finance-na') el.innerHTML=renderFieldsFinanceNA();
   else if(route.fields==='finance') el.innerHTML=renderFieldsFinance();
+  else if(route.fields&&route.fields.indexOf('finance-')===0&&route.fields!=='finance-na'){
+    const code=route.fields.replace('finance-','');
+    el.innerHTML=renderFieldsFinanceRegion(code);
+  }
   else el.innerHTML=renderFieldsRoot();
   el.style.display='block';
   if($('mf')) $('mf').style.display='none';
-  const ctx={root:'Champs',sports:'Sports professionnels',finance:'Finance','finance-na':'Amérique du Nord'}[route.fields]||'Champs';
+  const ctx={root:'Champs',sports:'Sports professionnels',finance:'Finance','finance-na':'Amérique du Nord','finance-APAC':'Asie-Pacifique','finance-ME':'Moyen-Orient','finance-EUR':'Europe','finance-AFR':'Afrique','finance-LATAM':'Amérique du Sud'}[route.fields]||'Champs';
   ensureRetourHubBar(ctx);
   // hide static portal button while inside fields
 }
@@ -1780,7 +1863,7 @@ function renderGalaxyPlanet(){
       <span class="gpo-blurb">Hockey · football · soccer · football américain · basketball — silos isolés (aucune donnée finance)</span>
     </button>`;
   el.innerHTML=`<div class="ovtop"><div>
-      <h1>Galaxie planétaire <span class="verpill">v20.14.1</span></h1>
+      <h1>Galaxie planétaire <span class="verpill">v20.15</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Cinq branches d'ouverture en objets Classe 2 · porte Sports (galaxies par sport, silo isolé) · aucune fusion sport↔finance · données manquantes = [INCOMPLET].</p>
       <p class="galaxy-actions">
@@ -1811,7 +1894,7 @@ function renderGalaxySports(){
       <span class="gpo-blurb">Silo um.analysis.sports.${s.id}.* — aucune donnée inventée</span>
     </button>`).join('');
   el.innerHTML=`<div class="ovtop"><div>
-      <h1>Galaxies Sports <span class="verpill">v20.14.1</span></h1>
+      <h1>Galaxies Sports <span class="verpill">v20.15</span></h1>
       <div class="crumb-slot"></div>
       <p class="lead">Chaque sport = galaxie et silo d'analyse isolés. Aucun mélange entre sports, aucun mélange avec la finance.</p>
       <p class="galaxy-actions">
@@ -1973,7 +2056,7 @@ function applyNhlGalaxy(){
   ensureNhlInfoChip();
   size(); drawNhlGalaxy();
   window.__DRAW_OVERRIDE='nhl';
-  window.__VERSION='v20.14.1';
+  window.__VERSION='v20.15';
 }
 function ensureNhlInfoChip(){
   let chip=$('nhl-info-chip');
@@ -2062,6 +2145,13 @@ function applyGalaxy(route){
   window.__HUB_CAT='finance';
   const sub=route.worldSub||null;
   if(window.WORLD_FLOORS && route.branch){
+    const subId=sub&&sub.kind==='index'&&sub.id;
+    if(subId && DATA[subId] && DATA[subId].meta && DATA[subId].meta.n_with_prices){
+      applyFloor({mode:'floor', sys:DATA[subId].meta.floor, ds:subId, index:subId, lvl:'x'});
+      document.body.classList.add('mode-galaxy','mode-galaxy-branch');
+      ensureRetourHubBar('Finance · '+(b?b.name:route.branch)+' · '+(DATA[subId].meta.name||subId));
+      return;
+    }
     applyWorldBranch(route.branch, sub);
     // AMER: still expose canvas via NDX/SPX cards (routes #/floor/...)
     return;
@@ -2074,7 +2164,7 @@ function applyGalaxy(route){
     document.body.className='mode-home mode-galaxy mode-galaxy-branch';
     stopPlay();
     const el=ensureGalaxyPlanet();
-    el.innerHTML='<div class="ovtop"><div><h1>Galaxie — '+((b&&b.name)||route.branch)+' <span class="verpill">v20.14.1</span></h1><p class="incomp">[INCOMPLET]</p></div></div>';
+    el.innerHTML='<div class="ovtop"><div><h1>Galaxie — '+((b&&b.name)||route.branch)+' <span class="verpill">v20.15</span></h1><p class="incomp">[INCOMPLET]</p></div></div>';
     el.style.display='block';
     if($('mf')) $('mf').style.display='none';
     ensureRetourHubBar('Finance · '+((b&&b.name)||route.branch)+' · [INCOMPLET]');
@@ -2084,7 +2174,16 @@ function applyGalaxy(route){
 function applyFloor(route){
   document.body.className='mode-floor';
   document.body.classList.remove('ui-collapsed'); // will re-apply collapse below
+  // v20.15 — world index floors (STI/TASI/IBOV) keep the NDX/SPX applyFloor path intact
+  if(route.index && DATA[route.index] && DATA[route.index].meta && DATA[route.index].meta.floor){
+    route.sys=DATA[route.index].meta.floor;
+    route.ds=route.index;
+  }
   if(!LIB4.some(x=>x.id===route.sys)) route.sys='AMF';
+  // ensure ds <select> knows world indices
+  if(route.ds && DATA[route.ds] && $('ds') && ![...$('ds').options].some(o=>o.value===route.ds)){
+    const op=document.createElement('option'); op.value=route.ds; op.textContent=(DATA[route.ds].meta&&DATA[route.ds].meta.name)||route.ds; $('ds').appendChild(op);
+  }
   $('sys').value=route.sys;
   $('ds').value=route.ds||'ALL';
   if(route.index) $('lvl').value='x';
@@ -2096,7 +2195,7 @@ function applyFloor(route){
   // v20.14 — land on T1 so the constellation is dense, then fit to Class 1
   try{ if($('c') && $('e')) $('c').value=$('e').value; }catch(e){}
   if(route.index){
-    const want={NDX:'Nasdaq-100 (indice)',SPX:'S&P 500 (indice)'}[route.index];
+    const want=(window.INDEX_GROUP_NAME||{})[route.index]||({NDX:'Nasdaq-100 (indice)',SPX:'S&P 500 (indice)'}[route.index]);
     const gi=GROUPS.findIndex(g=>g.name===want);
     if(gi>=0){
       select(gi);
@@ -2190,7 +2289,7 @@ function applyRoute(){
     });
   }catch(e){}
   window.__NAV.crumb=($('crumb')&&$('crumb').textContent)||'';
-  window.__VERSION='v20.14.1';
+  window.__VERSION='v20.15';
   // Right window: summon on object navigation; never restore from ghost
   try{
     if(window.__RW_FORCE_CLOSED){ closeRightWindow(); window.__RW_FORCE_CLOSED=false; }
