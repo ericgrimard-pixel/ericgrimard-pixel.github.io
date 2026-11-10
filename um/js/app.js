@@ -373,7 +373,7 @@ let drag=null,moved=false;cv.onmousedown=e=>{drag=[e.clientX,e.clientY];moved=fa
 cv.onmousemove=e=>{if(!drag||EMPTY)return;if(Math.abs(e.clientX-drag[0])+Math.abs(e.clientY-drag[1])>2)moved=true;const v=view();panX-=(e.clientX-drag[0])/(W-L-R)*(v.x1-v.x0);panY+=(e.clientY-drag[1])/(H-T-B)*(v.y1-v.y0);drag=[e.clientX,e.clientY];draw();};
 // survol : test géométrique exact sur la forme dessinée (rayon affiché compris).
 // Priorité : Classe 1 (même à l'intérieur d'un objet de Classe 2) → Classe 2 → Classe 4 → marqueur Z0 → fantôme de la traîne. Aucune zone morte.
-function hoverAt(mx,my){{const lb=hoverLib(mx,my);if(lb)return lb;}if(EMPTY)return null;const inC=h=>Math.hypot(h.px-mx,h.py-my)<=h.r;const best=a=>{let b=null,bd=Infinity;for(const h of a){const d=Math.hypot(h.px-mx,h.py-my);if(d<=h.r&&d<bd){bd=d;b=h;}}return b;};
+function hoverAt(mx,my){if(window.__DRAW_OVERRIDE==='nhl')return null;{const lb=hoverLib(mx,my);if(lb)return lb;}if(EMPTY)return null;const inC=h=>Math.hypot(h.px-mx,h.py-my)<=h.r;const best=a=>{let b=null,bd=Infinity;for(const h of a){const d=Math.hypot(h.px-mx,h.py-my);if(d<=h.r&&d<bd){bd=d;b=h;}}return b;};
   const pc=v=>(v*100).toFixed(1)+' %',c=HIT.c;
   // constituants déployés dessinés au-dessus : prioritaires parmi les Classe 1
   let h=best(HIT.c1.filter(z=>z.dep))||best(HIT.c1.filter(z=>!z.dep));
@@ -1072,6 +1072,10 @@ function parseHash(){
       if(p[i]==='list'){ r.list=true; i++; }
       if(p[i]==='agg'&&p[i+1]&&p[i+2]!==undefined){r.agg=p[i+1];r.key=p[i+2];i+=3;}
       if(p[i]==='player'&&p[i+1]) r.player=p[i+1];
+      if(p[2]==='conf'&&p[3]){ r.nhlLevel='conf'; r.nhlConf=String(p[3]).toLowerCase(); }
+      else if(p[2]==='div'&&p[3]){ r.nhlLevel='div'; r.nhlDiv=String(p[3]).toLowerCase(); }
+      else if(p[2]==='team'&&p[3]){ r.nhlLevel='team'; r.nhlTeam=String(p[3]).toUpperCase(); }
+      else if(!r.list && !r.agg && !r.player){ r.nhlLevel='league'; }
       return r;
     }
     return {mode:'placeholder',sport:p[1]};
@@ -1128,6 +1132,10 @@ function tileHTML(id,name,sum,status,route){
   </button>`;
 }
 function renderMainframe(){
+  if(typeof window.renderDomainMap==='function'){
+    window.renderDomainMap();
+    return;
+  }
   // Opening = balance chart tree (5 branches only). Floors LIB4 kept as data structure, not shown as opening tiles.
   const shown=new Set(['AMF','EUF','AFF','ASF','OCF','WF','NSF','EWF','NDX','SPX','SPORTS','NHL','APAC','ME','EUR','AFR','AMER']);
   const extra=REGISTRY.filter(x=>!shown.has(x.id) && !SPORT_PH.some(s=>s.id===x.id) && FLOOR_IDS.indexOf(x.id)<0);
@@ -1855,13 +1863,7 @@ function renderGalaxyPlanet(){
     </button>`;
   }).join('');
   // Sports door as Class 2 on planet — opens per-sport galaxies ONLY; never merges with finance
-  const sportsDoor=`<button type="button" class="galaxy-planet-obj class2 sports-door" data-id="GAL-SPORTS" data-route="#/galaxy/sports" data-hub-cat="sports" aria-label="Sports professionnels">
-      <span class="gpo-class">Classe 2 · porte Sports</span>
-      <span class="gpo-id">SPORTS</span>
-      <span class="gpo-name">Sports professionnels</span>
-      <span class="gpo-badge">galaxies par sport</span>
-      <span class="gpo-blurb">Hockey · football · soccer · football américain · basketball — silos isolés (aucune donnée finance)</span>
-    </button>`;
+  const sportsDoor='';
   el.innerHTML=`<div class="ovtop"><div>
       <h1>Galaxie planétaire <span class="verpill">v20.15</span></h1>
       <div class="crumb-slot"></div>
@@ -1979,12 +1981,27 @@ function nhlGalaxyFit(){
 }
 function nhlXY(x,y){
   const v=window.__NHL_VIEW||{x0:-1.2,x1:1.2,y0:-1.2,y1:1.2};
-  const Lft=56, Rgt=($('libon')&&$('libon').checked)?(PW+50):36, Top=56, Bot=48;
+  const nhlMode=window.__DRAW_OVERRIDE==='nhl';
+  const Lft=nhlMode?64:56;
+  const Rgt=nhlMode?((W>=960 && document.body.classList.contains('rw-open'))?360:52):(($('libon')&&$('libon').checked)?(PW+50):36);
+  const Top=56, Bot=48;
   const px=Lft + (x-v.x0)/(v.x1-v.x0)*(W-Lft-Rgt);
   const py=Top + (v.y1-y)/(v.y1-v.y0)*(H-Top-Bot);
   return [px,py];
 }
 function drawNhlGalaxy(){
+  window.ctx=ctx; window.W=W; window.H=H; window.nhlXY=nhlXY; window.moved=moved;
+  if(typeof window.drawNhlLeagueGalaxy==='function'){
+    window.drawNhlLeagueGalaxy();
+    if(window.HIT){
+      HIT.c1=window.HIT.c1||[];
+      HIT.c2=window.HIT.c2||[];
+      HIT.c4=window.HIT.c4||null;
+      HIT.c4n=window.HIT.c4n||[];
+      HIT.nhl=true;
+    }
+    return;
+  }
   const G=ensureNhlGalaxy(); nhlGalaxyFit();
   HIT={c1:[],c2:[],c4:null,c4n:[],z0:null,gr:0,c:0,lib:[],libR:null,nhl:true};
   ctx.fillStyle='#07080c'; ctx.fillRect(0,0,W,H);
@@ -2048,15 +2065,18 @@ function applyNhlGalaxy(){
   document.body.className='mode-floor mode-nhl-galaxy mode-galaxy';
   stopPlay(); clearSel();
   EMPTY=false;
-  // hide nhl list overlay
   if($('nhlview')) {$('nhlview').style.display='none'; $('nhlview').innerHTML='';}
-  ensureRetourHubBar('Sports · LNH (galaxie)');
+  if($('mf')) $('mf').style.display='none';
+  try{ hideRetourHubBar(); }catch(e){}
   try{ collapseUiPanel(true); }catch(e){}
-  // soft info banner (collapsed behind ⓘ)
-  ensureNhlInfoChip();
-  size(); drawNhlGalaxy();
+  try{ hideNhlInfoChip(); }catch(e){}
+  if(typeof window.applyNhlLeagueHooks==='function') window.applyNhlLeagueHooks();
   window.__DRAW_OVERRIDE='nhl';
-  window.__VERSION='v20.15';
+  window.__VERSION='v20.16';
+  if(typeof window.nhlSummonCurrentSystem==='function' && !window.__RW_NHL_LOCK){
+    try{ window.nhlSummonCurrentSystem(); }catch(e){}
+  }
+  size(); drawNhlGalaxy();
 }
 function ensureNhlInfoChip(){
   let chip=$('nhl-info-chip');
@@ -2289,7 +2309,7 @@ function applyRoute(){
     });
   }catch(e){}
   window.__NAV.crumb=($('crumb')&&$('crumb').textContent)||'';
-  window.__VERSION='v20.15';
+  window.__VERSION='v20.16';
   // Right window: summon on object navigation; never restore from ghost
   try{
     if(window.__RW_FORCE_CLOSED){ closeRightWindow(); window.__RW_FORCE_CLOSED=false; }
@@ -2340,6 +2360,10 @@ function patchNhlClicks(){
   const prev=cv.onclick;
   cv.onclick=function(e){
     if(window.__DRAW_OVERRIDE==='nhl'){
+      window.moved=moved; window.HIT=HIT; window.ctx=ctx; window.W=W; window.H=H;
+      if(typeof window.handleNhlLeagueClick==='function'){
+        if(window.handleNhlLeagueClick(e)) return;
+      }
       if(moved) return;
       const mx=e.clientX, my=e.clientY;
       // Class 2 team first
@@ -2605,10 +2629,12 @@ function initV211(U){
     e.preventDefault();
     if(r.mode==='nhl'&&r.player){go(r.agg? '#/sports/nhl/agg/'+r.agg+'/'+encodeURIComponent(r.key) : '#/sports/nhl');return;}
     if(r.mode==='nhl'&&r.agg){go('#/sports/nhl');return;}
-    if(r.mode==='nhl'||r.mode==='placeholder'){go('#/sports');return;}
+    if(r.mode==='nhl'){go('#/');return;}
+    if(r.mode==='placeholder'){go('#/sports');return;}
     if(r.mode==='sports') go('#/');
   });
   patchClicks();
+  try{patchNhlClicks();}catch(e){}
   ghostHubBindLifecycle();
   // Restore hub/floor from ghost memory unless URL already points deeper than #/
   const hash0=location.hash||'';

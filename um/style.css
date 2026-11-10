@@ -1103,3 +1103,154 @@ body.mode-floor #icons,
 body.mode-nhl-galaxy #icons{
   top:96px !important; /* room for gear at 52–88 */
 }
+
+/* ===== v20.16 domain-map hub + hockey galaxy ===== */
+#um-galaxy-hero-static{ display:none !important; }
+body.mode-home.mode-home-vignette #ui,
+body.mode-home.mode-home-vignette #cv,
+body.mode-home.mode-home-vignette #hint,
+body.mode-home.mode-home-vignette #hud,
+body.mode-home.mode-home-vignette #icons,
+body.mode-home.mode-home-vignette #crumb,
+body.mode-home.mode-home-vignette #homebtn,
+body.mode-home.mode-home-vignette #floorctl,
+body.mode-home.mode-home-vignette #retour-hub-bar,
+body.mode-home.mode-home-vignette #super-strip-persist,
+body.mode-home.mode-home-vignette #ui-toggle,
+body.mode-home.mode-home-vignette #nhl-info-chip,
+body.mode-home.mode-home-vignette #nhl-spine{
+  display:none !important;
+  visibility:hidden !important;
+}
+body.mode-home.mode-home-vignette #mf,
+body.mode-home #mf{
+  display:block !important;
+  padding:0 !important;
+  position:fixed;
+  inset:0;
+  z-index:30;
+  overflow:auto;
+  background:#07080c;
+  border:none;
+  box-shadow:none;
+}
+body.mode-home.mode-home-vignette #mf .ovtop,
+body.mode-home.mode-home-vignette #mf .lead,
+body.mode-home.mode-home-vignette #mf .t01-banner,
+body.mode-home.mode-home-vignette #mf .fields-hint,
+body.mode-home.mode-home-vignette #mf h1,
+body.mode-home.mode-home-vignette #mf h2{ display:none !important; }
+
+.domain-map{
+  min-height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:28px 20px;
+  box-sizing:border-box;
+}
+.dm-grid{
+  width:min(920px, 100%);
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap:18px;
+}
+.dm-tile{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  min-height:160px;
+  padding:28px 20px;
+  text-decoration:none;
+  color:#e8c872;
+  background:radial-gradient(circle at 30% 20%, rgba(232,200,114,.16), rgba(14,18,28,.96) 62%);
+  border:1.5px solid rgba(232,200,114,.45);
+  border-radius:18px;
+  box-sizing:border-box;
+  cursor:pointer;
+}
+.dm-tile:hover, .dm-tile:focus-visible{
+  border-color:#fff3c4;
+  box-shadow:0 0 0 1px rgba(232,200,114,.35), 0 10px 32px rgba(0,0,0,.35);
+  outline:none;
+}
+.dm-tile.dm-hockey{
+  grid-column:1 / -1;
+  min-height:240px;
+  background:radial-gradient(circle at 50% 30%, rgba(232,200,114,.22), rgba(10,16,26,.98) 68%);
+}
+.dm-glyph{ width:56px; height:56px; display:block; }
+.dm-glyph svg{ width:56px; height:56px; display:block; }
+.dm-tile.dm-hockey .dm-glyph, .dm-tile.dm-hockey .dm-glyph svg{ width:72px; height:72px; }
+.dm-name{
+  font:700 22px/1.15 system-ui,sans-serif;
+  letter-spacing:.04em;
+  color:#e8e6df;
+}
+.dm-tile.dm-hockey .dm-name{ font-size:32px; }
+
+#nhl-spine{
+  position:fixed;
+  left:10px;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:45;
+  display:none;
+  flex-direction:column;
+  gap:8px;
+  padding:8px 6px;
+  background:rgba(7,8,12,.72);
+  border:1px solid rgba(232,200,114,.28);
+  border-radius:14px;
+}
+body.mode-nhl-galaxy #nhl-spine{ display:flex !important; }
+body:not(.mode-nhl-galaxy) #nhl-spine{ display:none !important; }
+.nhl-spine-btn{
+  width:42px; height:42px;
+  padding:6px;
+  border:1px solid rgba(232,200,114,.35);
+  border-radius:10px;
+  background:rgba(14,18,28,.9);
+  cursor:pointer;
+  line-height:0;
+}
+.nhl-spine-btn svg{ width:28px; height:28px; display:block; }
+.nhl-spine-btn.on, .nhl-spine-btn:hover, .nhl-spine-btn:focus-visible{
+  border-color:#e8c872;
+  box-shadow:0 0 8px rgba(232,200,114,.35);
+  outline:none;
+}
+body.mode-nhl-galaxy #retour-hub-bar,
+body.mode-nhl-galaxy #nhl-info-chip{ display:none !important; }
+body.mode-nhl-galaxy #icons{ display:none !important; }
+
+.rw-rink{ margin:10px 0 14px; }
+.rw-rink h3{ margin:0 0 8px; font:700 13px/1.2 system-ui,sans-serif; color:#e8c872; }
+.nhl-mini-rink{ display:block; width:100%; max-width:260px; height:auto; }
+.rw-muted{ color:#9aa3b5; font:500 12px/1.35 system-ui,sans-serif; margin:8px 0 0; }
+
+@media (max-width:520px){
+  .dm-grid{ grid-template-columns:1fr; gap:12px; }
+  .dm-tile{ min-height:120px; padding:20px 16px; }
+  .dm-tile.dm-hockey{ min-height:180px; }
+  .dm-name{ font-size:18px; }
+  .dm-tile.dm-hockey .dm-name{ font-size:24px; }
+  #nhl-spine{ left:6px; padding:6px 4px; gap:6px; }
+  .nhl-spine-btn{ width:40px; height:40px; }
+}
+
+body.mode-nhl-galaxy #um-safe-note,
+body.mode-home #um-safe-note,
+body.mode-home-vignette #um-safe-note,
+body.mode-nhl-galaxy #ui-toggle,
+body.mode-nhl-galaxy #panbtn,
+body.mode-nhl-galaxy #tip{
+  display:none !important;
+}
+.nhl-spine-btn{ width:44px; height:44px; }
+@media (max-width:520px){
+  .nhl-spine-btn{ width:44px; height:44px; }
+}
