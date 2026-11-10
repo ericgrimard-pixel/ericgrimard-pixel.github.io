@@ -1104,7 +1104,7 @@ body.mode-nhl-galaxy #icons{
   top:96px !important; /* room for gear at 52–88 */
 }
 
-/* ===== v20.16 domain-map hub + hockey galaxy ===== */
+/* ===== v20.17 domain-map hub + hockey galaxy ===== */
 #um-galaxy-hero-static{ display:none !important; }
 body.mode-home.mode-home-vignette #ui,
 body.mode-home.mode-home-vignette #cv,
@@ -1122,8 +1122,8 @@ body.mode-home.mode-home-vignette #nhl-spine{
   display:none !important;
   visibility:hidden !important;
 }
-body.mode-home.mode-home-vignette #mf,
-body.mode-home #mf{
+body.mode-home.mode-home-vignette:not(.mode-galaxy) #mf,
+body.mode-home:not(.mode-galaxy):not(.mode-floor) #mf{
   display:block !important;
   padding:0 !important;
   position:fixed;

@@ -1,4 +1,4 @@
-/* v20.16 — Hockey galaxy: league → conference/division → club → players.
+/* v20.17 — Hockey galaxy: league → conference/division → club → players.
    Sealed sports silo. Original conference/division glyphs (not NHL trademarks).
    Club logos self-hosted. Player mugshots are not used on the public site. */
 (function(w){
@@ -676,18 +676,15 @@ function applyNhlLeagueHooks(){
   var old = $('nhl-info-chip'); if(old) old.style.display='none';
 }
 
-/* Domain-map hub */
-var UM_ENGINE = w.UM_ENGINE_URL || '';
+/* Domain-map hub — two doors only. Finance opens Claude's real UM financial engine (S&P 500).
+   The hub's own finance placeholder stays at #/galaxy/planet (URL only, not a tile). */
+var UM_FINANCE = w.UM_ENGINE_URL || 'https://claude.ai/artifact/Mr4cUjAuszjdrQU8U6YRig#sp500';
 
 function renderDomainMap(){
   var el = $('mf');
   if(!el) return;
   document.body.classList.add('mode-home-vignette');
   hideNhlSpine();
-  var umHref = UM_ENGINE;
-  var umTile = umHref
-    ? '<a class="dm-tile dm-um" href="'+umHref+'" target="_blank" rel="noopener noreferrer" data-id="UM-ENGINE"><span class="dm-glyph" aria-hidden="true">'+glyphSVG('nhl')+'</span><span class="dm-name">Universal Metaphor</span></a>'
-    : '';
   el.innerHTML =
     '<div class="domain-map" id="domain-map">'
     + '<div class="dm-grid">'
@@ -695,11 +692,10 @@ function renderDomainMap(){
     +     '<span class="dm-glyph" aria-hidden="true">'+glyphSVG('nhl')+'</span>'
     +     '<span class="dm-name">Hockey</span>'
     +   '</a>'
-    +   '<a class="dm-tile dm-finance" href="#/galaxy/planet" data-route="#/galaxy/planet" data-id="DOM-FINANCE">'
+    +   '<a class="dm-tile dm-finance" href="'+UM_FINANCE+'" data-id="DOM-FINANCE">'
     +     '<span class="dm-glyph" aria-hidden="true"><svg viewBox="0 0 32 32" aria-hidden="true"><g stroke="#e8c872" stroke-width="2" fill="none" stroke-linecap="round"><circle cx="16" cy="16" r="11"/><path d="M16 5 C20 10 20 22 16 27 M16 5 C12 10 12 22 16 27 M5 16 H27 M7 11 H25 M7 21 H25"/></g></svg></span>'
     +     '<span class="dm-name">Finance</span>'
     +   '</a>'
-    +   umTile
     + '</div></div>';
 }
 
