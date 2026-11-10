@@ -1317,16 +1317,19 @@ body.mode-nhl-galaxy #tip{
 
 /* ===== v20.20 living Class 4 panel ===== */
 #c4panel{
-  position:fixed; z-index:5;
-  right:12px; top:12px;
-  width:min(312px, calc(100vw - 24px));
-  max-height:min(52vh, 420px); overflow:auto;
+  position:fixed; z-index:8;
+  left:64px; bottom:48px; top:auto; right:auto;
+  width:min(312px, calc(100vw - 80px));
+  max-height:min(42vh, 380px); overflow:auto;
   background:rgba(10,12,18,.93);
   border:1px solid #e8c872; border-radius:8px;
   padding:8px 10px 10px;
   color:#dfe3ea; font:12px/1.35 system-ui,sans-serif;
   box-shadow:0 8px 24px rgba(0,0,0,.35);
   pointer-events:none;
+}
+body.rw-open.mode-floor #c4panel{
+  width:min(312px, calc(100vw - min(380px, 42vw) - 88px));
 }
 #c4panel[hidden]{display:none !important;}
 body:not(.mode-floor) #c4panel{display:none !important;}
@@ -1342,7 +1345,11 @@ body:not(.mode-floor) #c4panel{display:none !important;}
 #c4panel table.c4-attrs td{color:#fff;padding:2px 0;font-variant-numeric:tabular-nums;}
 @media (max-width:520px){
   #c4panel{
-    right:8px; left:8px; top:auto; bottom:8px;
-    width:auto; max-height:34vh; font-size:11px;
+    left:56px; right:auto; top:auto; bottom:44px;
+    width:min(280px, calc(100vw - 72px));
+    max-height:30vh; font-size:11px;
+  }
+  body.rw-open.mode-floor #c4panel{
+    width:min(220px, calc(100vw - min(380px, 42vw) - 72px));
   }
 }
