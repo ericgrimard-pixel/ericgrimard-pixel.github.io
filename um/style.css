@@ -1313,3 +1313,36 @@ body.mode-nhl-galaxy #tip{
 @media (max-width:520px){
   .nhl-spine-btn{ width:44px; height:44px; }
 }
+
+
+/* ===== v20.20 living Class 4 panel ===== */
+#c4panel{
+  position:fixed; z-index:5;
+  right:12px; top:12px;
+  width:min(312px, calc(100vw - 24px));
+  max-height:min(52vh, 420px); overflow:auto;
+  background:rgba(10,12,18,.93);
+  border:1px solid #e8c872; border-radius:8px;
+  padding:8px 10px 10px;
+  color:#dfe3ea; font:12px/1.35 system-ui,sans-serif;
+  box-shadow:0 8px 24px rgba(0,0,0,.35);
+  pointer-events:none;
+}
+#c4panel[hidden]{display:none !important;}
+body:not(.mode-floor) #c4panel{display:none !important;}
+#c4panel header{margin:0 0 4px;font:700 13px/1.3 system-ui,sans-serif;color:#e8c872;}
+#c4panel .c4-rule{margin:0 0 8px;color:#c6b37a;font:italic 11px/1.35 system-ui,sans-serif;}
+#c4panel dl{margin:0 0 8px;}
+#c4panel dl div{margin:0 0 6px;}
+#c4panel dt{color:#8a91a0;font-weight:600;font-size:11px;}
+#c4panel dd{margin:1px 0 0;color:#fff;font-variant-numeric:tabular-nums;}
+#c4panel table.c4-attrs{width:100%;border-collapse:collapse;font-size:11px;}
+#c4panel table.c4-attrs caption{text-align:left;color:#e8c872;font-weight:700;margin:0 0 4px;}
+#c4panel table.c4-attrs th{text-align:left;color:#8a91a0;font-weight:600;padding:2px 8px 2px 0;vertical-align:top;white-space:nowrap;}
+#c4panel table.c4-attrs td{color:#fff;padding:2px 0;font-variant-numeric:tabular-nums;}
+@media (max-width:520px){
+  #c4panel{
+    right:8px; left:8px; top:auto; bottom:8px;
+    width:auto; max-height:34vh; font-size:11px;
+  }
+}

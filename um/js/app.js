@@ -60,8 +60,9 @@ function cyc(p0,p1,t,i0,i1){if(!Z0||i0==null)return cycAbs(p0,p1,t);const z0=ZL(
   const o0=[p0[0]-z0[0],p0[1]-z0[1]],o1=[p1[0]-z1[0],p1[1]-z1[1]];const o=cycAbs(o0,o1,t);return [zt[0]+o[0],zt[1]+o[1]];}
 // ---------- moteurs (séparés ; CLAVIS n'est pas touché) ----------
 // Classe 4 = effondrement total de toutes les constituantes du système (classes 3, 2 et 1 communes).
-// Placeholder actuel : comparaison directe avec la moyenne. Point de branchement : MANIF_ENGINES.irrationalisateur = {name, collapse(points)->[x,y]}.
-const MANIF_ENGINES={class4:{name:'moyenne directe (placeholder)',collapse:pts=>{let sx=0,sy=0;for(const p of pts){sx+=p[0];sy+=p[1];}return [sx/pts.length,sy/pts.length];}},irrationalisateur:null};
+// Position = moyenne de l'ensemble (Z0, canon). Le caractère visuel est l'effondrement des attributs du nuage.
+// Point de branchement : MANIF_ENGINES.irrationalisateur = {name, collapse(points)->[x,y]}.
+const MANIF_ENGINES={class4:{name:'effondrement vivant (dérive-comme-signal)',collapse:pts=>{let sx=0,sy=0;for(const p of pts){sx+=p[0];sy+=p[1];}return [sx/pts.length,sy/pts.length];}},irrationalisateur:null};
 window.MANIF_ENGINES=MANIF_ENGINES;
 function collapseClass4(pts){const e=MANIF_ENGINES.irrationalisateur||MANIF_ENGINES.class4;return e.collapse(pts);}
 // « Tout » à la séance i : configuration active, en un seul ensemble — Classe 1 + (Classe 2 si cochée) + (conteneurs de Classe 3 si cochés)
@@ -88,9 +89,105 @@ if(typeof window.__Z0_DOMAIN==='undefined') window.__Z0_DOMAIN='finance';
 function computeZ0(){ if(window.__Z0_DOMAIN==='none'){ Z0=null; return; }
 Z0=null;const C4=[];for(let i=S0;i<=S1;i++){const s=SET(i);C4[i]=s.pts.length?collapseClass4(s.pts):null;}
   const C4N=SYS.boxes.filter(b=>b.kind==='c4n'||b.kind==='half').map(b=>{const P=[];for(let i=S0;i<=S1;i++){const q=SETBOX(b,i);P[i]=q.length?collapseClass4(q):null;}return {b,P,has:P.some(x=>x)};});
-  const s0=SET(S0),s1=SET(S1);// placeholder de moindre effort : Z0 = moyennes de T₀ et de T₁ (le vrai Z0 = triple effondrement, non calculable présentement)
+  const s0=SET(S0),s1=SET(S1);// Z0 = moyenne de tout en un seul ensemble à T₀ et à T₁ ; le fil Z0(τ) est linéaire (canon). La Classe 4 vivante porte ce fil et le caractère du nuage.
   Z0={i0:S0,i1:S1,a:MANIF_ENGINES.class4.collapse(s0.pts),b:MANIF_ENGINES.class4.collapse(s1.pts),n0:s0,n1:s1,C4,C4N};}
 function ZL(tau){const f=(tau-Z0.i0)/(Z0.i1-Z0.i0);return [Z0.a[0]+(Z0.b[0]-Z0.a[0])*f,Z0.a[1]+(Z0.b[1]-Z0.a[1])*f];}
+
+// ---------- v20.20 — Classe 4 vivante (dérive-comme-signal) ----------
+// Z0(τ) = (1−f)·Z0(T₀) + f·Z0(T₁), f = (τ−T₀)/(T₁−T₀)  [fil linéaire]
+// Chaque constituant : p(τ) = Z0(τ) + arch(p(T₀)−Z0(T₀), p(T₁)−Z0(T₁), t)  [déjà via cyc()]
+// Caractère = moments du nuage des écarts à Z0 : forme, étirement, rotation, centre-extérieur, couleur.
+function hideC4Panel(){const el=$('c4panel');if(el) el.hidden=true;}
+function meanHueHex(hexes){let cx=0,cy=0,n=0;for(const hex of hexes){const rad=hueOf(hex)*Math.PI/180;cx+=Math.cos(rad);cy+=Math.sin(rad);n++;}if(!n)return null;return (Math.atan2(cy,cx)*180/Math.PI+360)%360;}
+function cloudStats(pts,origin){const n=pts.length;if(!n||!origin)return null;let sxx=0,syy=0,sxy=0,rad=0;
+  for(const p of pts){const ux=p[0]-origin[0],uy=p[1]-origin[1];sxx+=ux*ux;syy+=uy*uy;sxy+=ux*uy;rad+=Math.hypot(ux,uy);}
+  sxx/=n;syy/=n;sxy/=n;rad/=n;
+  const theta=0.5*Math.atan2(2*sxy,sxx-syy);
+  const tr=sxx+syy,det=sxx*syy-sxy*sxy,disc=Math.sqrt(Math.max(0,tr*tr/4-det));
+  const l1=tr/2+disc,l2=tr/2-disc;
+  const sigMaj=Math.sqrt(Math.max(0,l1)),sigMin=Math.sqrt(Math.max(0,l2));
+  const stretch=(sigMin>1e-9)?(sigMaj/sigMin):null;
+  const ecc=(sigMaj>1e-9)?(1-sigMin/sigMaj):0;
+  return {n,sxx,syy,sxy,theta,sigMaj,sigMin,stretch,ecc,radius:rad};}
+function interpPos(p0,p1,c,u){if(!p0&&!p1)return null;if(!p0)return p1;return (p1&&u>0)?cyc(p0,p1,u,c,c+1):p0;}
+function wallCollapseMap(i){const walls=new Map();if(!ds||!ds.objs)return walls;
+  ds.objs.forEach((o,k)=>{const p=P1(k,i);if(!p)return;const sx=p[0]<bx[0]?'G':p[0]>bx[1]?'D':'',sy=p[1]<by[0]?'B':p[1]>by[1]?'H':'';if(!(sx||sy))return;const key=sx+sy;if(!walls.has(key))walls.set(key,[]);walls.get(key).push([Math.min(bx[1],Math.max(bx[0],p[0])),Math.min(by[1],Math.max(by[0],p[1]))]);});
+  const out=new Map();walls.forEach((w,key)=>{if(w.length)out.set(key,MANIF_ENGINES.class4.collapse(w));});return out;}
+function computeC4Live(c,u){if(!Z0||window.__Z0_DOMAIN==='none'||EMPTY||!ds||!ds.objs)return null;
+  u=u||0;const tau=c+u,zc=ZL(tau),pts=[],hues=[];let n1=0,n2=0,n3=0;
+  ds.objs.forEach((o,k)=>{const p=interpPos(P1(k,c),P1(k,c+1),c,u);if(!p)return;pts.push(p);n1++;hues.push(SECT[o.s]||'#bbbbbb');});
+  if($('z2')&&$('z2').checked)GROUPS.forEach(g=>{const p=interpPos(P2(g,c),P2(g,c+1),c,u);if(p){pts.push(p);n2++;}});
+  if($('z3')&&$('z3').checked){const w0=wallCollapseMap(c),w1=wallCollapseMap(c+1);const keys=new Set([...w0.keys(),...w1.keys()]);keys.forEach(key=>{const p=interpPos(w0.get(key)||null,w1.get(key)||null,c,u);if(p){pts.push(p);n3++;}});}
+  if(!pts.length)return null;
+  const stats=cloudStats(pts,zc);
+  const pts0=[];ds.objs.forEach((o,k)=>{const p=P1(k,Z0.i0);if(p)pts0.push(p);});
+  if($('z2')&&$('z2').checked)GROUPS.forEach(g=>{const p=P2(g,Z0.i0);if(p)pts0.push(p);});
+  if($('z3')&&$('z3').checked)wallCollapseMap(Z0.i0).forEach(p=>{if(p)pts0.push(p);});
+  const st0=cloudStats(pts0,Z0.a);const theta=stats?stats.theta:0,theta0=st0?st0.theta:0;let rot=theta-theta0;while(rot>Math.PI)rot-=2*Math.PI;while(rot<-Math.PI)rot+=2*Math.PI;
+  const hue=meanHueHex(hues);let sat=68,light=60,sn=0,ss=0,sl=0;
+  ds.objs.forEach((o,k)=>{const p=interpPos(P1(k,c),P1(k,c+1),c,u);if(!p)return;const col=colAt(SECT[o.s]||'#bbbbbb',tau,p);ss+=col.s;sl+=col.l;sn++;});
+  if(sn){sat=ss/sn;light=sl/sn;}
+  const drift=[zc[0]-Z0.a[0],zc[1]-Z0.a[1]];
+  const tNorm=(Z0.i1!==Z0.i0)?(tau-Z0.i0)/(Z0.i1-Z0.i0):0;
+  return {tau,t:tNorm,zc,drift,n1,n2,n3,n:pts.length,stats,theta,theta0,rot,hue,sat,light,
+    stretch:stats?stats.stretch:null,ecc:stats?stats.ecc:0,radius:stats?stats.radius:0,
+    sigMaj:stats?stats.sigMaj:0,sigMin:stats?stats.sigMin:0};}
+function syncC4Panel(live){const el=$('c4panel');if(!el){window.__C4LIVE=live||null;return;}
+  if(!live){el.hidden=true;window.__C4LIVE=null;return;}
+  const z=live.zc,d=live.drift,mag=Math.hypot(d[0],d[1]),ang=Math.atan2(d[1],d[0])*180/Math.PI;
+  const fn=v=>(v!=null&&isFinite(v))?Number(v).toFixed(4):'[INCOMPLET]';
+  const fp=v=>(v!=null&&isFinite(v))?((v*100).toFixed(2)+' %'):'[INCOMPLET]';
+  const fd=v=>(v!=null&&isFinite(v))?(Number(v).toFixed(2)+'°'):'[INCOMPLET]';
+  const stretchTxt=(live.stretch!=null&&isFinite(live.stretch))?(live.stretch>99?'>99':live.stretch.toFixed(3)):'[INCOMPLET]';
+  const hueTxt=(live.hue!=null&&isFinite(live.hue))?(live.hue.toFixed(1)+'°'):'[INCOMPLET]';
+  const payload={version:'v20.20',sys:SYS.name,tau:live.tau,t:live.t,
+    z0:{x:z[0],y:z[1],ret:Math.exp(z[0])-1,vol:z[1]},
+    z0T0:{x:Z0.a[0],y:Z0.a[1]},z0T1:{x:Z0.b[0],y:Z0.b[1]},
+    drift:{dx:d[0],dy:d[1],mag,angleDeg:ang},
+    n1:live.n1,n2:live.n2,n3:live.n3,n:live.n,
+    attrs:{X:z[0],Y:z[1],Z:'[INCOMPLET]',Forme:live.ecc,'Étirement-écrasement':(live.stretch!=null&&isFinite(live.stretch))?live.stretch:null,
+      Couleur:live.hue,'Inclinaison avant-arrière':'[INCOMPLET]',Rotation:live.rot*180/Math.PI,
+      'Centre-extérieur':live.radius,Saturation:live.sat}};
+  window.__C4LIVE=payload;
+  el.hidden=false;
+  el.innerHTML='<header>Classe 4 vivante — '+SYS.name+'</header>'
+    +'<p class="c4-rule">Dérive-comme-signal · l’ancre est le mouvement du système</p>'
+    +'<dl>'
+    +'<div><dt>Constituants</dt><dd id="c4-n">'+live.n1+' Cl.1 + '+live.n2+' Cl.2 + '+live.n3+' Cl.3 = '+live.n+'</dd></div>'
+    +'<div><dt>Z0 à l’instant</dt><dd id="c4-z0">('+fn(z[0])+', '+fn(z[1])+') · '+fp(Math.exp(z[0])-1)+' · vol '+fp(z[1])+' · τ = '+fn(live.t)+'</dd></div>'
+    +'<div><dt>Dérive depuis T₀</dt><dd id="c4-drift">Δ ('+fn(d[0])+', '+fn(d[1])+') · module '+fn(mag)+' · direction '+fd(ang)+'</dd></div>'
+    +'</dl>'
+    +'<table class="c4-attrs"><caption>Attributs effondrés</caption><tbody>'
+    +'<tr><th>X</th><td id="c4-attr-x">'+fn(z[0])+' · '+fp(Math.exp(z[0])-1)+'</td></tr>'
+    +'<tr><th>Y</th><td id="c4-attr-y">'+fn(z[1])+' · '+fp(z[1])+'</td></tr>'
+    +'<tr><th>Z</th><td id="c4-attr-z">[INCOMPLET]</td></tr>'
+    +'<tr><th>Forme</th><td id="c4-attr-forme">'+fn(live.ecc)+'</td></tr>'
+    +'<tr><th>Étirement-écrasement</th><td id="c4-attr-stretch">'+stretchTxt+'</td></tr>'
+    +'<tr><th>Couleur</th><td id="c4-attr-hue">'+hueTxt+'</td></tr>'
+    +'<tr><th>Inclinaison avant-arrière</th><td id="c4-attr-tilt">[INCOMPLET]</td></tr>'
+    +'<tr><th>Rotation</th><td id="c4-attr-rot">'+fd(live.rot*180/Math.PI)+'</td></tr>'
+    +'<tr><th>Centre-extérieur</th><td id="c4-attr-radius">'+fn(live.radius)+'</td></tr>'
+    +'<tr><th>Saturation</th><td id="c4-attr-sat">'+((live.sat!=null&&isFinite(live.sat))?live.sat.toFixed(1):'[INCOMPLET]')+'</td></tr>'
+    +'</tbody></table>';}
+function drawClass4Glyph(ctx,px,py,live,label){
+  const radius=live&&isFinite(live.radius)?live.radius:0;
+  const size=16*(0.82+0.5*Math.tanh(radius/0.12));
+  const stretch=(live&&live.stretch!=null&&isFinite(live.stretch))?live.stretch:1;
+  const k=Math.min(2.6,Math.max(1,Math.sqrt(stretch)));
+  const rx=size*Math.sqrt(k),ry=size/Math.sqrt(k);
+  const theta=(live&&isFinite(live.theta))?live.theta:0;
+  const col=(live&&live.hue!=null&&isFinite(live.hue))?('hsl('+live.hue.toFixed(0)+','+Math.max(30,Math.min(95,live.sat||68)).toFixed(0)+'%,'+Math.max(38,Math.min(78,live.light||60)).toFixed(0)+'%)'):'#ffd966';
+  ctx.save();ctx.translate(px,py);ctx.rotate(theta);
+  ctx.beginPath();ctx.moveTo(0,-ry);ctx.lineTo(rx,0);ctx.lineTo(0,ry);ctx.lineTo(-rx,0);ctx.closePath();
+  ctx.fillStyle='rgba(8,10,16,.92)';ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=2.2;ctx.stroke();
+  ctx.beginPath();ctx.moveTo(-rx*0.58,0);ctx.lineTo(rx*0.58,0);ctx.moveTo(0,-ry*0.58);ctx.lineTo(0,ry*0.58);
+  ctx.strokeStyle='rgba(232,200,114,.9)';ctx.lineWidth=1.15;ctx.stroke();
+  if(live&&isFinite(live.rot)&&Math.abs(live.rot)>1e-3){ctx.beginPath();ctx.arc(0,0,Math.min(rx,ry)*0.42,0,live.rot,live.rot<0);ctx.strokeStyle='rgba(232,200,114,.75)';ctx.lineWidth=1.3;ctx.stroke();}
+  ctx.restore();
+  ctx.fillStyle='#e8c872';ctx.font='600 11px system-ui';ctx.fillText(label||('Classe 4 — '+SYS.name),px+rx+8,py+5);
+  return Math.max(rx,ry);
+}
+window.computeC4Live=computeC4Live;window.cloudStats=cloudStats;
 // ---------- données de base (positions seulement ; aucune traîne n'est calculée ici) ----------
 let ds,BASE,S0,S1,GROUPS=[],sel=null,dep=null,CACHE=new Map(),zoom=1,panX=0,panY=0,bx,by,progress=0;
 function median(a){a=a.filter(v=>v!=null&&isFinite(v)).sort((x,y)=>x-y);const n=a.length;if(!n)return NaN;return n%2?a[(n-1)/2]:(a[n/2-1]+a[n/2])/2;}
@@ -178,7 +275,7 @@ function rule(){const [ux,uy]=unit();let mn=Infinity,mx=0;const trs=[];if(sel)tr
 function fmt(n){return Math.round(n).toLocaleString('fr-CA');}
 function visible(gh,c,u){return gh.e<c||(gh.e===c&&gh.t<=0)||(gh.e===c+1&&gh.t<=u)||gh.k===0&&gh.e<=c;}
 let HIT={c1:[],c2:[],c4:null,z0:null,gr:0,c:0};
-function draw(){if(window.__DRAW_OVERRIDE==='nhl'){drawNhlGalaxy();return;}const c=+$('c').value,u=progress;HIT={c1:[],c2:[],c4:null,c4n:[],z0:null,gr:0,c,lib:[],libR:null};GROUPS.forEach(g=>g._px=null);if(typeof EMPTY==='undefined'||EMPTY||!ds||!ds.dates)return (typeof drawEmpty==='function'?drawEmpty():undefined);if(window.__Z0_DOMAIN==='none'&&!(document.body&&document.body.classList.contains('mode-floor')))return; $('d').textContent=ds.dates[S0]+' → '+ds.dates[S1]+'  ·  instant '+ds.dates[Math.max(0,Math.min(c,ds.dates.length-1))]+(u>0?' (+'+u.toFixed(2)+')':'');
+function draw(){if(window.__DRAW_OVERRIDE==='nhl'){hideC4Panel();drawNhlGalaxy();return;}const c=+$('c').value,u=progress;HIT={c1:[],c2:[],c4:null,c4n:[],z0:null,gr:0,c,lib:[],libR:null};GROUPS.forEach(g=>g._px=null);if(typeof EMPTY==='undefined'||EMPTY||!ds||!ds.dates)return (typeof drawEmpty==='function'?drawEmpty():undefined);if(window.__Z0_DOMAIN==='none'&&!(document.body&&document.body.classList.contains('mode-floor'))){hideC4Panel();return;} $('d').textContent=ds.dates[S0]+' → '+ds.dates[S1]+'  ·  instant '+ds.dates[Math.max(0,Math.min(c,ds.dates.length-1))]+(u>0?' (+'+u.toFixed(2)+')':'');
   const v=view();const X=x=>L+(x-v.x0)/(v.x1-v.x0)*(W-L-R),Y=y=>H-B-(y-v.y0)/(v.y1-v.y0)*(H-T-B);
   const cl=(x,y)=>[Math.min(bx[1],Math.max(bx[0],x)),Math.min(by[1],Math.max(by[0],y))];
   ctx.fillStyle='#07080c';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#1d2230';ctx.fillStyle='#5d6475';ctx.font='11px system-ui';ctx.lineWidth=1;
@@ -207,11 +304,13 @@ function draw(){if(window.__DRAW_OVERRIDE==='nhl'){drawNhlGalaxy();return;}const
   if(dep){dep.M.forEach(tr=>{const o=ds.objs[tr.k];ghosts(tr,SECT[o.s]||'#bbb',false,dep.M.length<=60?8:4,true);});
     const dg=dep.gh,q=cl(dg.x,dg.y);ctx.strokeStyle='#ffffff';ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(X(q[0]),Y(q[1]),Math.max(6,objR+3),0,7);ctx.stroke();}
   if(sel) ghosts(sel.tr,sel.g.col,true,objR,false);
-  // fil Z0 (linéaire) et objet de Classe 4
-  if(Z0&&$('zt').checked){const A=Z0.a,Bz=Z0.b,zc=ZL(c+u);ctx.save();ctx.strokeStyle='#e8c872';ctx.lineWidth=sel?1.2:2.2;ctx.globalAlpha=(sel?0.35:0.95)*volSys();ctx.setLineDash([9,5]);ctx.beginPath();ctx.moveTo(X(A[0]),Y(A[1]));ctx.lineTo(X(Bz[0]),Y(Bz[1]));ctx.stroke();ctx.setLineDash([]);
+  // fil Z0 (linéaire) et objet de Classe 4 vivante (ancre = Z0(τ))
+  const liveC4=(Z0&&!EMPTY)?computeC4Live(c,u):null;
+  if(liveC4) syncC4Panel(liveC4); else hideC4Panel();
+  if(Z0&&$('zt').checked){const A=Z0.a,Bz=Z0.b,zc=liveC4?liveC4.zc:ZL(c+u);ctx.save();ctx.strokeStyle='#e8c872';ctx.lineWidth=sel?1.2:2.2;ctx.globalAlpha=(sel?0.35:0.95)*volSys();ctx.setLineDash([9,5]);ctx.beginPath();ctx.moveTo(X(A[0]),Y(A[1]));ctx.lineTo(X(Bz[0]),Y(Bz[1]));ctx.stroke();ctx.setLineDash([]);
     ctx.fillStyle='#e8c872';ctx.font='600 11px system-ui';[[A,'Z0(T₀)'],[Bz,'Z0(T₁)']].forEach(([p,l])=>{ctx.beginPath();ctx.arc(X(p[0]),Y(p[1]),4,0,7);ctx.fill();ctx.fillText(l,X(p[0])+6,Y(p[1])-6);});
-    HIT.z0={px:X(zc[0]),py:Y(zc[1]),r:7+1.25,p:zc};ctx.beginPath();ctx.arc(X(zc[0]),Y(zc[1]),7,0,7);ctx.lineWidth=2.5;ctx.stroke();ctx.fillText('Z0',X(zc[0])+9,Y(zc[1])+4);
-    const c0=Z0.C4[c],c1=Z0.C4[c+1];if(c0){const p=(c1&&u>0)?cyc(c0,c1,u,c,c+1):c0;const px=X(p[0]),py=Y(p[1]);HIT.c4={px,py,r:9+0.9,p};ctx.beginPath();ctx.moveTo(px,py-9);ctx.lineTo(px+9,py);ctx.lineTo(px,py+9);ctx.lineTo(px-9,py);ctx.closePath();ctx.fillStyle='rgba(8,10,16,.9)';ctx.fill();const c4c=colMove('#ffd966',c0,c1,c,c+1,u);ctx.strokeStyle=c4c;ctx.lineWidth=1.8;ctx.stroke();ctx.fillStyle=c4c;ctx.fillText('Classe 4 — '+SYS.name,px+11,py+14);}
+    HIT.z0={px:X(zc[0]),py:Y(zc[1]),r:8+1.25,p:zc};ctx.beginPath();ctx.arc(X(zc[0]),Y(zc[1]),5,0,7);ctx.lineWidth=2;ctx.stroke();
+    ctx.globalAlpha=Math.max(0.75,volSys());const px=X(zc[0]),py=Y(zc[1]);const hitR=drawClass4Glyph(ctx,px,py,liveC4,'Classe 4 — '+SYS.name);HIT.c4={px,py,r:hitR+2,p:zc,live:liveC4};
     Z0.C4N.forEach((n,ni)=>{const a0=n.P[c],a1=n.P[c+1];if(!a0)return;const p=(a1&&u>0)?cyc(a0,a1,u,c,c+1):a0;const px=X(p[0]),py=Y(p[1]);const s=6;HIT.c4n.push({px,py,r:s+0.9,p,n});
       ctx.beginPath();ctx.moveTo(px,py-s);ctx.lineTo(px+s,py);ctx.lineTo(px,py+s);ctx.lineTo(px-s,py);ctx.closePath();ctx.fillStyle='rgba(8,10,16,.9)';ctx.fill();const cc=colMove('#ffb347',a0,a1,c,c+1,u);ctx.strokeStyle=cc;ctx.lineWidth=1.4;ctx.stroke();ctx.fillStyle=cc;ctx.font='600 10px system-ui';ctx.fillText('◆ '+n.b.name+' (imbriqué)',px+9,py-8-ni*12);});
     ctx.restore();}
@@ -221,19 +320,26 @@ function draw(){if(window.__DRAW_OVERRIDE==='nhl'){drawNhlGalaxy();return;}const
     ctx.globalAlpha=volSys()*(sel&&!isS?.45:1);ctx.beginPath();ctx.arc(px,py,rad,0,7);ctx.fillStyle='rgba(8,10,16,.9)';ctx.fill();ctx.lineWidth=isS?2.2:1.4;ctx.strokeStyle=gc;ctx.stroke();
     if(!many||isS){const lab=g.name.length>18?g.name.slice(0,17)+'…':g.name;ctx.font='600 10px system-ui';ctx.fillStyle=gc;ctx.fillText(lab,px+rad+3,py+3);}ctx.globalAlpha=1;});
   // couche Classe 1, au-dessus des objets de Classe 2 : positions courantes (aucune traîne) puis constituants déployés
-  ctx.fillStyle='#e8eef8';ctx.globalAlpha=Math.min(1,volSys()*1.05);ctx.beginPath();const _c1r=(sel&&sel.g&&sel.g.mem&&sel.g.mem.length>200)?3.4:(sel&&sel.g&&sel.g.mem&&sel.g.mem.length>80)?4.2:(sel?5:3);ds.objs.forEach((o,k)=>{const p=P1(k,c);if(!p)return;if(sel&&sel.g&&sel.g.mem&&sel.g.mem.indexOf(k)<0) return;const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);if(px<-4||px>W+4||py<-4||py>H+4)return;HIT.c1.push({k,px,py,r:_c1r,p});ctx.moveTo(px+_c1r,py);ctx.arc(px,py,_c1r,0,6.2832);});ctx.fill();ctx.globalAlpha=1;
+  ctx.fillStyle='#e8eef8';ctx.globalAlpha=Math.min(1,volSys()*1.05);ctx.beginPath();const _c1r=(sel&&sel.g&&sel.g.mem&&sel.g.mem.length>200)?3.4:(sel&&sel.g&&sel.g.mem&&sel.g.mem.length>80)?4.2:(sel?5:3);ds.objs.forEach((o,k)=>{const p0=P1(k,c);if(!p0)return;if(sel&&sel.g&&sel.g.mem&&sel.g.mem.indexOf(k)<0) return;const p1=P1(k,c+1);const p=(p1&&u>0)?cyc(p0,p1,u,c,c+1):p0;const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);if(px<-4||px>W+4||py<-4||py>H+4)return;HIT.c1.push({k,px,py,r:_c1r,p});ctx.moveTo(px+_c1r,py);ctx.arc(px,py,_c1r,0,6.2832);});ctx.fill();ctx.globalAlpha=1;
   if(dep){
     // constituants à l'instant, déplacés sur leur trajet cycloïdal
     const few=dep.M.length<=60;ctx.globalAlpha=volSys();dep.M.forEach(tr=>{const k=tr.k,o=ds.objs[k];if(c<dep.d0)return;const p0=P1(k,c),p1=P1(k,c+1);if(!p0)return;const p=(p1&&u>0)?cyc(p0,p1,u,c,c+1):p0;const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);const col=colMove(SECT[o.s]||'#bbbbbb',p0,p1,c,c+1,u);
       HIT.c1.push({k,px,py,r:(few?8:4)+0.5,dep:true});ctx.beginPath();ctx.arc(px,py,few?8:4,0,7);ctx.fillStyle='rgba(8,10,16,.85)';ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=1;ctx.stroke();
       if(few){let fs=6;ctx.font='600 '+fs+'px system-ui';while(ctx.measureText(o.t).width>14&&fs>3){fs-=.5;ctx.font='600 '+fs+'px system-ui';}ctx.fillStyle=col;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(o.t,px,py+.5);ctx.textAlign='left';ctx.textBaseline='alphabetic';}});ctx.globalAlpha=1;
   }
+  // vecteurs visibles : chaque objet lu comme distance et direction depuis l'ancre Classe 4 / Z0
+  if(Z0&&$('zt').checked&&HIT.c4){const zx=HIT.c4.px,zy=HIT.c4.py;ctx.save();
+    ctx.strokeStyle='#e8c872';
+    HIT.c1.forEach(h=>{ctx.globalAlpha=0.10*volSys();ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(zx,zy);ctx.lineTo(h.px,h.py);ctx.stroke();});
+    HIT.c2.forEach(h=>{ctx.globalAlpha=(sel&&GROUPS[h.gi]===sel.g?0.55:0.32)*volSys();ctx.lineWidth=sel&&GROUPS[h.gi]===sel.g?1.6:1.1;ctx.beginPath();ctx.moveTo(zx,zy);ctx.lineTo(h.px,h.py);ctx.stroke();});
+    HIT.c4n.forEach(h=>{ctx.globalAlpha=0.45*volSys();ctx.lineWidth=1.3;ctx.beginPath();ctx.moveTo(zx,zy);ctx.lineTo(h.px,h.py);ctx.stroke();});
+    ctx.restore();}
   // état
   let h='';if(sel){const tr=sel.tr;h+='<b>'+sel.g.name+'</b> ('+sel.g.mem.length+' constituants) · '+fmt(tr.G.length)+' fantômes, dont '+fmt(tr.nh)+' creux · Σrv = '+tr.S.toFixed(2)+' · calcul '+tr.ms.toFixed(0)+' ms (cache)';}
   else h+='Aucune traîne calculée. Choisir un objet de Classe 2.';
   if(dep){let n=0,nh=0;dep.M.forEach(t=>{n+=t.G.length;nh+=t.nh;});h+='<br>Déploiement depuis '+ds.dates[dep.d0]+' : '+dep.M.length+' constituants, '+fmt(n)+' fantômes (dont '+fmt(nh)+' creux) · '+dep.ms.toFixed(0)+' ms';}
   if(sel){if(isFinite(rl.mn)&&rl.mn>0&&isFinite(rl.mx)){h+='<br>Diamètre de la règle : '+rl.mn.toPrecision(3)+' px × zoom '+zoom.toFixed(1)+(dr<FLOOR?' → affiché '+FLOOR+' px (plancher)':' = '+dr.toPrecision(3)+' px')+' · règle ×1 → ×'+fmt(rl.mx/rl.mn);}else{h+='<br>Diamètre de la règle : [INCOMPLET] (écart T0→T1 non mesurable — vol20 à T0 absente de la fenêtre courte)';}}
-  if(Z0){const f=v=>(v!=null&&isFinite(v))?v.toFixed(4):'[INCOMPLET]';const aok=Z0.a&&isFinite(Z0.a[0])&&isFinite(Z0.a[1]);const bok=Z0.b&&isFinite(Z0.b[0])&&isFinite(Z0.b[1]);h+='<br><span style="color:#e8c872">Z0 (placeholder : moyennes) — T₀ '+(aok?('('+f(Z0.a[0])+', '+f(Z0.a[1])+')'):'[INCOMPLET] (vol20 à T0 hors fenêtre courte)')+' → T₁ '+(bok?('('+f(Z0.b[0])+', '+f(Z0.b[1])+')'):'[INCOMPLET]')+' · ensemble T₁ : '+Z0.n1.n1+' Cl.1 + '+Z0.n1.n2+' Cl.2 + '+Z0.n1.n3+' Cl.3 = '+Z0.n1.pts.length+' · moteur Cl.4 : '+(MANIF_ENGINES.irrationalisateur||MANIF_ENGINES.class4).name+'</span>';}
+  if(Z0){const f=v=>(v!=null&&isFinite(v))?v.toFixed(4):'[INCOMPLET]';const aok=Z0.a&&isFinite(Z0.a[0])&&isFinite(Z0.a[1]);const bok=Z0.b&&isFinite(Z0.b[0])&&isFinite(Z0.b[1]);const live=window.__C4LIVE;h+='<br><span style="color:#e8c872">Z0 — moyenne de tout, fil linéaire T₀→T₁ (dérive-comme-signal) — T₀ '+(aok?('('+f(Z0.a[0])+', '+f(Z0.a[1])+')'):'[INCOMPLET] (vol20 à T0 hors fenêtre courte)')+' → T₁ '+(bok?('('+f(Z0.b[0])+', '+f(Z0.b[1])+')'):'[INCOMPLET]')+(live?(' · maintenant ('+f(live.z0.x)+', '+f(live.z0.y)+') · dérive module '+f(live.drift.mag)):'')+' · ensemble T₁ : '+Z0.n1.n1+' Cl.1 + '+Z0.n1.n2+' Cl.2 + '+Z0.n1.n3+' Cl.3 = '+Z0.n1.pts.length+' · moteur Cl.4 : '+(MANIF_ENGINES.irrationalisateur||MANIF_ENGINES.class4).name+'</span>';}
   if(sel){const vis=sel.tr.G.filter(g=>visible(g,c,u));window.__GHOST={n:vis.length,volsys:volSys(),volgh:volGh(),volghobj:volGhObj(),focus:$('ghfocus').checked,libon:$('libon').checked,R:R,W:W,objR:objR,fades:vis.length?[0,.25,.5,.75,1].map(t=>{const g=vis[Math.min(vis.length-1,Math.round(t*(vis.length-1)))];return {k:g.k,fade:+fadeOf(g,sel.tr).toFixed(4)};}):[]};}
     else window.__GHOST={n:0,volsys:volSys(),volgh:volGh(),volghobj:volGhObj(),libon:$('libon').checked,R:R,W:W};
   $('st').innerHTML=h;legend();drawLib();}
@@ -284,7 +390,7 @@ function drawEmpty(){$('d').textContent=EMPTY?ds.dates[+$('s').value]+' → '+ds
   ctx.beginPath();ctx.moveTo(cx,cy-26);ctx.lineTo(cx+26,cy);ctx.lineTo(cx,cy+26);ctx.lineTo(cx-26,cy);ctx.closePath();ctx.strokeStyle='#e8c872';ctx.lineWidth=2;ctx.setLineDash([5,3]);ctx.stroke();ctx.setLineDash([]);
   ctx.textAlign='center';ctx.fillStyle='#e8c872';ctx.font='700 20px system-ui';ctx.fillText('Classe 4 — '+SYS.name,cx,cy+60);ctx.fillStyle='#e8a872';ctx.font='italic 15px system-ui';ctx.fillText(EC,cx,cy+84);
   ctx.fillStyle='#8a91a0';ctx.font='12px system-ui';ctx.fillText(SYS.fl.size+' places de Classe 2 nommées, toutes vides : aucune donnée dans la source, aucune valeur inventée ; Z0 non calculable.',cx,cy+106);ctx.textAlign='left';
-  $('st').innerHTML='<b>'+SYS.name+'</b> — '+EC+'. Conteneur structurel présent ; '+SYS.fl.size+' emplacements de Classe 2 vides.';legend();drawLib();}
+  hideC4Panel();$('st').innerHTML='<b>'+SYS.name+'</b> — '+EC+'. Conteneur structurel présent ; '+SYS.fl.size+' emplacements de Classe 2 vides.';legend();drawLib();}
 // ---------- interaction ----------
 function select(gi){clearSel();if(gi===''||gi==null)return draw();const g=GROUPS[+gi];sel={g,tr:gtrail(g)};$('sel').value=gi;if(g._volgh==null)g._volgh=100;$('volghobj').value=g._volgh;$('volghobjv').textContent=g._volgh;fit();draw();}
 function clearSel(){sel=null;dep=null;CACHE.clear();$('sel').value='';zoom=1;panX=0;panY=0;}
@@ -379,9 +485,9 @@ function hoverAt(mx,my){if(window.__DRAW_OVERRIDE==='nhl')return null;{const lb=
   let h=best(HIT.c1.filter(z=>z.dep))||best(HIT.c1.filter(z=>!z.dep));
   if(h){const o=ds.objs[h.k],p=P1(h.k,c)||h.p;return {kind:'c1',k:h.k,text:'Classe 1 — objet élémentaire\n'+o.t+' · '+(o.s||'—')+' · '+(o.i||'—')+'\nPlace de cotation : '+(FLOORS[o.f]?FLOORS[o.f].n+' ('+o.f+')':'—')+'\nSéance '+ds.dates[c]+'\nRendement cumulé depuis T₀ : '+(p?pc(Math.exp(p[0])-1):'—')+'\nVolatilité 20 séances : '+(p?pc(p[1]):'—')+'\nVolume : '+(o.v[c]!=null?o.v[c].toLocaleString('fr-CA'):'—')};}
   h=best(HIT.c2);if(h){const g=GROUPS[h.gi];return {kind:'c2',gi:h.gi,text:'Classe 2 — '+g.name+'\n'+({s:'secteur',i:'industrie',x:'indice',f:'place (bourse)'}[$('lvl').value])+' · '+g.mem.length+' constituants\nPosition = moyenne des constituants\nRendement cumulé : '+pc(Math.exp(h.p[0])-1)+' · vol20 : '+pc(h.p[1])+'\n(cliquer : choisir sa traîne)'};}
-  if(HIT.c4&&Math.abs(HIT.c4.px-mx)+Math.abs(HIT.c4.py-my)<=HIT.c4.r)return {kind:'c4',text:'Classe 4 — effondrement total (classes 3, 2 et 1)\n'+SYS.name+' · moteur : '+(MANIF_ENGINES.irrationalisateur||MANIF_ENGINES.class4).name+'\nRendement cumulé : '+pc(Math.exp(HIT.c4.p[0])-1)+' · vol20 : '+pc(HIT.c4.p[1])};
-  {let b=null,bd=Infinity;for(const h of HIT.c4n){const d=Math.abs(h.px-mx)+Math.abs(h.py-my);if(d<=h.r&&d<bd){bd=d;b=h;}}if(b)return {kind:'c4n',text:'Classe 4 imbriquée — '+b.n.b.name+' (dans '+SYS.name+')\nEffondrement de ses constituants (placeholder : moyenne)\nRendement cumulé : '+pc(Math.exp(b.p[0])-1)+' · vol20 : '+pc(b.p[1])};}
-  if(HIT.z0&&inC(HIT.z0))return {kind:'z0',text:'Z0 — fil linéaire Z0(T₀) → Z0(T₁)\nZ0 = moyenne de tout, en un seul ensemble (placeholder : moyennes de T₀ et T₁)\nRendement cumulé : '+pc(Math.exp(HIT.z0.p[0])-1)+' · vol20 : '+pc(HIT.z0.p[1])};
+  if(HIT.c4&&Math.hypot(HIT.c4.px-mx,HIT.c4.py-my)<=HIT.c4.r){const L=HIT.c4.live||window.__C4LIVE;const extra=L?('\nZ0 : ('+L.z0.x.toFixed(4)+', '+L.z0.y.toFixed(4)+') · dérive module '+L.drift.mag.toFixed(4)+' · dir. '+L.drift.angleDeg.toFixed(1)+'°\nConstituants : '+L.n1+' Cl.1 + '+L.n2+' Cl.2 + '+L.n3+' Cl.3\nX '+L.attrs.X.toFixed(4)+' · Y '+L.attrs.Y.toFixed(4)+' · Z [INCOMPLET]\nForme '+((L.attrs.Forme!=null&&isFinite(L.attrs.Forme))?L.attrs.Forme.toFixed(4):'—')+' · Étirement '+((L.attrs['Étirement-écrasement']!=null&&isFinite(L.attrs['Étirement-écrasement']))?L.attrs['Étirement-écrasement'].toFixed(3):'[INCOMPLET]')+' · Rotation '+((L.attrs.Rotation!=null&&isFinite(L.attrs.Rotation))?L.attrs.Rotation.toFixed(2)+'°':'—')+'\nCentre-extérieur '+((L.attrs['Centre-extérieur']!=null&&isFinite(L.attrs['Centre-extérieur']))?L.attrs['Centre-extérieur'].toFixed(4):'—')+' · Saturation '+((L.attrs.Saturation!=null&&isFinite(L.attrs.Saturation))?L.attrs.Saturation.toFixed(1):'—')+'\nInclinaison avant-arrière : [INCOMPLET]'):'';return {kind:'c4',text:'Classe 4 — ancre comparative (Z0)\n'+SYS.name+' · moteur : '+(MANIF_ENGINES.irrationalisateur||MANIF_ENGINES.class4).name+'\nRendement cumulé : '+pc(Math.exp(HIT.c4.p[0])-1)+' · vol20 : '+pc(HIT.c4.p[1])+extra};}
+  {let b=null,bd=Infinity;for(const h of HIT.c4n){const d=Math.abs(h.px-mx)+Math.abs(h.py-my);if(d<=h.r&&d<bd){bd=d;b=h;}}if(b)return {kind:'c4n',text:'Classe 4 imbriquée — '+b.n.b.name+' (dans '+SYS.name+')\nEffondrement de ses constituants (moyenne de l’ensemble restreint)\nRendement cumulé : '+pc(Math.exp(b.p[0])-1)+' · vol20 : '+pc(b.p[1])};}
+  if(HIT.z0&&inC(HIT.z0))return {kind:'z0',text:'Z0 — fil linéaire Z0(T₀) → Z0(T₁)\nZ0 = moyenne de tout, en un seul ensemble · dérive-comme-signal\nRendement cumulé : '+pc(Math.exp(HIT.z0.p[0])-1)+' · vol20 : '+pc(HIT.z0.p[1])};
   if(sel){const v=view();const X=x=>L+(x-v.x0)/(v.x1-v.x0)*(W-L-R),Y=y=>H-B-(y-v.y0)/(v.y1-v.y0)*(H-T-B);const cl=(x,y)=>[Math.min(bx[1],Math.max(bx[0],x)),Math.min(by[1],Math.max(by[0],y))];let b=null,bd=Infinity;
     for(const gh of sel.tr.G){const q=cl(gh.x,gh.y);const d=Math.hypot(X(q[0])-mx,Y(q[1])-my);if(d<=HIT.gr+0.5&&d<bd){bd=d;b=gh;}}
     if(b)return {kind:'ghost',text:'Fantôme n° '+b.k+' — '+sel.g.name+'\nTrajet '+ds.dates[Math.max(S0,b.e-1)]+' → '+ds.dates[b.e]+(b.h?'\nCreux (hors règle)':'')+'\n(cliquer : déployer les constituants)'};}
@@ -2072,7 +2178,7 @@ function applyNhlGalaxy(){
   try{ hideNhlInfoChip(); }catch(e){}
   if(typeof window.applyNhlLeagueHooks==='function') window.applyNhlLeagueHooks();
   window.__DRAW_OVERRIDE='nhl';
-  window.__VERSION='v20.19';
+  window.__VERSION='v20.20';
   if(typeof window.nhlSummonCurrentSystem==='function' && !window.__RW_NHL_LOCK){
     try{ window.nhlSummonCurrentSystem(); }catch(e){}
   }
@@ -2309,7 +2415,7 @@ function applyRoute(){
     });
   }catch(e){}
   window.__NAV.crumb=($('crumb')&&$('crumb').textContent)||'';
-  window.__VERSION='v20.19';
+  window.__VERSION='v20.20';
   // Right window: summon on object navigation; never restore from ghost
   try{
     if(window.__RW_FORCE_CLOSED){ closeRightWindow(); window.__RW_FORCE_CLOSED=false; }
