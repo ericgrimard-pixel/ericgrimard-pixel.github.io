@@ -1357,3 +1357,30 @@ body:not(.mode-floor) #c4panel{display:none !important;}
     max-height:36vh;
   }
 }
+
+/* ===== v20.25 living gate ===== */
+body.mode-gate #cv{visibility:visible !important; opacity:1 !important; display:block !important;}
+body.mode-gate #c4panel:not([hidden]){display:block !important;}
+body.mode-gate #mf{display:none !important;}
+#gate-chrome{
+  position:fixed; top:48px; left:50%; transform:translateX(-50%);
+  z-index:24; display:none; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center;
+  pointer-events:auto; max-width:calc(100vw - 120px);
+  background:rgba(8,10,16,.78); border:1px solid #2a2f3a; border-radius:10px;
+  padding:6px 10px; font:600 12px/1.2 system-ui,sans-serif; color:#dfe3ea;
+}
+body.mode-gate #gate-chrome{display:flex !important;}
+#gate-chrome .gate-modes{display:flex; border:1px solid #39404f; border-radius:8px; overflow:hidden;}
+#gate-chrome .gate-modes button{
+  border:0; background:transparent; color:#c6b37a; padding:5px 10px; cursor:pointer; font:600 12px system-ui;
+}
+#gate-chrome .gate-modes button.on{background:#e8c872; color:#07080c;}
+#gate-chrome a.gate-door{color:#e8c872; text-decoration:none; border:1px solid #39404f; border-radius:8px; padding:5px 8px;}
+#gate-chrome a.gate-door:hover{border-color:#e8c872;}
+#gate-chrome #gate-play{
+  border:1px solid #e8c872; background:rgba(232,200,114,.12); color:#e8c872;
+  border-radius:8px; padding:5px 10px; cursor:pointer; font:700 12px system-ui;
+}
+@media (max-width:520px){
+  #gate-chrome{top:44px; max-width:calc(100vw - 24px); padding:5px 7px; gap:5px; font-size:11px;}
+}
