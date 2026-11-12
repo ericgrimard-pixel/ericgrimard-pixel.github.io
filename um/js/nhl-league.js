@@ -682,7 +682,7 @@ function applyNhlLeagueHooks(){
    primary #sp500y (année, 2 janv. → 4 nov.), secondary #sp500 (deux séances T0/T1).
    The hub's own hockey route #/sports/nhl and finance placeholder #/galaxy/planet
    stay at their URLs (not doors). */
-var UM_ENGINE_BASE = String(w.UM_ENGINE_URL || 'https://claude.ai/artifact/Mr4cUjAuszjdrQU8U6YRig').split('#')[0];
+var UM_ENGINE_BASE = String(w.UM_ENGINE_URL || 'https://claude.ai/artifact/BhtoueP8EK52M5iEK38Fko').split('#')[0];
 var UM_HOCKEY = UM_ENGINE_BASE + '#nhl';
 var UM_FINANCE_YEAR = UM_ENGINE_BASE + '#sp500y';
 var UM_FINANCE_TWO = UM_ENGINE_BASE + '#sp500';

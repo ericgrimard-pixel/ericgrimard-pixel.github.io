@@ -1075,9 +1075,9 @@ function ensureGateChrome(){
   let el=$('gate-chrome');
   if(!el){ el=document.createElement('div'); el.id='gate-chrome'; document.body.appendChild(el); }
   const mode=gateModeFromHash();
-  const hockey='https://claude.ai/artifact/Mr4cUjAuszjdrQU8U6YRig#nhl';
-  const finY='https://claude.ai/artifact/Mr4cUjAuszjdrQU8U6YRig#sp500y';
-  const fin2='https://claude.ai/artifact/Mr4cUjAuszjdrQU8U6YRig#sp500';
+  const hockey='https://claude.ai/artifact/BhtoueP8EK52M5iEK38Fko#nhl';
+  const finY='https://claude.ai/artifact/BhtoueP8EK52M5iEK38Fko#sp500y';
+  const fin2='https://claude.ai/artifact/BhtoueP8EK52M5iEK38Fko#sp500';
   el.innerHTML='<div class="gate-modes" role="radiogroup" aria-label="Mode d’ouverture">'
     +'<button type="button" data-gate-mode="libre"'+(mode==='libre'?' class="on" aria-pressed="true"':' aria-pressed="false"')+'>Libre</button>'
     +'<button type="button" data-gate-mode="fourier"'+(mode==='fourier'?' class="on" aria-pressed="true"':' aria-pressed="false"')+'>Fourier</button>'
