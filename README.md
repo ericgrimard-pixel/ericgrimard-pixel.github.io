@@ -1,6 +1,6 @@
 # ericgrimard-pixel.github.io
 
-Prototype **Universal Metaphor — HUB point de chute v20.34** (version sûre).
+Prototype **Universal Metaphor — HUB point de chute v20.39** (version sûre).
 
 Le site est servi ici : [https://ericgrimard-pixel.github.io/um/](https://ericgrimard-pixel.github.io/um/)
 

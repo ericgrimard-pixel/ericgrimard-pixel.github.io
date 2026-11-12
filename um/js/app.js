@@ -1,5 +1,5 @@
 /* Application code from v20.11 HUB galaxies (SAFE Pages) — DATA/FLOORS/NHL loaded by previous scripts.
-   Standing definition of the Hub (v20.38). The Class 4 library below is the floor structure;
+   Standing definition of the Hub (v20.39). The Class 4 library below is the floor structure;
    this sentence is the standing rule for Music, kept in this header:
    Music (Société · Musique) is an independent field (a row) in the World view, under society. It is separate from finance and from professional sport, and it has its own Class 2 objects. It is the starting point for the next layer of the build. It is never nested inside any panel.
    Its Class 2 slot is #um-musique-c2 on the World view. The slot is empty: the Hub has no local music data source. Nothing is invented.
@@ -207,7 +207,7 @@ function syncC4Panel(live){const el=$('c4panel');if(!el){window.__C4LIVE=live||n
     }
     return fallback;
   }
-  const payload={version:'v20.38',sys:sysName,space:live.space||'market',tau:live.tau,t:live.t,gateMode:fourierMode?'fourier':'libre',formT:(live.formT!=null?live.formT:((typeof window.waveFormT==='function')?window.waveFormT():1)),swell:(live.swell!=null?live.swell:((typeof window.waveSwell==='function')?window.waveSwell():1)),
+  const payload={version:'v20.39',sys:sysName,space:live.space||'market',tau:live.tau,t:live.t,gateMode:fourierMode?'fourier':'libre',formT:(live.formT!=null?live.formT:((typeof window.waveFormT==='function')?window.waveFormT():1)),swell:(live.swell!=null?live.swell:((typeof window.waveSwell==='function')?window.waveSwell():1)),
     z0:market?{x:z[0],y:z[1],ret:Math.exp(z[0])-1,vol:z[1]}:{x:z[0],y:z[1]},
     z0T0,z0T1,
     drift:{dx:d[0],dy:d[1],mag,angleDeg:ang,incomplet:!!live.driftIncomplet},
@@ -775,7 +775,7 @@ function paintManifestMark(ctx,px,py,rad,col,label,ang){
 function fmt(n){return Math.round(n).toLocaleString('fr-CA');}
 function visible(gh,c,u){return gh.e<c||(gh.e===c&&gh.t<=0)||(gh.e===c+1&&gh.t<=u)||gh.k===0&&gh.e<=c;}
 let HIT={c1:[],c2:[],c4:null,z0:null,gr:0,c:0};
-function draw(){if(window.__DRAW_OVERRIDE==='nhl'){ if(typeof window.drawNhlGalaxy==='function') window.drawNhlGalaxy(); return;}const c=+$('c').value,u=progress;HIT={c1:[],c2:[],c4:null,c4n:[],z0:null,gr:0,c,lib:[],libR:null};window.HIT=HIT;GROUPS.forEach(g=>g._px=null);if(typeof EMPTY==='undefined'||EMPTY||!ds||!ds.dates)return (typeof drawEmpty==='function'?drawEmpty():undefined);if(window.__Z0_DOMAIN==='none'&&!(document.body&&document.body.classList.contains('mode-floor'))){hideC4Panel();return;} $('d').textContent=ds.dates[S0]+' → '+ds.dates[S1]+'  ·  instant '+ds.dates[Math.max(0,Math.min(c,ds.dates.length-1))]+(u>0?' (+'+u.toFixed(2)+')':'');
+function draw(){if(window.__DRAW_OVERRIDE==='nhl'){ if(typeof window.drawNhlGalaxy==='function') window.drawNhlGalaxy(); return;}if(window.__DRAW_OVERRIDE==='roster'&&typeof window.drawRoster==='function'){window.drawRoster();return;}const c=+$('c').value,u=progress;HIT={c1:[],c2:[],c4:null,c4n:[],z0:null,gr:0,c,lib:[],libR:null};window.HIT=HIT;GROUPS.forEach(g=>g._px=null);if(typeof EMPTY==='undefined'||EMPTY||!ds||!ds.dates)return (typeof drawEmpty==='function'?drawEmpty():undefined);if(window.__Z0_DOMAIN==='none'&&!(document.body&&document.body.classList.contains('mode-floor'))){hideC4Panel();return;} $('d').textContent=ds.dates[S0]+' → '+ds.dates[S1]+'  ·  instant '+ds.dates[Math.max(0,Math.min(c,ds.dates.length-1))]+(u>0?' (+'+u.toFixed(2)+')':'');
   document.body.classList.add('manifest-primary');
   if(!document.body.classList.contains('c4-open')) document.body.classList.add('c4-collapsed');
   const sp0=playSpan(c,u);
@@ -1000,6 +1000,14 @@ function mergeFloorDatasets(floorId){
   return {dates,objs,meta:{id:floorId,name:((typeof LIB4!=='undefined'&&LIB4.find(x=>x.id===floorId))||{}).name||floorId,floor:floorId,T0:t0s[0]||true,T1:t1s.length?t1s[t1s.length-1]:undefined,dates:starts.length?[starts[starts.length-1]]:undefined,merged:keys,n_with_prices:objs.filter(o=>o.c0!=null||(o.c&&o.c.some(x=>x!=null))).length}};
 }
 function setDS(){SYS=LIB4.find(x=>x.id===$('sys').value)||LIB4[0];const src=DATA[$('ds').value];
+  const keepAll=!!(src&&src.meta&&(src.meta.keepAll||/^(EX-|REG-|HEMI-)/.test(String(src.meta.id||''))));
+  if(keepAll){
+    ds={dates:src.dates||[],objs:(src.objs||[]).slice()};
+    EMPTY=!ds.objs.length;const n=ds.dates.length;for(const id of['s','e','c'])$(id).max=Math.max(0,n-1);
+    for(const id of['lvl','col','z2','z3','zt','sel','s','e','c','play','clr'])$(id).disabled=EMPTY;
+    if(EMPTY){BASE=[];GROUPS=[];Z0=null;sel=null;dep=null;$('sel').innerHTML='<option value="">— aucun —</option>';return;}
+    base();window_();groups();computeZ0();return;
+  }
   let used=src;
   if(src&&src.objs&&!src.objs.some(o=>SYS.fl.has(o.f))){
     const merged=mergeFloorDatasets(SYS.id);
@@ -1305,16 +1313,16 @@ cv.onmousedown=e=>{
   const g=hit&&(hit.kind==='c2'||hit.kind==='c1')?(hit.kind==='c2'?GROUPS[hit.gi]:GROUPS.find(gr=>gr.mem&&gr.mem.indexOf(hit.k)>=0)):null;
   const distC4=HIT.c4?Math.hypot(HIT.c4.px-e.clientX,HIT.c4.py-e.clientY):1e9;
   const distG=(g&&g._px!=null)?Math.hypot(g._px-e.clientX,g._py-e.clientY):1e9;
-  if(g&&g.hubFloor&&distG<=distC4) hubDown=g.hubFloor;
+  if(g&&g.hubFloor&&distG<=(g._r||16)+4) hubDown=g.hubFloor;
   else if(world && onCenter) hubDown='#/floor/WF';
   else if(intl && onCenter) hubDown='#/world';
-  else if(onFloor && onCenter) hubDown=(route.index&&route.sys)?('#/floor/'+route.sys):'#/world';
+  else if(onFloor && onCenter) hubDown=(route.sys&&(route.index||route.ex))?('#/floor/'+route.sys):'#/world';
 };
 onmouseup=()=>drag=null;
 cv.onmousemove=e=>{if(!drag||EMPTY)return;if(Math.abs(e.clientX-drag[0])+Math.abs(e.clientY-drag[1])>2)moved=true;const v=view();panX-=(e.clientX-drag[0])/(W-L-R)*(v.x1-v.x0);panY+=(e.clientY-drag[1])/(H-T-B)*(v.y1-v.y0);drag=[e.clientX,e.clientY];draw();};
 // survol : test géométrique exact sur la forme dessinée (rayon affiché compris).
 // Priorité : Classe 1 (même à l'intérieur d'un objet de Classe 2) → Classe 2 → Classe 4 → marqueur Z0 → fantôme de la traîne. Aucune zone morte.
-function hoverAt(mx,my){if(window.__DRAW_OVERRIDE==='nhl')return null;{const lb=hoverLib(mx,my);if(lb)return lb;}if(EMPTY)return null;const inC=h=>Math.hypot(h.px-mx,h.py-my)<=h.r;const best=a=>{let b=null,bd=Infinity;for(const h of a){const d=Math.hypot(h.px-mx,h.py-my);if(d<=h.r&&d<bd){bd=d;b=h;}}return b;};
+function hoverAt(mx,my){if(window.__DRAW_OVERRIDE==='nhl')return null;if(window.__DRAW_OVERRIDE==='roster'){const best=a=>{let b=null,bd=Infinity;for(const h of (a||[])){const d=Math.hypot(h.px-mx,h.py-my);if(d<=(h.r||8)&&d<bd){bd=d;b=h;}}return b;};const h=best(HIT.c2);if(h){const g=GROUPS[h.gi];return {kind:'c2',gi:h.gi,text:'Classe 2 — '+(g?g.name:'')+'\n[INCOMPLET] prix T0/T1'};}if(HIT.c4&&Math.hypot(HIT.c4.px-mx,HIT.c4.py-my)<=(HIT.c4.r||28))return {kind:'c4',text:'Classe 4 — '+((window.__ROSTER&&window.__ROSTER.title)||'')+'\n[INCOMPLET] prix T0/T1'};const c1=best(HIT.c1);if(c1){const it=(window.__ROSTER&&window.__ROSTER.items||[])[c1.k];return {kind:'c1',k:c1.k,text:'Classe 1 — '+((it&&it.label)||'')+'\n[INCOMPLET] prix T0/T1'};}return null;}{const lb=hoverLib(mx,my);if(lb)return lb;}if(EMPTY)return null;const inC=h=>Math.hypot(h.px-mx,h.py-my)<=h.r;const best=a=>{let b=null,bd=Infinity;for(const h of a){const d=Math.hypot(h.px-mx,h.py-my);if(d<=h.r&&d<bd){bd=d;b=h;}}return b;};
   const pc=v=>(v*100).toFixed(1)+' %',c=HIT.c;
   // constituants déployés dessinés au-dessus : prioritaires parmi les Classe 1
   let h=best(HIT.c1.filter(z=>z.dep))||best(HIT.c1.filter(z=>!z.dep));
@@ -1332,7 +1340,7 @@ cv.addEventListener('mousemove',e=>{const tip=$('tip');if(drag){tip.style.displa
   tip.textContent=r.text;tip.dataset.kind=r.kind;tip.style.display='block';tip.style.left=Math.min(W-330,e.clientX+14)+'px';tip.style.top=Math.min(H-140,e.clientY+14)+'px';});
 cv.addEventListener('mouseleave',()=>{$('tip').style.display='none';});
 cv.onclick=e=>{if(moved)return;if(clickLib(e.clientX,e.clientY))return;if(EMPTY)return;const gh=hitGhost(e.clientX,e.clientY);if(gh){doDeploy(gh,true);return;}
-  for(let gi=0;gi<GROUPS.length;gi++){const g=GROUPS[gi];if(g._px!=null&&Math.hypot(g._px-e.clientX,g._py-e.clientY)<=g._r+1.1){if(document.body.classList.contains('mode-world')||document.body.classList.contains('mode-intl'))return;stopPlay();select(gi);return;}}};
+  for(let gi=0;gi<GROUPS.length;gi++){const g=GROUPS[gi];if(g._px!=null&&Math.hypot(g._px-e.clientX,g._py-e.clientY)<=g._r+1.1){if(document.body.classList.contains('mode-world')||document.body.classList.contains('mode-intl')||document.body.classList.contains('mode-region')||document.body.classList.contains('mode-roster'))return;stopPlay();select(gi);return;}}};
 cv.ondblclick=()=>{
   // Hub navigation is its own layer: an object dives into its floor; Class 4 goes up one level.
   if(window.__clickNavTimer){ clearTimeout(window.__clickNavTimer); window.__clickNavTimer=null; }
@@ -1605,10 +1613,10 @@ function floorContentsForHub(branchOrFloor){
   (blk.indices||[]).forEach(ix=>{
     const n=ix.constituents_n||0;
     const priced=!!(DATA[ix.id]&&DATA[ix.id].meta&&DATA[ix.id].meta.n_with_prices);
-    const floor=(DATA[ix.id]&&DATA[ix.id].meta&&DATA[ix.id].meta.floor)||ix.floor||((id==='AMER')?'AMF':(id==='EUR')?'EUF':(id==='AFR')?'AFF':(id==='APAC'||id==='ME')?'ASF':null);
+    const floor=(DATA[ix.id]&&DATA[ix.id].meta&&DATA[ix.id].meta.floor)||ix.floor||((id==='AMER')?'AMF':(id==='EUR')?'EUF':(id==='AFR')?'AFF':(id==='ME')?'MEF':(id==='APAC')?'ASF':null);
     const st=priced?'live':(n>0?'links':'links');
     const count=priced?(DATA[ix.id].meta.n_with_prices+' titres Classe 1 · prix T0/T1'):(n>0?(n+' constituants Classe 1 · [INCOMPLET] prix T0/T1'):((ix.note||'[INCOMPLET] constituants')+' · liens vérifiés'));
-    const route=priced?('#/floor/'+floor+'/index/'+ix.id):('#/galaxy/'+id+'/index/'+ix.id);
+    const route='#/floor/'+(floor||'AFF')+'/index/'+ix.id;
     rows.push({id:ix.id,name:ix.name,status:st,route:route,count:count,klass:2,links:ix.links,note:ix.note,constituents_n:n});
   });
   // Exchange Class 2
@@ -1618,7 +1626,7 @@ function floorContentsForHub(branchOrFloor){
     rows.push({
       id:ex.id,name:ex.name+(ex.city?(' · '+ex.city):''),
       status:has?'links':'empty',
-      route:'#/galaxy/'+id+'/ex/'+ex.id,
+      route:'#/floor/'+((ex.mic&&typeof meMics==='function'&&meMics().has(ex.mic))?'MEF':(ex.ct||(FLOORS[ex.mic]&&FLOORS[ex.mic].ct)||'AMF'))+'/ex/'+(ex.mic||ex.id),
       count:(has?'liens vérifiés':'[INCOMPLET]')+' · '+micInfo+(ex.iso_name?(' · '+ex.iso_name):''),
       klass:2,links:ex.links,note:ex.note
     });
@@ -2713,14 +2721,14 @@ function renderFieldsFinance(){
       <button type="button" class="field-door live" data-id="FIELD-EUR" data-route="#/fields/finance/EUR" aria-label="Europe">
         <span class="fd-kicker">Sous-champ</span>
         <span class="fd-name">EUROPE</span>
-        <span class="fd-blurb">FTSE 100 · DAX 40 · CAC 40 · EURO STOXX 50 — constituants liés, prix T0/T1 [INCOMPLET]</span>
+        <span class="fd-blurb">FTSE 100 · DAX 40 · CAC 40 · EURO STOXX 50 — manifestation T0/T1</span>
         <span class="fd-badge">ACTIVE</span>
         <span class="fd-go">→</span>
       </button>
       <button type="button" class="field-door live" data-id="FIELD-AFR" data-route="#/fields/finance/AFR" aria-label="Afrique">
         <span class="fd-kicker">Sous-champ</span>
         <span class="fd-name">AFRIQUE</span>
-        <span class="fd-blurb">FTSE/JSE Top 40 — constituants liés, prix T0/T1 [INCOMPLET]</span>
+        <span class="fd-blurb">FTSE/JSE Top 40 — constituants réels, prix T0/T1 [INCOMPLET]</span>
         <span class="fd-badge">ACTIVE</span>
         <span class="fd-go">→</span>
       </button>
@@ -3065,7 +3073,7 @@ function applyNhlGalaxy(){
   try{ hideNhlInfoChip(); }catch(e){}
   if(typeof window.applyNhlLeagueHooks==='function') window.applyNhlLeagueHooks();
   window.__DRAW_OVERRIDE='nhl';
-  window.__VERSION='v20.38';
+  window.__VERSION='v20.39';
   if(typeof window.nhlSummonCurrentSystem==='function' && !window.__RW_NHL_LOCK){
     try{ window.nhlSummonCurrentSystem(); }catch(e){}
   }
@@ -3186,15 +3194,30 @@ function applyGalaxy(route){
 }
 
 function applyFloor(route){
+  window.__DRAW_OVERRIDE=null;
+  window.__ROSTER=null;
   if(typeof setFloorInterpretation==='function') setFloorInterpretation(route&&route.interpretation?route.interpretation:'twopass');
   document.body.className='mode-floor';
   document.body.classList.remove('ui-collapsed'); // will re-apply collapse below
+  try{ stopPlay(); }catch(e){}
+  if((route.sys==='NSF'||route.sys==='EWF') && !route.ex){
+    if(route.index && route.index.length===1){ mountHemisphereMembers(route); return; }
+    mountHemisphereDoors(route); return;
+  }
+  if(route.ex){ mountExchangeFloor(route); return; }
+  if(route.index && !indexHasPrices(route.index)){
+    const roster=ensureRosterIndex(route.index);
+    if(roster){ mountIndexRoster(route); return; }
+  }
   // v20.15/v20.23 — world index floors keep the NDX/SPX applyFloor path intact
-  if(route.index && DATA[route.index] && DATA[route.index].meta && DATA[route.index].meta.floor){
+  if(route.index && DATA[route.index] && DATA[route.index].meta && DATA[route.index].meta.floor && !regionSpec(route.sys)){
     route.sys=DATA[route.index].meta.floor;
     route.ds=route.index;
   }
-  if(!LIB4.some(x=>x.id===route.sys)) route.sys='AMF';
+  if(route.index && regionSpec(route.sys) && DATA[route.index] && DATA[route.index].meta && DATA[route.index].meta.floor && DATA[route.index].meta.floor!==route.sys){
+    DATA[route.index].meta.keepAll=true;
+  }
+  if(!LIB4.some(x=>x.id===route.sys) && !regionSpec(route.sys)) route.sys='AMF';
   // ensure ds <select> knows world indices
   if(route.ds && DATA[route.ds] && $('ds') && ![...$('ds').options].some(o=>o.value===route.ds)){
     const op=document.createElement('option'); op.value=route.ds; op.textContent=(DATA[route.ds].meta&&DATA[route.ds].meta.name)||route.ds; $('ds').appendChild(op);
@@ -3207,7 +3230,10 @@ function applyFloor(route){
   const idxbar=$('idxbar'); if(idxbar) idxbar.style.display=route.sys==='AMF'?'block':'none';
   stopPlay(); clearSel();
   hideIndexGap();
-  if(!route.index && !route.ex && regionSpec(route.sys)){ mountRegionDoors(route); return; }
+  if(!route.index && !route.ex && regionSpec(route.sys)){
+    if(regionHasPlottedDoors(route.sys)){ mountRegionDoors(route); return; }
+    mountRegionRoster(route); return;
+  }
   if(route.index && !indexHasPrices(route.index)){
     showIndexGap((INDEX_GROUP_NAME[route.index])||route.index);
     try{ collapseUiPanel(true); }catch(e){}
@@ -3500,7 +3526,8 @@ const FINANCE_INDEX_FLOORS=[
   {id:'ASX200',name:'ASX 200',route:'#/floor/OCF/index/ASX200'},
   {id:'IBOV',name:'Ibovespa',route:'#/floor/AMF/index/IBOV'},
   {id:'STI',name:'Straits Times',route:'#/floor/ASF/index/STI'},
-  {id:'TASI',name:'Tadawul (TASI)',route:'#/floor/ASF/index/TASI'},
+  {id:'TASI',name:'Tadawul (TASI)',route:'#/floor/MEF/index/TASI'},
+  {id:'JSE40',name:'FTSE/JSE Top 40',route:'#/floor/AFF/index/JSE40'},
   {id:'SPX',name:'S&P 500',route:'#/floor/AMF/index/SPX'},
   {id:'NDX',name:'Nasdaq-100',route:'#/floor/AMF/index/NDX'}
 ];
@@ -3508,12 +3535,13 @@ function indexFloorCards(){
   try{ ensureDJIA(); }catch(e){}
   return FINANCE_INDEX_FLOORS.map(ix=>{
     const live=indexHasPrices(ix.id);
+    const roster=!live?ensureRosterIndex(ix.id):null;
     const d=DATA[ix.id];
-    const n=live?((d.meta&&d.meta.n_with_prices)||d.objs.filter(o=>o.c&&o.c.some(x=>x!=null&&x>0)).length):0;
+    const n=live?((d.meta&&d.meta.n_with_prices)||d.objs.filter(o=>o.c&&o.c.some(x=>x!=null&&x>0)).length):(roster&&roster.objs?roster.objs.length:0);
     return `<button type="button" class="field-door ${live?'live set-card':'empty'}" data-id="SET-${ix.id}" data-route="${ix.route}" aria-label="${ix.name}">
         <span class="fd-kicker">Étage · indice</span>
         <span class="fd-name">${ix.name}</span>
-        <span class="fd-blurb">${live?(n+' titres Classe 1 · manifestation T0/T1'):'[INCOMPLET — données manquantes]'}</span>
+        <span class="fd-blurb">${live?(n+' titres Classe 1 · manifestation T0/T1'):(n?(n+' constituants · prix [INCOMPLET]'):'[INCOMPLET — données manquantes]')}</span>
         <span class="fd-badge">${live?'ACTIVE':'[INCOMPLET]'}</span>
         <span class="fd-go">→</span>
       </button>`;
@@ -3523,7 +3551,9 @@ const REGION_SPECS=[
   {id:'AMF', name:'Amériques', color:'#6fa8ff', mic:'XNYS'},
   {id:'EUF', name:'Europe', color:'#e6c35c', mic:'XETR'},
   {id:'ASF', name:'Asie-Pacifique', color:'#4fd1c5', mic:'XTKS'},
-  {id:'OCF', name:'Océanie', color:'#b48cff', mic:'XASX'}
+  {id:'OCF', name:'Océanie', color:'#b48cff', mic:'XASX'},
+  {id:'AFF', name:'Afrique', color:'#9ad66b', mic:'XJSE'},
+  {id:'MEF', name:'Moyen-Orient', color:'#ff9f5a', mic:'XSAU'}
 ];
 function regionSpec(id){ return REGION_SPECS.find(s=>s.id===id)||null; }
 function indicesInRegion(sys){ return FINANCE_INDEX_FLOORS.filter(ix=>ix.route.indexOf('#/floor/'+sys+'/index/')===0); }
@@ -3566,6 +3596,282 @@ function appendRegionDoors(dates, objs){
     objs.push({t:spec.id,n:spec.name,s:spec.name,i:spec.name,f:spec.mic,c,v,c0:1,hubFloor:'#/floor/'+spec.id});
   });
 }
+function meMics(){
+  const blk=((window.WORLD_FLOORS&&WORLD_FLOORS.branches)||{}).ME||{};
+  const set=new Set((blk.exchanges||[]).map(ex=>ex.mic).filter(Boolean));
+  set.add('XSAU');
+  return set;
+}
+function exchangesInRegion(sys){
+  if(sys==='MEF') return [...meMics()];
+  const me=meMics();
+  return Object.keys(FLOORS).filter(m=>FLOORS[m].ct===sys && !me.has(m));
+}
+function marketSources(){
+  return Object.keys(DATA).filter(k=>{
+    if(['ALL','UNIVERSE','ZONES','WZONES'].indexOf(k)>=0) return false;
+    if(/^(EX-|REG-|HEMI-)/.test(k)) return false;
+    const d=DATA[k];
+    return !!(d&&d.objs&&d.dates&&d.objs.length);
+  }).map(k=>DATA[k]);
+}
+function ensureExchangeSeries(mic){
+  const id='EX-'+mic;
+  if(DATA[id]&&DATA[id].objs) return DATA[id].objs.length?DATA[id]:null;
+  const sources=marketSources().filter(src=>src.objs.some(o=>o&&o.f===mic&&o.c&&o.c.some(x=>x!=null&&x>0)));
+  if(!sources.length){ DATA[id]={dates:[],objs:[],meta:{id,name:mic,keepAll:true,n_with_prices:0}}; return null; }
+  const dateSet=new Set();
+  sources.forEach(s=>s.dates.forEach(d=>dateSet.add(d)));
+  const dates=[...dateSet].sort();
+  const seen=new Set();
+  const objs=[];
+  sources.forEach(src=>{
+    const imap=new Map(src.dates.map((d,i)=>[d,i]));
+    src.objs.forEach(o=>{
+      if(!o||o.f!==mic||!o.t||seen.has(o.t)) return;
+      if(!(o.c&&o.c.some(x=>x!=null&&x>0))) return;
+      seen.add(o.t);
+      const c=dates.map(d=>{ const i=imap.get(d); const x=(i!=null&&o.c)?o.c[i]:null; return (x!=null&&x>0)?x:null; });
+      const v=dates.map(d=>{ const i=imap.get(d); const x=(i!=null&&o.v)?o.v[i]:null; return (x!=null&&isFinite(x))?x:null; });
+      let c0=o.c0; if(!(c0>0)){ for(const x of o.c){ if(x!=null&&x>0){ c0=x; break; } } }
+      objs.push({t:o.t,n:o.n||o.t,s:o.s||'',i:o.i||'',f:mic,c,v,c0});
+    });
+  });
+  const f=FLOORS[mic]||{};
+  DATA[id]={dates,objs,meta:{id,name:(f.n||mic)+' ('+mic+')',floor:f.ct||null,mic,keepAll:true,n_with_prices:objs.length}};
+  return objs.length?DATA[id]:null;
+}
+function worldIndexRecord(id){
+  const branches=(window.WORLD_FLOORS&&WORLD_FLOORS.branches)||{};
+  for(const b of Object.values(branches)){
+    const ix=(b.indices||[]).find(i=>i.id===id);
+    if(ix) return ix;
+  }
+  return null;
+}
+function ensureRosterIndex(id){
+  if(indexHasPrices(id)) return DATA[id];
+  if(DATA[id]&&DATA[id].meta&&DATA[id].meta.price==='[INCOMPLET]') return DATA[id];
+  const ix=worldIndexRecord(id);
+  if(!ix) return null;
+  const floor=ix.floor||(ix.branch==='AFR'?'AFF':ix.branch==='ME'?'MEF':ix.branch==='EUR'?'EUF':ix.branch==='AMER'?'AMF':ix.branch==='APAC'?'ASF':'AFF');
+  const link=(ix.links&&((ix.links.constituents_source&&ix.links.constituents_source.url)||(ix.links.factsheet&&ix.links.factsheet.url)))||'';
+  const objs=(ix.constituents||[]).map(c=>{
+    const name=c.name||c.symbol||'[INCOMPLET]';
+    const t=c.symbol||name;
+    return {t,n:name,s:ix.name,i:ix.name,f:ix.mic||null,c:[],v:[],c0:null};
+  });
+  DATA[id]={dates:[],objs,meta:{id,name:ix.name,floor,keepAll:true,n_with_prices:0,price:'[INCOMPLET]',link}};
+  return DATA[id];
+}
+function drawRoster(){
+  const spec=window.__ROSTER||{title:'',items:[]};
+  const items=spec.items||[];
+  ctx.fillStyle='#07080c'; ctx.fillRect(0,0,W,H);
+  HIT={c1:[],c2:[],c4:null,c4n:[],z0:null,gr:8,c:0,lib:[],libR:null};
+  window.HIT=HIT;
+  const cx=L+(W-L-R)*0.5, cy=H*0.48;
+  ctx.textAlign='center';
+  ctx.fillStyle='#e8c872'; ctx.font='700 15px system-ui';
+  ctx.fillText(spec.title||'', cx, 36);
+  ctx.fillStyle='#c6b37a'; ctx.font='12px system-ui';
+  const note=spec.note||'[INCOMPLET] prix T0/T1';
+  ctx.fillText(note.length>110?note.slice(0,108)+'…':note, cx, 56);
+  ctx.beginPath(); ctx.arc(cx,cy,26,0,7); ctx.fillStyle='#e8c872'; ctx.fill();
+  ctx.fillStyle='#07080c'; ctx.font='700 11px system-ui';
+  ctx.fillText('Classe 4', cx, cy+4);
+  HIT.c4={px:cx,py:cy,r:30,p:[0,0]};
+  const n=Math.max(items.length,1);
+  const rad=Math.max(70, Math.min(W-L-R, H)*0.30);
+  items.forEach((it,i)=>{
+    const ang=-Math.PI/2 + i*2*Math.PI/n;
+    const px=cx+Math.cos(ang)*rad, py=cy+Math.sin(ang)*rad*0.86;
+    const rr=it.kind==='c2'?13:7;
+    ctx.beginPath(); ctx.arc(px,py,rr,0,7); ctx.fillStyle=it.color||'#9ad66b'; ctx.fill();
+    ctx.fillStyle='#d5dbe6'; ctx.font='11px system-ui';
+    const lab=String(it.label||'');
+    ctx.fillText(lab.length>22?lab.slice(0,20)+'…':lab, px, py-rr-6);
+    if(it.kind==='c2') HIT.c2.push({gi:i,px,py,r:rr+3,p:[0,0]});
+    else HIT.c1.push({k:i,px,py,r:rr+3,p:[0,0]});
+    if(GROUPS[i]){ GROUPS[i]._px=px; GROUPS[i]._py=py; GROUPS[i]._r=rr+2; }
+  });
+  ctx.textAlign='left';
+  window.__SHORT_GHOST={mode:'year',n:0,nC2:0,nC1:items.length,nC4:0,nC4n:0,volsys:0};
+  try{ if($('d')) $('d').textContent='[INCOMPLET] prix T0/T1'; }catch(e){}
+}
+window.drawRoster=drawRoster;
+function mountRoster(spec){
+  hideIndexGap();
+  window.__DRAW_OVERRIDE='roster';
+  window.__ROSTER=spec;
+  window.__CORE_ZONES=false;
+  window.__REGION_DOORS=false;
+  window.__WORLD_GAUSS=false;
+  window.__WAVE=false;
+  document.body.classList.add('mode-roster','mode-manifest');
+  GROUPS=(spec.items||[]).map(it=>({name:it.label,mem:[],hubFloor:it.hubFloor||null,col:it.color||'#e8c872',_r:it.kind==='c2'?16:8}));
+  EMPTY=false;
+  try{ hideGateChrome(); }catch(e){}
+  try{ hideC4Panel(); }catch(e){}
+  try{ collapseUiPanel(true); }catch(e){}
+  try{ draw(); }catch(e){ console.warn('roster', e); }
+}
+function mountIndexRoster(route){
+  const d=DATA[route.index];
+  const items=((d&&d.objs)||[]).map(o=>({label:(o.n&&o.n!==o.t)?o.n:o.t, kind:'c1', color:'#e6c35c'}));
+  const link=d&&d.meta&&d.meta.link;
+  mountRoster({
+    title:(d&&d.meta&&d.meta.name)||route.index,
+    note:(items.length?items.length+' constituants réels':'Constituants [INCOMPLET]')+' · prix T0/T1 [INCOMPLET]'+(link?' · source enregistrée':''),
+    items:items.length?items:[{label:'[INCOMPLET]', kind:'c2', color:'#8a91a0'}]
+  });
+}
+function mountRegionRoster(route){
+  const spec=regionSpec(route.sys);
+  if(!spec) return;
+  const items=[];
+  indicesInRegion(spec.id).forEach(ix=>items.push({label:ix.name, hubFloor:ix.route, color:spec.color, kind:'c2'}));
+  exchangesInRegion(spec.id).forEach(mic=>{
+    const f=FLOORS[mic]||{};
+    items.push({label:f.n||mic, hubFloor:'#/floor/'+spec.id+'/ex/'+mic, color:spec.color, kind:'c2'});
+  });
+  document.body.classList.add('mode-region');
+  mountRoster({title:spec.name, note:'Prix T0/T1 [INCOMPLET] · objets réels déjà nommés sur disque', items});
+}
+function mountExchangeFloor(route){
+  const mic=route.ex;
+  const ser=ensureExchangeSeries(mic);
+  if(ser&&ser.objs&&ser.objs.length){
+    const id=ser.meta.id;
+    if($('ds')&&![...$('ds').options].some(o=>o.value===id)){
+      const op=document.createElement('option'); op.value=id; op.textContent=ser.meta.name; $('ds').appendChild(op);
+    }
+    $('sys').value=route.sys;
+    $('ds').value=id;
+    $('lvl').value='s';
+    if($('col')) $('col').value='seance';
+    stopPlay(); clearSel();
+    setDS();
+    mountIndexCoreZones({index:id, sys:route.sys});
+    return;
+  }
+  const f=FLOORS[mic]||{};
+  const ix=mic==='XJSE'?ensureRosterIndex('JSE40'):null;
+  const named=(ix&&ix.objs)||[];
+  if(named.length){
+    mountRoster({
+      title:f.n||mic,
+      note:named.length+' constituants (FTSE/JSE Top 40) · prix T0/T1 [INCOMPLET] · le reste de la place est [INCOMPLET]',
+      items:named.map(o=>({label:o.n||o.t, kind:'c1', color:'#9ad66b'}))
+    });
+    return;
+  }
+  mountRoster({
+    title:f.n||mic,
+    note:'Constituants [INCOMPLET] · prix T0/T1 [INCOMPLET]'+(f.city?(' · '+f.city):''),
+    items:[{label:f.n||mic, kind:'c2', color:'#8a91a0'}]
+  });
+}
+function hemiPoles(kind){
+  return kind==='EWF'
+    ?[{id:'W',name:'Hémisphère Ouest',color:'#b48cff'},{id:'E',name:'Hémisphère Est',color:'#4fd1c5'}]
+    :[{id:'N',name:'Hémisphère Nord',color:'#6fa8ff'},{id:'S',name:'Hémisphère Sud',color:'#ff9f5a'}];
+}
+function poleOfMic(mic, kind){
+  const f=FLOORS[mic]; if(!f||f.lat==null||f.lon==null) return null;
+  if(kind==='EWF') return f.lon>=0?'E':'W';
+  return f.lat>=0?'N':'S';
+}
+function ensureHemiMembers(kind, pole){
+  const id='HEMI-'+kind+'-'+pole;
+  if(DATA[id]&&DATA[id].objs) return DATA[id];
+  const sources=marketSources();
+  const dateSet=new Set();
+  sources.forEach(s=>s.dates.forEach(d=>dateSet.add(d)));
+  const dates=[...dateSet].sort();
+  const seen=new Set();
+  const objs=[];
+  sources.forEach(src=>{
+    const imap=new Map(src.dates.map((d,i)=>[d,i]));
+    src.objs.forEach(o=>{
+      if(!o||!o.t||!o.f||seen.has(o.t+'|'+o.f)) return;
+      if(poleOfMic(o.f, kind)!==pole) return;
+      if(!(o.c&&o.c.some(x=>x!=null&&x>0))) return;
+      seen.add(o.t+'|'+o.f);
+      const c=dates.map(d=>{ const i=imap.get(d); const x=(i!=null&&o.c)?o.c[i]:null; return (x!=null&&x>0)?x:null; });
+      const v=dates.map(d=>{ const i=imap.get(d); const x=(i!=null&&o.v)?o.v[i]:null; return (x!=null&&isFinite(x))?x:null; });
+      let c0=o.c0; if(!(c0>0)){ for(const x of o.c){ if(x!=null&&x>0){ c0=x; break; } } }
+      objs.push({t:o.t,n:o.n||o.t,s:o.s||pole,i:o.i||pole,f:o.f,c,v,c0});
+    });
+  });
+  const name=(hemiPoles(kind).find(p=>p.id===pole)||{}).name||pole;
+  DATA[id]={dates,objs,meta:{id,name,floor:kind,keepAll:true,n_with_prices:objs.length}};
+  return DATA[id];
+}
+function mountHemisphereDoors(route){
+  hideIndexGap();
+  const kind=route.sys;
+  const poles=hemiPoles(kind);
+  const dateSet=new Set();
+  poles.forEach(p=>{ const d=ensureHemiMembers(kind,p.id); if(d&&d.dates) d.dates.forEach(x=>dateSet.add(x)); });
+  const dates=[...dateSet].sort();
+  const doorObjs=[];
+  poles.forEach(p=>{
+    const src=DATA['HEMI-'+kind+'-'+p.id];
+    const ser=meanCloseSeries(src, dates);
+    if(!ser) return;
+    SECT[p.name]=p.color;
+    doorObjs.push({t:p.id,n:p.name,s:p.name,i:p.name,f:(FLOORS[p.id]?p.id:'XNYS'),c:ser.c,v:ser.v,c0:1,hubFloor:'#/floor/'+kind+'/index/'+p.id});
+  });
+  const id='REG-'+kind;
+  DATA[id]={dates,objs:doorObjs,meta:{id,name:kind==='EWF'?'Est-Ouest':'Nord-Sud',floor:kind,keepAll:true}};
+  if($('ds')&&![...$('ds').options].some(o=>o.value===id)){
+    const op=document.createElement('option'); op.value=id; op.textContent=DATA[id].meta.name; $('ds').appendChild(op);
+  }
+  $('sys').value=kind;
+  $('ds').value=id;
+  $('lvl').value='s';
+  if($('col')) $('col').value='seance';
+  window.__REGION_DOORS=true;
+  window.__CORE_ZONES=false;
+  window.__WORLD_GAUSS=false;
+  window.__FLOOR_TITLE=DATA[id].meta.name;
+  document.body.classList.add('mode-region','mode-manifest');
+  stopPlay(); clearSel();
+  setDS();
+  const byName={};
+  doorObjs.forEach(o=>{ byName[o.s]=o.hubFloor; });
+  GROUPS.forEach(g=>{ g.hubFloor=byName[g.name]||null; if(SECT[g.name]) g.col=SECT[g.name]; });
+  const n=ds.dates.length;
+  let s0=0;
+  if(GROUPS.length){ for(let i=0;i<n;i++){ if(GROUPS.every(g=>P2(g,i))){ s0=i; break; } } }
+  if($('s')) $('s').value=s0;
+  if($('e')) $('e').value=Math.max(0,n-1);
+  if($('c')) $('c').value=s0;
+  window_(); computeZ0();
+  try{ fitGroupsOnScreen(); }catch(e){}
+  try{ collapseUiPanel(true); }catch(e){}
+  try{ ensureGateChrome(); }catch(e){}
+  try{ draw(); }catch(e){}
+  try{ startManifestWave(); }catch(e){}
+}
+function mountHemisphereMembers(route){
+  const built=ensureHemiMembers(route.sys, route.index);
+  const id=built.meta.id;
+  if($('ds')&&![...$('ds').options].some(o=>o.value===id)){
+    const op=document.createElement('option'); op.value=id; op.textContent=built.meta.name; $('ds').appendChild(op);
+  }
+  $('sys').value=route.sys;
+  $('ds').value=id;
+  $('lvl').value='s';
+  stopPlay(); clearSel();
+  setDS();
+  mountIndexCoreZones({index:id, sys:route.sys});
+}
+function regionHasPlottedDoors(sys){
+  if(indicesInRegion(sys).some(ix=>indexHasPrices(ix.id))) return true;
+  return exchangesInRegion(sys).some(mic=>{ const s=ensureExchangeSeries(mic); return !!(s&&s.objs&&s.objs.length); });
+}
 function mountRegionDoors(route){
   hideIndexGap();
   const spec=regionSpec(route.sys);
@@ -3587,8 +3893,17 @@ function mountRegionDoors(route){
     SECT[ix.name]=spec.color;
     doorObjs.push({t:ix.id,n:ix.name,s:ix.name,i:ix.name,f:ser.mic||spec.mic,c:ser.c,v:ser.v,c0:1,hubFloor:ix.route});
   });
+  exchangesInRegion(spec.id).forEach(mic=>{
+    const src=ensureExchangeSeries(mic);
+    const ser=src?meanCloseSeries(src, dates):null;
+    if(!ser) return;
+    const f=FLOORS[mic]||{};
+    const name=f.n||mic;
+    SECT[name]=spec.color;
+    doorObjs.push({t:mic,n:name,s:name,i:name,f:mic,c:ser.c,v:ser.v,c0:1,hubFloor:'#/floor/'+spec.id+'/ex/'+mic});
+  });
   const id='REG-'+spec.id;
-  DATA[id]={dates,objs:doorObjs,meta:{id,name:spec.name,floor:spec.id,T0:dates[0]||null,T1:dates.length?dates[dates.length-1]:null,dates:dates.length?[dates[0]]:[]}};
+  DATA[id]={dates,objs:doorObjs,meta:{id,name:spec.name,floor:spec.id,keepAll:true,T0:dates[0]||null,T1:dates.length?dates[dates.length-1]:null,dates:dates.length?[dates[0]]:[]}};
   if($('ds')&&![...$('ds').options].some(o=>o.value===id)){
     const op=document.createElement('option'); op.value=id; op.textContent=spec.name; $('ds').appendChild(op);
   }
@@ -3774,6 +4089,8 @@ function openInterpretedFloor(){
   return true;
 }
 function applyRoute(){
+  window.__DRAW_OVERRIDE=null;
+  window.__ROSTER=null;
   const route=parseHash();
   window.__WORLD_GAUSS=route.mode==='world';
   window.__CORE_ZONES=route.mode==='world';
@@ -3850,7 +4167,7 @@ function applyRoute(){
     });
   }catch(e){}
   window.__NAV.crumb=($('crumb')&&$('crumb').textContent)||'';
-  window.__VERSION='v20.38';
+  window.__VERSION='v20.39';
   // Right window: summon on object navigation; never restore from ghost
   try{
     if(window.__RW_FORCE_CLOSED){ closeRightWindow(); window.__RW_FORCE_CLOSED=false; }
@@ -3996,6 +4313,7 @@ function patchClicks(){
     for(let gi=0;gi<GROUPS.length;gi++){
       const g=GROUPS[gi];
       if(g._px!=null&&Math.hypot(g._px-e.clientX,g._py-e.clientY)<=g._r+1.1){
+        if(document.body.classList.contains('mode-world')||document.body.classList.contains('mode-intl')||document.body.classList.contains('mode-region')||document.body.classList.contains('mode-roster')) return;
         stopPlay();select(gi);return;
       }
     }
