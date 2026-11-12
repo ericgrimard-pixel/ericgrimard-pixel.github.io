@@ -1,5 +1,5 @@
 /* Application code from v20.11 HUB galaxies (SAFE Pages) — DATA/FLOORS/NHL loaded by previous scripts.
-   Standing definition of the Hub (v20.37). The Class 4 library below is the floor structure;
+   Standing definition of the Hub (v20.38). The Class 4 library below is the floor structure;
    this sentence is the standing rule for Music, kept in this header:
    Music (Société · Musique) is an independent field (a row) in the World view, under society. It is separate from finance and from professional sport, and it has its own Class 2 objects. It is the starting point for the next layer of the build. It is never nested inside any panel.
    Its Class 2 slot is #um-musique-c2 on the World view. The slot is empty: the Hub has no local music data source. Nothing is invented.
@@ -207,7 +207,7 @@ function syncC4Panel(live){const el=$('c4panel');if(!el){window.__C4LIVE=live||n
     }
     return fallback;
   }
-  const payload={version:'v20.37',sys:sysName,space:live.space||'market',tau:live.tau,t:live.t,gateMode:fourierMode?'fourier':'libre',formT:(live.formT!=null?live.formT:((typeof window.waveFormT==='function')?window.waveFormT():1)),swell:(live.swell!=null?live.swell:((typeof window.waveSwell==='function')?window.waveSwell():1)),
+  const payload={version:'v20.38',sys:sysName,space:live.space||'market',tau:live.tau,t:live.t,gateMode:fourierMode?'fourier':'libre',formT:(live.formT!=null?live.formT:((typeof window.waveFormT==='function')?window.waveFormT():1)),swell:(live.swell!=null?live.swell:((typeof window.waveSwell==='function')?window.waveSwell():1)),
     z0:market?{x:z[0],y:z[1],ret:Math.exp(z[0])-1,vol:z[1]}:{x:z[0],y:z[1]},
     z0T0,z0T1,
     drift:{dx:d[0],dy:d[1],mag,angleDeg:ang,incomplet:!!live.driftIncomplet},
@@ -224,6 +224,18 @@ function syncC4Panel(live){const el=$('c4panel');if(!el){window.__C4LIVE=live||n
   window.__ATTR_UNLOCKED=[...unlocked];
   window.__WAVE_T=window.__WAVE?Math.max(0,Math.min(1,progress||0)):null;
   el.hidden=false;
+  try{
+    let tog=document.getElementById('c4-toggle');
+    if(!tog){
+      tog=document.createElement('button'); tog.type='button'; tog.id='c4-toggle'; tog.textContent='Attributs';
+      document.body.appendChild(tog);
+      tog.addEventListener('click',()=>{
+        const open=document.body.classList.toggle('c4-open');
+        tog.setAttribute('aria-expanded', open?'true':'false');
+      });
+    }
+    tog.setAttribute('aria-expanded', document.body.classList.contains('c4-open')?'true':'false');
+  }catch(e){}
   const z0Line=market
     ? '('+fn(z[0])+', '+fn(z[1])+') · '+fp(Math.exp(z[0])-1)+' · vol '+fp(z[1])+' · τ = '+fn(live.t)
     : '('+fn(z[0])+', '+fn(z[1])+') · moyenne de ce qui est visible';
@@ -314,7 +326,8 @@ function syncC4Panel(live){const el=$('c4panel');if(!el){window.__C4LIVE=live||n
 function drawClass4Glyph(ctx,px,py,live,label){
   const radius=live&&isFinite(live.radius)?live.radius:0;
   const radScale=(live&&live.space==='static')?180:0.12;
-  const size=16*(0.82+0.5*Math.tanh(radius/radScale));
+  const hero=document.body&&document.body.classList.contains('manifest-primary')?1.7:1;
+  const size=16*hero*(0.82+0.5*Math.tanh(radius/radScale));
   const stretch=(live&&live.stretch!=null&&isFinite(live.stretch))?live.stretch:1;
   const k=Math.min(2.6,Math.max(1,Math.sqrt(stretch)));
   const rx=size*Math.sqrt(k),ry=size/Math.sqrt(k);
@@ -737,17 +750,52 @@ function rule(){const [ux,uy]=unit();let mn=Infinity,mx=0;const trs=[];if(sel)tr
   for(const tr of trs){const G=tr.G;for(let i=1;i<G.length;i++){if(G[i].h||G[i-1].h)continue;const d=Math.hypot((G[i].x-G[i-1].x)*ux,(G[i].y-G[i-1].y)*uy);if(d>0){mn=Math.min(mn,d);mx=Math.max(mx,d);}}}
   return {mn,mx};}
 // ---------- dessin ----------
+function paintManifestMark(ctx,px,py,rad,col,label,ang){
+  const formT=(typeof waveFormT==='function')?waveFormT():1;
+  const k=1.2+0.45*Math.abs(Math.sin((ang||0)*2));
+  const rx=Math.max(4,rad)*Math.sqrt(k), ry=Math.max(4,rad)/Math.sqrt(k);
+  ctx.save(); ctx.translate(px,py); ctx.rotate(ang||0);
+  ctx.beginPath();
+  const n=16;
+  for(let i=0;i<=n;i++){
+    const a=-Math.PI/2+i*2*Math.PI/n;
+    const diamond=1/(Math.abs(Math.cos(a))/Math.max(1e-6,rx)+Math.abs(Math.sin(a))/Math.max(1e-6,ry));
+    const wobble=1+0.26*Math.sin(3*a)+0.12*Math.sin(5*a+0.4);
+    const circ=Math.max(rx,ry)*0.9*wobble;
+    const r=circ+(diamond-circ)*formT;
+    const x=Math.cos(a)*r, y=Math.sin(a)*r;
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.closePath();
+  ctx.fillStyle='rgba(8,10,16,.94)'; ctx.fill();
+  ctx.strokeStyle=col||'#e8c872'; ctx.lineWidth=Math.max(1.2,rad*0.08); ctx.stroke();
+  ctx.restore();
+  if(label){ ctx.fillStyle=col||'#e8c872'; ctx.font='700 14px system-ui'; ctx.fillText(label,px+rx+6,py+4); }
+}
 function fmt(n){return Math.round(n).toLocaleString('fr-CA');}
 function visible(gh,c,u){return gh.e<c||(gh.e===c&&gh.t<=0)||(gh.e===c+1&&gh.t<=u)||gh.k===0&&gh.e<=c;}
 let HIT={c1:[],c2:[],c4:null,z0:null,gr:0,c:0};
 function draw(){if(window.__DRAW_OVERRIDE==='nhl'){drawNhlGalaxy();return;}const c=+$('c').value,u=progress;HIT={c1:[],c2:[],c4:null,c4n:[],z0:null,gr:0,c,lib:[],libR:null};window.HIT=HIT;GROUPS.forEach(g=>g._px=null);if(typeof EMPTY==='undefined'||EMPTY||!ds||!ds.dates)return (typeof drawEmpty==='function'?drawEmpty():undefined);if(window.__Z0_DOMAIN==='none'&&!(document.body&&document.body.classList.contains('mode-floor'))){hideC4Panel();return;} $('d').textContent=ds.dates[S0]+' → '+ds.dates[S1]+'  ·  instant '+ds.dates[Math.max(0,Math.min(c,ds.dates.length-1))]+(u>0?' (+'+u.toFixed(2)+')':'');
-  const v=view();const frame=plotFrame();const Bb=frame.bottom,Tt=frame.top;const X=x=>L+(x-v.x0)/(v.x1-v.x0)*(W-L-R),Y=y=>H-Bb-(y-v.y0)/(v.y1-v.y0)*(H-Tt-Bb);
-  const cl=(x,y)=>[Math.min(bx[1],Math.max(bx[0],x)),Math.min(by[1],Math.max(by[0],y))];
-  ctx.fillStyle='#07080c';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#1d2230';ctx.fillStyle='#5d6475';ctx.font='11px system-ui';ctx.lineWidth=1;
-  for(let k=-4;k<=12;k++){const xv=Math.log(1+k*0.25);if(1+k*.25<=0||xv<v.x0||xv>v.x1)continue;const px=X(xv);ctx.beginPath();ctx.moveTo(px,T);ctx.lineTo(px,H-B);ctx.stroke();ctx.fillText((k*25>0?'+':'')+(k*25)+' %',px-12,H-B+16);}
-  const st=(v.y1-v.y0)>1?0.2:(v.y1-v.y0)>.2?0.05:0.01;for(let yv=Math.ceil(v.y0/st)*st;yv<v.y1;yv+=st){const py=Y(yv);ctx.beginPath();ctx.moveTo(L,py);ctx.lineTo(W-R,py);ctx.stroke();ctx.fillText(Math.round(yv*100)+' %',L-40,py+4);}
-  ctx.fillText('rendement cumulé depuis T₀ (log) →',W-R-200,H-B+34);ctx.save();ctx.translate(18,T+170);ctx.rotate(-Math.PI/2);ctx.fillText('volatilité 20 séances →',0,0);ctx.restore();
-  ctx.strokeStyle='#3a4256';ctx.setLineDash([4,4]);ctx.strokeRect(X(bx[0]),Y(by[1]),X(bx[1])-X(bx[0]),Y(by[0])-Y(by[1]));ctx.setLineDash([]);
+  document.body.classList.add('manifest-primary');
+  if(!document.body.classList.contains('c4-open')) document.body.classList.add('c4-collapsed');
+  const sp0=playSpan(c,u);
+  const zc0=(Z0&&typeof ZL==='function')?ZL(sp0.tau):[0,0];
+  const radii=[];
+  const touchR=p=>{ if(!p||!isFinite(p[0])||!isFinite(p[1])||!zc0) return; radii.push(Math.hypot(p[0]-zc0[0],p[1]-zc0[1])); };
+  if(typeof GROUPS!=='undefined') GROUPS.forEach(g=>{ touchR(P2(g,sp0.i0)); touchR(P2(g,sp0.i1)); touchR(P2(g,S0)); touchR(P2(g,S1)); });
+  if(Z0){ touchR(Z0.a); touchR(Z0.b); if(Z0.C4N) Z0.C4N.forEach(n=>{ if(n&&n.P){ touchR(n.P[sp0.i0]); touchR(n.P[sp0.i1]); } }); }
+  radii.sort((a,b)=>a-b);
+  const maxR=Math.max(0.04, radii.length?radii[Math.floor((radii.length-1)*0.55)]:0.08);
+  const frame=plotFrame();const Bb=frame.bottom,Tt=frame.top;
+  const cx=L+(W-L-R)*0.5, cy=Tt+(H-Tt-Bb)*0.46;
+  const reach=Math.min(W-L-R, H-Tt-Bb)*0.42;
+  const swell=(window.__WAVE&&typeof waveSwell==='function')?waveSwell():1;
+  const soft=u=>u/(1+Math.abs(u));
+  const X=x=>cx+soft((x-zc0[0])/maxR)*reach*1.55*swell;
+  const Y=y=>cy-soft((y-zc0[1])/maxR)*reach*1.55*swell;
+  const cl=(x,y)=>[x,y];
+  ctx.fillStyle='#07080c';ctx.fillRect(0,0,W,H);
+  document.body.classList.toggle('c4-wave-attrs', !window.__WAVE || (typeof waveFormT==='function' && waveFormT()>=0.98));
   // contexte : positions courantes des objets de Classe 1 (aucune traîne)
   const rl=(sel||dep)?rule():{mn:NaN,mx:NaN};const dr=rl.mn*zoom,r=Math.max(FLOOR,isFinite(dr)?dr:FLOOR)/2;const objR=sel?16:13;HIT.gr=objR;
   const fadeOf=(gh,tr)=>{const vis=[];for(const g of tr.G)if(visible(g,c,u))vis.push(g);if(!vis.length)return 0;const k0=tr.G[0].k,k1=vis[vis.length-1].k,sp=k1-k0;return sp<=0?1:0.08+0.92*((gh.k-k0)/sp);};
@@ -776,15 +824,14 @@ function draw(){if(window.__DRAW_OVERRIDE==='nhl'){drawNhlGalaxy();return;}const
   else if(liveC4 && (window.__CORE_ZONES||window.__REGION_DOORS) && window.__FLOOR_TITLE) liveC4.sysName=window.__FLOOR_TITLE;
   if(liveC4){liveC4.formT=(typeof window.waveFormT==='function')?window.waveFormT():1;liveC4.swell=(typeof window.waveSwell==='function')?window.waveSwell():1;}
   if(liveC4) syncC4Panel(liveC4); else hideC4Panel();
-  if(Z0){const A=Z0.a,Bz=Z0.b,zc=liveC4?liveC4.zc:ZL(sp.tau);ctx.save();ctx.strokeStyle='#e8c872';ctx.lineWidth=sel?1.2:2.2;ctx.globalAlpha=(sel?0.35:0.95)*volSys();ctx.setLineDash([9,5]);ctx.beginPath();ctx.moveTo(X(A[0]),Y(A[1]));ctx.lineTo(X(Bz[0]),Y(Bz[1]));ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle='#e8c872';ctx.font='600 11px system-ui';[[A,'Z0(T₀)'],[Bz,'Z0(T₁)']].forEach(([p,l])=>{ctx.beginPath();ctx.arc(X(p[0]),Y(p[1]),4,0,7);ctx.fill();ctx.fillText(l,X(p[0])+6,Y(p[1])-6);});
+  if(Z0){const A=Z0.a,Bz=Z0.b,zc=liveC4?liveC4.zc:ZL(sp.tau);ctx.save();ctx.strokeStyle='rgba(232,200,114,.55)';ctx.lineWidth=1.4;ctx.globalAlpha=0.85*volSys();ctx.beginPath();ctx.moveTo(X(A[0]),Y(A[1]));ctx.lineTo(X(Bz[0]),Y(Bz[1]));ctx.stroke();
     HIT.z0={px:X(zc[0]),py:Y(zc[1]),r:8+1.25,p:zc};HIT.c4={px:X(zc[0]),py:Y(zc[1]),r:22,p:zc,live:liveC4};
     ctx.restore();}
   // v20.27 — short trailing-sequence ghost (last N steps, decaying opacity) on both interpretations.
-  try{ if(typeof paintFloorShortGhosts==='function') paintFloorShortGhosts(ctx,{X,Y,cl,c,u,sp,liveC4}); }catch(e){}
+  try{ if(!document.body.classList.contains('manifest-primary') && typeof paintFloorShortGhosts==='function') paintFloorShortGhosts(ctx,{X,Y,cl,c,u,sp,liveC4}); }catch(e){}
   // objets de Classe 2 à l'instant (déplacés sur leur trajet cycloïdal)
-  const many=GROUPS.length>30;GROUPS.forEach((g,gi)=>{if(sel&&sel.g!==g&&many)return;const onWorld=!!(window.__CORE_ZONES||window.__REGION_DOORS);const reveal=(!onWorld||!window.__WAVE)?1:((typeof waveSwell==='function')?waveSwell():1);if(onWorld&&window.__WAVE&&reveal<=0.02)return;const p0=P2(g,sp.i0);if(!p0)return;const p1=P2(g,sp.i1);let p=(p1&&sp.u>0)?cyc(p0,p1,sp.u,sp.i0,sp.i1):p0;if(typeof window.swellFromZ0==="function"&&liveC4) p=window.swellFromZ0(p,liveC4.zc);const q=cl(p[0],p[1]);let px=X(q[0]),py=Y(q[1]);
-    if(window.__REGION_DOORS&&HIT.c4){
+  const many=GROUPS.length>30;GROUPS.forEach((g,gi)=>{if(sel&&sel.g!==g&&many)return;const onWorld=!!(window.__CORE_ZONES||window.__REGION_DOORS);const reveal=(!onWorld||!window.__WAVE)?1:((typeof waveSwell==='function')?waveSwell():1);if(onWorld&&window.__WAVE&&reveal<=0.02)return;const p0=P2(g,sp.i0);if(!p0)return;const p1=P2(g,sp.i1);let p=(p1&&sp.u>0)?cyc(p0,p1,sp.u,sp.i0,sp.i1):p0;if(typeof window.swellFromZ0==="function"&&liveC4) p=window.swellFromZ0(p,liveC4.zc);const q=cl(p[0],p[1]);let px=X(q[0]),py=Y(q[1]); px=Math.max(L+28,Math.min(W<760?318:W-R-18,px)); py=Math.max(Math.max(Tt+78,112),Math.min(H-Bb-28,py));
+    if(window.__REGION_DOORS&&HIT.c4&&(!window.__WAVE||swell>0.98)){
       const minC4=(HIT.c4.r||22)+36, minG=58;
       for(let guard=0;guard<14;guard++){
         let dx=px-HIT.c4.px, dy=py-HIT.c4.py, d=Math.hypot(dx,dy), moved=false;
@@ -794,11 +841,16 @@ function draw(){if(window.__DRAW_OVERRIDE==='nhl'){drawNhlGalaxy();return;}const
         if(!moved) break;
       }
     }
-    const isS=sel&&sel.g===g;const rad=isS?28:(many?7:(onWorld?26:13));const gc=colMove(g.col,p0,p1,c,c+1,u);if(isS)window.__COLLOG.push([c,u,gc]);g._px=px;g._py=py;g._r=rad;HIT.c2.push({gi,px,py,r:rad+(isS?1.1:0.7),p});
-    ctx.globalAlpha=volSys()*(sel&&!isS?.45:1)*(onWorld&&window.__WAVE?Math.min(1,reveal/0.28):1);ctx.beginPath();ctx.arc(px,py,rad,0,7);ctx.fillStyle='rgba(8,10,16,.9)';ctx.fill();ctx.lineWidth=isS?2.2:1.4;ctx.strokeStyle=gc;ctx.stroke();
-    if(!many||isS||onWorld){const lab=onWorld?g.name:(g.name.length>18?g.name.slice(0,17)+'…':g.name);ctx.font=(onWorld?'700 15px ':'600 10px ')+'system-ui';ctx.fillStyle=gc;ctx.fillText(lab,px+rad+4,py+4);}ctx.globalAlpha=1;});
+    const isS=sel&&sel.g===g;const rad=isS?30:(many?11:(onWorld?28:16));const gc=colMove(g.col,p0,p1,c,c+1,u);if(isS)window.__COLLOG.push([c,u,gc]);g._px=px;g._py=py;g._r=rad;HIT.c2.push({gi,px,py,r:rad+(isS?1.1:0.7),p});
+    ctx.globalAlpha=volSys()*(sel&&!isS?0.55:1);
+    const ang=Math.atan2(cy-py, px-cx);
+    const lab=(!many||isS||onWorld)?(onWorld?g.name:(g.name.length>18?g.name.slice(0,17)+'…':g.name)):null;
+    paintManifestMark(ctx,px,py,rad,gc,lab,ang);
+    const pA=P2(g,S0), pB=P2(g,S1);
+    if(pA&&pB){ ctx.save(); ctx.globalAlpha=0.34; [0.22,0.5,0.78].forEach(t=>{ paintManifestMark(ctx, X(pA[0]+(pB[0]-pA[0])*t), Y(pA[1]+(pB[1]-pA[1])*t), Math.max(5,rad*0.38), gc, null, ang); }); ctx.restore(); }
+    ctx.globalAlpha=1;});
   // couche Classe 1, au-dessus des objets de Classe 2 : positions courantes (aucune traîne) puis constituants déployés
-  ctx.fillStyle='#e8eef8';ctx.globalAlpha=Math.min(1,volSys()*1.05);ctx.beginPath();const _c1r=(sel&&sel.g&&sel.g.mem&&sel.g.mem.length>200)?3.4:(sel&&sel.g&&sel.g.mem&&sel.g.mem.length>80)?4.2:(sel?5:3);ds.objs.forEach((o,k)=>{if(window.__CORE_ZONES)return;const p0=P1(k,sp.i0);if(!p0)return;if(sel&&sel.g&&sel.g.mem&&sel.g.mem.indexOf(k)<0) return;const p1=P1(k,sp.i1);let p=(p1&&sp.u>0)?cyc(p0,p1,sp.u,sp.i0,sp.i1):p0;if(typeof window.swellFromZ0==="function"&&liveC4) p=window.swellFromZ0(p,liveC4.zc);const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);if(px<-4||px>W+4||py<-4||py>H+4)return;HIT.c1.push({k,px,py,r:_c1r,p});ctx.moveTo(px+_c1r,py);ctx.arc(px,py,_c1r,0,6.2832);});ctx.fill();ctx.globalAlpha=1;
+  ctx.globalAlpha=1;const _c1r=(sel&&sel.g&&sel.g.mem&&sel.g.mem.length>200)?5:(sel&&sel.g&&sel.g.mem&&sel.g.mem.length>80)?6:(sel?7:5);const hitC1=!(window.__CORE_ZONES||window.__REGION_DOORS);ds.objs.forEach((o,k)=>{if(document.body.classList.contains('mode-world')||document.body.classList.contains('mode-intl')||window.__REGION_DOORS)return;const p0=P1(k,sp.i0);if(!p0)return;if(sel&&sel.g&&sel.g.mem&&sel.g.mem.indexOf(k)<0) return;if(!sel&&ds.objs.length>140&&(k%3)!==0) return;const p1=P1(k,sp.i1);let p=(p1&&sp.u>0)?cyc(p0,p1,sp.u,sp.i0,sp.i1):p0;if(typeof window.swellFromZ0==="function"&&liveC4) p=window.swellFromZ0(p,liveC4.zc);const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);if(px<-8||px>W+8||py<-8||py>H+8)return;if(hitC1) HIT.c1.push({k,px,py,r:_c1r,p});paintManifestMark(ctx,px,py,_c1r,SECT[o.s]||'#c5cddc',null,Math.atan2(cy-py,px-cx));});ctx.globalAlpha=1;
   if(dep){
     // constituants à l'instant, déplacés sur leur trajet cycloïdal
     const few=dep.M.length<=60;ctx.globalAlpha=volSys();dep.M.forEach(tr=>{const k=tr.k,o=ds.objs[k];if(c<dep.d0)return;const p0=P1(k,sp.i0),p1=P1(k,sp.i1);if(!p0)return;let p=(p1&&sp.u>0)?cyc(p0,p1,sp.u,sp.i0,sp.i1):p0;if(typeof window.swellFromZ0==="function"&&liveC4) p=window.swellFromZ0(p,liveC4.zc);const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);const col=colMove(SECT[o.s]||'#bbbbbb',p0,p1,c,c+1,u);
@@ -2915,8 +2967,14 @@ function nhlXY(x,y){
   const Lft=nhlMode?64:56;
   const Rgt=nhlMode?((W>=960 && document.body.classList.contains('rw-open'))?360:52):(($('libon')&&$('libon').checked)?(PW+50):36);
   const Top=56, Bot=48;
-  const px=Lft + (x-v.x0)/(v.x1-v.x0)*(W-Lft-Rgt);
-  const py=Top + (v.y1-y)/(v.y1-v.y0)*(H-Top-Bot);
+  let px=Lft + (x-v.x0)/(v.x1-v.x0)*(W-Lft-Rgt);
+  let py=Top + (v.y1-y)/(v.y1-v.y0)*(H-Top-Bot);
+  if(window.__WAVE && typeof waveSwell==='function'){
+    const cx=Lft + (0-v.x0)/(v.x1-v.x0)*(W-Lft-Rgt);
+    const cy=Top + (v.y1-0)/(v.y1-v.y0)*(H-Top-Bot);
+    const s=waveSwell();
+    px=cx+(px-cx)*s; py=cy+(py-cy)*s;
+  }
   return [px,py];
 }
 function drawNhlGalaxy(){
@@ -3004,11 +3062,12 @@ function applyNhlGalaxy(){
   try{ hideNhlInfoChip(); }catch(e){}
   if(typeof window.applyNhlLeagueHooks==='function') window.applyNhlLeagueHooks();
   window.__DRAW_OVERRIDE='nhl';
-  window.__VERSION='v20.37';
+  window.__VERSION='v20.38';
   if(typeof window.nhlSummonCurrentSystem==='function' && !window.__RW_NHL_LOCK){
     try{ window.nhlSummonCurrentSystem(); }catch(e){}
   }
   size(); drawNhlGalaxy();
+  try{ if(!window.__WAVE) startManifestWave(); }catch(e){}
 }
 function ensureNhlInfoChip(){
   let chip=$('nhl-info-chip');
@@ -3788,7 +3847,7 @@ function applyRoute(){
     });
   }catch(e){}
   window.__NAV.crumb=($('crumb')&&$('crumb').textContent)||'';
-  window.__VERSION='v20.37';
+  window.__VERSION='v20.38';
   // Right window: summon on object navigation; never restore from ghost
   try{
     if(window.__RW_FORCE_CLOSED){ closeRightWindow(); window.__RW_FORCE_CLOSED=false; }
