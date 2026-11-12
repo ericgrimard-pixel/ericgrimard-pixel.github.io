@@ -1,7 +1,7 @@
 # Short trailing-sequence ghost — spec for the Hub floors
 
 Date: 2026-11-12, America/Toronto (EST, UTC-5)
-Hub version: v20.32 (five cardinal floors drawn in the Hub + short ghost)
+Hub version: v20.33 (five cardinal floors drawn in the Hub + short ghost)
 Source of the request: Éric, voice. Apply a GHOST on BOTH interpretations of the financial floors. Not Fourier. A simple trailing-sequence ghost: the last sequence of the movement, a short trailing segment like a motion trail. Short is good — it gives an idea of the movement.
 
 The live renderer is the Hub canvas (`um/index.html`, `um/js/app.js`).
@@ -12,6 +12,12 @@ and `/t0t1`, `#/floor/ASF/index/TASI/year` and `/t0t1`,
 `#/floor/AMF/index/IBOV/year` and `/t0t1`. Math lives in
 `um/js/floor-short-ghost.js`; `um/js/app.js` paints it with
 `paintFloorShortGhosts`.
+
+## Société · Musique
+
+Music (Société · Musique) is an independent field (a row) in the World view, under society. It is separate from finance and from professional sport, and it has its own Class 2 objects. It is the starting point for the next layer of the build. It is never nested inside any panel.
+
+The Class 2 slot is `#um-musique-c2` in `um/index.html`. It is empty. The Hub has no local music data source, so no Class 2 object is listed. Nothing is invented.
 
 ## What “both interpretations” means
 

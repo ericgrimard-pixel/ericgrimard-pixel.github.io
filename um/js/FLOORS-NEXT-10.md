@@ -1,6 +1,6 @@
 # Next ten floors — staged, not live
 
-Hub v20.32. This file is a disabled spec. `um/index.html` does not load it.
+Hub v20.33. This file is a disabled spec. `um/index.html` does not load it.
 Nothing here adds a route, a door href, or a script tag. The live Hub still
 draws only the five cardinals already in the renderer:
 

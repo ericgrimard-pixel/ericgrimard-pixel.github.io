@@ -58,7 +58,7 @@
     var all = Array.prototype.slice.call(document.body.querySelectorAll('*'));
     var c = all.filter(function (el) {
       if (el.closest('.um-pbar,.um-recall,.um-panel-menu')) return false;
-      if (el.id === 'cv' || el.id === 'popcv') return false;
+      if (el.id === 'cv' || el.id === 'popcv' || el.id === 'um-societe-musique') return false;
       if (/^(CANVAS|IFRAME|VIDEO|IMG|SVG|BUTTON|A|INPUT|SELECT|LABEL|SCRIPT|STYLE|TEXTAREA)$/i.test(el.tagName)) return false;
       var cs = getComputedStyle(el);
       if (!/^(fixed|absolute|sticky)$/.test(cs.position) || cs.display === 'none' || cs.visibility === 'hidden') return false;
@@ -166,7 +166,7 @@
     function add(el) {
       if (!el || list.indexOf(el) >= 0) return;
       if (el.closest('.um-pbar,.um-recall,.um-panel-menu')) return;
-      if (el.tagName === 'CANVAS') return;
+      if (el.tagName === 'CANVAS' || el.id === 'um-societe-musique') return;
       list.push(el);
     }
     marked.forEach(add); known.forEach(add); found.forEach(add);

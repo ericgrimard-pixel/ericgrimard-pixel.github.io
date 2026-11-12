@@ -1,4 +1,8 @@
-/* Application code from v20.11 HUB galaxies (SAFE Pages) — DATA/FLOORS/NHL loaded by previous scripts. */
+/* Application code from v20.11 HUB galaxies (SAFE Pages) — DATA/FLOORS/NHL loaded by previous scripts.
+   Standing definition of the Hub (v20.33). The Class 4 library below is the floor structure;
+   this sentence is the standing rule for Music, kept in this header:
+   Music (Société · Musique) is an independent field (a row) in the World view, under society. It is separate from finance and from professional sport, and it has its own Class 2 objects. It is the starting point for the next layer of the build. It is never nested inside any panel.
+   Its Class 2 slot is #um-musique-c2 on the World view. The slot is empty: the Hub has no local music data source. Nothing is invented. */
 var DATA = window.DATA;
 const INDEX_GROUP_NAME={NDX:'Nasdaq-100 (indice)',SPX:'S&P 500 (indice)',ALL:'Nasdaq-100 ∪ S&P 500',STI:'Straits Times Index',IBOV:'Ibovespa',TASI:'Tadawul All-Share Index (TASI)',N225:'Nikkei 225',HSI:'Hang Seng Index',FTSE100:'FTSE 100',DAX:'DAX 40',CAC40:'CAC 40',SX5E:'EURO STOXX 50',ASX200:'S&P/ASX 200'};
 window.INDEX_GROUP_NAME=INDEX_GROUP_NAME;
