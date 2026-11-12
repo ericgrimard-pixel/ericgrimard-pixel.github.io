@@ -1,12 +1,12 @@
 /* Application code from v20.11 HUB galaxies (SAFE Pages) — DATA/FLOORS/NHL loaded by previous scripts.
-   Standing definition of the Hub (v20.34). The Class 4 library below is the floor structure;
+   Standing definition of the Hub (v20.35). The Class 4 library below is the floor structure;
    this sentence is the standing rule for Music, kept in this header:
    Music (Société · Musique) is an independent field (a row) in the World view, under society. It is separate from finance and from professional sport, and it has its own Class 2 objects. It is the starting point for the next layer of the build. It is never nested inside any panel.
    Its Class 2 slot is #um-musique-c2 on the World view. The slot is empty: the Hub has no local music data source. Nothing is invented.
    Étage international · manifestation is #/floor/WF: the five geographic macro-zones as Class 2.
    #/world is the World market Class 4 (Z0 = mean of the whole system) surrounded by Omega, φ−, Sigma, φ+, Alpha. */
 var DATA = window.DATA;
-const INDEX_GROUP_NAME={NDX:'Nasdaq-100 (indice)',SPX:'S&P 500 (indice)',ALL:'Nasdaq-100 ∪ S&P 500',STI:'Straits Times Index',IBOV:'Ibovespa',TASI:'Tadawul All-Share Index (TASI)',N225:'Nikkei 225',HSI:'Hang Seng Index',FTSE100:'FTSE 100',DAX:'DAX 40',CAC40:'CAC 40',SX5E:'EURO STOXX 50',ASX200:'S&P/ASX 200'};
+const INDEX_GROUP_NAME={NDX:'Nasdaq-100 (indice)',SPX:'S&P 500 (indice)',ALL:'Nasdaq-100 ∪ S&P 500',STI:'Straits Times Index',IBOV:'Ibovespa',TASI:'Tadawul All-Share Index (TASI)',N225:'Nikkei 225',HSI:'Hang Seng Index',FTSE100:'FTSE 100',DAX:'DAX 40',CAC40:'CAC 40',SX5E:'EURO STOXX 50',ASX200:'S&P/ASX 200',DJIA:'Dow Jones (DJIA)'};
 window.INDEX_GROUP_NAME=INDEX_GROUP_NAME;
 var FLOORS = window.FLOORS;
 var NHL = window.NHL;
@@ -193,7 +193,7 @@ function syncC4Panel(live){const el=$('c4panel');if(!el){window.__C4LIVE=live||n
     }
     return fallback;
   }
-  const payload={version:'v20.34',sys:sysName,space:live.space||'market',tau:live.tau,t:live.t,gateMode:fourierMode?'fourier':'libre',formT:(live.formT!=null?live.formT:((typeof window.waveFormT==='function')?window.waveFormT():1)),swell:(live.swell!=null?live.swell:((typeof window.waveSwell==='function')?window.waveSwell():1)),
+  const payload={version:'v20.35',sys:sysName,space:live.space||'market',tau:live.tau,t:live.t,gateMode:fourierMode?'fourier':'libre',formT:(live.formT!=null?live.formT:((typeof window.waveFormT==='function')?window.waveFormT():1)),swell:(live.swell!=null?live.swell:((typeof window.waveSwell==='function')?window.waveSwell():1)),
     z0:market?{x:z[0],y:z[1],ret:Math.exp(z[0])-1,vol:z[1]}:{x:z[0],y:z[1]},
     z0T0,z0T1,
     drift:{dx:d[0],dy:d[1],mag,angleDeg:ang,incomplet:!!live.driftIncomplet},
@@ -288,7 +288,7 @@ function syncC4Panel(live){const el=$('c4panel');if(!el){window.__C4LIVE=live||n
     +'<tr><th>Centre-extérieur</th><td id="c4-attr-radius">'+cell('Centre-extérieur',radLine)+'</td></tr>'
     +'<tr><th>Saturation</th><td id="c4-attr-sat">'+(unlocked.has('Saturation')?((live.sat!=null&&isFinite(live.sat))?live.sat.toFixed(1):'[INCOMPLET]'):'…')+'</td></tr>'
     +'</tbody></table>'+fourierHtml;
-  if(document.body.classList.contains('mode-world')&&window.__WORLD_ZONES){
+  if(window.__CORE_ZONES&&window.__WORLD_ZONES){
     const rows=window.__WORLD_ZONES.map(function(z){
       const gap=z.incomplet?' [INCOMPLET]':'';
       return '<span class="wz" data-zone="'+z.name+'">'+z.name+gap+'</span>';
@@ -727,7 +727,7 @@ function fmt(n){return Math.round(n).toLocaleString('fr-CA');}
 function visible(gh,c,u){return gh.e<c||(gh.e===c&&gh.t<=0)||(gh.e===c+1&&gh.t<=u)||gh.k===0&&gh.e<=c;}
 let HIT={c1:[],c2:[],c4:null,z0:null,gr:0,c:0};
 function draw(){if(window.__DRAW_OVERRIDE==='nhl'){drawNhlGalaxy();return;}const c=+$('c').value,u=progress;HIT={c1:[],c2:[],c4:null,c4n:[],z0:null,gr:0,c,lib:[],libR:null};window.HIT=HIT;GROUPS.forEach(g=>g._px=null);if(typeof EMPTY==='undefined'||EMPTY||!ds||!ds.dates)return (typeof drawEmpty==='function'?drawEmpty():undefined);if(window.__Z0_DOMAIN==='none'&&!(document.body&&document.body.classList.contains('mode-floor'))){hideC4Panel();return;} $('d').textContent=ds.dates[S0]+' → '+ds.dates[S1]+'  ·  instant '+ds.dates[Math.max(0,Math.min(c,ds.dates.length-1))]+(u>0?' (+'+u.toFixed(2)+')':'');
-  const v=view();const Bb=(document.body.classList.contains('mode-world')&&W<760)?Math.round(H*0.48):B;const X=x=>L+(x-v.x0)/(v.x1-v.x0)*(W-L-R),Y=y=>H-Bb-(y-v.y0)/(v.y1-v.y0)*(H-T-Bb);
+  const v=view();const Bb=((document.body.classList.contains('mode-world')||window.__CORE_ZONES)&&W<760)?Math.round(H*0.48):B;const X=x=>L+(x-v.x0)/(v.x1-v.x0)*(W-L-R),Y=y=>H-Bb-(y-v.y0)/(v.y1-v.y0)*(H-T-Bb);
   const cl=(x,y)=>[Math.min(bx[1],Math.max(bx[0],x)),Math.min(by[1],Math.max(by[0],y))];
   ctx.fillStyle='#07080c';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#1d2230';ctx.fillStyle='#5d6475';ctx.font='11px system-ui';ctx.lineWidth=1;
   for(let k=-4;k<=12;k++){const xv=Math.log(1+k*0.25);if(1+k*.25<=0||xv<v.x0||xv>v.x1)continue;const px=X(xv);ctx.beginPath();ctx.moveTo(px,T);ctx.lineTo(px,H-B);ctx.stroke();ctx.fillText((k*25>0?'+':'')+(k*25)+' %',px-12,H-B+16);}
@@ -759,6 +759,7 @@ function draw(){if(window.__DRAW_OVERRIDE==='nhl'){drawNhlGalaxy();return;}const
   const sp=playSpan(c,u);
   const liveC4=(Z0&&!EMPTY)?computeC4Live(c,u):null;
   if(liveC4 && (document.body.classList.contains('mode-world')||document.body.classList.contains('mode-intl'))) liveC4.sysName='World';
+  else if(liveC4 && window.__CORE_ZONES && window.__FLOOR_TITLE) liveC4.sysName=window.__FLOOR_TITLE;
   if(liveC4){liveC4.formT=(typeof window.waveFormT==='function')?window.waveFormT():1;liveC4.swell=(typeof window.waveSwell==='function')?window.waveSwell():1;}
   if(liveC4) syncC4Panel(liveC4); else hideC4Panel();
   if(Z0){const A=Z0.a,Bz=Z0.b,zc=liveC4?liveC4.zc:ZL(sp.tau);ctx.save();ctx.strokeStyle='#e8c872';ctx.lineWidth=sel?1.2:2.2;ctx.globalAlpha=(sel?0.35:0.95)*volSys();ctx.setLineDash([9,5]);ctx.beginPath();ctx.moveTo(X(A[0]),Y(A[1]));ctx.lineTo(X(Bz[0]),Y(Bz[1]));ctx.stroke();ctx.setLineDash([]);
@@ -768,12 +769,12 @@ function draw(){if(window.__DRAW_OVERRIDE==='nhl'){drawNhlGalaxy();return;}const
   // v20.27 — short trailing-sequence ghost (last N steps, decaying opacity) on both interpretations.
   try{ if(typeof paintFloorShortGhosts==='function') paintFloorShortGhosts(ctx,{X,Y,cl,c,u,sp,liveC4}); }catch(e){}
   // objets de Classe 2 à l'instant (déplacés sur leur trajet cycloïdal)
-  const many=GROUPS.length>30;GROUPS.forEach((g,gi)=>{if(sel&&sel.g!==g&&many)return;const onWorld=document.body.classList.contains('mode-world')&&!!window.__WORLD_GAUSS;const reveal=(!onWorld||!window.__WAVE)?1:((typeof waveSwell==='function')?waveSwell():1);if(onWorld&&window.__WAVE&&reveal<=0.02)return;const p0=P2(g,sp.i0);if(!p0)return;const p1=P2(g,sp.i1);let p=(p1&&sp.u>0)?cyc(p0,p1,sp.u,sp.i0,sp.i1):p0;if(typeof window.swellFromZ0==="function"&&liveC4) p=window.swellFromZ0(p,liveC4.zc);const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);
+  const many=GROUPS.length>30;GROUPS.forEach((g,gi)=>{if(sel&&sel.g!==g&&many)return;const onWorld=!!window.__CORE_ZONES;const reveal=(!onWorld||!window.__WAVE)?1:((typeof waveSwell==='function')?waveSwell():1);if(onWorld&&window.__WAVE&&reveal<=0.02)return;const p0=P2(g,sp.i0);if(!p0)return;const p1=P2(g,sp.i1);let p=(p1&&sp.u>0)?cyc(p0,p1,sp.u,sp.i0,sp.i1):p0;if(typeof window.swellFromZ0==="function"&&liveC4) p=window.swellFromZ0(p,liveC4.zc);const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);
     const isS=sel&&sel.g===g;const rad=isS?28:(many?7:(onWorld?26:13));const gc=colMove(g.col,p0,p1,c,c+1,u);if(isS)window.__COLLOG.push([c,u,gc]);g._px=px;g._py=py;g._r=rad;HIT.c2.push({gi,px,py,r:rad+(isS?1.1:0.7),p});
     ctx.globalAlpha=volSys()*(sel&&!isS?.45:1)*(onWorld&&window.__WAVE?Math.min(1,reveal/0.28):1);ctx.beginPath();ctx.arc(px,py,rad,0,7);ctx.fillStyle='rgba(8,10,16,.9)';ctx.fill();ctx.lineWidth=isS?2.2:1.4;ctx.strokeStyle=gc;ctx.stroke();
     if(!many||isS||onWorld){const lab=onWorld?g.name:(g.name.length>18?g.name.slice(0,17)+'…':g.name);ctx.font=(onWorld?'700 15px ':'600 10px ')+'system-ui';ctx.fillStyle=gc;ctx.fillText(lab,px+rad+4,py+4);}ctx.globalAlpha=1;});
   // couche Classe 1, au-dessus des objets de Classe 2 : positions courantes (aucune traîne) puis constituants déployés
-  ctx.fillStyle='#e8eef8';ctx.globalAlpha=Math.min(1,volSys()*1.05);ctx.beginPath();const _c1r=(sel&&sel.g&&sel.g.mem&&sel.g.mem.length>200)?3.4:(sel&&sel.g&&sel.g.mem&&sel.g.mem.length>80)?4.2:(sel?5:3);ds.objs.forEach((o,k)=>{if(window.__WORLD_GAUSS&&document.body.classList.contains('mode-world'))return;const p0=P1(k,sp.i0);if(!p0)return;if(sel&&sel.g&&sel.g.mem&&sel.g.mem.indexOf(k)<0) return;const p1=P1(k,sp.i1);let p=(p1&&sp.u>0)?cyc(p0,p1,sp.u,sp.i0,sp.i1):p0;if(typeof window.swellFromZ0==="function"&&liveC4) p=window.swellFromZ0(p,liveC4.zc);const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);if(px<-4||px>W+4||py<-4||py>H+4)return;HIT.c1.push({k,px,py,r:_c1r,p});ctx.moveTo(px+_c1r,py);ctx.arc(px,py,_c1r,0,6.2832);});ctx.fill();ctx.globalAlpha=1;
+  ctx.fillStyle='#e8eef8';ctx.globalAlpha=Math.min(1,volSys()*1.05);ctx.beginPath();const _c1r=(sel&&sel.g&&sel.g.mem&&sel.g.mem.length>200)?3.4:(sel&&sel.g&&sel.g.mem&&sel.g.mem.length>80)?4.2:(sel?5:3);ds.objs.forEach((o,k)=>{if(window.__CORE_ZONES)return;const p0=P1(k,sp.i0);if(!p0)return;if(sel&&sel.g&&sel.g.mem&&sel.g.mem.indexOf(k)<0) return;const p1=P1(k,sp.i1);let p=(p1&&sp.u>0)?cyc(p0,p1,sp.u,sp.i0,sp.i1):p0;if(typeof window.swellFromZ0==="function"&&liveC4) p=window.swellFromZ0(p,liveC4.zc);const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);if(px<-4||px>W+4||py<-4||py>H+4)return;HIT.c1.push({k,px,py,r:_c1r,p});ctx.moveTo(px+_c1r,py);ctx.arc(px,py,_c1r,0,6.2832);});ctx.fill();ctx.globalAlpha=1;
   if(dep){
     // constituants à l'instant, déplacés sur leur trajet cycloïdal
     const few=dep.M.length<=60;ctx.globalAlpha=volSys();dep.M.forEach(tr=>{const k=tr.k,o=ds.objs[k];if(c<dep.d0)return;const p0=P1(k,sp.i0),p1=P1(k,sp.i1);if(!p0)return;let p=(p1&&sp.u>0)?cyc(p0,p1,sp.u,sp.i0,sp.i1):p0;if(typeof window.swellFromZ0==="function"&&liveC4) p=window.swellFromZ0(p,liveC4.zc);const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);const col=colMove(SECT[o.s]||'#bbbbbb',p0,p1,c,c+1,u);
@@ -849,7 +850,7 @@ function drawEmpty(){$('d').textContent=EMPTY?ds.dates[+$('s').value]+' → '+ds
 // ---------- interaction ----------
 function select(gi){clearSel();if(gi===''||gi==null)return draw();const g=GROUPS[+gi];sel={g,tr:gtrail(g)};$('sel').value=gi;if(g._volgh==null)g._volgh=100;$('volghobj').value=g._volgh;$('volghobjv').textContent=g._volgh;fit();draw();}
 function clearSel(){sel=null;dep=null;CACHE.clear();$('sel').value='';zoom=1;panX=0;panY=0;}
-function hitGhost(mx,my){if(!sel)return null;const v=view();const Bb=(document.body.classList.contains('mode-world')&&W<760)?Math.round(H*0.48):B;const X=x=>L+(x-v.x0)/(v.x1-v.x0)*(W-L-R),Y=y=>H-Bb-(y-v.y0)/(v.y1-v.y0)*(H-T-Bb);let best=null,bd=(HIT.gr||16)+2;for(const gh of sel.tr.G){const d=Math.hypot(X(gh.x)-mx,Y(gh.y)-my);if(d<bd){bd=d;best=gh;}}return best;}
+function hitGhost(mx,my){if(!sel)return null;const v=view();const Bb=((document.body.classList.contains('mode-world')||window.__CORE_ZONES)&&W<760)?Math.round(H*0.48):B;const X=x=>L+(x-v.x0)/(v.x1-v.x0)*(W-L-R),Y=y=>H-Bb-(y-v.y0)/(v.y1-v.y0)*(H-T-Bb);let best=null,bd=(HIT.gr||16)+2;for(const gh of sel.tr.G){const d=Math.hypot(X(gh.x)-mx,Y(gh.y)-my);if(d<bd){bd=d;best=gh;}}return best;}
 function doDeploy(gh,auto){const d0=gh.k===0?gh.e:(gh.t>=1?gh.e:gh.e-1);dep=deploy(sel.g,d0);dep.gh=gh;$('c').value=d0;progress=0;fit();draw();if(auto)startPlay(d0);}
 let timer=null;
 function startPlay(from){if(timer){clearInterval(timer);timer=null;}
@@ -1236,7 +1237,7 @@ function hoverAt(mx,my){if(window.__DRAW_OVERRIDE==='nhl')return null;{const lb=
   if(HIT.c4&&Math.hypot(HIT.c4.px-mx,HIT.c4.py-my)<=HIT.c4.r){const raw=HIT.c4.live||window.__C4LIVE;const L=(raw&&raw.z0)?raw:((window.__C4LIVE&&window.__C4LIVE.z0)?window.__C4LIVE:null);const extra=L?('\nZ0 : ('+L.z0.x.toFixed(4)+', '+L.z0.y.toFixed(4)+') · dérive module '+L.drift.mag.toFixed(4)+' · dir. '+L.drift.angleDeg.toFixed(1)+'°\nConstituants : '+L.n1+' Cl.1 + '+L.n2+' Cl.2 + '+L.n3+' Cl.3\nX '+L.attrs.X.toFixed(4)+' · Y '+L.attrs.Y.toFixed(4)+' · Z [INCOMPLET]\nForme '+((L.attrs.Forme!=null&&isFinite(L.attrs.Forme))?L.attrs.Forme.toFixed(4):'—')+' · Étirement '+((L.attrs['Étirement-écrasement']!=null&&isFinite(L.attrs['Étirement-écrasement']))?L.attrs['Étirement-écrasement'].toFixed(3):'[INCOMPLET]')+' · Rotation '+((L.attrs.Rotation!=null&&isFinite(L.attrs.Rotation))?L.attrs.Rotation.toFixed(2)+'°':'—')+'\nCentre-extérieur '+((L.attrs['Centre-extérieur']!=null&&isFinite(L.attrs['Centre-extérieur']))?L.attrs['Centre-extérieur'].toFixed(4):'—')+' · Saturation '+((L.attrs.Saturation!=null&&isFinite(L.attrs.Saturation))?L.attrs.Saturation.toFixed(1):'—')+'\nInclinaison avant-arrière : [INCOMPLET]'):'';return {kind:'c4',text:'Classe 4 — ancre comparative (Z0)\n'+SYS.name+' · moteur : '+(MANIF_ENGINES.irrationalisateur||MANIF_ENGINES.class4).name+'\nRendement cumulé : '+pc(Math.exp(HIT.c4.p[0])-1)+' · vol20 : '+pc(HIT.c4.p[1])+extra};}
   {let b=null,bd=Infinity;for(const h of HIT.c4n){const d=Math.abs(h.px-mx)+Math.abs(h.py-my);if(d<=h.r&&d<bd){bd=d;b=h;}}if(b)return {kind:'c4n',text:'Classe 4 imbriquée — '+b.n.b.name+' (dans '+SYS.name+')\nEffondrement de ses constituants (moyenne de l’ensemble restreint)\nRendement cumulé : '+pc(Math.exp(b.p[0])-1)+' · vol20 : '+pc(b.p[1])};}
   if(HIT.z0&&inC(HIT.z0))return {kind:'z0',text:'Z0 — fil linéaire Z0(T₀) → Z0(T₁)\nZ0 = moyenne de tout, en un seul ensemble · dérive-comme-signal\nRendement cumulé : '+pc(Math.exp(HIT.z0.p[0])-1)+' · vol20 : '+pc(HIT.z0.p[1])};
-  if(sel){const v=view();const Bb=(document.body.classList.contains('mode-world')&&W<760)?Math.round(H*0.48):B;const X=x=>L+(x-v.x0)/(v.x1-v.x0)*(W-L-R),Y=y=>H-Bb-(y-v.y0)/(v.y1-v.y0)*(H-T-Bb);const cl=(x,y)=>[Math.min(bx[1],Math.max(bx[0],x)),Math.min(by[1],Math.max(by[0],y))];let b=null,bd=Infinity;
+  if(sel){const v=view();const Bb=((document.body.classList.contains('mode-world')||window.__CORE_ZONES)&&W<760)?Math.round(H*0.48):B;const X=x=>L+(x-v.x0)/(v.x1-v.x0)*(W-L-R),Y=y=>H-Bb-(y-v.y0)/(v.y1-v.y0)*(H-T-Bb);const cl=(x,y)=>[Math.min(bx[1],Math.max(bx[0],x)),Math.min(by[1],Math.max(by[0],y))];let b=null,bd=Infinity;
     for(const gh of sel.tr.G){const q=cl(gh.x,gh.y);const d=Math.hypot(X(q[0])-mx,Y(q[1])-my);if(d<=HIT.gr+0.5&&d<bd){bd=d;b=gh;}}
     if(b)return {kind:'ghost',text:'Fantôme n° '+b.k+' — '+sel.g.name+'\nTrajet '+ds.dates[Math.max(S0,b.e-1)]+' → '+ds.dates[b.e]+(b.h?'\nCreux (hors règle)':'')+'\n(cliquer : déployer les constituants)'};}
   return null;}
@@ -2642,7 +2643,9 @@ function renderFieldsFinance(){
         <span class="fd-blurb">Nord + Sud · places et indices liés</span>
         <span class="fd-go">→</span>
       </button>
-    </div>`;
+    </div>
+    <h2 class="cov-sub">Étages d’indices</h2>
+    <div class="fields-grid" id="fields-finance-indices">${indexFloorCards()}</div>`;
 }
 function renderFieldsFinanceNA(){
   const nNdx=(DATA.NDX&&DATA.NDX.objs)?DATA.NDX.objs.length:0;
@@ -2966,7 +2969,7 @@ function applyNhlGalaxy(){
   try{ hideNhlInfoChip(); }catch(e){}
   if(typeof window.applyNhlLeagueHooks==='function') window.applyNhlLeagueHooks();
   window.__DRAW_OVERRIDE='nhl';
-  window.__VERSION='v20.34';
+  window.__VERSION='v20.35';
   if(typeof window.nhlSummonCurrentSystem==='function' && !window.__RW_NHL_LOCK){
     try{ window.nhlSummonCurrentSystem(); }catch(e){}
   }
@@ -3106,7 +3109,14 @@ function applyFloor(route){
   else $('lvl').value=route.lvl||'s';
   const idxbar=$('idxbar'); if(idxbar) idxbar.style.display=route.sys==='AMF'?'block':'none';
   stopPlay(); clearSel();
+  hideIndexGap();
+  if(route.index && !indexHasPrices(route.index)){
+    showIndexGap((INDEX_GROUP_NAME[route.index])||route.index);
+    try{ collapseUiPanel(true); }catch(e){}
+    return;
+  }
   setDS();
+  if(route.index){ mountIndexCoreZones(route); return; }
   // v20.14 — land on T1 so the constellation is dense, then fit to Class 1
   try{ if($('c') && $('e')) $('c').value=$('e').value; }catch(e){}
   if(route.index){
@@ -3258,6 +3268,160 @@ function umZoneIndex(x,mu,sd){
   for(let k=0;k<4;k++) if(x>=mu+WORLD_ZONE_Q[k]*sd) z=k+2;
   return z;
 }
+
+/* v20.35 — one core zone cut (um_zones) for World and every index floor.
+   Copies only: source sector names on DATA stay untouched. No price is invented. */
+function coreZoneCopies(list){
+  const scored=[]; let incomplete=0;
+  (list||[]).forEach(src=>{
+    if(!src||!src.c){ incomplete++; return; }
+    const o=Object.assign({}, src);
+    if(!(o.c0>0)){ for(const x of o.c){ if(x!=null&&x>0){ o.c0=x; break; } } }
+    if(!(o.c0>0)){ incomplete++; return; }
+    const n=o.c.length, r=new Array(n).fill(null), vol=new Array(n).fill(null);
+    for(let i=1;i<n;i++) if(o.c[i]!=null&&o.c[i-1]!=null&&o.c[i]>0&&o.c[i-1]>0) r[i]=Math.log(o.c[i]/o.c[i-1]);
+    for(let i=0;i<n;i++){
+      const w=[]; for(let j=Math.max(1,i-19);j<=i;j++) if(r[j]!=null) w.push(r[j]);
+      if(w.length>=2){ const m=w.reduce((a,b)=>a+b,0)/w.length; vol[i]=Math.sqrt(w.reduce((a,b)=>a+(b-m)*(b-m),0)/(w.length-1)*252); }
+    }
+    let at=-1;
+    for(let i=n-1;i>=0;i--){ if(o.c[i]!=null&&o.c[i]>0&&vol[i]!=null&&isFinite(vol[i])){ at=i; break; } }
+    if(at<0){ incomplete++; return; }
+    const X=Math.log(o.c[at]/o.c0), Y=vol[at];
+    if(!isFinite(X)||!isFinite(Y)){ incomplete++; return; }
+    scored.push({o,X,Y});
+  });
+  const minmax=a=>{ if(!a.length) return []; const lo=Math.min.apply(null,a), hi=Math.max.apply(null,a); return a.map(x=>hi>lo?2*(x-lo)/(hi-lo)-1:0); };
+  let zones=scored.map(()=>null);
+  if(scored.length>=2){
+    const xn=minmax(scored.map(it=>it.X)), yn=minmax(scored.map(it=>it.Y));
+    const h=xn.map((x,i)=>Math.sqrt((x*x+yn[i]*yn[i])/2));
+    const mu=h.reduce((a,b)=>a+b,0)/h.length;
+    const sd=Math.sqrt(Math.max(h.reduce((a,b)=>a+(b-mu)*(b-mu),0)/Math.max(h.length-1,1), 1e-300));
+    zones=h.map(x=>umZoneIndex(x,mu,sd));
+  } else if(scored.length===1){
+    zones=[3];
+  }
+  const buckets=WORLD_ZONE_NAMES.map(()=>[]);
+  scored.forEach((it,i)=>{ const z=zones[i]; if(z>=1&&z<=5) buckets[z-1].push(it.o); });
+  const objs=[];
+  const report=WORLD_ZONE_NAMES.map((name,zi)=>{
+    const mem=buckets[zi];
+    SECT[name]=WORLD_ZONE_COLOR[name];
+    if(!mem.length) return {name:name,n:0,incomplet:true};
+    mem.forEach(o=>{ o.s=name; o.i=name; objs.push(o); });
+    return {name:name,n:mem.length,incomplet:false};
+  });
+  return {objs, report, incomplete};
+}
+function indexHasPrices(id){
+  const d=id&&DATA[id];
+  return !!(d&&d.objs&&d.objs.some(o=>o&&o.c&&o.c.some(x=>x!=null&&x>0)));
+}
+function hideIndexGap(){
+  const el=$('index-gap'); if(el) el.hidden=true;
+  document.body.classList.remove('mode-index-gap');
+}
+function showIndexGap(title){
+  window.__CORE_ZONES=false;
+  window.__WAVE=false;
+  try{ hideGateChrome(); }catch(e){}
+  try{ hideC4Panel(); }catch(e){}
+  let el=$('index-gap');
+  if(!el){ el=document.createElement('div'); el.id='index-gap'; el.className='index-gap'; document.body.appendChild(el); }
+  el.innerHTML='<h1>'+title+'</h1><p>[INCOMPLET — données manquantes]</p><p><button type="button" class="retour-hub" data-route="#/fields/finance">← Finance</button></p>';
+  el.hidden=false;
+  document.body.classList.add('mode-index-gap');
+}
+function mountIndexCoreZones(route){
+  hideIndexGap();
+  window.__CORE_ZONES=true;
+  window.__WORLD_GAUSS=false;
+  const title=(DATA[route.index]&&DATA[route.index].meta&&DATA[route.index].meta.name)||INDEX_GROUP_NAME[route.index]||route.index;
+  window.__FLOOR_TITLE=title;
+  document.body.classList.add('mode-manifest');
+  const zoned=coreZoneCopies(ds.objs||[]);
+  if(!zoned.objs.length){ showIndexGap(title); return; }
+  ds.objs=zoned.objs;
+  EMPTY=false;
+  window.__WORLD_ZONES=zoned.report;
+  window.__WORLD_INCOMPLETE=zoned.incomplete;
+  $('lvl').value='s';
+  base();
+  const n=ds.dates.length;
+  if($('s')) $('s').value=0;
+  if($('e')) $('e').value=Math.max(0,n-1);
+  if($('c')) $('c').value=0;
+  window_();
+  groups();
+  let s0=0;
+  if(GROUPS.length){
+    for(let i=0;i<n;i++){ if(GROUPS.every(g=>P2(g,i))){ s0=i; break; } }
+  }
+  if($('s')) $('s').value=s0;
+  if($('e')) $('e').value=Math.max(0,n-1);
+  if($('c')) $('c').value=s0;
+  window_(); computeZ0();
+  GROUPS.forEach(g=>{ if(SECT[g.name]) g.col=SECT[g.name]; });
+  try{ refitWorldGaussBounds(); }catch(e){}
+  try{ collapseUiPanel(true); }catch(e){}
+  try{ ensureGateChrome(); }catch(e){}
+  try{ fit(); draw(); }catch(e){}
+  try{ startManifestWave(); }catch(e){}
+}
+/* Dow Jones membership: Wikipedia "List of Dow Jones Industrial Average companies" (retrieved 2026-11-12).
+   Prices are the embedded SPX/NDX series for those tickers. Nothing is invented. */
+const DJIA_TICKERS=['MMM','GOOGL','AXP','AMGN','AMZN','AAPL','BA','CAT','CVX','CSCO','KO','DIS','GS','HD','HON','IBM','JNJ','JPM','MCD','MRK','MSFT','NKE','NVDA','PG','CRM','SHW','TRV','UNH','V','WMT'];
+function ensureDJIA(){
+  if(DATA.DJIA&&DATA.DJIA.objs&&DATA.DJIA.objs.length) return DATA.DJIA;
+  const dates=(DATA.SPX&&DATA.SPX.dates)?DATA.SPX.dates.slice():[];
+  const pool=[];
+  ['SPX','NDX'].forEach(k=>{ const d=DATA[k]; if(d&&d.objs) d.objs.forEach(o=>{ if(o&&o.t) pool.push({d,o}); }); });
+  const objs=[]; const missing=[];
+  DJIA_TICKERS.forEach(t=>{
+    const hit=pool.find(p=>p.o.t===t);
+    if(!hit||!dates.length){ missing.push(t); return; }
+    const imap=new Map((hit.d.dates||[]).map((d,i)=>[d,i]));
+    const o=hit.o;
+    const c=dates.map(d=>{ const i=imap.get(d); const x=(i!=null&&o.c)?o.c[i]:null; return (x!=null&&x>0)?x:null; });
+    const v=dates.map(d=>{ const i=imap.get(d); const x=(i!=null&&o.v)?o.v[i]:null; return (x!=null&&isFinite(x))?x:null; });
+    objs.push({t:o.t,n:o.n,s:o.s,i:o.i,f:o.f||'XNYS',c0:o.c0,c0_date:o.c0_date,c,v});
+  });
+  DATA.DJIA={dates,objs,meta:{id:'DJIA',name:'Dow Jones (DJIA)',floor:'AMF',T0:dates[0]||null,T1:dates.length?dates[dates.length-1]:null,dates:dates.length?[dates[0]]:[],n_with_prices:objs.filter(o=>o.c&&o.c.some(x=>x!=null&&x>0)).length,missing}};
+  return DATA.DJIA;
+}
+try{ ensureDJIA(); }catch(e){ console.warn('DJIA', e); }
+const FINANCE_INDEX_FLOORS=[
+  {id:'DJIA',name:'Dow Jones (DJIA)',route:'#/floor/AMF/index/DJIA'},
+  {id:'N225',name:'Nikkei 225',route:'#/floor/ASF/index/N225'},
+  {id:'HSI',name:'Hang Seng',route:'#/floor/ASF/index/HSI'},
+  {id:'FTSE100',name:'FTSE 100',route:'#/floor/EUF/index/FTSE100'},
+  {id:'DAX',name:'DAX',route:'#/floor/EUF/index/DAX'},
+  {id:'CAC40',name:'CAC 40',route:'#/floor/EUF/index/CAC40'},
+  {id:'SX5E',name:'Euro Stoxx 50',route:'#/floor/EUF/index/SX5E'},
+  {id:'ASX200',name:'ASX 200',route:'#/floor/OCF/index/ASX200'},
+  {id:'IBOV',name:'Ibovespa',route:'#/floor/AMF/index/IBOV'},
+  {id:'STI',name:'Straits Times',route:'#/floor/ASF/index/STI'},
+  {id:'TASI',name:'Tadawul (TASI)',route:'#/floor/ASF/index/TASI'},
+  {id:'SPX',name:'S&P 500',route:'#/floor/AMF/index/SPX'},
+  {id:'NDX',name:'Nasdaq-100',route:'#/floor/AMF/index/NDX'}
+];
+function indexFloorCards(){
+  try{ ensureDJIA(); }catch(e){}
+  return FINANCE_INDEX_FLOORS.map(ix=>{
+    const live=indexHasPrices(ix.id);
+    const d=DATA[ix.id];
+    const n=live?((d.meta&&d.meta.n_with_prices)||d.objs.filter(o=>o.c&&o.c.some(x=>x!=null&&x>0)).length):0;
+    return `<button type="button" class="field-door ${live?'live set-card':'empty'}" data-id="SET-${ix.id}" data-route="${ix.route}" aria-label="${ix.name}">
+        <span class="fd-kicker">Étage · indice</span>
+        <span class="fd-name">${ix.name}</span>
+        <span class="fd-blurb">${live?(n+' titres Classe 1 · manifestation T0/T1'):'[INCOMPLET — données manquantes]'}</span>
+        <span class="fd-badge">${live?'ACTIVE':'[INCOMPLET]'}</span>
+        <span class="fd-go">→</span>
+      </button>`;
+  }).join('');
+}
+
 function buildWorldGaussZones(){
   if(DATA.WZONES&&DATA.WZONES.objs&&DATA.WZONES.objs.length) return DATA.WZONES;
   const keys=worldMarketKeys();
@@ -3279,49 +3443,17 @@ function buildWorldGaussZones(){
       raw.push({t:o.t,n:o.n,f:o.f,c0:o.c0,c,v});
     });
   });
-  const scored=[]; let incomplete=0;
-  raw.forEach(o=>{
-    const n=o.c.length, r=new Array(n).fill(null), vol=new Array(n).fill(null);
-    for(let i=1;i<n;i++) if(o.c[i]!=null&&o.c[i-1]!=null) r[i]=Math.log(o.c[i]/o.c[i-1]);
-    for(let i=0;i<n;i++){
-      const w=[]; for(let j=Math.max(1,i-19);j<=i;j++) if(r[j]!=null) w.push(r[j]);
-      if(w.length>=2){ const m=w.reduce((a,b)=>a+b,0)/w.length; vol[i]=Math.sqrt(w.reduce((a,b)=>a+(b-m)*(b-m),0)/(w.length-1)*252); }
-    }
-    let at=-1;
-    for(let i=n-1;i>=0;i--){ if(o.c[i]!=null&&vol[i]!=null&&isFinite(vol[i])){ at=i; break; } }
-    if(at<0||!(o.c0>0)){ incomplete++; return; }
-    const X=Math.log(o.c[at]/o.c0), Y=vol[at];
-    if(!isFinite(X)||!isFinite(Y)){ incomplete++; return; }
-    scored.push({o,X,Y});
-  });
-  const minmax=a=>{ const lo=Math.min.apply(null,a), hi=Math.max.apply(null,a); return a.map(x=>hi>lo?2*(x-lo)/(hi-lo)-1:0); };
-  let zones=scored.map(()=>null);
-  if(scored.length>=2){
-    const xn=minmax(scored.map(s=>s.X)), yn=minmax(scored.map(s=>s.Y));
-    const h=xn.map((x,i)=>Math.sqrt((x*x+yn[i]*yn[i])/2));
-    const mu=h.reduce((a,b)=>a+b,0)/h.length;
-    const sd=Math.sqrt(h.reduce((a,b)=>a+(b-mu)*(b-mu),0)/Math.max(h.length-1,1));
-    zones=h.map(x=>umZoneIndex(x,mu,sd));
-  } else if(scored.length===1){
-    zones=[3];
-  }
-  const buckets=WORLD_ZONE_NAMES.map(()=>[]);
-  scored.forEach((s,i)=>{ const z=zones[i]; if(z>=1&&z<=5) buckets[z-1].push(s.o); });
-  const objs=[];
-  const report=WORLD_ZONE_NAMES.map((name,zi)=>{
-    const mem=buckets[zi];
-    SECT[name]=WORLD_ZONE_COLOR[name];
-    if(!mem.length) return {name:name,n:0,incomplet:true};
-    mem.forEach(o=>{ o.s=name; o.i=name; objs.push(o); });
-    return {name:name,n:mem.length,incomplet:false};
-  });
-  window.__WORLD_ZONES=report;
-  window.__WORLD_INCOMPLETE=incomplete;
+  const zoned=coreZoneCopies(raw);
+  window.__WORLD_ZONES=zoned.report;
+  window.__WORLD_INCOMPLETE=zoned.incomplete;
+  const objs=zoned.objs;
+  const incomplete=zoned.incomplete;
+  const report=zoned.report;
   DATA.WZONES={dates,objs,meta:{id:'WZONES',name:'World — Omega \u00b7 \u03c6\u2212 \u00b7 Sigma \u00b7 \u03c6+ \u00b7 Alpha',floor:'WF',T0:dates[0]||null,T1:dates.length?dates[dates.length-1]:null,dates:dates.length?[dates[0]]:[],n_with_prices:objs.length,incomplete:incomplete,zones:report}};
   return DATA.WZONES;
 }
 function refitWorldGaussBounds(){
-  if(!window.__WORLD_GAUSS||!GROUPS||!GROUPS.length) return;
+  if(!(window.__CORE_ZONES||window.__WORLD_GAUSS)||!GROUPS||!GROUPS.length) return;
   const xs=[], ys=[];
   GROUPS.forEach(g=>{ [S0,S1].forEach(i=>{ const p=P2(g,i); if(p&&isFinite(p[0])&&isFinite(p[1])){ xs.push(p[0]); ys.push(p[1]); } }); });
   if(Z0&&Z0.a&&Z0.b){ xs.push(Z0.a[0],Z0.b[0]); ys.push(Z0.a[1],Z0.b[1]); }
@@ -3425,12 +3557,17 @@ function mountZoneManifestation(route, preset){
 function applyWorld(route){
   document.body.className='mode-floor mode-world';
   window.__WORLD_GAUSS=true;
+  window.__CORE_ZONES=true;
+  window.__FLOOR_TITLE='World';
+  hideIndexGap();
   mountZoneManifestation(route, buildWorldGaussZones());
   try{ ensureRetourHubBar('World'); }catch(e){}
 }
 function applyInternationalFloor(route){
   document.body.className='mode-floor mode-intl';
   window.__WORLD_GAUSS=false;
+  window.__CORE_ZONES=false;
+  hideIndexGap();
   mountZoneManifestation(route, buildWorldZones());
 }
 function openInterpretedFloor(){
@@ -3444,6 +3581,8 @@ function openInterpretedFloor(){
 function applyRoute(){
   const route=parseHash();
   window.__WORLD_GAUSS=route.mode==='world';
+  window.__CORE_ZONES=route.mode==='world';
+  if(route.mode==='world') window.__FLOOR_TITLE='World';
   window.__NAV={mode:route.mode,route,hash:location.hash||'#/'};
   window.__Z0_DOMAIN=z0DomainForRoute(route);
   if(route.mode!=='world'&&route.mode!=='home'){ window.__WAVE=false; try{hideGateChrome();}catch(e){} }
@@ -3515,7 +3654,7 @@ function applyRoute(){
     });
   }catch(e){}
   window.__NAV.crumb=($('crumb')&&$('crumb').textContent)||'';
-  window.__VERSION='v20.34';
+  window.__VERSION='v20.35';
   // Right window: summon on object navigation; never restore from ghost
   try{
     if(window.__RW_FORCE_CLOSED){ closeRightWindow(); window.__RW_FORCE_CLOSED=false; }

@@ -996,3 +996,9 @@ body.mode-world #gate-chrome, body.mode-gate #gate-chrome{display:flex !importan
 
 #c4panel .world-zones{margin:8px 0 0;color:#e8c872;font:700 13px/1.45 system-ui,sans-serif;}
 #c4panel .world-zones .wz{white-space:nowrap;}
+
+#index-gap{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:#07080c;color:#e8eef8;text-align:center;padding:24px;}
+#index-gap[hidden]{display:none !important;}
+#index-gap h1{margin:0;color:#e8c872;font:700 28px/1.2 system-ui,sans-serif;}
+#index-gap p{margin:0;color:#e8c872;font:600 18px/1.3 system-ui,sans-serif;}
+body.mode-manifest #gate-chrome{display:flex !important;}
