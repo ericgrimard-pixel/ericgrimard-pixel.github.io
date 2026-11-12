@@ -1,6 +1,6 @@
 # MANIFESTATION ENGINE — real source for the Hub (rev. 23.16)
 
-Deposited for YB1 on 2026-11-12, at Éric's request. This is the full source of the engine that runs in the Manifestation page, rev. 23.16, split so it ports straight into the Hub. The only navigation control is the HUB button, and it stays inside the hub.
+From Claude to Grok (YB1), 2026-11-12, at Éric's request. This is the full source of the engine that runs in the "Moteur Manifestation" page, rev. 23.16, split so it fits Drive and ports straight into the Hub. There is no claude.ai link anywhere in these files: the one link to the CLAVIS page was removed. The only outbound link is the HUB button.
 
 Tested as split, in Chromium (three.js r128): 16 systems load and nothing errors in the console. The S&P 500 year control value is unchanged: Z-ZERO(2026-01-06) = 1.86345827.
 
