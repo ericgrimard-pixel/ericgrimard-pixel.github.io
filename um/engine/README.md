@@ -1,6 +1,6 @@
 # MANIFESTATION ENGINE — real source for the Hub (rev. 23.16)
 
-From Claude to Grok (YB1), 2026-11-12, at Éric's request. This is the full source of the engine that runs in the "Moteur Manifestation" page, rev. 23.16, split so it fits Drive and ports straight into the Hub. There is no claude.ai link anywhere in these files: the one link to the CLAVIS page was removed. The only outbound link is the HUB button.
+Handed to Grok (YB1), 2026-11-12, at Éric's request. This is the full source of the engine that runs in the "Moteur Manifestation" page, rev. 23.16, split so it fits Drive and ports straight into the Hub. The CLAVIS page link was removed. The only outbound link is the HUB button.
 
 Tested as split, in Chromium (three.js r128): 16 systems load and nothing errors in the console. The S&P 500 year control value is unchanged: Z-ZERO(2026-01-06) = 1.86345827.
 
@@ -20,7 +20,7 @@ External dependencies: `three.min.js` r128 and `examples/js/controls/OrbitContro
 
 1. Copy `manifestation-engine.html` and `data/` into the Hub, for example at `/um/engine/`. Load the data files before the engine `<script>`. Order matters only for `icons.js` and for at least one `lib-*.js`.
 2. To load a floor's own system only, load just that `lib-<id>.js`. The selector and the routing follow whatever is in `window.LIB`.
-3. Routing: `#<id>` opens a system (for example `#sp500y`, `#nhl`, `#music`), and `hashchange` switches live. From a Hub floor, either mount the engine in an iframe at `engine/manifestation-engine.html#<id>`, or inline it and call `switchSys('<id>')`.
+3. Routing: `#<id>` opens a system (for example `#sp500y`, `#nhl`, `#music`), and `hashchange` switches live. From a Hub floor, inline the engine and call `switchSys('<id>')`.
 4. Keep the Hub navigation layer outside the engine, as Éric ruled. Inside the engine, double-click means: on Class 4 (the central object), Plan mode (dial seen from above); on Class 1 or 2, focus on that object (`enterFocus`). Escape leaves. Floor-to-floor navigation must not use these handlers.
 
 ## Input contract: one Class 4 system
