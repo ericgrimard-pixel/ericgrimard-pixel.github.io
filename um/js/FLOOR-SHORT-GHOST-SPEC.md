@@ -1,7 +1,7 @@
 # Short trailing-sequence ghost — spec for the Hub floors
 
 Date: 2026-11-12, America/Toronto (EST, UTC-5)
-Hub version: v20.31 (five cardinal floors drawn in the Hub + short ghost)
+Hub version: v20.32 (five cardinal floors drawn in the Hub + short ghost)
 Source of the request: Éric, voice. Apply a GHOST on BOTH interpretations of the financial floors. Not Fourier. A simple trailing-sequence ghost: the last sequence of the movement, a short trailing segment like a motion trail. Short is good — it gives an idea of the movement.
 
 The live renderer is the Hub canvas (`um/index.html`, `um/js/app.js`).
@@ -29,8 +29,8 @@ the v19 volume-spaced activity trail (`volGh` / `volGhObj`). Do not hook this
 ghost to the Fourier gate. Libre / Fourier may keep their own modes; the
 short ghost is a positional motion trail in both floor interpretations.
 
-Evidence in the Hub: `um/um-engine.js` lists both readings for each cardinal
-(année and T0→T1). `trail()` dispatches on `__MARKET_Z0_TWOPASS`.
+Evidence in the Hub: each cardinal floor is `#/floor/…/year` and `#/floor/…/t0t1`.
+`trail()` dispatches on `__MARKET_Z0_TWOPASS`.
 
 ## Visual rule (identical in both interpretations)
 

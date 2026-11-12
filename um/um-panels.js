@@ -1,12 +1,11 @@
 /* um-panels.js — Universal Metaphor HUB · Claude, 11 Nov. 2026 (Éric, 15 h 14: « make the panels in the hub movable or erasable
    because we do not see the engine. It's hidden behind the panels »).
    v20.27.1 — every window is disposable: movable, closable, and re-openable from the Panneaux menu.
-   The door panel (« Manifestation · moteur réel ») is one of these windows. It is not locked in a slot.
    Positions and erased panels are remembered in this browser only.
 
    Use: one line at the end of the HUB page, after the panels exist:
        <script src="um-panels.js" defer></script>
-   Panels: every element marked data-um-panel="Title" (recommended), known Hub chrome (door, controls,
+   Panels: every element marked data-um-panel="Title" (recommended), known Hub chrome (controls,
    Classe 4, attribute dialog, gate, retour), plus every other visible element positioned fixed /
    absolute / sticky, at least 140 × 60 px, that is not a canvas, iframe, video or control and holds no canvas
    (<body data-um-panels="marked"> keeps only the marked ones).
@@ -19,9 +18,8 @@
   var st = {}; try { st = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { st = {}; }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
 
-  var KNOWN = ['um-engine-panel', 'ui', 'c4panel', 'pop', 'retour-hub-bar', 'right-window', 'nhl-info-panel'];
+  var KNOWN = ['ui', 'c4panel', 'pop', 'retour-hub-bar', 'right-window', 'nhl-info-panel'];
   var TITLES = {
-    'um-engine-panel': 'Manifestation · moteur réel',
     ui: 'Contrôles',
     c4panel: 'Classe 4',
     pop: 'Attribut',
@@ -60,7 +58,7 @@
     var all = Array.prototype.slice.call(document.body.querySelectorAll('*'));
     var c = all.filter(function (el) {
       if (el.closest('.um-pbar,.um-recall,.um-panel-menu')) return false;
-      if (el.id === 'um-engine' || el.id === 'cv' || el.id === 'popcv') return false;
+      if (el.id === 'cv' || el.id === 'popcv') return false;
       if (/^(CANVAS|IFRAME|VIDEO|IMG|SVG|BUTTON|A|INPUT|SELECT|LABEL|SCRIPT|STYLE|TEXTAREA)$/i.test(el.tagName)) return false;
       var cs = getComputedStyle(el);
       if (!/^(fixed|absolute|sticky)$/.test(cs.position) || cs.display === 'none' || cs.visibility === 'hidden') return false;
@@ -168,7 +166,7 @@
     function add(el) {
       if (!el || list.indexOf(el) >= 0) return;
       if (el.closest('.um-pbar,.um-recall,.um-panel-menu')) return;
-      if (el.id === 'um-engine' || el.tagName === 'CANVAS') return;
+      if (el.tagName === 'CANVAS') return;
       list.push(el);
     }
     marked.forEach(add); known.forEach(add); found.forEach(add);

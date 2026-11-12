@@ -12,7 +12,7 @@
    published Sep 2026). Exchange totals are summed as WFE publishes them (dual
    listings may overlap). No prices are invented: an index without T0/T1 in the
    Hub keeps status [INCOMPLET] and has no engine door.
-   Loaded by um-engine.js (dynamic, no change to the short um/index.html loader). */
+   Loaded by um/index.html. The zone table is reference data for the five macro-zones. */
 window.FINANCE_ZONES = {
   "version": "v20.27",
   "generated": "2026-11-12",
