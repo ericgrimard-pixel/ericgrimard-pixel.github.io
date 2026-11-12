@@ -683,6 +683,7 @@ function draw(){if(window.__DRAW_OVERRIDE==='nhl'){drawNhlGalaxy();return;}const
   // fil Z0 (linéaire) ; le glyphe de Classe 4 est redessiné après les objets pour rester lisible
   const sp=playSpan(c,u);
   const liveC4=(Z0&&!EMPTY)?computeC4Live(c,u):null;
+  if(liveC4 && document.body.classList.contains('mode-world')) liveC4.sysName='World';
   if(liveC4) syncC4Panel(liveC4); else hideC4Panel();
   if(Z0){const A=Z0.a,Bz=Z0.b,zc=liveC4?liveC4.zc:ZL(sp.tau);ctx.save();ctx.strokeStyle='#e8c872';ctx.lineWidth=sel?1.2:2.2;ctx.globalAlpha=(sel?0.35:0.95)*volSys();ctx.setLineDash([9,5]);ctx.beginPath();ctx.moveTo(X(A[0]),Y(A[1]));ctx.lineTo(X(Bz[0]),Y(Bz[1]));ctx.stroke();ctx.setLineDash([]);
     ctx.fillStyle='#e8c872';ctx.font='600 11px system-ui';[[A,'Z0(T₀)'],[Bz,'Z0(T₁)']].forEach(([p,l])=>{ctx.beginPath();ctx.arc(X(p[0]),Y(p[1]),4,0,7);ctx.fill();ctx.fillText(l,X(p[0])+6,Y(p[1])-6);});
@@ -704,7 +705,7 @@ function draw(){if(window.__DRAW_OVERRIDE==='nhl'){drawNhlGalaxy();return;}const
       if(few){let fs=6;ctx.font='600 '+fs+'px system-ui';while(ctx.measureText(o.t).width>14&&fs>3){fs-=.5;ctx.font='600 '+fs+'px system-ui';}ctx.fillStyle=col;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(o.t,px,py+.5);ctx.textAlign='left';ctx.textBaseline='alphabetic';}});ctx.globalAlpha=1;
   }
   // vecteurs + glyphe : chemin unique paintLivingClass4 (noyau, pas d'opt-in)
-  if(Z0&&Z0.C4N){ctx.save();ctx.globalAlpha=Math.max(0.82,c4Vol());
+  if(Z0&&Z0.C4N&&!document.body.classList.contains('mode-world')){ctx.save();ctx.globalAlpha=Math.max(0.82,c4Vol());
     Z0.C4N.forEach((n,ni)=>{const a0=n.P[sp.i0],a1=n.P[sp.i1];if(!a0)return;const p=(a1&&sp.u>0)?cyc(a0,a1,sp.u,sp.i0,sp.i1):a0;const qx=X(p[0]),qy=Y(p[1]);
       const morph=(typeof c3MorphAt==='function')?c3MorphAt(n.b,sp,p):null;
       const hitR=(typeof drawC3Morph==='function')?drawC3Morph(ctx,qx,qy,morph,n.b.name,ni):6;
@@ -1115,7 +1116,25 @@ function fit(){
   zoom=Math.max(1.15, Math.min(5000, Math.min(zx,zy)));
   panX=(x0+x1)/2-(v.x0+v.x1)/2; panY=(y0+y1)/2-(v.y0+v.y1)/2;
 }
-let drag=null,moved=false;cv.onmousedown=e=>{drag=[e.clientX,e.clientY];moved=false;};onmouseup=()=>drag=null;
+let drag=null,moved=false,hubDown=null,hubDownAt=0;
+cv.onmousedown=e=>{
+  drag=[e.clientX,e.clientY]; moved=false;
+  const now=performance.now();
+  if(hubDown && now-hubDownAt<500) return;
+  hubDown=null; hubDownAt=now;
+  if(EMPTY) return;
+  const world=document.body.classList.contains('mode-world');
+  if(world){
+    const hit=hoverAt(e.clientX,e.clientY);
+    if(hit && (hit.kind==='c2' || hit.kind==='c1')){
+      const g=hit.kind==='c2'?GROUPS[hit.gi]:GROUPS.find(gr=>gr.mem&&gr.mem.indexOf(hit.k)>=0);
+      if(g && g.hubFloor) hubDown=g.hubFloor;
+    }
+  } else if(document.body.classList.contains('mode-floor') && HIT.c4 && Math.hypot(HIT.c4.px-e.clientX,HIT.c4.py-e.clientY)<=(HIT.c4.r||22)+4){
+    hubDown='#/world';
+  }
+};
+onmouseup=()=>drag=null;
 cv.onmousemove=e=>{if(!drag||EMPTY)return;if(Math.abs(e.clientX-drag[0])+Math.abs(e.clientY-drag[1])>2)moved=true;const v=view();panX-=(e.clientX-drag[0])/(W-L-R)*(v.x1-v.x0);panY+=(e.clientY-drag[1])/(H-T-B)*(v.y1-v.y0);drag=[e.clientX,e.clientY];draw();};
 // survol : test géométrique exact sur la forme dessinée (rayon affiché compris).
 // Priorité : Classe 1 (même à l'intérieur d'un objet de Classe 2) → Classe 2 → Classe 4 → marqueur Z0 → fantôme de la traîne. Aucune zone morte.
@@ -1137,8 +1156,13 @@ cv.addEventListener('mousemove',e=>{const tip=$('tip');if(drag){tip.style.displa
   tip.textContent=r.text;tip.dataset.kind=r.kind;tip.style.display='block';tip.style.left=Math.min(W-330,e.clientX+14)+'px';tip.style.top=Math.min(H-140,e.clientY+14)+'px';});
 cv.addEventListener('mouseleave',()=>{$('tip').style.display='none';});
 cv.onclick=e=>{if(moved)return;if(clickLib(e.clientX,e.clientY))return;if(EMPTY)return;const gh=hitGhost(e.clientX,e.clientY);if(gh){doDeploy(gh,true);return;}
-  for(let gi=0;gi<GROUPS.length;gi++){const g=GROUPS[gi];if(g._px!=null&&Math.hypot(g._px-e.clientX,g._py-e.clientY)<=g._r+1.1){stopPlay();select(gi);return;}}};
-cv.ondblclick=()=>{if(EMPTY)return;zoom=1;panX=0;panY=0;draw();};
+  for(let gi=0;gi<GROUPS.length;gi++){const g=GROUPS[gi];if(g._px!=null&&Math.hypot(g._px-e.clientX,g._py-e.clientY)<=g._r+1.1){if(document.body.classList.contains('mode-world'))return;stopPlay();select(gi);return;}}};
+cv.ondblclick=()=>{
+  // Hub navigation is its own layer: a zone dives into its cardinal floor; the floor's central object returns to World.
+  if(hubDown && typeof window.go==='function'){ const dest=hubDown; hubDown=null; window.go(dest); return; }
+  if(EMPTY)return;
+  zoom=1;panX=0;panY=0;draw();
+};
 cv.addEventListener('wheel',ev=>{ev.preventDefault();if(EMPTY)return;const v=view();const mx=v.x0+(ev.clientX-L)/(W-L-R)*(v.x1-v.x0),my=v.y0+(H-B-ev.clientY)/(H-T-B)*(v.y1-v.y0);const f=ev.deltaY<0?1.25:0.8;const nz=Math.max(1,Math.min(5000,zoom*f));
   const k=zoom/nz;const vv=vb(),cx=(vv.x0+vv.x1)/2,cy=(vv.y0+vv.y1)/2;panX=mx-(mx-(cx+panX))*k-cx;panY=my-(my-(cy+panY))*k-cy;zoom=nz;draw();},{passive:false});
 // ---------- démarrage (paramètres d'URL facultatifs : ds, lvl, col, sel, dep=AAAA-MM-JJ, at=AAAA-MM-JJ, z, noui) ----------
@@ -1778,6 +1802,13 @@ function parseHash(){
   const q=new URLSearchParams(qi>=0?rawFull.slice(qi+1):'');
   const gateMode=q.get('mode')==='fourier'?'fourier':'libre';
   const p=raw.split('/').filter(Boolean);
+  if(p[0]==='world'){
+    const r={mode:'world'};
+    if(p.includes('t0t1')||p.includes('twopass')||p.includes('seances')||p.includes('deux-seances')) r.interpretation='twopass';
+    else if(p.includes('year')||p.includes('annee')||p.includes('année')) r.interpretation='year';
+    else r.interpretation='year';
+    return r;
+  }
   if(!p.length){
     const r={mode:'home', gateMode};
     const interp=(typeof window.FloorShortGhost==='object'&&window.FloorShortGhost.parseInterpretation)
@@ -3016,8 +3047,84 @@ function applyFloor(route){
   try{ fit(); draw(); }catch(e){}
 }
 
-/* Default Hub view: the interpreted S&P 500 floor (year walk). There is no gate. */
-var DEFAULT_FLOOR='#/floor/AMF/index/SPX/year';
+/* Opening view: World, with the five macro-zones around it. Cardinal floors stay on #/floor/… */
+var DEFAULT_FLOOR='#/world';
+var HUB_ZONES=[
+  {id:'NA', name:'Amérique du Nord', key:'SPX', mic:'XNYS', floor:'#/floor/AMF/index/SPX/year', color:'#6fa8ff'},
+  {id:'EUR', name:'Europe', key:'SX5E', mic:'XETR', floor:'#/floor/EUF/index/SX5E/year', color:'#e6c35c'},
+  {id:'APAC', name:'Asie-Pacifique', key:'N225', mic:'XTKS', floor:'#/floor/ASF/index/N225/year', color:'#4fd1c5'},
+  {id:'MEA', name:'Moyen-Orient et Afrique', key:'TASI', mic:'XSAU', floor:'#/floor/ASF/index/TASI/year', color:'#ff9f5a'},
+  {id:'LATAM', name:'Amérique latine', key:'IBOV', mic:'XB3', floor:'#/floor/AMF/index/IBOV/year', color:'#b48cff'}
+];
+function buildWorldZones(){
+  if(DATA.ZONES&&DATA.ZONES.objs&&DATA.ZONES.objs.length) return DATA.ZONES;
+  const dateSet=new Set();
+  const ready=[];
+  HUB_ZONES.forEach(z=>{
+    const src=DATA[z.key];
+    if(!src||!src.objs||!src.objs.length||!src.dates) return;
+    src.dates.forEach(d=>dateSet.add(d));
+    ready.push({z,src});
+  });
+  const dates=[...dateSet].sort();
+  const objs=ready.map(({z,src})=>{
+    const imap=new Map(src.dates.map((d,i)=>[d,i]));
+    const c=dates.map(d=>{
+      const i=imap.get(d);
+      if(i==null) return null;
+      let s=0,n=0;
+      for(const o of src.objs){
+        const v=o.c&&o.c[i];
+        let c0=o.c0;
+        if(!(c0!=null&&isFinite(c0)&&c0>0)&&o.c){ for(const x of o.c){ if(x!=null&&isFinite(x)&&x>0){ c0=x; break; } } }
+        if(v!=null&&isFinite(v)&&v>0&&c0!=null&&isFinite(c0)&&c0>0){s+=Math.log(v/c0);n++;}
+      }
+      return n?Math.exp(s/n):null;
+    });
+    SECT[z.name]=z.color;
+    // Level 1 at T0 so the plotted log-return is the equal-weight mean of the cardinal's real constituent log-returns. No price is invented.
+    return {t:z.id,n:z.name,s:z.name,i:z.name,f:z.mic,c,v:c.map(()=>null),c0:1,hubFloor:z.floor,nConst:src.objs.length};
+  });
+  DATA.ZONES={dates,objs,meta:{id:'ZONES',name:'World',floor:'WF',T0:dates[0]||null,T1:dates.length?dates[dates.length-1]:null,dates:dates.length?[dates[0]]:[]}};
+  return DATA.ZONES;
+}
+function applyWorld(route){
+  if(typeof setFloorInterpretation==='function') setFloorInterpretation((route&&route.interpretation)||'year');
+  document.body.className='mode-floor mode-world';
+  document.body.classList.remove('ui-collapsed');
+  try{ hideNhlInfoChip(); }catch(e){}
+  window.__DRAW_OVERRIDE=null; window.__RW_NHL_LOCK=false;
+  try{ hideGalaxyPlanet(); }catch(e){}
+  const built=buildWorldZones();
+  if($('ds')&&built&&![...$('ds').options].some(o=>o.value==='ZONES')){
+    const op=document.createElement('option'); op.value='ZONES'; op.textContent='World — cinq macro-zones'; $('ds').appendChild(op);
+  }
+  $('sys').value='WF';
+  $('ds').value='ZONES';
+  $('lvl').value='s';
+  if($('col')) $('col').value='seance';
+  const idxbar=$('idxbar'); if(idxbar) idxbar.style.display='none';
+  stopPlay(); clearSel();
+  setDS();
+  // T0 is the first séance where every zone already has a real vol20, so World is the mean of five positions at both frames.
+  if(built&&built.objs&&built.dates){
+    let s0=0;
+    for(let i=0;i<built.dates.length;i++){
+      if(built.objs.every((o,k)=>P1(k,i))){ s0=i; break; }
+    }
+    if($('s')) $('s').value=s0;
+    if($('e')) $('e').value=built.dates.length-1;
+    if($('c')) $('c').value=built.dates.length-1;
+    window_(); computeZ0();
+  }
+  const byName={};
+  (built.objs||[]).forEach(o=>{ byName[o.s]=o.hubFloor; });
+  GROUPS.forEach(g=>{ g.hubFloor=byName[g.name]||null; if(SECT[g.name]) g.col=SECT[g.name]; });
+  try{ if($('c')&&$('e')) $('c').value=$('e').value; }catch(e){}
+  try{ ensureRetourHubBar('World'); }catch(e){}
+  try{ collapseUiPanel(true); }catch(e){}
+  try{ fit(); draw(); }catch(e){}
+}
 function openInterpretedFloor(){
   const next=DEFAULT_FLOOR;
   const cur=location.hash||'#/';
@@ -3035,6 +3142,9 @@ function applyRoute(){
   }
   if(route.mode==='home'){
     if(openInterpretedFloor()) return;
+  }
+  else if(route.mode==='world'){
+    applyWorld(route);
   }
   else if(route.mode==='fields'){
     applyFields(route);
@@ -3227,7 +3337,10 @@ function patchClicks(){
     if(gh){doDeploy(gh,true);return;}
     for(let gi=0;gi<GROUPS.length;gi++){
       const g=GROUPS[gi];
-      if(g._px!=null&&Math.hypot(g._px-e.clientX,g._py-e.clientY)<=g._r+1.1){stopPlay();select(gi);return;}
+      if(g._px!=null&&Math.hypot(g._px-e.clientX,g._py-e.clientY)<=g._r+1.1){
+        if(document.body.classList.contains('mode-world')) return;
+        stopPlay();select(gi);return;
+      }
     }
   };
   $('sys').onchange=()=>{const v=$('sys').value;if(v==='__MAIN__')go('#/');else go('#/floor/'+v);};

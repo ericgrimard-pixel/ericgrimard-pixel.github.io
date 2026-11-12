@@ -1,7 +1,7 @@
 /* um-engine.js — the real Manifestation engine in the HUB · Claude, 11 Nov. 2026 (Éric, 15 h 14: « the hub should just link to the
    real engine, as simple as that. And as we build the hub, it's just gonna be another new object in the engine for the hub »;
    15 h 36: « it's still not the real engine in the hub »).
-   v20.31, 12 nov 2026 — added Société · Musique door (#music) linking to the live Manifestation engine artifact.
+   v20.31, 12 nov 2026 — Hub opens on World. Société · Musique stays listed in the panel.
    recorded Hub Navigation Rule (foundational, permanent): Hub navigation is its own layer, distinct from the manifestation engine.
    Double-clicks differ: Hub starts with group of 5 macro-zones; double-click Class 2 plunges in (siblings become Class 2 of larger group) down to single floor;
    in floor, double-click central object pops up one level; two clicks up to emerge from Class 4, one click down into Class 2.
@@ -12,8 +12,7 @@
        <script src="um-panels.js" defer></script>
    This script loads js/data-finance-zones.js by itself, so the short um/index.html loader does not need a new tag.
    It adds the panel « Manifestation · moteur réel »: one door per floor already in the Hub.
-   Each door opens that floor in the page (#/floor/… or #/sports/nhl) or the live engine for #music.
-   Nothing here opens an external page except the live Manifestation engine doors.
+   Each door opens that floor in the page (#/floor/… or #/sports/nhl). Nothing here opens an external page.
    Where: inside <div id="um-engine"></div> if the page has one, otherwise floating at the top left (movable and erasable with
    um-panels.js).
    Optional: <script>window.UM_HIDE='#selector'</script> before it hides the HUB's own reproduction of the engine.
@@ -31,12 +30,12 @@
    - Then, in that floor's environment, double-clicking the central object pops you up one level.
    - Two clicks up to emerge from a Class 4 object. One click down into a Class 2 object.
    Do not merge Hub and engine double-click behaviors.
-   v20.31 — added Société · Musique (#music) door to the live engine.
+   v20.31 — World is the opening view. A price series opens its floor in the Hub (year and T0→T1).
    A door with no series is not a link. */
 (function () {
   'use strict';
   if (window.__umEngine) return; window.__umEngine = true;
-  /* In-hub routes. [primary, other interpretation]. No external URL except live engine. */
+  /* In-hub routes. [primary, other interpretation]. No external URL. */
   var LOCAL_FLOOR = {
     sp500y: ['#/floor/AMF/index/SPX/year', '#/floor/AMF/index/SPX/t0t1'],
     ndx100: ['#/floor/AMF/index/NDX/year', '#/floor/AMF/index/NDX/t0t1'],
@@ -51,8 +50,7 @@
     cac40: ['#/floor/EUF/index/CAC40/year', '#/floor/EUF/index/CAC40/t0t1'],
     tasi: ['#/floor/ASF/index/TASI/year', '#/floor/ASF/index/TASI/t0t1'],
     ibov: ['#/floor/AMF/index/IBOV/year', '#/floor/AMF/index/IBOV/t0t1'],
-    nhl: ['#/sports/nhl', null],
-    music: ['https://claude.ai/artifact/Mr4cUjAuszjdrQU8U6YRig#music', null]
+    nhl: ['#/sports/nhl', null]
   };
 
   /* Fallback only if js/data-finance-zones.js cannot be loaded. Keep in sync with FINANCE_ZONES. */
@@ -144,20 +142,20 @@
     var p = document.createElement('section');
     p.id = 'um-engine-panel'; p.setAttribute('data-um-panel', 'Manifestation · moteur réel');
     if (!host) p.className = 'um-float';
-    var h = '<a class="um-main" href="' + LOCAL_FLOOR.sp500y[0] + '">Ouvrir les étages' +
-            '<small>Manifestation · S&P 500 · année</small></a>';
+    var h = '<a class="um-main" href="#/world">Ouvrir le monde' +
+            '<small>World · cinq macro-zones</small></a>';
     FLOORS.forEach(function (g) {
       h += '<h4>' + g[0] + '</h4><ul>';
       g[1].forEach(function (f) {
         var cardinal = !!f[2];
         var local = LOCAL_FLOOR[f[0]];
-        var label = String(f[1]).replace(/&/g, '&') +
+        var label = String(f[1]).replace(/&/g, '&amp;') +
              (cardinal ? ' <em class="um-cardinal">cardinal</em>' : '');
-        if (local) {
+        if (local && local[0].indexOf('http') !== 0) {
           var alt = local[1] ? '<a class="um-interp" href="' + local[1] + '">' +
             (local[0].indexOf('/t0t1') >= 0 ? 'année' : 'T0→T1') + '</a>' : '';
           h += '<li class="um-door-row"><a class="' + (cardinal ? 'um-cardinal-door' : '') + '" href="' + local[0] +
-               '" target="_blank"><span>' + label + '</span><code>#' + f[0] + '</code></a>' + alt + '</li>';
+               '"><span>' + label + '</span><code>#' + f[0] + '</code></a>' + alt + '</li>';
         } else {
           h += '<li><span class="um-nodata"><span>' + label + '</span><code>pas de série</code></span></li>';
         }
