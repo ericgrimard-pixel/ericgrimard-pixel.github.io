@@ -1,0 +1,11 @@
+<!doctype html><meta charset=utf-8><title>Pandemonium · surface</title>
+<style>body{background:#05070c;color:#e4ebe6;font:14px Georgia}svg{display:block;margin:auto}</style>
+<h3 style="text-align:center;color:#e8c872">Pandemonium · Z-ZERO path T₀→T₁</h3>
+<svg id=s width=600 height=260></svg>
+<script>
+// The skin only draws: it reads the JSON the Python ring emits.
+const r=JSON.parse(document.getElementById('d')?.textContent||'{"path":[0.5,0.52,0.56,0.6,0.63,0.64]}');
+const p=r.path,lo=Math.min(...p),hi=Math.max(...p)||1,s=document.getElementById('s');
+s.innerHTML='<polyline fill=none stroke=#6fd3a6 stroke-width=3 points="'+p.map((v,i)=>
+ (40+i*520/(p.length-1))+','+(220-180*(v-lo)/((hi-lo)||1))).join(' ')+'"/>';
+</script>
