@@ -1,8 +1,9 @@
 /* Application code from v20.11 HUB galaxies (SAFE Pages) — DATA/FLOORS/NHL loaded by previous scripts.
-   Standing definition of the Hub (v20.33). The Class 4 library below is the floor structure;
+   Standing definition of the Hub (v20.34). The Class 4 library below is the floor structure;
    this sentence is the standing rule for Music, kept in this header:
    Music (Société · Musique) is an independent field (a row) in the World view, under society. It is separate from finance and from professional sport, and it has its own Class 2 objects. It is the starting point for the next layer of the build. It is never nested inside any panel.
-   Its Class 2 slot is #um-musique-c2 on the World view. The slot is empty: the Hub has no local music data source. Nothing is invented. */
+   Its Class 2 slot is #um-musique-c2 on the World view. The slot is empty: the Hub has no local music data source. Nothing is invented.
+   Étage international · manifestation is #/floor/WF: World at the center and the five macro-zones as Class 2, the same series as #/world. */
 var DATA = window.DATA;
 const INDEX_GROUP_NAME={NDX:'Nasdaq-100 (indice)',SPX:'S&P 500 (indice)',ALL:'Nasdaq-100 ∪ S&P 500',STI:'Straits Times Index',IBOV:'Ibovespa',TASI:'Tadawul All-Share Index (TASI)',N225:'Nikkei 225',HSI:'Hang Seng Index',FTSE100:'FTSE 100',DAX:'DAX 40',CAC40:'CAC 40',SX5E:'EURO STOXX 50',ASX200:'S&P/ASX 200'};
 window.INDEX_GROUP_NAME=INDEX_GROUP_NAME;
@@ -687,7 +688,7 @@ function draw(){if(window.__DRAW_OVERRIDE==='nhl'){drawNhlGalaxy();return;}const
   // fil Z0 (linéaire) ; le glyphe de Classe 4 est redessiné après les objets pour rester lisible
   const sp=playSpan(c,u);
   const liveC4=(Z0&&!EMPTY)?computeC4Live(c,u):null;
-  if(liveC4 && document.body.classList.contains('mode-world')) liveC4.sysName='World';
+  if(liveC4 && (document.body.classList.contains('mode-world')||document.body.classList.contains('mode-intl'))) liveC4.sysName='World';
   if(liveC4) syncC4Panel(liveC4); else hideC4Panel();
   if(Z0){const A=Z0.a,Bz=Z0.b,zc=liveC4?liveC4.zc:ZL(sp.tau);ctx.save();ctx.strokeStyle='#e8c872';ctx.lineWidth=sel?1.2:2.2;ctx.globalAlpha=(sel?0.35:0.95)*volSys();ctx.setLineDash([9,5]);ctx.beginPath();ctx.moveTo(X(A[0]),Y(A[1]));ctx.lineTo(X(Bz[0]),Y(Bz[1]));ctx.stroke();ctx.setLineDash([]);
     ctx.fillStyle='#e8c872';ctx.font='600 11px system-ui';[[A,'Z0(T₀)'],[Bz,'Z0(T₁)']].forEach(([p,l])=>{ctx.beginPath();ctx.arc(X(p[0]),Y(p[1]),4,0,7);ctx.fill();ctx.fillText(l,X(p[0])+6,Y(p[1])-6);});
@@ -709,7 +710,7 @@ function draw(){if(window.__DRAW_OVERRIDE==='nhl'){drawNhlGalaxy();return;}const
       if(few){let fs=6;ctx.font='600 '+fs+'px system-ui';while(ctx.measureText(o.t).width>14&&fs>3){fs-=.5;ctx.font='600 '+fs+'px system-ui';}ctx.fillStyle=col;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(o.t,px,py+.5);ctx.textAlign='left';ctx.textBaseline='alphabetic';}});ctx.globalAlpha=1;
   }
   // vecteurs + glyphe : chemin unique paintLivingClass4 (noyau, pas d'opt-in)
-  if(Z0&&Z0.C4N&&!document.body.classList.contains('mode-world')){ctx.save();ctx.globalAlpha=Math.max(0.82,c4Vol());
+  if(Z0&&Z0.C4N&&!document.body.classList.contains('mode-world')&&!document.body.classList.contains('mode-intl')){ctx.save();ctx.globalAlpha=Math.max(0.82,c4Vol());
     Z0.C4N.forEach((n,ni)=>{const a0=n.P[sp.i0],a1=n.P[sp.i1];if(!a0)return;const p=(a1&&sp.u>0)?cyc(a0,a1,sp.u,sp.i0,sp.i1):a0;const qx=X(p[0]),qy=Y(p[1]);
       const morph=(typeof c3MorphAt==='function')?c3MorphAt(n.b,sp,p):null;
       const hitR=(typeof drawC3Morph==='function')?drawC3Morph(ctx,qx,qy,morph,n.b.name,ni):6;
@@ -1128,13 +1129,17 @@ cv.onmousedown=e=>{
   hubDown=null; hubDownAt=now;
   if(EMPTY) return;
   const world=document.body.classList.contains('mode-world');
-  if(world){
+  const intl=document.body.classList.contains('mode-intl');
+  const onCenter=HIT.c4 && Math.hypot(HIT.c4.px-e.clientX,HIT.c4.py-e.clientY)<=(HIT.c4.r||22)+4;
+  if(world && onCenter) hubDown='#/floor/WF';
+  else if(intl && onCenter) hubDown='#/world';
+  else if(world || intl){
     const hit=hoverAt(e.clientX,e.clientY);
     if(hit && (hit.kind==='c2' || hit.kind==='c1')){
       const g=hit.kind==='c2'?GROUPS[hit.gi]:GROUPS.find(gr=>gr.mem&&gr.mem.indexOf(hit.k)>=0);
       if(g && g.hubFloor) hubDown=g.hubFloor;
     }
-  } else if(document.body.classList.contains('mode-floor') && HIT.c4 && Math.hypot(HIT.c4.px-e.clientX,HIT.c4.py-e.clientY)<=(HIT.c4.r||22)+4){
+  } else if(document.body.classList.contains('mode-floor') && onCenter){
     hubDown='#/world';
   }
 };
@@ -1148,7 +1153,7 @@ function hoverAt(mx,my){if(window.__DRAW_OVERRIDE==='nhl')return null;{const lb=
   let h=best(HIT.c1.filter(z=>z.dep))||best(HIT.c1.filter(z=>!z.dep));
   if(h){const o=ds.objs[h.k],p=P1(h.k,c)||h.p;return {kind:'c1',k:h.k,text:'Classe 1 — objet élémentaire\n'+o.t+' · '+(o.s||'—')+' · '+(o.i||'—')+'\nPlace de cotation : '+(FLOORS[o.f]?FLOORS[o.f].n+' ('+o.f+')':'—')+'\nSéance '+ds.dates[c]+'\nRendement cumulé depuis T₀ : '+(p?pc(Math.exp(p[0])-1):'—')+'\nVolatilité 20 séances : '+(p?pc(p[1]):'—')+'\nVolume : '+(o.v[c]!=null?o.v[c].toLocaleString('fr-CA'):'—')};}
   h=best(HIT.c2);if(h){const g=GROUPS[h.gi];return {kind:'c2',gi:h.gi,text:'Classe 2 — '+g.name+'\n'+({s:'secteur',i:'industrie',x:'indice',f:'place (bourse)'}[$('lvl').value])+' · '+g.mem.length+' constituants\nPosition = moyenne des constituants\nRendement cumulé : '+pc(Math.exp(h.p[0])-1)+' · vol20 : '+pc(h.p[1])+'\n(cliquer : choisir sa traîne)'};}
-  if(HIT.c4&&Math.hypot(HIT.c4.px-mx,HIT.c4.py-my)<=HIT.c4.r){const L=HIT.c4.live||window.__C4LIVE;const extra=L?('\nZ0 : ('+L.z0.x.toFixed(4)+', '+L.z0.y.toFixed(4)+') · dérive module '+L.drift.mag.toFixed(4)+' · dir. '+L.drift.angleDeg.toFixed(1)+'°\nConstituants : '+L.n1+' Cl.1 + '+L.n2+' Cl.2 + '+L.n3+' Cl.3\nX '+L.attrs.X.toFixed(4)+' · Y '+L.attrs.Y.toFixed(4)+' · Z [INCOMPLET]\nForme '+((L.attrs.Forme!=null&&isFinite(L.attrs.Forme))?L.attrs.Forme.toFixed(4):'—')+' · Étirement '+((L.attrs['Étirement-écrasement']!=null&&isFinite(L.attrs['Étirement-écrasement']))?L.attrs['Étirement-écrasement'].toFixed(3):'[INCOMPLET]')+' · Rotation '+((L.attrs.Rotation!=null&&isFinite(L.attrs.Rotation))?L.attrs.Rotation.toFixed(2)+'°':'—')+'\nCentre-extérieur '+((L.attrs['Centre-extérieur']!=null&&isFinite(L.attrs['Centre-extérieur']))?L.attrs['Centre-extérieur'].toFixed(4):'—')+' · Saturation '+((L.attrs.Saturation!=null&&isFinite(L.attrs.Saturation))?L.attrs.Saturation.toFixed(1):'—')+'\nInclinaison avant-arrière : [INCOMPLET]'):'';return {kind:'c4',text:'Classe 4 — ancre comparative (Z0)\n'+SYS.name+' · moteur : '+(MANIF_ENGINES.irrationalisateur||MANIF_ENGINES.class4).name+'\nRendement cumulé : '+pc(Math.exp(HIT.c4.p[0])-1)+' · vol20 : '+pc(HIT.c4.p[1])+extra};}
+  if(HIT.c4&&Math.hypot(HIT.c4.px-mx,HIT.c4.py-my)<=HIT.c4.r){const raw=HIT.c4.live||window.__C4LIVE;const L=(raw&&raw.z0)?raw:((window.__C4LIVE&&window.__C4LIVE.z0)?window.__C4LIVE:null);const extra=L?('\nZ0 : ('+L.z0.x.toFixed(4)+', '+L.z0.y.toFixed(4)+') · dérive module '+L.drift.mag.toFixed(4)+' · dir. '+L.drift.angleDeg.toFixed(1)+'°\nConstituants : '+L.n1+' Cl.1 + '+L.n2+' Cl.2 + '+L.n3+' Cl.3\nX '+L.attrs.X.toFixed(4)+' · Y '+L.attrs.Y.toFixed(4)+' · Z [INCOMPLET]\nForme '+((L.attrs.Forme!=null&&isFinite(L.attrs.Forme))?L.attrs.Forme.toFixed(4):'—')+' · Étirement '+((L.attrs['Étirement-écrasement']!=null&&isFinite(L.attrs['Étirement-écrasement']))?L.attrs['Étirement-écrasement'].toFixed(3):'[INCOMPLET]')+' · Rotation '+((L.attrs.Rotation!=null&&isFinite(L.attrs.Rotation))?L.attrs.Rotation.toFixed(2)+'°':'—')+'\nCentre-extérieur '+((L.attrs['Centre-extérieur']!=null&&isFinite(L.attrs['Centre-extérieur']))?L.attrs['Centre-extérieur'].toFixed(4):'—')+' · Saturation '+((L.attrs.Saturation!=null&&isFinite(L.attrs.Saturation))?L.attrs.Saturation.toFixed(1):'—')+'\nInclinaison avant-arrière : [INCOMPLET]'):'';return {kind:'c4',text:'Classe 4 — ancre comparative (Z0)\n'+SYS.name+' · moteur : '+(MANIF_ENGINES.irrationalisateur||MANIF_ENGINES.class4).name+'\nRendement cumulé : '+pc(Math.exp(HIT.c4.p[0])-1)+' · vol20 : '+pc(HIT.c4.p[1])+extra};}
   {let b=null,bd=Infinity;for(const h of HIT.c4n){const d=Math.abs(h.px-mx)+Math.abs(h.py-my);if(d<=h.r&&d<bd){bd=d;b=h;}}if(b)return {kind:'c4n',text:'Classe 4 imbriquée — '+b.n.b.name+' (dans '+SYS.name+')\nEffondrement de ses constituants (moyenne de l’ensemble restreint)\nRendement cumulé : '+pc(Math.exp(b.p[0])-1)+' · vol20 : '+pc(b.p[1])};}
   if(HIT.z0&&inC(HIT.z0))return {kind:'z0',text:'Z0 — fil linéaire Z0(T₀) → Z0(T₁)\nZ0 = moyenne de tout, en un seul ensemble · dérive-comme-signal\nRendement cumulé : '+pc(Math.exp(HIT.z0.p[0])-1)+' · vol20 : '+pc(HIT.z0.p[1])};
   if(sel){const v=view();const X=x=>L+(x-v.x0)/(v.x1-v.x0)*(W-L-R),Y=y=>H-B-(y-v.y0)/(v.y1-v.y0)*(H-T-B);const cl=(x,y)=>[Math.min(bx[1],Math.max(bx[0],x)),Math.min(by[1],Math.max(by[0],y))];let b=null,bd=Infinity;
@@ -1160,7 +1165,7 @@ cv.addEventListener('mousemove',e=>{const tip=$('tip');if(drag){tip.style.displa
   tip.textContent=r.text;tip.dataset.kind=r.kind;tip.style.display='block';tip.style.left=Math.min(W-330,e.clientX+14)+'px';tip.style.top=Math.min(H-140,e.clientY+14)+'px';});
 cv.addEventListener('mouseleave',()=>{$('tip').style.display='none';});
 cv.onclick=e=>{if(moved)return;if(clickLib(e.clientX,e.clientY))return;if(EMPTY)return;const gh=hitGhost(e.clientX,e.clientY);if(gh){doDeploy(gh,true);return;}
-  for(let gi=0;gi<GROUPS.length;gi++){const g=GROUPS[gi];if(g._px!=null&&Math.hypot(g._px-e.clientX,g._py-e.clientY)<=g._r+1.1){if(document.body.classList.contains('mode-world'))return;stopPlay();select(gi);return;}}};
+  for(let gi=0;gi<GROUPS.length;gi++){const g=GROUPS[gi];if(g._px!=null&&Math.hypot(g._px-e.clientX,g._py-e.clientY)<=g._r+1.1){if(document.body.classList.contains('mode-world')||document.body.classList.contains('mode-intl'))return;stopPlay();select(gi);return;}}};
 cv.ondblclick=()=>{
   // Hub navigation is its own layer: a zone dives into its cardinal floor; the floor's central object returns to World.
   if(hubDown && typeof window.go==='function'){ const dest=hubDown; hubDown=null; window.go(dest); return; }
@@ -1905,6 +1910,8 @@ function renderCrumb(route){
   } else if(route.mode==='tree'){
     const b=treeBranchById(route.branch);
     bits.push(crumbLink('#/galaxy/'+route.branch,(b&&b.name)||route.branch,true));
+  } else if(route.mode==='floor' && route.sys==='WF' && !route.index && !route.ex){
+    bits.push(crumbLink('#/floor/WF','Étage international · manifestation',true));
   } else if(route.mode==='floor'){
     const bb=treeBranchForFloor(route.sys);
     if(bb) bits.push(crumbLink('#/galaxy/'+bb.id,bb.name,false));
@@ -3092,9 +3099,8 @@ function buildWorldZones(){
   DATA.ZONES={dates,objs,meta:{id:'ZONES',name:'World',floor:'WF',T0:dates[0]||null,T1:dates.length?dates[dates.length-1]:null,dates:dates.length?[dates[0]]:[]}};
   return DATA.ZONES;
 }
-function applyWorld(route){
+function mountZoneManifestation(route){
   if(typeof setFloorInterpretation==='function') setFloorInterpretation((route&&route.interpretation)||'year');
-  document.body.className='mode-floor mode-world';
   document.body.classList.remove('ui-collapsed');
   try{ hideNhlInfoChip(); }catch(e){}
   window.__DRAW_OVERRIDE=null; window.__RW_NHL_LOCK=false;
@@ -3125,9 +3131,17 @@ function applyWorld(route){
   (built.objs||[]).forEach(o=>{ byName[o.s]=o.hubFloor; });
   GROUPS.forEach(g=>{ g.hubFloor=byName[g.name]||null; if(SECT[g.name]) g.col=SECT[g.name]; });
   try{ if($('c')&&$('e')) $('c').value=$('e').value; }catch(e){}
-  try{ ensureRetourHubBar('World'); }catch(e){}
   try{ collapseUiPanel(true); }catch(e){}
   try{ fit(); draw(); }catch(e){}
+}
+function applyWorld(route){
+  document.body.className='mode-floor mode-world';
+  mountZoneManifestation(route);
+  try{ ensureRetourHubBar('World'); }catch(e){}
+}
+function applyInternationalFloor(route){
+  document.body.className='mode-floor mode-intl';
+  mountZoneManifestation(route);
 }
 function openInterpretedFloor(){
   const next=DEFAULT_FLOOR;
@@ -3186,10 +3200,16 @@ function applyRoute(){
   else if(route.mode==='floor'){
     hideNhlInfoChip(); window.__DRAW_OVERRIDE=null; window.__RW_NHL_LOCK=false;
     hideGalaxyPlanet();
-    applyFloor(route);
-    document.body.classList.add('mode-galaxy');
-    const bb=treeBranchForFloor(route.sys);
-    ensureRetourHubBar(bb?('Finance · '+bb.name):('Finance · '+route.sys));
+    if(route.sys==='WF' && !route.index && !route.ex){
+      applyInternationalFloor(route);
+      document.body.classList.add('mode-galaxy');
+      ensureRetourHubBar('Étage international · manifestation');
+    } else {
+      applyFloor(route);
+      document.body.classList.add('mode-galaxy');
+      const bb=treeBranchForFloor(route.sys);
+      ensureRetourHubBar(bb?('Finance · '+bb.name):('Finance · '+route.sys));
+    }
   }
   else { if(openInterpretedFloor()) return; }
   ensureMainframeNav();
@@ -3208,6 +3228,7 @@ function applyRoute(){
     if(window.__RW_FORCE_CLOSED){ closeRightWindow(); window.__RW_FORCE_CLOSED=false; }
     else if(route.mode==='galaxy'&&route.galaxy==='branch'&&route.branch){ summonRightWindow(rwSpecFromBranch(route.branch)); }
     else if(route.mode==='tree'&&route.branch){ summonRightWindow(rwSpecFromBranch(route.branch)); }
+    else if(route.mode==='floor'&&route.sys==='WF'&&!route.index&&!route.ex){ closeRightWindow(); }
     else if(route.mode==='floor'&&route.sys&&!route.index&&!route.ex){ summonRightWindow(rwSpecFromFloor(route.sys)); }
     else if(route.mode==='nhl'&&route.player){
       const pl=NHL.players.find(p=>p.id===route.player);
@@ -3342,7 +3363,7 @@ function patchClicks(){
     for(let gi=0;gi<GROUPS.length;gi++){
       const g=GROUPS[gi];
       if(g._px!=null&&Math.hypot(g._px-e.clientX,g._py-e.clientY)<=g._r+1.1){
-        if(document.body.classList.contains('mode-world')) return;
+        if(document.body.classList.contains('mode-world')||document.body.classList.contains('mode-intl')) return;
         stopPlay();select(gi);return;
       }
     }

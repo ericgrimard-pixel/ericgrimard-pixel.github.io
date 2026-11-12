@@ -1,12 +1,12 @@
 # Short trailing-sequence ghost — spec for the Hub floors
 
 Date: 2026-11-12, America/Toronto (EST, UTC-5)
-Hub version: v20.33 (five cardinal floors drawn in the Hub + short ghost)
+Hub version: v20.34 (five cardinal floors drawn in the Hub + short ghost)
 Source of the request: Éric, voice. Apply a GHOST on BOTH interpretations of the financial floors. Not Fourier. A simple trailing-sequence ghost: the last sequence of the movement, a short trailing segment like a motion trail. Short is good — it gives an idea of the movement.
 
 The live renderer is the Hub canvas (`um/index.html`, `um/js/app.js`).
-Opening `/um/` lands on `#/floor/AMF/index/SPX/year`. The door panel opens
-the five cardinals in place: `#/floor/AMF/index/SPX/year` and `/t0t1`,
+Opening `/um/` lands on `#/world`. The international floor is `#/floor/WF`.
+The five cardinals are `#/floor/AMF/index/SPX/year` and `/t0t1`,
 `#/floor/ASF/index/N225/year` and `/t0t1`, `#/floor/EUF/index/SX5E/year`
 and `/t0t1`, `#/floor/ASF/index/TASI/year` and `/t0t1`,
 `#/floor/AMF/index/IBOV/year` and `/t0t1`. Math lives in
