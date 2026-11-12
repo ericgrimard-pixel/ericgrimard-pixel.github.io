@@ -2978,6 +2978,9 @@ function nhlXY(x,y){
   return [px,py];
 }
 function drawNhlGalaxy(){ window.drawNhlGalaxy=drawNhlGalaxy;
+  document.body.classList.add('manifest-primary');
+  if(!document.body.classList.contains('c4-open')) document.body.classList.add('c4-collapsed');
+  document.body.classList.toggle('c4-wave-attrs', !window.__WAVE || (typeof waveFormT==='function' && waveFormT()>=0.98));
   window.ctx=ctx; window.W=W; window.H=H; window.nhlXY=nhlXY; window.moved=moved;
   if(typeof window.drawNhlLeagueGalaxy==='function'){
     window.drawNhlLeagueGalaxy();
