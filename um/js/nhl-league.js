@@ -676,16 +676,10 @@ function applyNhlLeagueHooks(){
   var old = $('nhl-info-chip'); if(old) old.style.display='none';
 }
 
-/* Domain-map hub — two domain doors.
-   Hockey opens Claude's real NHL galaxy (#nhl).
-   Finance opens Claude's UM engine:
-   primary #sp500y (année, 2 janv. → 4 nov.), secondary #sp500 (deux séances T0/T1).
-   The hub's own hockey route #/sports/nhl and finance placeholder #/galaxy/planet
-   stay at their URLs (not doors). */
-var UM_ENGINE_BASE = String(w.UM_ENGINE_URL || 'https://claude.ai/artifact/BhtoueP8EK52M5iEK38Fko').split('#')[0];
-var UM_HOCKEY = UM_ENGINE_BASE + '#nhl';
-var UM_FINANCE_YEAR = UM_ENGINE_BASE + '#sp500y';
-var UM_FINANCE_TWO = UM_ENGINE_BASE + '#sp500';
+/* Domain-map hub — two domain doors, both inside this page. */
+var UM_HOCKEY = '#/sports/nhl';
+var UM_FINANCE_YEAR = '#/floor/AMF/index/SPX/year';
+var UM_FINANCE_TWO = '#/floor/AMF/index/SPX/t0t1';
 
 function renderDomainMap(){
   var el = $('mf');

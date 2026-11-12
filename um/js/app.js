@@ -384,7 +384,7 @@ window.trailTwoPass=trailTwoPass; window.trailFullYear=trailFullYear;
  * the segment (short regardless of playSubsteps, which is only 8 in floor mode).
  *
  * This file is pure and DOM-free so it can be unit-tested in Node and reused
- * by Claude's artifact engine. app.js paints with paintFloorShortGhosts().
+ * by the Hub floor renderer. app.js paints with paintFloorShortGhosts().
  */
 (function (root, factory) {
   const api = factory();

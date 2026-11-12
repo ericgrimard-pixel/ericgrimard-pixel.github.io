@@ -1,17 +1,17 @@
 /* um-engine.js — the real Manifestation engine in the HUB · Claude, 11 Nov. 2026 (Éric, 15 h 14: « the hub should just link to the
    real engine, as simple as that. And as we build the hub, it's just gonna be another new object in the engine for the hub »;
    15 h 36: « it's still not the real engine in the hub »).
-   v20.29, 12 nov 2026 — recorded Hub Navigation Rule (foundational, permanent): Hub navigation is its own layer, distinct from the manifestation engine.
+   v20.30, 12 nov 2026 — recorded Hub Navigation Rule (foundational, permanent): Hub navigation is its own layer, distinct from the manifestation engine.
    Double-clicks differ: Hub starts with group of 5 macro-zones; double-click Class 2 plunges in (siblings become Class 2 of larger group) down to single floor;
    in floor, double-click central object pops up one level; two clicks up to emerge from Class 4, one click down into Class 2.
    Applied Classe 4 founding rules (size factor, single solid object at origin, Class 3 solids, collapse rules, uniform application).
-   Reference engine updated to published artifact with applyC4 / SZ / SOLIDMAT.
+   Classe 4 rules applied (applyC4 / SZ / SOLIDMAT).
    One line in the HUB page, BEFORE um-panels.js:
        <script src="um-engine.js" defer></script>
        <script src="um-panels.js" defer></script>
    This script loads js/data-finance-zones.js by itself, so the short um/index.html loader does not need a new tag.
-   It adds the panel « Manifestation · moteur réel »: one door per Class 4 system of the engine; each door opens the real engine
-   at its anchor. The engine link never changes, so the HUB always opens the latest revision.
+   It adds the panel « Manifestation · moteur réel »: one door per floor already in the Hub.
+   Each door opens that floor in the page (#/floor/… or #/sports/nhl). Nothing here opens an external page.
    Where: inside <div id="um-engine"></div> if the page has one, otherwise floating at the top left (movable and erasable with
    um-panels.js).
    Optional: <script>window.UM_HIDE='#selector'</script> before it hides the HUB's own reproduction of the engine.
@@ -22,9 +22,6 @@
    3. Classe 3 (Ω, Σ, α, etc.) : objets solides, opaques, hors brume, pour ressortir. Les pièges λ non activés restent des contours.
    4. Effondrement de la Classe 4 : seulement les attributs physiques (forme, étirement, couleur, saturation) et angulaires (avant-arrière, rotation, centre-extérieur). X, Y, Z ne sont pas effondrés. Chaque attribut = moyenne sur le même ensemble que Z0 (Classe 1, plus Classe 2 et conteneurs Classe 3 si cochés). Sans donnée : objet masqué, rien d'inventé.
    5. Mêmes règles pour tous les systèmes.
-   Ref engine: https://claude.ai/artifact/BhtoueP8EK52M5iEK38Fko
-   Spec: https://claude.ai/artifact/BPgoo9fhk4cJchZ9pqffVn (section 9)
-
    HUB NAVIGATION RULE — FOUNDATIONAL and PERMANENT (recorded 12 nov 2026 01:13 EST from Éric):
    The Hub's navigation is its own layer. It is distinct from the manifestation engine's navigation. The double-clicks are different in the two applications.
    - In the Hub, you start with the smallest possible group, which is 5: the five financial macro-zones.
@@ -32,18 +29,24 @@
    - Then, in that floor's environment, double-clicking the central object pops you up one level.
    - Two clicks up to emerge from a Class 4 object. One click down into a Class 2 object.
    Do not merge Hub and engine double-click behaviors.
-   v20.29 — the five cardinal floors open inside the Hub (year and T0→T1).
-   Doors that are not interpreted yet stay on the published engine; they are not a second copy of the floor. */
+   v20.30 — every door with a price series opens that floor inside the Hub (year and T0→T1).
+   A door with no series is not a link. */
 (function () {
   'use strict';
   if (window.__umEngine) return; window.__umEngine = true;
-  var ENGINE = 'https://claude.ai/artifact/BhtoueP8EK52M5iEK38Fko';
-  /* In-hub routes for floors the renderer already paints. [year, t0t1]. */
+  /* In-hub routes. [primary, other interpretation]. No external URL. */
   var LOCAL_FLOOR = {
     sp500y: ['#/floor/AMF/index/SPX/year', '#/floor/AMF/index/SPX/t0t1'],
+    ndx100: ['#/floor/AMF/index/NDX/year', '#/floor/AMF/index/NDX/t0t1'],
     sp500: ['#/floor/AMF/index/SPX/t0t1', '#/floor/AMF/index/SPX/year'],
     n225: ['#/floor/ASF/index/N225/year', '#/floor/ASF/index/N225/t0t1'],
+    hsi: ['#/floor/ASF/index/HSI/year', '#/floor/ASF/index/HSI/t0t1'],
+    asx200: ['#/floor/OCF/index/ASX200/year', '#/floor/OCF/index/ASX200/t0t1'],
+    sti: ['#/floor/ASF/index/STI/year', '#/floor/ASF/index/STI/t0t1'],
     sx5e: ['#/floor/EUF/index/SX5E/year', '#/floor/EUF/index/SX5E/t0t1'],
+    ftse100: ['#/floor/EUF/index/FTSE100/year', '#/floor/EUF/index/FTSE100/t0t1'],
+    dax: ['#/floor/EUF/index/DAX/year', '#/floor/EUF/index/DAX/t0t1'],
+    cac40: ['#/floor/EUF/index/CAC40/year', '#/floor/EUF/index/CAC40/t0t1'],
     tasi: ['#/floor/ASF/index/TASI/year', '#/floor/ASF/index/TASI/t0t1'],
     ibov: ['#/floor/AMF/index/IBOV/year', '#/floor/AMF/index/IBOV/t0t1'],
     nhl: ['#/sports/nhl', null]
@@ -117,6 +120,7 @@
     '#um-engine-panel li.um-door-row{display:flex;gap:3px;align-items:stretch}' +
     '#um-engine-panel li.um-door-row>a:first-child{flex:1}' +
     '#um-engine-panel a.um-interp{flex:none;align-items:center;color:#e8c872;font:500 10px/1.2 ui-monospace,Menlo,monospace}' +
+    '#um-engine-panel li span.um-nodata{display:flex;justify-content:space-between;gap:8px;padding:5px 8px;border:1px dashed #1a2636;border-radius:3px;color:#5c6a82;background:#0d1520}' +
     '#um-engine-panel li a.um-cardinal-door{border-color:#6a5a2c}' +
     '#um-engine-panel li a code{font:11px ui-monospace,Menlo,monospace;color:#5c6a82}' +
     '#um-engine-panel .um-cardinal{flex:none;font:500 9px/1.2 ui-monospace,Menlo,monospace;letter-spacing:.08em;text-transform:uppercase;' +
@@ -144,9 +148,7 @@
           h += '<li class="um-door-row"><a class="' + (cardinal ? 'um-cardinal-door' : '') + '" href="' + local[0] +
                '"><span>' + label + '</span><code>#' + f[0] + '</code></a>' + alt + '</li>';
         } else {
-          h += '<li><a class="' + (cardinal ? 'um-cardinal-door' : '') + '" href="' + ENGINE + '#' + f[0] +
-               '" target="_blank" rel="noopener"><span>' + label +
-               '</span><code>#' + f[0] + '</code></a></li>';
+          h += '<li><span class="um-nodata"><span>' + label + '</span><code>pas de série</code></span></li>';
         }
       });
       h += '</ul>';
@@ -164,7 +166,7 @@
   function start() {
     if (window.FINANCE_ZONES) { boot(); return; }
     var s = document.createElement('script');
-    s.src = 'js/data-finance-zones.js?v=20.29';
+    s.src = 'js/data-finance-zones.js?v=20.30';
     s.onload = boot;
     s.onerror = function () { init(FALLBACK_FLOORS); };
     document.head.appendChild(s);
