@@ -1,7 +1,10 @@
 /* um-engine.js — the real Manifestation engine in the HUB · Claude, 11 Nov. 2026 (Éric, 15 h 14: « the hub should just link to the
    real engine, as simple as that. And as we build the hub, it's just gonna be another new object in the engine for the hub »;
    15 h 36: « it's still not the real engine in the hub »).
-   v20.28, 12 nov 2026 — applied Classe 4 founding rules (size factor, single solid object at origin, Class 3 solids, collapse rules, uniform application).
+   v20.29, 12 nov 2026 — recorded Hub Navigation Rule (foundational, permanent): Hub navigation is its own layer, distinct from the manifestation engine.
+   Double-clicks differ: Hub starts with group of 5 macro-zones; double-click Class 2 plunges in (siblings become Class 2 of larger group) down to single floor;
+   in floor, double-click central object pops up one level; two clicks up to emerge from Class 4, one click down into Class 2.
+   Applied Classe 4 founding rules (size factor, single solid object at origin, Class 3 solids, collapse rules, uniform application).
    Reference engine updated to published artifact with applyC4 / SZ / SOLIDMAT.
    One line in the HUB page, BEFORE um-panels.js:
        <script src="um-engine.js" defer></script>
@@ -20,7 +23,15 @@
    4. Effondrement de la Classe 4 : seulement les attributs physiques (forme, étirement, couleur, saturation) et angulaires (avant-arrière, rotation, centre-extérieur). X, Y, Z ne sont pas effondrés. Chaque attribut = moyenne sur le même ensemble que Z0 (Classe 1, plus Classe 2 et conteneurs Classe 3 si cochés). Sans donnée : objet masqué, rien d'inventé.
    5. Mêmes règles pour tous les systèmes.
    Ref engine: https://claude.ai/artifact/BhtoueP8EK52M5iEK38Fko
-   Spec: https://claude.ai/artifact/BPgoo9fhk4cJchZ9pqffVn (section 9) */
+   Spec: https://claude.ai/artifact/BPgoo9fhk4cJchZ9pqffVn (section 9)
+
+   HUB NAVIGATION RULE — FOUNDATIONAL and PERMANENT (recorded 12 nov 2026 01:13 EST from Éric):
+   The Hub's navigation is its own layer. It is distinct from the manifestation engine's navigation. The double-clicks are different in the two applications.
+   - In the Hub, you start with the smallest possible group, which is 5: the five financial macro-zones.
+   - When you double-click a Class 2 object, you plunge into it. All the others become Class 2 of that larger group, and you can dive down to the level of one single floor.
+   - Then, in that floor's environment, double-clicking the central object pops you up one level.
+   - Two clicks up to emerge from a Class 4 object. One click down into a Class 2 object.
+   Do not merge Hub and engine double-click behaviors. */
 (function () {
   'use strict';
   if (window.__umEngine) return; window.__umEngine = true;
