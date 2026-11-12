@@ -6,7 +6,7 @@ EventTarget.prototype.addEventListener=function(t,f,o){
   if(BOOT&&BOOT.ac){const opt=(o&&typeof o==='object')?Object.assign({},o):{capture:!!o};if(!opt.signal)opt.signal=BOOT.ac.signal;return _addEL.call(this,t,f,opt)}
   return _addEL.call(this,t,f,o);
 };
-let CURSYS=null;
+let CURSYS=null, lastTouchNav=0;
 function hubHash(id){return id==='world'?'/world':id}
 function switchSys(id,keep){
   const SYSn=LIB.find(x=>x.id===id&&x.data);if(!SYSn)return;
@@ -1592,12 +1592,8 @@ renderer.domElement.addEventListener('pointermove',e=>{
   tip.style.left=x+'px';tip.style.top=y+'px';
 });
 renderer.domElement.addEventListener('pointerleave',()=>{tip.style.display='none'});
-renderer.domElement.addEventListener('pointerdown',e=>{downAt=[e.clientX,e.clientY]});
-renderer.domElement.addEventListener('pointerup',e=>{
-  if(!downAt)return;const moved=Math.hypot(e.clientX-downAt[0],e.clientY-downAt[1]);downAt=null;if(moved>5)return;
-  const ref=pickAt(e);if(ref)select(ref);
-});
-renderer.domElement.addEventListener('dblclick',e=>{const ref=pickAt(e);if(!ref)return;
+function ascendOrEnter(e){
+  const ref=pickAt(e);if(!ref)return;
   const rr=renderer.domElement.getBoundingClientRect();mouse.x=(e.clientX-rr.left)/rr.width*2-1;mouse.y=-(e.clientY-rr.top)/rr.height*2+1;
   ray.setFromCamera(mouse,camera);
   const vis=HITS.filter(m=>{let p=m;while(p){if(!p.visible)return false;p=p.parent}return true});
@@ -1605,7 +1601,21 @@ renderer.domElement.addEventListener('dblclick',e=>{const ref=pickAt(e);if(!ref)
   if(SYS.id==='world'&&ref.kind===1){const id=TK[ref.idx]&&TK[ref.idx].floor;if(id){switchSys(id);return}}
   if(onC4&&SYS.id!=='world'){switchSys('world');return}
   select(ref);
-  if(ref.kind===4)enterPlan();else if(ref.kind===1||ref.kind===2)enterFocus(ref)});
+  if(ref.kind===4)enterPlan();else if(ref.kind===1||ref.kind===2)enterFocus(ref);
+}
+let tapMark=null;
+renderer.domElement.addEventListener('pointerdown',e=>{downAt=[e.clientX,e.clientY]});
+renderer.domElement.addEventListener('pointerup',e=>{
+  if(!downAt)return;const moved=Math.hypot(e.clientX-downAt[0],e.clientY-downAt[1]);downAt=null;
+  if(moved>(e.pointerType==='touch'?14:5))return;
+  const ref=pickAt(e);if(ref)select(ref);
+  if(e.pointerType!=='touch')return;
+  const now=e.timeStamp,prev=tapMark;tapMark={t:now,x:e.clientX,y:e.clientY};
+  if(!prev||now-prev.t<40||now-prev.t>520||Math.hypot(e.clientX-prev.x,e.clientY-prev.y)>28)return;
+  lastTouchNav=now;ascendOrEnter(e);
+});
+/* A finger double-tap never becomes a dblclick: the orbit handler cancels the touch. Mouse keeps dblclick. */
+renderer.domElement.addEventListener('dblclick',e=>{if(lastTouchNav&&performance.now()-lastTouchNav<700)return;ascendOrEnter(e)});
 function boxMembers(z,d){const m=[];for(let i=0;i<N1;i++){const j=i*F+d;if(PRES[j]&&boxOf(V[j*10],V[j*10+1],V[j*10+2])===z)m.push(i)}return m}
 /* The leading object carries its information inside itself: its symbol always; when chosen, a short card. Ghosts carry none. */
 let CARD=null;
