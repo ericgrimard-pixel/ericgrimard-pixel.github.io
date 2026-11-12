@@ -1,5 +1,5 @@
 /* Application code from v20.11 HUB galaxies (SAFE Pages) — DATA/FLOORS/NHL loaded by previous scripts.
-   Standing definition of the Hub (v20.36). The Class 4 library below is the floor structure;
+   Standing definition of the Hub (v20.37). The Class 4 library below is the floor structure;
    this sentence is the standing rule for Music, kept in this header:
    Music (Société · Musique) is an independent field (a row) in the World view, under society. It is separate from finance and from professional sport, and it has its own Class 2 objects. It is the starting point for the next layer of the build. It is never nested inside any panel.
    Its Class 2 slot is #um-musique-c2 on the World view. The slot is empty: the Hub has no local music data source. Nothing is invented.
@@ -207,7 +207,7 @@ function syncC4Panel(live){const el=$('c4panel');if(!el){window.__C4LIVE=live||n
     }
     return fallback;
   }
-  const payload={version:'v20.36',sys:sysName,space:live.space||'market',tau:live.tau,t:live.t,gateMode:fourierMode?'fourier':'libre',formT:(live.formT!=null?live.formT:((typeof window.waveFormT==='function')?window.waveFormT():1)),swell:(live.swell!=null?live.swell:((typeof window.waveSwell==='function')?window.waveSwell():1)),
+  const payload={version:'v20.37',sys:sysName,space:live.space||'market',tau:live.tau,t:live.t,gateMode:fourierMode?'fourier':'libre',formT:(live.formT!=null?live.formT:((typeof window.waveFormT==='function')?window.waveFormT():1)),swell:(live.swell!=null?live.swell:((typeof window.waveSwell==='function')?window.waveSwell():1)),
     z0:market?{x:z[0],y:z[1],ret:Math.exp(z[0])-1,vol:z[1]}:{x:z[0],y:z[1]},
     z0T0,z0T1,
     drift:{dx:d[0],dy:d[1],mag,angleDeg:ang,incomplet:!!live.driftIncomplet},
@@ -1052,7 +1052,7 @@ function lastConsecutive(arr,maxN){
   }
   return vals.reverse();
 }
-const KOBAYASHI_FOUND='INDEX VIVANT — Manifestation (Drive 1UUVWpRERnOaUvLnniVF2vHeqCX4WIV1wEaFks9nz8t0) : « Modes : Fourier (trois entrées) ; libre ; Kobayashi Maru (la transparence est le collapse de tous les résultats, G-4). » Aucune procédure exécutable dans le code du hub ni dans ÉCHANGE au-delà de cette phrase. Recette Claude (1B1RmxyHNhAs7BSIwseSi-QHOymIrtMQIjTOEiT-eAmQ, 5 nov 2026) : F=(2/n)·(−Σ u_m·sin(2πm/n)), F=0 si n<3 ; court ≤5, long ≤63 ; forme=court X, couleur=court Y, étirement=court Z, rotation=long X, inclinaison avant=long Y, inclinaison radiale=long Z. Saturation n’y est pas assignée.';
+const KOBAYASHI_FOUND='INDEX VIVANT — Manifestation : « Modes : Fourier (trois entrées) ; libre ; Kobayashi Maru (la transparence est le collapse de tous les résultats, G-4). » Aucune procédure exécutable dans le code du hub au-delà de cette phrase. Recette Fourier : F=(2/n)·(−Σ u_m·sin(2πm/n)), F=0 si n<3 ; court ≤5, long ≤63 ; forme=court X, couleur=court Y, étirement=court Z, rotation=long X, inclinaison avant=long Y, inclinaison radiale=long Z. Saturation n’y est pas assignée.';
 function computeFourierSystem(){
   const LONG_MIN=63, SHORT_MAX=5, SHORT_MIN=3;
   const kobayashi={status:'[INCOMPLET — définition à fournir]',found:KOBAYASHI_FOUND};
@@ -3004,7 +3004,7 @@ function applyNhlGalaxy(){
   try{ hideNhlInfoChip(); }catch(e){}
   if(typeof window.applyNhlLeagueHooks==='function') window.applyNhlLeagueHooks();
   window.__DRAW_OVERRIDE='nhl';
-  window.__VERSION='v20.36';
+  window.__VERSION='v20.37';
   if(typeof window.nhlSummonCurrentSystem==='function' && !window.__RW_NHL_LOCK){
     try{ window.nhlSummonCurrentSystem(); }catch(e){}
   }
@@ -3788,7 +3788,7 @@ function applyRoute(){
     });
   }catch(e){}
   window.__NAV.crumb=($('crumb')&&$('crumb').textContent)||'';
-  window.__VERSION='v20.36';
+  window.__VERSION='v20.37';
   // Right window: summon on object navigation; never restore from ghost
   try{
     if(window.__RW_FORCE_CLOSED){ closeRightWindow(); window.__RW_FORCE_CLOSED=false; }

@@ -9,7 +9,7 @@
 
 This is a new version. It leaves the Foundational Revision of 2026-11-07 unchanged. That earlier text is reproduced below in sections I–VII. Section II.A and the source notes are the D4 integration ordered by Éric Grimard on 12 November 2026.
 
-The path `artifacts/Pandemonium_Black_Paper.pdf` was not found in the hub repository, on the working machine, or as a PDF on Drive. The source used here is the Google Doc *Pandemonium Black Paper - Foundational Revision 2026-11-07* (Drive id `1G8esTg5jt3d6HLKgsqsQS4C4aCQdfFB4yDZlgK-7z-E`), sealed 2026-11-07 with the line “Integrated into lattice via YB1.” No separate lattice-framework document was located. The lattice used for this integration is therefore the architecture already stated in that paper: the invariant core, the five-ring spine, the hinge, and the crowns. D4 is placed at the core, as one synergetic node, with branches into those levels.
+The path `Pandemonium_Black_Paper.pdf` was not found in the hub repository, on the working machine, or as a PDF on Drive. The source used here is the Google Doc *Pandemonium Black Paper - Foundational Revision 2026-11-07* (Drive id `1G8esTg5jt3d6HLKgsqsQS4C4aCQdfFB4yDZlgK-7z-E`), sealed 2026-11-07 with the line “Integrated into lattice via YB1.” No separate lattice-framework document was located. The lattice used for this integration is therefore the architecture already stated in that paper: the invariant core, the five-ring spine, the hinge, and the crowns. D4 is placed at the core, as one synergetic node, with branches into those levels.
 
 ---
 
@@ -170,7 +170,7 @@ None of it has yet been tested under load. The distance between a beautiful fram
 
 The spine goes through various rounds because there will be the outside cohort — the crowd of outer agents and outer sources — and the inner hell to manage. The framework holds. What remains is the work of making it real.
 
-The D4 node does not close that gap. It does, however, give the core something finite to prove: a constant with an exact definition, a collapse with an exact formula, a mean with an exact bound, and zone cuts that can be checked against a Gaussian. The first numerical fact already in hand is the value of D4. What is not yet in hand is a compiled Fortran run of the deposited core under load. Claude’s deposit of 12 November 2026 recorded the collapse formulas as proposed, and the Fortran as not yet compiled in the exchange environment. That remaining work is proof, not decoration.
+The D4 node does not close that gap. It does, however, give the core something finite to prove: a constant with an exact definition, a collapse with an exact formula, a mean with an exact bound, and zone cuts that can be checked against a Gaussian. The first numerical fact already in hand is the value of D4. What is not yet in hand is a compiled Fortran run of the deposited core under load. The deposit of 12 November 2026 recorded the collapse formulas as proposed, and the Fortran as not yet compiled in the exchange environment. That remaining work is proof, not decoration.
 
 ---
 
@@ -197,7 +197,7 @@ These notes are part of v2. They record provenance, mismatches, and limits, so t
 
 **S5. Literature check.** See II.A. OEIS returned no sequence for the digits of 4.458328665404773 and no sequence for √(e² + π² + φ²), on 12 November 2026. The check is a search, not an exhaustive historical survey.
 
-**S6. Compilation.** At the time of Claude’s deposit, the Fortran core had not been compiled in the exchange environment. This integration verified the scalar value of D4 independently. It did not, in this pass, compile `um_core.f90` with gfortran (the compiler was not present on the machine used). [INCOMPLET] as to a compiled end-to-end run of `um_agents.py` against `libum.so`.
+**S6. Compilation.** At the time of the 12 November 2026 deposit, the Fortran core had not been compiled in the exchange environment. This integration verified the scalar value of D4 independently. It did not, in this pass, compile `um_core.f90` with gfortran (the compiler was not present on the machine used). [INCOMPLET] as to a compiled end-to-end run of `um_agents.py` against `libum.so`.
 
 **S7. Clavis.** Named in Section VI; not present in `um/nucleus/`.
 

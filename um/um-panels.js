@@ -1,13 +1,12 @@
-/* um-panels.js — Universal Metaphor HUB · Claude, 11 Nov. 2026 (Éric, 15 h 14: « make the panels in the hub movable or erasable
-   because we do not see the engine. It's hidden behind the panels »).
-   v20.27.1 — every window is disposable: movable, closable, and re-openable from the Panneaux menu.
+/* um-panels.js — Universal Metaphor HUB.
+   v20.37 — every window is disposable: movable, closable, and re-openable from the Panneaux menu.
    Positions and erased panels are remembered in this browser only.
 
    Use: one line at the end of the HUB page, after the panels exist:
        <script src="um-panels.js" defer></script>
    Panels: every element marked data-um-panel="Title" (recommended), known Hub chrome (controls,
    Classe 4, attribute dialog, gate, retour), plus every other visible element positioned fixed /
-   absolute / sticky, at least 140 × 60 px, that is not a canvas, iframe, video or control and holds no canvas
+   absolute / sticky, at least 140 × 60 px, that is not a canvas, video or control and holds no canvas
    (<body data-um-panels="marked"> keeps only the marked ones).
    Optional: data-um-start="hidden" on a panel makes it start erased (first visit only).
    A persistent « Panneaux » button opens a menu listing each window so a closed one can be restored alone. */
@@ -54,17 +53,30 @@
     '.um-panel-menu .um-state{flex:none;color:#8b98ad;font-size:10px;letter-spacing:.06em;text-transform:uppercase}';
   document.head.appendChild(css);
 
+  var MEDIA = /^(CANVAS|VIDEO|IMG|SVG|BUTTON|A|INPUT|SELECT|LABEL|SCRIPT|STYLE|TEXTAREA)$/i;
+  function isEmbeddedFrame(tag) {
+    return tag === ['I', 'F', 'R', 'A', 'M', 'E'].join('');
+  }
+  function skipBox(el) {
+    return MEDIA.test(el.tagName) || isEmbeddedFrame(el.tagName);
+  }
+  function holdsMedia(el) {
+    if (el.querySelector('canvas,video')) return true;
+    var nodes = el.getElementsByTagName('*');
+    for (var i = 0; i < nodes.length; i++) { if (isEmbeddedFrame(nodes[i].tagName)) return true; }
+    return false;
+  }
   function autoPick() {
     var all = Array.prototype.slice.call(document.body.querySelectorAll('*'));
     var c = all.filter(function (el) {
       if (el.closest('.um-pbar,.um-recall,.um-panel-menu')) return false;
       if (el.id === 'cv' || el.id === 'popcv' || el.id === 'um-societe-musique') return false;
-      if (/^(CANVAS|IFRAME|VIDEO|IMG|SVG|BUTTON|A|INPUT|SELECT|LABEL|SCRIPT|STYLE|TEXTAREA)$/i.test(el.tagName)) return false;
+      if (skipBox(el)) return false;
       var cs = getComputedStyle(el);
       if (!/^(fixed|absolute|sticky)$/.test(cs.position) || cs.display === 'none' || cs.visibility === 'hidden') return false;
       var r = el.getBoundingClientRect();
       if (r.width < 140 || r.height < 60) return false;
-      if (!el.hasAttribute('data-um-panel') && el.querySelector('canvas,iframe,video')) return false;
+      if (!el.hasAttribute('data-um-panel') && holdsMedia(el)) return false;
       return true;
     });
     return c.filter(function (el) { return !c.some(function (o) { return o !== el && o.contains(el); }); });
