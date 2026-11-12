@@ -35,7 +35,7 @@ const FLOOR=3,NS=24,SUB=8; // plancher px ; échantillons par segment cycloïdal
 // ---------- transition cycloïdale (canon) ----------
 // Corpus Rev3 / runs du 6 oct. : cycloïde vraie s(t)=t−sin(2πt)/(2π), « PAS une quadratique ».
 // Gouvernance du 11 oct. (G-3, §12.5) : appliquée indépendamment sur chaque axe ; ease-out pour un déplacement positif,
-// ease-in pour un déplacement négatif, immobile pour aucun. Lecture Grok : demi-arches de la cycloïde vraie.
+// ease-in pour un déplacement négatif, immobile pour aucun. Demi-arches de la cycloïde vraie.
 const CIN=t=>{const th=Math.PI*t;return (th-Math.sin(th))/Math.PI;};   // demi-arche, départ lent (ease-in)
 const COUT=t=>1-CIN(1-t);                                               // demi-arche, arrivée lente (ease-out)
 const CFULL=t=>t-Math.sin(2*Math.PI*t)/(2*Math.PI);                     // arche complète (référence Rev3)
@@ -162,7 +162,7 @@ function syncC4Panel(live){const el=$('c4panel');if(!el){window.__C4LIVE=live||n
   const market=live.space!=='static';
   const z0T0=(market&&typeof Z0!=='undefined'&&Z0&&Z0.a)?{x:Z0.a[0],y:Z0.a[1]}:null;
   const z0T1=(market&&typeof Z0!=='undefined'&&Z0&&Z0.b)?{x:Z0.b[0],y:Z0.b[1]}:null;
-  const fourierMode=typeof gateModeFromHash==='function'&&gateModeFromHash()==='fourier';
+  const fourierMode=false;
   const fou=window.__FOURIER||null;
   const unlocked=new Set(typeof unlockedAttrNames==='function'?unlockedAttrNames(live.t,fourierMode):['X','Y','Z','Forme','Étirement-écrasement','Couleur','Inclinaison avant-arrière','Rotation','Centre-extérieur','Saturation']);
   const zTxt=(live.zVal!=null&&isFinite(live.zVal))?fn(live.zVal):'[INCOMPLET]';
@@ -365,12 +365,12 @@ window.trailTwoPass=trailTwoPass; window.trailFullYear=trailFullYear;
  * of the financial floors. The ghost is the last sequence of the movement —
  * a short trailing segment, like a motion trail. Short is good: it gives an
  * idea of the movement. NOT Fourier-related. Not the v19 volume-spaced
- * "fantôme d'activité" (volGh / volGhObj / arc-length trail along the whole path).
+ * trail (volGh / volGhObj / arc-length trail along the whole path).
  *
  * Both interpretations (Hub evidence — see FLOOR-SHORT-GHOST-SPEC.md):
- *   - "year"     : séance-by-séance walk (trailFullYear, doors #sp500y / "2026 · année"
- *                  / gate "Finance · 1 an"). Last N séances behind the current τ.
- *   - "twopass"  : single cycloidal T0→T1 segment (trailTwoPass, doors #sp500 /
+ *   - "year"     : séance-by-séance walk (trailFullYear, door #sp500y / "2026 · année").
+ *                  Last N séances behind the current τ.
+ *   - "twopass"  : single cycloidal T0→T1 segment (trailTwoPass, door #sp500 /
  *                  "deux séances", __MARKET_Z0_TWOPASS). Last N virtual frames
  *                  behind the current t ∈ [0,1] on that segment.
  *
@@ -802,8 +802,8 @@ function startPlay(from){stopPlay();
       draw();
     },28);
   }
-  if(typeof syncGatePlayLabel==='function') syncGatePlayLabel();}
-function stopPlay(){if(timer){clearInterval(timer);timer=null;}window.__PLAYING=false;progress=0;$('play').textContent='▶ Jouer'; if(typeof syncGatePlayLabel==='function') syncGatePlayLabel();}
+}
+function stopPlay(){if(timer){clearInterval(timer);timer=null;}window.__PLAYING=false;progress=0;$('play').textContent='▶ Jouer';}
 $('play').onclick=()=>{if(timer){stopPlay();draw();return;}startPlay(dep?dep.d0:S0);};
 $('c').oninput=()=>{stopPlay();draw();};
 $('sel').onchange=()=>select($('sel').value);
@@ -851,22 +851,7 @@ function setDS(){SYS=LIB4.find(x=>x.id===$('sys').value)||LIB4[0];const src=DATA
   if(EMPTY){BASE=[];GROUPS=[];Z0=null;sel=null;dep=null;$('sel').innerHTML='<option value="">— aucun —</option>';return;}
   base();window_();groups();computeZ0();}
 
-// ---------- v20.25 — portail vivant, Fourier, cohérence à 3 couches ----------
-function gateModeFromHash(){
-  const h=location.hash||'#/';
-  const qi=h.indexOf('?');
-  if(qi<0) return 'libre';
-  try{
-    const q=new URLSearchParams(h.slice(qi+1));
-    return q.get('mode')==='fourier'?'fourier':'libre';
-  }catch(e){return 'libre';}
-}
-function setGateMode(mode){
-  const next=mode==='fourier'?'#/?mode=fourier':'#/';
-  if((location.hash||'#/')===next || (location.hash||'')===next){ applyRoute(); return; }
-  location.hash=next;
-}
-function playSubsteps(){return (window.__GATE&&document.body&&document.body.classList.contains('mode-gate'))?96:SUB;}
+function playSubsteps(){return SUB;}
 function mergeUniverseDataset(){
   if(window.__UNIVERSE_DS&&window.__UNIVERSE_DS.objs&&window.__UNIVERSE_DS.objs.length) return window.__UNIVERSE_DS;
   const keys=['ALL'].concat(typeof worldIndexKeys==='function'?worldIndexKeys():[]);
@@ -1069,65 +1054,7 @@ function sampleLayerCoherence(sp){
   };
   window.__LAYER_TAU=rec; window.__LAYER_COHERENCE=rec; return rec;
 }
-function hideGateChrome(){const el=$('gate-chrome'); if(el) el.style.display='none';}
-function syncGatePlayLabel(){const g=$('gate-play'); if(g&&$('play')) g.textContent=$('play').textContent;}
-function ensureGateChrome(){
-  let el=$('gate-chrome');
-  if(!el){ el=document.createElement('div'); el.id='gate-chrome'; document.body.appendChild(el); }
-  const mode=gateModeFromHash();
-  const hockey='https://claude.ai/artifact/BhtoueP8EK52M5iEK38Fko#nhl';
-  const finY='https://claude.ai/artifact/BhtoueP8EK52M5iEK38Fko#sp500y';
-  const fin2='https://claude.ai/artifact/BhtoueP8EK52M5iEK38Fko#sp500';
-  el.innerHTML='<div class="gate-modes" role="radiogroup" aria-label="Mode d’ouverture">'
-    +'<button type="button" data-gate-mode="libre"'+(mode==='libre'?' class="on" aria-pressed="true"':' aria-pressed="false"')+'>Libre</button>'
-    +'<button type="button" data-gate-mode="fourier"'+(mode==='fourier'?' class="on" aria-pressed="true"':' aria-pressed="false"')+'>Fourier</button>'
-    +'</div>'
-    +'<button type="button" id="gate-play">'+( ($('play')&&$('play').textContent)||'▶ Jouer')+'</button>'
-    +'<a class="gate-door" href="'+hockey+'" target="_blank" rel="noopener">Hockey</a>'
-    +'<a class="gate-door" href="'+finY+'" target="_blank" rel="noopener">Finance · 1 an</a>'
-    +'<a class="gate-door" href="'+fin2+'" target="_blank" rel="noopener">Finance · 2 ans</a>';
-  el.style.display='flex';
-  el.querySelectorAll('[data-gate-mode]').forEach(btn=>{
-    btn.addEventListener('click',()=>setGateMode(btn.getAttribute('data-gate-mode')));
-  });
-  const gp=$('gate-play');
-  if(gp) gp.onclick=()=>{ if(timer){ stopPlay(); draw(); syncGatePlayLabel(); return; } startPlay(S0); };
-}
-function applyGate(route){
-  try{ const gp=$('galaxy-planet'); if(gp){ gp.style.display='none'; gp.innerHTML=''; } }catch(e){}
-  try{ const bar=$('retour-hub-bar'); if(bar) bar.style.display='none'; }catch(e){}
-  window.__DRAW_OVERRIDE=null;
-  window.__Z0_DOMAIN='finance';
-  window.__GATE=true;
-  if(typeof setFloorInterpretation==='function') setFloorInterpretation((route&&route.interpretation)?route.interpretation:'twopass');
-  window.__RW_NHL_LOCK=false;
-  document.body.className='mode-floor mode-gate mode-galaxy';
-  document.body.classList.remove('mode-home-vignette');
-  if($('mf')) $('mf').style.display='none';
-  if($('idxbar')) $('idxbar').style.display='none';
-  ensureGateChrome();
-  const uni=mergeUniverseDataset();
-  DATA.UNIVERSE=uni;
-  if($('ds')&&![...$('ds').options].some(o=>o.value==='UNIVERSE')){
-    const op=document.createElement('option'); op.value='UNIVERSE'; op.textContent='Univers — tous les étages cotés'; $('ds').appendChild(op);
-  }
-  $('sys').value='WF';
-  $('ds').value='UNIVERSE';
-  if($('lvl')) $('lvl').value='f';
-  if($('libon')) $('libon').checked=true;
-  size();
-  stopPlay(); clearSel();
-  setDS();
-  try{ collapseUiPanel(true); }catch(e){}
-  try{ if($('c')&&$('e')) $('c').value=$('e').value; }catch(e){}
-  try{ fit(); draw(); }catch(e){}
-  try{ startPlay(S0); }catch(e){}
-  syncGatePlayLabel();
-  setTimeout(function(){ try{ computeFourierSystem(); if(window.__GATE) draw(); }catch(e){ console.warn('Fourier',e);} },80);
-}
-window.applyGate=applyGate;
 window.computeFourierSystem=computeFourierSystem;
-window.gateModeFromHash=gateModeFromHash;
 window.__sampleTau=function(tNorm){
   if(!Z0) return null;
   const t=Math.max(0,Math.min(1,+tNorm||0));
@@ -1934,7 +1861,7 @@ function crumbLink(href,label,here){
   return here?`<span class="here">${label}</span>`:`<a href="${href}" data-route="${href}">${label}</a>`;
 }
 function renderCrumb(route){
-  const bits=[crumbLink('#/','HUB — point de chute',route.mode==='home')];
+  const bits=[crumbLink(DEFAULT_FLOOR,'HUB — point de chute',(location.hash||'')===DEFAULT_FLOOR)];
   if(route.mode==='galaxy'){
     bits.push(crumbLink('#/galaxy/planet','Galaxie planétaire',route.galaxy==='planet'));
     if(route.galaxy==='sports') bits.push(crumbLink('#/galaxy/sports','Sports',true));
@@ -3089,6 +3016,15 @@ function applyFloor(route){
   try{ fit(); draw(); }catch(e){}
 }
 
+/* Default Hub view: the interpreted S&P 500 floor (year walk). There is no gate. */
+var DEFAULT_FLOOR='#/floor/AMF/index/SPX/year';
+function openInterpretedFloor(){
+  const next=DEFAULT_FLOOR;
+  const cur=location.hash||'#/';
+  if(cur===next) return false;
+  location.replace(location.pathname+location.search+next);
+  return true;
+}
 function applyRoute(){
   const route=parseHash();
   window.__NAV={mode:route.mode,route,hash:location.hash||'#/'};
@@ -3097,9 +3033,8 @@ function applyRoute(){
   if(!(route.mode==='galaxy' && (route.galaxy==='planet'||route.galaxy==='sports'||(route.galaxy==='branch'&&route.branch&&(!treeBranchById(route.branch)||treeBranchById(route.branch).floor==='MEF'||!LIB4.some(x=>x.id===treeBranchById(route.branch).floor)))))){
     // still let applyGalaxy manage show/hide
   }
-  if(route.mode!=='home'){ window.__GATE=false; try{hideGateChrome();}catch(e){} }
   if(route.mode==='home'){
-    applyGate(route);
+    if(openInterpretedFloor()) return;
   }
   else if(route.mode==='fields'){
     applyFields(route);
@@ -3142,7 +3077,7 @@ function applyRoute(){
     const bb=treeBranchForFloor(route.sys);
     ensureRetourHubBar(bb?('Finance · '+bb.name):('Finance · '+route.sys));
   }
-  else {applyGate(route||{mode:'home'});}
+  else { if(openInterpretedFloor()) return; }
   ensureMainframeNav();
   syncMainframeNavHighlight(route);
   renderCrumb(route);
@@ -3489,8 +3424,7 @@ function initV211(U){
     else if(U.get('lvl')==='f'&&U.get('ex')) h+='/ex/'+U.get('ex');
     history.replaceState(null,'',h);
   } else if(!urlHasDeep){
-    // v20.25 : a bare #/ is the living gate — do not restore away to a stored floor
-    history.replaceState(null,'','#/');
+    history.replaceState(null,'',DEFAULT_FLOOR);
   }
   if(U.get('noui')) $('ui').style.display='none';
   applyRoute();

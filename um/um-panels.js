@@ -19,13 +19,12 @@
   var st = {}; try { st = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { st = {}; }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
 
-  var KNOWN = ['um-engine-panel', 'ui', 'c4panel', 'pop', 'gate-chrome', 'retour-hub-bar', 'right-window', 'nhl-info-panel'];
+  var KNOWN = ['um-engine-panel', 'ui', 'c4panel', 'pop', 'retour-hub-bar', 'right-window', 'nhl-info-panel'];
   var TITLES = {
     'um-engine-panel': 'Manifestation · moteur réel',
     ui: 'Contrôles',
     c4panel: 'Classe 4',
     pop: 'Attribut',
-    'gate-chrome': 'Portes',
     'retour-hub-bar': 'Retour',
     'right-window': 'Fenêtre',
     'nhl-info-panel': 'Info LNH'

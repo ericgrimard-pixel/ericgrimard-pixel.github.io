@@ -4,12 +4,12 @@
  * of the financial floors. The ghost is the last sequence of the movement —
  * a short trailing segment, like a motion trail. Short is good: it gives an
  * idea of the movement. NOT Fourier-related. Not the v19 volume-spaced
- * "fantôme d'activité" (volGh / volGhObj / arc-length trail along the whole path).
+ * trail (volGh / volGhObj / arc-length trail along the whole path).
  *
  * Both interpretations (Hub evidence — see FLOOR-SHORT-GHOST-SPEC.md):
- *   - "year"     : séance-by-séance walk (trailFullYear, doors #sp500y / "2026 · année"
- *                  / gate "Finance · 1 an"). Last N séances behind the current τ.
- *   - "twopass"  : single cycloidal T0→T1 segment (trailTwoPass, doors #sp500 /
+ *   - "year"     : séance-by-séance walk (trailFullYear, door #sp500y / "2026 · année").
+ *                  Last N séances behind the current τ.
+ *   - "twopass"  : single cycloidal T0→T1 segment (trailTwoPass, door #sp500 /
  *                  "deux séances", __MARKET_Z0_TWOPASS). Last N virtual frames
  *                  behind the current t ∈ [0,1] on that segment.
  *

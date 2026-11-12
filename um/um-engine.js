@@ -31,11 +31,23 @@
    - When you double-click a Class 2 object, you plunge into it. All the others become Class 2 of that larger group, and you can dive down to the level of one single floor.
    - Then, in that floor's environment, double-clicking the central object pops you up one level.
    - Two clicks up to emerge from a Class 4 object. One click down into a Class 2 object.
-   Do not merge Hub and engine double-click behaviors. */
+   Do not merge Hub and engine double-click behaviors.
+   v20.29 — the five cardinal floors open inside the Hub (year and T0→T1).
+   Doors that are not interpreted yet stay on the published engine; they are not a second copy of the floor. */
 (function () {
   'use strict';
   if (window.__umEngine) return; window.__umEngine = true;
   var ENGINE = 'https://claude.ai/artifact/BhtoueP8EK52M5iEK38Fko';
+  /* In-hub routes for floors the renderer already paints. [year, t0t1]. */
+  var LOCAL_FLOOR = {
+    sp500y: ['#/floor/AMF/index/SPX/year', '#/floor/AMF/index/SPX/t0t1'],
+    sp500: ['#/floor/AMF/index/SPX/t0t1', '#/floor/AMF/index/SPX/year'],
+    n225: ['#/floor/ASF/index/N225/year', '#/floor/ASF/index/N225/t0t1'],
+    sx5e: ['#/floor/EUF/index/SX5E/year', '#/floor/EUF/index/SX5E/t0t1'],
+    tasi: ['#/floor/ASF/index/TASI/year', '#/floor/ASF/index/TASI/t0t1'],
+    ibov: ['#/floor/AMF/index/IBOV/year', '#/floor/AMF/index/IBOV/t0t1'],
+    nhl: ['#/sports/nhl', null]
+  };
 
   /* Fallback only if js/data-finance-zones.js cannot be loaded. Keep in sync with FINANCE_ZONES. */
   var FALLBACK_FLOORS = [
@@ -102,6 +114,9 @@
     '#um-engine-panel li a{display:flex;justify-content:space-between;gap:8px;padding:5px 8px;border:1px solid #1a2636;border-radius:3px;' +
     'color:#dbe3ee;text-decoration:none;background:#0d1520}' +
     '#um-engine-panel li a:hover,#um-engine-panel li a:focus-visible{border-color:#a6dcff;outline:none}' +
+    '#um-engine-panel li.um-door-row{display:flex;gap:3px;align-items:stretch}' +
+    '#um-engine-panel li.um-door-row>a:first-child{flex:1}' +
+    '#um-engine-panel a.um-interp{flex:none;align-items:center;color:#e8c872;font:500 10px/1.2 ui-monospace,Menlo,monospace}' +
     '#um-engine-panel li a.um-cardinal-door{border-color:#6a5a2c}' +
     '#um-engine-panel li a code{font:11px ui-monospace,Menlo,monospace;color:#5c6a82}' +
     '#um-engine-panel .um-cardinal{flex:none;font:500 9px/1.2 ui-monospace,Menlo,monospace;letter-spacing:.08em;text-transform:uppercase;' +
@@ -114,16 +129,25 @@
     var p = document.createElement('section');
     p.id = 'um-engine-panel'; p.setAttribute('data-um-panel', 'Manifestation · moteur réel');
     if (!host) p.className = 'um-float';
-    var h = '<a class="um-main" href="' + ENGINE + '" target="_blank" rel="noopener">Ouvrir le moteur réel ↗' +
-            '<small>Manifestation · le corps · Universal Metaphor</small></a>';
+    var h = '<a class="um-main" href="' + LOCAL_FLOOR.sp500y[0] + '">Ouvrir les étages' +
+            '<small>Manifestation · S&amp;P 500 · année</small></a>';
     FLOORS.forEach(function (g) {
       h += '<h4>' + g[0] + '</h4><ul>';
       g[1].forEach(function (f) {
         var cardinal = !!f[2];
-        h += '<li><a class="' + (cardinal ? 'um-cardinal-door' : '') + '" href="' + ENGINE + '#' + f[0] +
-             '" target="_blank" rel="noopener"><span>' + String(f[1]).replace(/&/g, '&') +
-             (cardinal ? ' <em class="um-cardinal">cardinal</em>' : '') +
-             '</span><code>#' + f[0] + '</code></a></li>';
+        var local = LOCAL_FLOOR[f[0]];
+        var label = String(f[1]).replace(/&/g, '&amp;') +
+             (cardinal ? ' <em class="um-cardinal">cardinal</em>' : '');
+        if (local) {
+          var alt = local[1] ? '<a class="um-interp" href="' + local[1] + '">' +
+            (local[0].indexOf('/t0t1') >= 0 ? 'année' : 'T0→T1') + '</a>' : '';
+          h += '<li class="um-door-row"><a class="' + (cardinal ? 'um-cardinal-door' : '') + '" href="' + local[0] +
+               '"><span>' + label + '</span><code>#' + f[0] + '</code></a>' + alt + '</li>';
+        } else {
+          h += '<li><a class="' + (cardinal ? 'um-cardinal-door' : '') + '" href="' + ENGINE + '#' + f[0] +
+               '" target="_blank" rel="noopener"><span>' + label +
+               '</span><code>#' + f[0] + '</code></a></li>';
+        }
       });
       h += '</ul>';
     });
@@ -140,7 +164,7 @@
   function start() {
     if (window.FINANCE_ZONES) { boot(); return; }
     var s = document.createElement('script');
-    s.src = 'js/data-finance-zones.js';
+    s.src = 'js/data-finance-zones.js?v=20.29';
     s.onload = boot;
     s.onerror = function () { init(FALLBACK_FLOORS); };
     document.head.appendChild(s);

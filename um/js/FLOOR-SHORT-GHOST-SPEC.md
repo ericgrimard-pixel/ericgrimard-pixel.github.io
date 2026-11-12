@@ -1,22 +1,23 @@
-# Short trailing-sequence ghost — spec for the Claude artifact engine
+# Short trailing-sequence ghost — spec for the Hub floors
 
 Date: 2026-11-12, America/Toronto (EST, UTC-5)
-Hub version: v20.27 (five-zone floors + short ghost)
+Hub version: v20.29 (five cardinal floors drawn in the Hub + short ghost)
 Source of the request: Éric, voice. Apply a GHOST on BOTH interpretations of the financial floors. Not Fourier. A simple trailing-sequence ghost: the last sequence of the movement, a short trailing segment like a motion trail. Short is good — it gives an idea of the movement.
 
-This document is for the live renderer at
-`https://claude.ai/artifact/Mr4cUjAuszjdrQU8U6YRig`
-(`#sp500y`, `#sp500`, and the other finance anchors). The live Hub page
-(`um/index.html` v20.26 COURT) only opens doors; it does not paint the
-galaxy. Hub-side implementation lives in `um/js/floor-short-ghost.js`
-(math) and `um/js/app.js` (`paintFloorShortGhosts`, both interpretations).
-Please mirror this behaviour in the artifact so the doors show the same ghost.
+The live renderer is the Hub canvas (`um/index.html`, `um/js/app.js`).
+Opening `/um/` lands on `#/floor/AMF/index/SPX/year`. The door panel opens
+the five cardinals in place: `#/floor/AMF/index/SPX/year` and `/t0t1`,
+`#/floor/ASF/index/N225/year` and `/t0t1`, `#/floor/EUF/index/SX5E/year`
+and `/t0t1`, `#/floor/ASF/index/TASI/year` and `/t0t1`,
+`#/floor/AMF/index/IBOV/year` and `/t0t1`. Math lives in
+`um/js/floor-short-ghost.js`; `um/js/app.js` paints it with
+`paintFloorShortGhosts`.
 
 ## What “both interpretations” means
 
 1. **Year** — séance-by-séance walk of the already-embedded series
-   (Hub: `trailFullYear`, doors `#sp500y` / NDX / DJIA labelled “2026 · année”,
-   gate chrome “Finance · 1 an”). Current parameter is τ = c + u along the
+   (Hub: `trailFullYear`, door `#sp500y` labelled “2026 · année”).
+   Current parameter is τ = c + u along the
    trading-day index.
 2. **Two-session / T0→T1** — a single cycloidal segment between the two
    market frames (Hub: `trailTwoPass`, `__MARKET_Z0_TWOPASS`, doors `#sp500`
@@ -28,11 +29,8 @@ the v19 volume-spaced activity trail (`volGh` / `volGhObj`). Do not hook this
 ghost to the Fourier gate. Libre / Fourier may keep their own modes; the
 short ghost is a positional motion trail in both floor interpretations.
 
-Evidence in the Hub: `um/um-engine.js` already lists both doors for the S&P
-500; `app.js` `ensureGateChrome` exposes “Finance · 1 an” (`#sp500y`) and
-“Finance · 2 ans” (`#sp500` — Hub typo for “deux séances”); `trail()`
-dispatches on `__MARKET_Z0_TWOPASS`; comments at v20.11 explicitly kept the
-year walk in the data while defaulting play to T0→T1.
+Evidence in the Hub: `um/um-engine.js` lists both readings for each cardinal
+(année and T0→T1). `trail()` dispatches on `__MARKET_Z0_TWOPASS`.
 
 ## Visual rule (identical in both interpretations)
 
