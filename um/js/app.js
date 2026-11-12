@@ -3,7 +3,8 @@
    this sentence is the standing rule for Music, kept in this header:
    Music (Société · Musique) is an independent field (a row) in the World view, under society. It is separate from finance and from professional sport, and it has its own Class 2 objects. It is the starting point for the next layer of the build. It is never nested inside any panel.
    Its Class 2 slot is #um-musique-c2 on the World view. The slot is empty: the Hub has no local music data source. Nothing is invented.
-   Étage international · manifestation is #/floor/WF: World at the center and the five macro-zones as Class 2, the same series as #/world. */
+   Étage international · manifestation is #/floor/WF: the five geographic macro-zones as Class 2.
+   #/world is the World market Class 4 (Z0 = mean of the whole system) surrounded by Omega, φ−, Sigma, φ+, Alpha. */
 var DATA = window.DATA;
 const INDEX_GROUP_NAME={NDX:'Nasdaq-100 (indice)',SPX:'S&P 500 (indice)',ALL:'Nasdaq-100 ∪ S&P 500',STI:'Straits Times Index',IBOV:'Ibovespa',TASI:'Tadawul All-Share Index (TASI)',N225:'Nikkei 225',HSI:'Hang Seng Index',FTSE100:'FTSE 100',DAX:'DAX 40',CAC40:'CAC 40',SX5E:'EURO STOXX 50',ASX200:'S&P/ASX 200'};
 window.INDEX_GROUP_NAME=INDEX_GROUP_NAME;
@@ -155,6 +156,18 @@ function liveFromHits(hits,sysName){
     stats,theta:stats?stats.theta:0,theta0:stats?stats.theta:0,rot:0,hue:null,sat:null,light:60,
     stretch:stats?stats.stretch:null,ecc:stats?stats.ecc:0,radius:stats?stats.radius:0,
     sigMaj:stats?stats.sigMaj:0,sigMin:stats?stats.sigMin:0,px:sx,py:sy};}
+function coherenceVerdictFrom(payload){
+  const z0=payload&&payload.z0, t0=payload&&payload.z0T0, t1=payload&&payload.z0T1, attrs=payload&&payload.attrs||{};
+  const fin=v=>v!=null&&isFinite(v);
+  const xy=fin(z0&&z0.x)&&fin(z0&&z0.y)&&fin(t0&&t0.x)&&fin(t0&&t0.y)&&fin(t1&&t1.x)&&fin(t1&&t1.y);
+  const zOk=fin(attrs.Z);
+  return {xy,z:zOk,ok:xy,label:xy?(zOk?'X, Y et Z cohérents — le jeu de données tient':'X et Y cohérents · Z [INCOMPLET]'):'[INCOMPLET] — X/Y non calculables'};
+}
+function attrChipHtml(name, text, state, bar){
+  const cls='attr-chip'+(state?' '+state:'');
+  const b=(bar!=null&&isFinite(bar))?'<i class="attr-bar" style="width:'+Math.max(4,Math.min(100,Math.abs(bar)*100))+'%"></i>':'';
+  return '<span class="'+cls+'" data-attr="'+name+'"><b>'+name+'</b> <em>'+text+'</em>'+b+'</span>';
+}
 function syncC4Panel(live){const el=$('c4panel');if(!el){window.__C4LIVE=live||null;return;}
   if(!live){el.hidden=true;window.__C4LIVE=null;return;}
   const z=live.zc,d=live.drift||[0,0],mag=Math.hypot(d[0],d[1]),ang=Math.atan2(d[1],d[0])*180/Math.PI;
@@ -167,7 +180,7 @@ function syncC4Panel(live){const el=$('c4panel');if(!el){window.__C4LIVE=live||n
   const market=live.space!=='static';
   const z0T0=(market&&typeof Z0!=='undefined'&&Z0&&Z0.a)?{x:Z0.a[0],y:Z0.a[1]}:null;
   const z0T1=(market&&typeof Z0!=='undefined'&&Z0&&Z0.b)?{x:Z0.b[0],y:Z0.b[1]}:null;
-  const fourierMode=false;
+  const fourierMode=(typeof gateModeFromHash==='function'?gateModeFromHash():'libre')==='fourier';
   const fou=window.__FOURIER||null;
   const unlocked=new Set(typeof unlockedAttrNames==='function'?unlockedAttrNames(live.t,fourierMode):['X','Y','Z','Forme','Étirement-écrasement','Couleur','Inclinaison avant-arrière','Rotation','Centre-extérieur','Saturation']);
   const zTxt=(live.zVal!=null&&isFinite(live.zVal))?fn(live.zVal):'[INCOMPLET]';
@@ -180,7 +193,7 @@ function syncC4Panel(live){const el=$('c4panel');if(!el){window.__C4LIVE=live||n
     }
     return fallback;
   }
-  const payload={version:'v20.25',sys:sysName,space:live.space||'market',tau:live.tau,t:live.t,gateMode:fourierMode?'fourier':'libre',
+  const payload={version:'v20.34',sys:sysName,space:live.space||'market',tau:live.tau,t:live.t,gateMode:fourierMode?'fourier':'libre',formT:(live.formT!=null?live.formT:((typeof window.waveFormT==='function')?window.waveFormT():1)),swell:(live.swell!=null?live.swell:((typeof window.waveSwell==='function')?window.waveSwell():1)),
     z0:market?{x:z[0],y:z[1],ret:Math.exp(z[0])-1,vol:z[1]}:{x:z[0],y:z[1]},
     z0T0,z0T1,
     drift:{dx:d[0],dy:d[1],mag,angleDeg:ang,incomplet:!!live.driftIncomplet},
@@ -191,7 +204,11 @@ function syncC4Panel(live){const el=$('c4panel');if(!el){window.__C4LIVE=live||n
     attrs:{X:z[0],Y:z[1],Z:(live.zVal!=null&&isFinite(live.zVal))?live.zVal:'[INCOMPLET]',Forme:live.ecc,'Étirement-écrasement':(live.stretch!=null&&isFinite(live.stretch))?live.stretch:null,
       Couleur:live.hue,'Inclinaison avant-arrière':'[INCOMPLET]',Rotation:live.rot*180/Math.PI,
       'Centre-extérieur':live.radius,Saturation:live.sat}};
+  const coh=coherenceVerdictFrom(payload);
+  payload.coherence=coh;
   window.__C4LIVE=payload;
+  window.__ATTR_UNLOCKED=[...unlocked];
+  window.__WAVE_T=window.__WAVE?Math.max(0,Math.min(1,progress||0)):null;
   el.hidden=false;
   const z0Line=market
     ? '('+fn(z[0])+', '+fn(z[1])+') · '+fp(Math.exp(z[0])-1)+' · vol '+fp(z[1])+' · τ = '+fn(live.t)
@@ -223,8 +240,37 @@ function syncC4Panel(live){const el=$('c4panel');if(!el){window.__C4LIVE=live||n
     const koba=unlocked.has('Kobayashi-Maru')?'[INCOMPLET — définition à fournir]':'…';
     fourierHtml+='<tr><th>Kobayashi-Maru</th><td>'+koba+'</td></tr></tbody></table>';
   }
+  const chipNames=['X','Y','Z','Forme','Étirement-écrasement','Couleur','Inclinaison avant-arrière','Rotation','Centre-extérieur','Saturation'].concat(fourierMode?['Kobayashi-Maru']:[]);
+  const chipVals={
+    X: unlocked.has('X')?xLine:'…',
+    Y: unlocked.has('Y')?yLine:'…',
+    Z: unlocked.has('Z')?zTxt:'…',
+    Forme: cell('Forme',fn(live.ecc)),
+    'Étirement-écrasement': cell('Étirement-écrasement',stretchTxt),
+    Couleur: cell('Couleur',hueTxt),
+    'Inclinaison avant-arrière': cell('Inclinaison avant-arrière','[INCOMPLET]'),
+    Rotation: cell('Rotation',fd(live.rot*180/Math.PI)),
+    'Centre-extérieur': cell('Centre-extérieur',radLine),
+    Saturation: unlocked.has('Saturation')?((live.sat!=null&&isFinite(live.sat))?live.sat.toFixed(1):'[INCOMPLET]'):'…',
+    'Kobayashi-Maru': unlocked.has('Kobayashi-Maru')?'[INCOMPLET — définition à fournir]':'…'
+  };
+  const chipHtml='<div class="attr-strip" aria-label="Attributs dans l’ordre">'+chipNames.map(name=>{
+    const locked=fourierMode&&(name==='X'||name==='Y'||name==='Z');
+    const on=unlocked.has(name)||locked;
+    const txt=chipVals[name]||'…';
+    const st=locked?'locked':(on?(String(txt).indexOf('[INCOMPLET]')>=0?'incomplet':'on'):'pending');
+    let bar=null;
+    if(on&&name==='X') bar=Math.tanh((z&&z[0])||0);
+    if(on&&name==='Y') bar=Math.tanh((z&&z[1])||0);
+    if(on&&name==='Z'&&live.zVal!=null&&isFinite(live.zVal)) bar=Math.tanh((live.zVal-8)/2);
+    if(on&&name==='Forme'&&isFinite(live.ecc)) bar=live.ecc;
+    if(on&&name==='Saturation'&&isFinite(live.sat)) bar=live.sat/100;
+    return attrChipHtml(name, locked?(txt+' · verrouillé'):txt, st, bar);
+  }).join('')+'</div>';
   el.innerHTML='<header>Classe 4 vivante — '+sysName+'</header>'
     +'<p class="c4-rule">Dérive-comme-signal · l’ancre est le mouvement du système · mode '+(fourierMode?'Fourier':'Libre')+'</p>'
+    +'<p class="c4-coh" id="c4-coh">'+coh.label+'</p>'
+    +chipHtml
     +'<dl>'
     +'<div><dt>Constituants</dt><dd id="c4-n">'+live.n1+' Cl.1 + '+live.n2+' Cl.2 + '+live.n3+' Cl.3 = '+live.n+'</dd></div>'
     +'<div><dt>Z0 à l’instant</dt><dd id="c4-z0">'+z0Line+'</dd></div>'
@@ -241,7 +287,15 @@ function syncC4Panel(live){const el=$('c4panel');if(!el){window.__C4LIVE=live||n
     +'<tr><th>Rotation</th><td id="c4-attr-rot">'+cell('Rotation',fd(live.rot*180/Math.PI))+'</td></tr>'
     +'<tr><th>Centre-extérieur</th><td id="c4-attr-radius">'+cell('Centre-extérieur',radLine)+'</td></tr>'
     +'<tr><th>Saturation</th><td id="c4-attr-sat">'+(unlocked.has('Saturation')?((live.sat!=null&&isFinite(live.sat))?live.sat.toFixed(1):'[INCOMPLET]'):'…')+'</td></tr>'
-    +'</tbody></table>'+fourierHtml;}
+    +'</tbody></table>'+fourierHtml;
+  if(document.body.classList.contains('mode-world')&&window.__WORLD_ZONES){
+    const rows=window.__WORLD_ZONES.map(function(z){
+      const gap=z.incomplet?' [INCOMPLET]':'';
+      return '<span class="wz" data-zone="'+z.name+'">'+z.name+gap+'</span>';
+    }).join(' · ');
+    el.insertAdjacentHTML('beforeend','<p class="world-zones" id="world-zones">'+rows+'</p>');
+  }
+}
 
 function drawClass4Glyph(ctx,px,py,live,label){
   const radius=live&&isFinite(live.radius)?live.radius:0;
@@ -252,8 +306,24 @@ function drawClass4Glyph(ctx,px,py,live,label){
   const rx=size*Math.sqrt(k),ry=size/Math.sqrt(k);
   const theta=(live&&isFinite(live.theta))?live.theta:0;
   const col=(live&&live.hue!=null&&isFinite(live.hue))?('hsl('+live.hue.toFixed(0)+','+Math.max(30,Math.min(95,live.sat||68)).toFixed(0)+'%,'+Math.max(38,Math.min(78,live.light||60)).toFixed(0)+'%)'):'#ffd966';
+  const formT=(live&&isFinite(live.formT))?live.formT:((typeof window.waveFormT==='function')?window.waveFormT():1);
   ctx.save();ctx.translate(px,py);ctx.rotate(theta);
-  ctx.beginPath();ctx.moveTo(0,-ry);ctx.lineTo(rx,0);ctx.lineTo(0,ry);ctx.lineTo(-rx,0);ctx.closePath();
+  ctx.beginPath();
+  if(formT>=0.999){
+    ctx.moveTo(0,-ry);ctx.lineTo(rx,0);ctx.lineTo(0,ry);ctx.lineTo(-rx,0);ctx.closePath();
+  }else{
+    const n=20;
+    for(let i=0;i<=n;i++){
+      const a=-Math.PI/2+i*2*Math.PI/n;
+      const diamond=1/(Math.abs(Math.cos(a))/Math.max(1e-6,rx)+Math.abs(Math.sin(a))/Math.max(1e-6,ry));
+      const wobble=1+0.32*Math.sin(3*a)+0.18*Math.sin(5*a+0.7);
+      const circ=Math.max(rx,ry)*0.95*wobble;
+      const r=circ+(diamond-circ)*formT;
+      const x=Math.cos(a)*r,y=Math.sin(a)*r;
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.closePath();
+  }
   ctx.fillStyle='rgba(8,10,16,.92)';ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=2.2;ctx.stroke();
   ctx.beginPath();ctx.moveTo(-rx*0.58,0);ctx.lineTo(rx*0.58,0);ctx.moveTo(0,-ry*0.58);ctx.lineTo(0,ry*0.58);
   ctx.strokeStyle='rgba(232,200,114,.9)';ctx.lineWidth=1.15;ctx.stroke();
@@ -274,7 +344,7 @@ function paintLivingClass4(ctx,live,opts){
   (hits.c4n||[]).forEach(h=>{if(!h||!isFinite(h.px)||!isFinite(h.py))return;ctx.globalAlpha=0.45*vol;ctx.lineWidth=1.3;ctx.beginPath();ctx.moveTo(zx,zy);ctx.lineTo(h.px,h.py);ctx.stroke();});
   ctx.restore();
   ctx.save();ctx.globalAlpha=Math.max(0.82,vol);
-  const hitR=drawClass4Glyph(ctx,zx,zy,live,'Classe 4 — '+(live.sysName||(typeof SYS!=='undefined'&&SYS&&SYS.name)||'système'));
+  const hitR=drawClass4Glyph(ctx,zx,zy,live,live.sysName==='World'?'World':('Classe 4 — '+(live.sysName||(typeof SYS!=='undefined'&&SYS&&SYS.name)||'système')));
   ctx.restore();
   const rec={px:zx,py:zy,r:hitR+2,p:live.zc,live,kind:'c4-live'};
   if(opts.preserveC4) hits.c4Live=rec;
@@ -632,7 +702,7 @@ function paintFloorShortGhosts(ctx, env){
     dep.M.forEach(tr=>{ nC1+=paint(shortGhostPointsFor(i=>P1(tr.k,i),st), 2.4, '#c5cddc'); });
   }
   if(Z0&&Z0.a&&Z0.b) nC4+=paint(shortGhostC4(st), 8, '#e8c872');
-  if(Z0&&Z0.C4N){
+  if(Z0&&Z0.C4N&&!(document.body.classList.contains('mode-world')||document.body.classList.contains('mode-intl'))){
     Z0.C4N.forEach(n=>{
       if(!n||!n.P) return;
       nC4n+=paint(shortGhostPointsFor(i=>n.P[i]||null,st), 3, '#c9b56a');
@@ -689,6 +759,7 @@ function draw(){if(window.__DRAW_OVERRIDE==='nhl'){drawNhlGalaxy();return;}const
   const sp=playSpan(c,u);
   const liveC4=(Z0&&!EMPTY)?computeC4Live(c,u):null;
   if(liveC4 && (document.body.classList.contains('mode-world')||document.body.classList.contains('mode-intl'))) liveC4.sysName='World';
+  if(liveC4){liveC4.formT=(typeof window.waveFormT==='function')?window.waveFormT():1;liveC4.swell=(typeof window.waveSwell==='function')?window.waveSwell():1;}
   if(liveC4) syncC4Panel(liveC4); else hideC4Panel();
   if(Z0){const A=Z0.a,Bz=Z0.b,zc=liveC4?liveC4.zc:ZL(sp.tau);ctx.save();ctx.strokeStyle='#e8c872';ctx.lineWidth=sel?1.2:2.2;ctx.globalAlpha=(sel?0.35:0.95)*volSys();ctx.setLineDash([9,5]);ctx.beginPath();ctx.moveTo(X(A[0]),Y(A[1]));ctx.lineTo(X(Bz[0]),Y(Bz[1]));ctx.stroke();ctx.setLineDash([]);
     ctx.fillStyle='#e8c872';ctx.font='600 11px system-ui';[[A,'Z0(T₀)'],[Bz,'Z0(T₁)']].forEach(([p,l])=>{ctx.beginPath();ctx.arc(X(p[0]),Y(p[1]),4,0,7);ctx.fill();ctx.fillText(l,X(p[0])+6,Y(p[1])-6);});
@@ -697,26 +768,26 @@ function draw(){if(window.__DRAW_OVERRIDE==='nhl'){drawNhlGalaxy();return;}const
   // v20.27 — short trailing-sequence ghost (last N steps, decaying opacity) on both interpretations.
   try{ if(typeof paintFloorShortGhosts==='function') paintFloorShortGhosts(ctx,{X,Y,cl,c,u,sp,liveC4}); }catch(e){}
   // objets de Classe 2 à l'instant (déplacés sur leur trajet cycloïdal)
-  const many=GROUPS.length>30;GROUPS.forEach((g,gi)=>{if(sel&&sel.g!==g&&many)return;const p0=P2(g,sp.i0);if(!p0)return;const p1=P2(g,sp.i1);const p=(p1&&sp.u>0)?cyc(p0,p1,sp.u,sp.i0,sp.i1):p0;const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);
-    const isS=sel&&sel.g===g;const rad=isS?28:(many?7:13);const gc=colMove(g.col,p0,p1,c,c+1,u);if(isS)window.__COLLOG.push([c,u,gc]);g._px=px;g._py=py;g._r=rad;HIT.c2.push({gi,px,py,r:rad+(isS?1.1:0.7),p});
-    ctx.globalAlpha=volSys()*(sel&&!isS?.45:1);ctx.beginPath();ctx.arc(px,py,rad,0,7);ctx.fillStyle='rgba(8,10,16,.9)';ctx.fill();ctx.lineWidth=isS?2.2:1.4;ctx.strokeStyle=gc;ctx.stroke();
-    if(!many||isS){const lab=g.name.length>18?g.name.slice(0,17)+'…':g.name;ctx.font='600 10px system-ui';ctx.fillStyle=gc;ctx.fillText(lab,px+rad+3,py+3);}ctx.globalAlpha=1;});
+  const many=GROUPS.length>30;GROUPS.forEach((g,gi)=>{if(sel&&sel.g!==g&&many)return;const onWorld=document.body.classList.contains('mode-world')&&!!window.__WORLD_GAUSS;const reveal=(!onWorld||!window.__WAVE)?1:((typeof waveSwell==='function')?waveSwell():1);if(onWorld&&window.__WAVE&&reveal<=0.02)return;const p0=P2(g,sp.i0);if(!p0)return;const p1=P2(g,sp.i1);let p=(p1&&sp.u>0)?cyc(p0,p1,sp.u,sp.i0,sp.i1):p0;if(typeof window.swellFromZ0==="function"&&liveC4) p=window.swellFromZ0(p,liveC4.zc);const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);
+    const isS=sel&&sel.g===g;const rad=isS?28:(many?7:(onWorld?26:13));const gc=colMove(g.col,p0,p1,c,c+1,u);if(isS)window.__COLLOG.push([c,u,gc]);g._px=px;g._py=py;g._r=rad;HIT.c2.push({gi,px,py,r:rad+(isS?1.1:0.7),p});
+    ctx.globalAlpha=volSys()*(sel&&!isS?.45:1)*(onWorld&&window.__WAVE?Math.min(1,reveal/0.28):1);ctx.beginPath();ctx.arc(px,py,rad,0,7);ctx.fillStyle='rgba(8,10,16,.9)';ctx.fill();ctx.lineWidth=isS?2.2:1.4;ctx.strokeStyle=gc;ctx.stroke();
+    if(!many||isS||onWorld){const lab=onWorld?g.name:(g.name.length>18?g.name.slice(0,17)+'…':g.name);ctx.font=(onWorld?'700 15px ':'600 10px ')+'system-ui';ctx.fillStyle=gc;ctx.fillText(lab,px+rad+4,py+4);}ctx.globalAlpha=1;});
   // couche Classe 1, au-dessus des objets de Classe 2 : positions courantes (aucune traîne) puis constituants déployés
-  ctx.fillStyle='#e8eef8';ctx.globalAlpha=Math.min(1,volSys()*1.05);ctx.beginPath();const _c1r=(sel&&sel.g&&sel.g.mem&&sel.g.mem.length>200)?3.4:(sel&&sel.g&&sel.g.mem&&sel.g.mem.length>80)?4.2:(sel?5:3);ds.objs.forEach((o,k)=>{const p0=P1(k,sp.i0);if(!p0)return;if(sel&&sel.g&&sel.g.mem&&sel.g.mem.indexOf(k)<0) return;const p1=P1(k,sp.i1);const p=(p1&&sp.u>0)?cyc(p0,p1,sp.u,sp.i0,sp.i1):p0;const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);if(px<-4||px>W+4||py<-4||py>H+4)return;HIT.c1.push({k,px,py,r:_c1r,p});ctx.moveTo(px+_c1r,py);ctx.arc(px,py,_c1r,0,6.2832);});ctx.fill();ctx.globalAlpha=1;
+  ctx.fillStyle='#e8eef8';ctx.globalAlpha=Math.min(1,volSys()*1.05);ctx.beginPath();const _c1r=(sel&&sel.g&&sel.g.mem&&sel.g.mem.length>200)?3.4:(sel&&sel.g&&sel.g.mem&&sel.g.mem.length>80)?4.2:(sel?5:3);ds.objs.forEach((o,k)=>{if(window.__WORLD_GAUSS&&document.body.classList.contains('mode-world'))return;const p0=P1(k,sp.i0);if(!p0)return;if(sel&&sel.g&&sel.g.mem&&sel.g.mem.indexOf(k)<0) return;const p1=P1(k,sp.i1);let p=(p1&&sp.u>0)?cyc(p0,p1,sp.u,sp.i0,sp.i1):p0;if(typeof window.swellFromZ0==="function"&&liveC4) p=window.swellFromZ0(p,liveC4.zc);const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);if(px<-4||px>W+4||py<-4||py>H+4)return;HIT.c1.push({k,px,py,r:_c1r,p});ctx.moveTo(px+_c1r,py);ctx.arc(px,py,_c1r,0,6.2832);});ctx.fill();ctx.globalAlpha=1;
   if(dep){
     // constituants à l'instant, déplacés sur leur trajet cycloïdal
-    const few=dep.M.length<=60;ctx.globalAlpha=volSys();dep.M.forEach(tr=>{const k=tr.k,o=ds.objs[k];if(c<dep.d0)return;const p0=P1(k,sp.i0),p1=P1(k,sp.i1);if(!p0)return;const p=(p1&&sp.u>0)?cyc(p0,p1,sp.u,sp.i0,sp.i1):p0;const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);const col=colMove(SECT[o.s]||'#bbbbbb',p0,p1,c,c+1,u);
+    const few=dep.M.length<=60;ctx.globalAlpha=volSys();dep.M.forEach(tr=>{const k=tr.k,o=ds.objs[k];if(c<dep.d0)return;const p0=P1(k,sp.i0),p1=P1(k,sp.i1);if(!p0)return;let p=(p1&&sp.u>0)?cyc(p0,p1,sp.u,sp.i0,sp.i1):p0;if(typeof window.swellFromZ0==="function"&&liveC4) p=window.swellFromZ0(p,liveC4.zc);const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);const col=colMove(SECT[o.s]||'#bbbbbb',p0,p1,c,c+1,u);
       HIT.c1.push({k,px,py,r:(few?8:4)+0.5,dep:true});ctx.beginPath();ctx.arc(px,py,few?8:4,0,7);ctx.fillStyle='rgba(8,10,16,.85)';ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=1;ctx.stroke();
       if(few){let fs=6;ctx.font='600 '+fs+'px system-ui';while(ctx.measureText(o.t).width>14&&fs>3){fs-=.5;ctx.font='600 '+fs+'px system-ui';}ctx.fillStyle=col;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(o.t,px,py+.5);ctx.textAlign='left';ctx.textBaseline='alphabetic';}});ctx.globalAlpha=1;
   }
   // vecteurs + glyphe : chemin unique paintLivingClass4 (noyau, pas d'opt-in)
   if(Z0&&Z0.C4N&&!document.body.classList.contains('mode-world')&&!document.body.classList.contains('mode-intl')){ctx.save();ctx.globalAlpha=Math.max(0.82,c4Vol());
-    Z0.C4N.forEach((n,ni)=>{const a0=n.P[sp.i0],a1=n.P[sp.i1];if(!a0)return;const p=(a1&&sp.u>0)?cyc(a0,a1,sp.u,sp.i0,sp.i1):a0;const qx=X(p[0]),qy=Y(p[1]);
+    Z0.C4N.forEach((n,ni)=>{const a0=n.P[sp.i0],a1=n.P[sp.i1];if(!a0)return;let p=(a1&&sp.u>0)?cyc(a0,a1,sp.u,sp.i0,sp.i1):a0;if(typeof window.swellFromZ0==="function"&&liveC4) p=window.swellFromZ0(p,liveC4.zc);const qx=X(p[0]),qy=Y(p[1]);
       const morph=(typeof c3MorphAt==='function')?c3MorphAt(n.b,sp,p):null;
       const hitR=(typeof drawC3Morph==='function')?drawC3Morph(ctx,qx,qy,morph,n.b.name,ni):6;
       HIT.c4n.push({px:qx,py:qy,r:(hitR||8)+0.9,p,n,morph,off:morph&&morph.off});});
     ctx.restore();}
-  if(liveC4){liveC4.space=liveC4.space||'market';liveC4.sysName=liveC4.sysName||SYS.name;liveC4.px=X(liveC4.zc[0]);liveC4.py=Y(liveC4.zc[1]);if(HIT.c4){HIT.c4.px=liveC4.px;HIT.c4.py=liveC4.py;HIT.c4.p=liveC4.zc;HIT.c4.live=liveC4;}paintLivingClass4(ctx,liveC4,{});}
+  if(liveC4){liveC4.space=liveC4.space||'market';liveC4.sysName=liveC4.sysName||SYS.name;liveC4.formT=(typeof window.waveFormT==='function')?window.waveFormT():1;liveC4.swell=(typeof window.waveSwell==='function')?window.waveSwell():1;liveC4.px=X(liveC4.zc[0]);liveC4.py=Y(liveC4.zc[1]);if(HIT.c4){HIT.c4.px=liveC4.px;HIT.c4.py=liveC4.py;HIT.c4.p=liveC4.zc;HIT.c4.live=liveC4;}paintLivingClass4(ctx,liveC4,{});}
   try{if(typeof sampleLayerCoherence==='function') sampleLayerCoherence(sp);}catch(e){window.__LAYER_TAU=null;}
   // état
   let h='';if(sel){const tr=sel.tr;h+='<b>'+sel.g.name+'</b> ('+sel.g.mem.length+' constituants) · '+fmt(tr.G.length)+' fantômes, dont '+fmt(tr.nh)+' creux · Σrv = '+tr.S.toFixed(2)+' · calcul '+tr.ms.toFixed(0)+' ms (cache)';}
@@ -781,7 +852,7 @@ function clearSel(){sel=null;dep=null;CACHE.clear();$('sel').value='';zoom=1;pan
 function hitGhost(mx,my){if(!sel)return null;const v=view();const X=x=>L+(x-v.x0)/(v.x1-v.x0)*(W-L-R),Y=y=>H-B-(y-v.y0)/(v.y1-v.y0)*(H-T-B);let best=null,bd=(HIT.gr||16)+2;for(const gh of sel.tr.G){const d=Math.hypot(X(gh.x)-mx,Y(gh.y)-my);if(d<bd){bd=d;best=gh;}}return best;}
 function doDeploy(gh,auto){const d0=gh.k===0?gh.e:(gh.t>=1?gh.e:gh.e-1);dep=deploy(sel.g,d0);dep.gh=gh;$('c').value=d0;progress=0;fit();draw();if(auto)startPlay(d0);}
 let timer=null;
-function startPlay(from){stopPlay();
+function startPlay(from){if(timer){clearInterval(timer);timer=null;}
   // v20.27: year interpretation walks séance-by-séance (series already in the data).
   // twopass (default, v20.11 / v20.20): single T0→T1 transition.
   const year=window.__FLOOR_INTERPRETATION==='year'||window.__MARKET_Z0_TWOPASS===false;
@@ -808,8 +879,17 @@ function startPlay(from){stopPlay();
       draw();
     },28);
   }
+  if(typeof window.syncGatePlayLabel==='function') window.syncGatePlayLabel();
 }
-function stopPlay(){if(timer){clearInterval(timer);timer=null;}window.__PLAYING=false;progress=0;$('play').textContent='▶ Jouer';}
+function stopPlay(){
+  if(timer){clearInterval(timer);timer=null;}
+  const wasWave=!!window.__WAVE;
+  window.__PLAYING=false;
+  if(wasWave) try{ (window.finishManifestWave||finishManifestWave)(); }catch(e){ window.__WAVE=false; }
+  progress=0;
+  $('play').textContent='▶ Jouer';
+  if(typeof window.syncGatePlayLabel==='function') window.syncGatePlayLabel();
+}
 $('play').onclick=()=>{if(timer){stopPlay();draw();return;}startPlay(dep?dep.d0:S0);};
 $('c').oninput=()=>{stopPlay();draw();};
 $('sel').onchange=()=>select($('sel').value);
@@ -857,7 +937,7 @@ function setDS(){SYS=LIB4.find(x=>x.id===$('sys').value)||LIB4[0];const src=DATA
   if(EMPTY){BASE=[];GROUPS=[];Z0=null;sel=null;dep=null;$('sel').innerHTML='<option value="">— aucun —</option>';return;}
   base();window_();groups();computeZ0();}
 
-function playSubsteps(){return SUB;}
+function playSubsteps(){return window.__WAVE?96:SUB;}
 function mergeUniverseDataset(){
   if(window.__UNIVERSE_DS&&window.__UNIVERSE_DS.objs&&window.__UNIVERSE_DS.objs.length) return window.__UNIVERSE_DS;
   const keys=['ALL'].concat(typeof worldIndexKeys==='function'?worldIndexKeys():[]);
@@ -1812,7 +1892,7 @@ function parseHash(){
   const gateMode=q.get('mode')==='fourier'?'fourier':'libre';
   const p=raw.split('/').filter(Boolean);
   if(p[0]==='world'){
-    const r={mode:'world'};
+    const r={mode:'world', gateMode};
     if(p.includes('t0t1')||p.includes('twopass')||p.includes('seances')||p.includes('deux-seances')) r.interpretation='twopass';
     else if(p.includes('year')||p.includes('annee')||p.includes('année')) r.interpretation='year';
     else r.interpretation='year';
@@ -2886,7 +2966,7 @@ function applyNhlGalaxy(){
   try{ hideNhlInfoChip(); }catch(e){}
   if(typeof window.applyNhlLeagueHooks==='function') window.applyNhlLeagueHooks();
   window.__DRAW_OVERRIDE='nhl';
-  window.__VERSION='v20.25';
+  window.__VERSION='v20.34';
   if(typeof window.nhlSummonCurrentSystem==='function' && !window.__RW_NHL_LOCK){
     try{ window.nhlSummonCurrentSystem(); }catch(e){}
   }
@@ -3058,6 +3138,98 @@ function applyFloor(route){
   try{ fit(); draw(); }catch(e){}
 }
 
+
+// ---------- v20.32 — vague de manifestation, ouverture X/Y/Z, Fourier, fantômes T0→T1 ----------
+function gateModeFromHash(){
+  const h=location.hash||'#/';
+  const qi=h.indexOf('?');
+  if(qi<0) return 'libre';
+  try{ return new URLSearchParams(h.slice(qi+1)).get('mode')==='fourier'?'fourier':'libre'; }
+  catch(e){ return 'libre'; }
+}
+function setGateMode(mode){
+  const raw=(location.hash||'#/world');
+  const base=(raw.split('?')[0]||'#/world');
+  const path=(base==='#'||base==='#/'||!base)?'#/world':base;
+  const next=mode==='fourier'?path+'?mode=fourier':path;
+  if((location.hash||'')===next){ applyRoute(); return; }
+  location.hash=next;
+}
+window.gateModeFromHash=gateModeFromHash;
+window.setGateMode=setGateMode;
+function waveFormT(){
+  if(!window.__WAVE) return 1;
+  const t=Math.max(0,Math.min(1,progress||0));
+  // blob, then the central World object finishes forming before anything leaves the centre
+  return Math.max(0,Math.min(1,t/0.36));
+}
+function waveSwell(){
+  if(!window.__WAVE) return 1;
+  const t=Math.max(0,Math.min(1,progress||0));
+  if(t<=0.40) return 0;
+  const u=Math.max(0,Math.min(1,(t-0.40)/0.60));
+  return (typeof RISE==='function')?RISE(u):u;
+}
+function swellFromZ0(p,zc){
+  const s=waveSwell();
+  if(!(s<1)||!p||!zc) return p;
+  return [zc[0]+(p[0]-zc[0])*s, zc[1]+(p[1]-zc[1])*s];
+}
+window.waveFormT=waveFormT;
+window.waveSwell=waveSwell;
+window.swellFromZ0=swellFromZ0;
+function coherenceVerdict(){
+  const live=window.__C4LIVE, z0=live&&live.z0, t0=live&&live.z0T0, t1=live&&live.z0T1;
+  const fin=v=>v!=null&&isFinite(v);
+  const xy=fin(z0&&z0.x)&&fin(z0&&z0.y)&&fin(t0&&t0.x)&&fin(t0&&t0.y)&&fin(t1&&t1.x)&&fin(t1&&t1.y);
+  const zVal=live&&live.attrs?live.attrs.Z:null;
+  const zOk=zVal!=null&&zVal!=='[INCOMPLET]'&&isFinite(+zVal);
+  return {xy,z:zOk,ok:xy,label:xy?(zOk?'X, Y et Z cohérents — le jeu de données tient':'X et Y cohérents · Z [INCOMPLET]'):'[INCOMPLET] — X/Y non calculables'};
+}
+function hideGateChrome(){const el=$('gate-chrome'); if(el) el.style.display='none';}
+function syncGatePlayLabel(){const g=$('gate-play'); if(g&&$('play')) g.textContent=$('play').textContent;}
+function ensureGateChrome(){
+  let el=$('gate-chrome');
+  if(!el){ el=document.createElement('div'); el.id='gate-chrome'; document.body.appendChild(el); }
+  const mode=gateModeFromHash();
+  const interp=window.__FLOOR_INTERPRETATION||'year';
+  el.innerHTML='<div class="gate-modes" role="radiogroup" aria-label="Mode d’ouverture">'
+    +'<button type="button" data-gate-mode="libre"'+(mode==='libre'?' class="on" aria-pressed="true"':' aria-pressed="false"')+'>Libre</button>'
+    +'<button type="button" data-gate-mode="fourier"'+(mode==='fourier'?' class="on" aria-pressed="true"':' aria-pressed="false"')+'>Fourier</button>'
+    +'</div>'
+    +'<button type="button" id="gate-play">'+(($('play')&&$('play').textContent)||'▶ Jouer')+'</button>'
+    +'<span class="gate-interp">'+(interp==='year'?'année':'T0→T1')+'</span>';
+  el.style.display='flex';
+  el.querySelectorAll('[data-gate-mode]').forEach(btn=>{
+    btn.addEventListener('click',()=>setGateMode(btn.getAttribute('data-gate-mode')));
+  });
+  const gp=$('gate-play');
+  if(gp) gp.onclick=()=>{ if(timer){ stopPlay(); draw(); syncGatePlayLabel(); return; } startManifestWave(); };
+}
+function startManifestWave(){
+  window.__WAVE=true;
+  window.__WAVE_RESTORE=window.__FLOOR_INTERPRETATION||'year';
+  setFloorInterpretation('twopass');
+  startPlay(S0);
+  syncGatePlayLabel();
+}
+function finishManifestWave(){
+  if(!window.__WAVE) return;
+  window.__WAVE=false;
+  const back=window.__WAVE_RESTORE||'year';
+  window.__WAVE_RESTORE=null;
+  setFloorInterpretation(back);
+  try{ if($('c')&&$('e')) $('c').value=$('e').value; }catch(e){}
+  progress=0;
+  try{ ensureGateChrome(); }catch(e){}
+}
+window.startManifestWave=startManifestWave;
+window.finishManifestWave=finishManifestWave;
+window.ensureGateChrome=ensureGateChrome;
+window.hideGateChrome=hideGateChrome;
+window.syncGatePlayLabel=syncGatePlayLabel;
+window.coherenceVerdict=coherenceVerdict;
+
 /* Opening view: World, with the five macro-zones around it. Cardinal floors stay on #/floor/… */
 var DEFAULT_FLOOR='#/world';
 var HUB_ZONES=[
@@ -3067,6 +3239,100 @@ var HUB_ZONES=[
   {id:'MEA', name:'Moyen-Orient et Afrique', key:'TASI', mic:'XSAU', floor:'#/floor/ASF/index/TASI/year', color:'#ff9f5a'},
   {id:'LATAM', name:'Amérique latine', key:'IBOV', mic:'XB3', floor:'#/floor/AMF/index/IBOV/year', color:'#b48cff'}
 ];
+
+/* v20.34 — World floor: one Class 4 (Z0 = mean of every real world-index constituent)
+   surrounded by the five core zones. Membership is um_zones on the horizontal collapse
+   of min-max normalised (log-return, vol20). No price is invented. A zone with no
+   constituent is [INCOMPLET] and is not given a position. */
+const WORLD_ZONE_NAMES=['Omega','\u03c6\u2212','Sigma','\u03c6+','Alpha'];
+const WORLD_ZONE_COLOR={'Omega':'#6fa8ff','\u03c6\u2212':'#4fd1c5','Sigma':'#e8c872','\u03c6+':'#ff9f5a','Alpha':'#b48cff'};
+const WORLD_ZONE_Q=[-0.8416212335729143,-0.2533471031357997,0.2533471031357997,0.8416212335729143];
+function worldMarketKeys(){
+  const keys=new Set(typeof worldIndexKeys==='function'?worldIndexKeys():[]);
+  ['NDX','SPX'].forEach(k=>{ if(DATA[k]&&DATA[k].objs&&DATA[k].objs.length) keys.add(k); });
+  ['ALL','UNIVERSE','ZONES','WZONES'].forEach(k=>keys.delete(k));
+  return [...keys];
+}
+function umZoneIndex(x,mu,sd){
+  let z=1;
+  for(let k=0;k<4;k++) if(x>=mu+WORLD_ZONE_Q[k]*sd) z=k+2;
+  return z;
+}
+function buildWorldGaussZones(){
+  if(DATA.WZONES&&DATA.WZONES.objs&&DATA.WZONES.objs.length) return DATA.WZONES;
+  const keys=worldMarketKeys();
+  const dateSet=new Set();
+  keys.forEach(k=>((DATA[k]&&DATA[k].dates)||[]).forEach(d=>dateSet.add(d)));
+  const dates=[...dateSet].sort();
+  const seen=new Set();
+  const raw=[];
+  keys.forEach(k=>{
+    const src=DATA[k]; if(!src||!src.objs) return;
+    const imap=new Map((src.dates||[]).map((d,i)=>[d,i]));
+    src.objs.forEach(o=>{
+      const id=(o.t||'')+'|'+(o.f||'');
+      if(!id||id==='|'||seen.has(id)) return;
+      if(!(o.c0>0)||!o.c) return;
+      seen.add(id);
+      const c=dates.map(d=>{const i=imap.get(d);const x=(i!=null&&o.c[i]!=null)?o.c[i]:null;return (x!=null&&x>0)?x:null;});
+      const v=dates.map(d=>{const i=imap.get(d);return (i!=null&&o.v&&o.v[i]!=null&&isFinite(o.v[i]))?o.v[i]:null;});
+      raw.push({t:o.t,n:o.n,f:o.f,c0:o.c0,c,v});
+    });
+  });
+  const scored=[]; let incomplete=0;
+  raw.forEach(o=>{
+    const n=o.c.length, r=new Array(n).fill(null), vol=new Array(n).fill(null);
+    for(let i=1;i<n;i++) if(o.c[i]!=null&&o.c[i-1]!=null) r[i]=Math.log(o.c[i]/o.c[i-1]);
+    for(let i=0;i<n;i++){
+      const w=[]; for(let j=Math.max(1,i-19);j<=i;j++) if(r[j]!=null) w.push(r[j]);
+      if(w.length>=2){ const m=w.reduce((a,b)=>a+b,0)/w.length; vol[i]=Math.sqrt(w.reduce((a,b)=>a+(b-m)*(b-m),0)/(w.length-1)*252); }
+    }
+    let at=-1;
+    for(let i=n-1;i>=0;i--){ if(o.c[i]!=null&&vol[i]!=null&&isFinite(vol[i])){ at=i; break; } }
+    if(at<0||!(o.c0>0)){ incomplete++; return; }
+    const X=Math.log(o.c[at]/o.c0), Y=vol[at];
+    if(!isFinite(X)||!isFinite(Y)){ incomplete++; return; }
+    scored.push({o,X,Y});
+  });
+  const minmax=a=>{ const lo=Math.min.apply(null,a), hi=Math.max.apply(null,a); return a.map(x=>hi>lo?2*(x-lo)/(hi-lo)-1:0); };
+  let zones=scored.map(()=>null);
+  if(scored.length>=2){
+    const xn=minmax(scored.map(s=>s.X)), yn=minmax(scored.map(s=>s.Y));
+    const h=xn.map((x,i)=>Math.sqrt((x*x+yn[i]*yn[i])/2));
+    const mu=h.reduce((a,b)=>a+b,0)/h.length;
+    const sd=Math.sqrt(h.reduce((a,b)=>a+(b-mu)*(b-mu),0)/Math.max(h.length-1,1));
+    zones=h.map(x=>umZoneIndex(x,mu,sd));
+  } else if(scored.length===1){
+    zones=[3];
+  }
+  const buckets=WORLD_ZONE_NAMES.map(()=>[]);
+  scored.forEach((s,i)=>{ const z=zones[i]; if(z>=1&&z<=5) buckets[z-1].push(s.o); });
+  const objs=[];
+  const report=WORLD_ZONE_NAMES.map((name,zi)=>{
+    const mem=buckets[zi];
+    SECT[name]=WORLD_ZONE_COLOR[name];
+    if(!mem.length) return {name:name,n:0,incomplet:true};
+    mem.forEach(o=>{ o.s=name; o.i=name; objs.push(o); });
+    return {name:name,n:mem.length,incomplet:false};
+  });
+  window.__WORLD_ZONES=report;
+  window.__WORLD_INCOMPLETE=incomplete;
+  DATA.WZONES={dates,objs,meta:{id:'WZONES',name:'World — Omega \u00b7 \u03c6\u2212 \u00b7 Sigma \u00b7 \u03c6+ \u00b7 Alpha',floor:'WF',T0:dates[0]||null,T1:dates.length?dates[dates.length-1]:null,dates:dates.length?[dates[0]]:[],n_with_prices:objs.length,incomplete:incomplete,zones:report}};
+  return DATA.WZONES;
+}
+function refitWorldGaussBounds(){
+  if(!window.__WORLD_GAUSS||!GROUPS||!GROUPS.length) return;
+  const xs=[], ys=[];
+  GROUPS.forEach(g=>{ [S0,S1].forEach(i=>{ const p=P2(g,i); if(p&&isFinite(p[0])&&isFinite(p[1])){ xs.push(p[0]); ys.push(p[1]); } }); });
+  if(Z0&&Z0.a&&Z0.b){ xs.push(Z0.a[0],Z0.b[0]); ys.push(Z0.a[1],Z0.b[1]); }
+  const fin=xs.filter((x,i)=>isFinite(x)&&isFinite(ys[i]));
+  if(fin.length<2) return;
+  let x0=Infinity,x1=-Infinity,y0=Infinity,y1=-Infinity;
+  for(let i=0;i<xs.length;i++){ if(!isFinite(xs[i])||!isFinite(ys[i])) continue; x0=Math.min(x0,xs[i]); x1=Math.max(x1,xs[i]); y0=Math.min(y0,ys[i]); y1=Math.max(y1,ys[i]); }
+  const dx=Math.max(0.05,(x1-x0)*0.45), dy=Math.max(0.05,(y1-y0)*0.55);
+  bx=[x0-dx,x1+dx]; by=[Math.max(0,y0-dy),y1+dy];
+}
+
 function buildWorldZones(){
   if(DATA.ZONES&&DATA.ZONES.objs&&DATA.ZONES.objs.length) return DATA.ZONES;
   const dateSet=new Set();
@@ -3092,25 +3358,37 @@ function buildWorldZones(){
       }
       return n?Math.exp(s/n):null;
     });
+    const v=dates.map(d=>{
+      const i=imap.get(d);
+      if(i==null) return null;
+      let s=0,n=0;
+      for(const o of src.objs){
+        const vv=o.v&&o.v[i];
+        if(vv!=null&&isFinite(vv)&&vv>0){s+=vv;n++;}
+      }
+      return n?s:null;
+    });
     SECT[z.name]=z.color;
     // Level 1 at T0 so the plotted log-return is the equal-weight mean of the cardinal's real constituent log-returns. No price is invented.
-    return {t:z.id,n:z.name,s:z.name,i:z.name,f:z.mic,c,v:c.map(()=>null),c0:1,hubFloor:z.floor,nConst:src.objs.length};
+    // Volume = somme réelle des volumes constituants (aucune valeur inventée).
+    return {t:z.id,n:z.name,s:z.name,i:z.name,f:z.mic,c,v,c0:1,hubFloor:z.floor,nConst:src.objs.length};
   });
   DATA.ZONES={dates,objs,meta:{id:'ZONES',name:'World',floor:'WF',T0:dates[0]||null,T1:dates.length?dates[dates.length-1]:null,dates:dates.length?[dates[0]]:[]}};
   return DATA.ZONES;
 }
-function mountZoneManifestation(route){
+function mountZoneManifestation(route, preset){
   if(typeof setFloorInterpretation==='function') setFloorInterpretation((route&&route.interpretation)||'year');
   document.body.classList.remove('ui-collapsed');
   try{ hideNhlInfoChip(); }catch(e){}
   window.__DRAW_OVERRIDE=null; window.__RW_NHL_LOCK=false;
   try{ hideGalaxyPlanet(); }catch(e){}
-  const built=buildWorldZones();
-  if($('ds')&&built&&![...$('ds').options].some(o=>o.value==='ZONES')){
-    const op=document.createElement('option'); op.value='ZONES'; op.textContent='World — cinq macro-zones'; $('ds').appendChild(op);
+  const built=preset||buildWorldZones();
+  const dsId=(built&&built.meta&&built.meta.id)||'ZONES';
+  if($('ds')&&built&&![...$('ds').options].some(o=>o.value===dsId)){
+    const op=document.createElement('option'); op.value=dsId; op.textContent=(built.meta&&built.meta.name)||dsId; $('ds').appendChild(op);
   }
   $('sys').value='WF';
-  $('ds').value='ZONES';
+  $('ds').value=dsId;
   $('lvl').value='s';
   if($('col')) $('col').value='seance';
   const idxbar=$('idxbar'); if(idxbar) idxbar.style.display='none';
@@ -3119,8 +3397,14 @@ function mountZoneManifestation(route){
   // T0 is the first séance where every zone already has a real vol20, so World is the mean of five positions at both frames.
   if(built&&built.objs&&built.dates){
     let s0=0;
-    for(let i=0;i<built.dates.length;i++){
-      if(built.objs.every((o,k)=>P1(k,i))){ s0=i; break; }
+    if(window.__WORLD_GAUSS&&GROUPS.length){
+      for(let i=0;i<built.dates.length;i++){
+        if(GROUPS.every(g=>P2(g,i))){ s0=i; break; }
+      }
+    } else {
+      for(let i=0;i<built.dates.length;i++){
+        if(built.objs.every((o,k)=>P1(k,i))){ s0=i; break; }
+      }
     }
     if($('s')) $('s').value=s0;
     if($('e')) $('e').value=built.dates.length-1;
@@ -3132,28 +3416,37 @@ function mountZoneManifestation(route){
   GROUPS.forEach(g=>{ g.hubFloor=byName[g.name]||null; if(SECT[g.name]) g.col=SECT[g.name]; });
   try{ if($('c')&&$('e')) $('c').value=$('e').value; }catch(e){}
   try{ collapseUiPanel(true); }catch(e){}
+  try{ if(window.__WORLD_GAUSS) refitWorldGaussBounds(); }catch(e){}
+  try{ ensureGateChrome(); }catch(e){}
   try{ fit(); draw(); }catch(e){}
+  try{ startManifestWave(); }catch(e){}
+  setTimeout(function(){ try{ computeFourierSystem(); if(document.body.classList.contains('mode-world')) draw(); }catch(e){ console.warn('Fourier',e);} },80);
 }
 function applyWorld(route){
   document.body.className='mode-floor mode-world';
-  mountZoneManifestation(route);
+  window.__WORLD_GAUSS=true;
+  mountZoneManifestation(route, buildWorldGaussZones());
   try{ ensureRetourHubBar('World'); }catch(e){}
 }
 function applyInternationalFloor(route){
   document.body.className='mode-floor mode-intl';
-  mountZoneManifestation(route);
+  window.__WORLD_GAUSS=false;
+  mountZoneManifestation(route, buildWorldZones());
 }
 function openInterpretedFloor(){
-  const next=DEFAULT_FLOOR;
+  const qMode=gateModeFromHash()==='fourier'?'?mode=fourier':'';
+  const next=DEFAULT_FLOOR+qMode;
   const cur=location.hash||'#/';
-  if(cur===next) return false;
+  if(cur===next || cur===DEFAULT_FLOOR&&!qMode) return false;
   location.replace(location.pathname+location.search+next);
   return true;
 }
 function applyRoute(){
   const route=parseHash();
+  window.__WORLD_GAUSS=route.mode==='world';
   window.__NAV={mode:route.mode,route,hash:location.hash||'#/'};
   window.__Z0_DOMAIN=z0DomainForRoute(route);
+  if(route.mode!=='world'&&route.mode!=='home'){ window.__WAVE=false; try{hideGateChrome();}catch(e){} }
   // Hide galaxy planet overlay unless we are in planet/sports-galaxy empty panels
   if(!(route.mode==='galaxy' && (route.galaxy==='planet'||route.galaxy==='sports'||(route.galaxy==='branch'&&route.branch&&(!treeBranchById(route.branch)||treeBranchById(route.branch).floor==='MEF'||!LIB4.some(x=>x.id===treeBranchById(route.branch).floor)))))){
     // still let applyGalaxy manage show/hide
@@ -3222,7 +3515,7 @@ function applyRoute(){
     });
   }catch(e){}
   window.__NAV.crumb=($('crumb')&&$('crumb').textContent)||'';
-  window.__VERSION='v20.25';
+  window.__VERSION='v20.34';
   // Right window: summon on object navigation; never restore from ghost
   try{
     if(window.__RW_FORCE_CLOSED){ closeRightWindow(); window.__RW_FORCE_CLOSED=false; }
