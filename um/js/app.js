@@ -356,6 +356,286 @@ function trail(pos,rv,a,base){
   return trailFullYear(pos,rv,a,base);
 }
 window.trailTwoPass=trailTwoPass; window.trailFullYear=trailFullYear;
+
+/* v20.27 — FloorShortGhost math inlined so a page that only loads app.js still paints the trail.
+   Keep in sync with um/js/floor-short-ghost.js. */
+/* v20.27 — short trailing-sequence ghost for financial floors
+ *
+ * Éric (voice, 2026-11-12, America/Toronto): a GHOST on BOTH interpretations
+ * of the financial floors. The ghost is the last sequence of the movement —
+ * a short trailing segment, like a motion trail. Short is good: it gives an
+ * idea of the movement. NOT Fourier-related. Not the v19 volume-spaced
+ * "fantôme d'activité" (volGh / volGhObj / arc-length trail along the whole path).
+ *
+ * Both interpretations (Hub evidence — see FLOOR-SHORT-GHOST-SPEC.md):
+ *   - "year"     : séance-by-séance walk (trailFullYear, doors #sp500y / "2026 · année"
+ *                  / gate "Finance · 1 an"). Last N séances behind the current τ.
+ *   - "twopass"  : single cycloidal T0→T1 segment (trailTwoPass, doors #sp500 /
+ *                  "deux séances", __MARKET_Z0_TWOPASS). Last N virtual frames
+ *                  behind the current t ∈ [0,1] on that segment.
+ *
+ * No invented market data: samples only existing getPos(i) values and the
+ * engine's already-used interpolant (cyc / ZL) between known seats. Missing
+ * seats are skipped. At T0 / t=0 the tail is empty.
+ *
+ * Length: N = 8 (in the 6–12 range). Decay: linear fade 0.08 (oldest) → 0.45
+ * (newest ghost), always behind the live object (α = 1). For twopass the
+ * virtual frame count along T0→T1 is 64, so the tail spans 8/64 ≈ 12.5 % of
+ * the segment (short regardless of playSubsteps, which is only 8 in floor mode).
+ *
+ * This file is pure and DOM-free so it can be unit-tested in Node and reused
+ * by Claude's artifact engine. app.js paints with paintFloorShortGhosts().
+ */
+(function (root, factory) {
+  const api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  root.FloorShortGhost = api;
+}(typeof window !== 'undefined' ? window : globalThis, function () {
+  const N = 8;
+  const TWOPASS_FRAMES = 64;
+  const FADE_MIN = 0.08;
+  const FADE_MAX = 0.45;
+  const YEAR_TOKENS = ['year', 'annee', 'année', 'an', 'fullYear'];
+  const TWOPASS_TOKENS = ['twopass', 't0t1', 't0-t1', 'seances', 'séances', 'deux-seances', 'deux-séances', '2seances'];
+
+  function fade(i, n) {
+    if (!(n > 0)) return 0;
+    const t = (i + 1) / n; // 1/n … 1, i=0 oldest
+    return FADE_MIN + (FADE_MAX - FADE_MIN) * t;
+  }
+
+  function applyFades(pts) {
+    const n = pts.length;
+    pts.forEach((g, i) => { g.fade = fade(i, n); });
+    return pts;
+  }
+
+  function isYear(kind) {
+    const k = String(kind == null ? '' : kind).toLowerCase();
+    return YEAR_TOKENS.includes(k) || k === 'year';
+  }
+
+  function interpOf(flagOrKind) {
+    if (flagOrKind === false) return 'year';
+    if (flagOrKind === true) return 'twopass';
+    return isYear(flagOrKind) ? 'year' : 'twopass';
+  }
+
+  function parseInterpretation(parts, query) {
+    let found = null;
+    const consider = (raw) => {
+      if (raw == null || raw === '') return;
+      const t = String(raw).toLowerCase();
+      if (YEAR_TOKENS.includes(t)) found = 'year';
+      else if (TWOPASS_TOKENS.includes(t)) found = 'twopass';
+    };
+    if (query && typeof query === 'object') {
+      const q = query;
+      const get = typeof q.get === 'function'
+        ? (k) => q.get(k)
+        : (k) => q[k];
+      consider(get('view') || get('interp') || get('interpretation'));
+    }
+    if (Array.isArray(parts)) parts.forEach(consider);
+    return found;
+  }
+
+  function defaultCyc(p0, p1, t) {
+    if (!p0) return p1 || null;
+    if (!p1 || !(t > 0)) return p0;
+    if (t >= 1) return p1;
+    return [p0[0] + (p1[0] - p0[0]) * t, p0[1] + (p1[1] - p0[1]) * t];
+  }
+
+  function firstPos(getPos, S0, S1) {
+    let i0 = S0, p0 = getPos(i0);
+    while (!p0 && i0 < S1) { i0++; p0 = getPos(i0); }
+    return { i0, p0, p1: getPos(S1) };
+  }
+
+  function tCurTwoPass(playing, progress, parkedAt) {
+    if (playing) return Math.max(0, Math.min(1, +progress || 0));
+    if (parkedAt === 'T1' || parkedAt === 1) return 1;
+    if (parkedAt === 'T0' || parkedAt === 0) return 0;
+    const n = +parkedAt;
+    if (isFinite(n)) return Math.max(0, Math.min(1, n));
+    return 1; // floor views land on T1
+  }
+
+  function pointsTwoPass(args) {
+    const getPos = args.getPos;
+    const cycFn = args.cycFn || defaultCyc;
+    const S0 = args.S0, S1 = args.S1;
+    const { i0, p0, p1 } = firstPos(getPos, S0, S1);
+    if (!p0 || !p1) return []; // no T0 or no T1 → no movement to trail; do not invent
+    const tCur = tCurTwoPass(args.playing, args.progress, args.parkedAt);
+    if (tCur <= 0) return [];
+    const frames = Math.max(N, args.frames || TWOPASS_FRAMES);
+    const dt = 1 / frames;
+    const pts = [];
+    for (let k = N; k >= 1; k--) {
+      const t = tCur - k * dt;
+      if (t < 0) continue; // before T0: skip, do not invent
+      const p = t === 0 ? p0 : (t >= 1 ? p1 : cycFn(p0, p1, t, i0, S1));
+      if (p) pts.push({ p: [p[0], p[1]], t, kind: 'twopass' });
+    }
+    return applyFades(pts);
+  }
+
+  function pointsYear(args) {
+    const getPos = args.getPos;
+    const S0 = args.S0, S1 = args.S1;
+    const c = args.c, u = args.u || 0;
+    const tau = c + u;
+    if (!(tau > S0)) return [];
+    const pts = [];
+    const from = Math.max(S0, Math.floor(tau) - N);
+    for (let i = from; i < tau && i <= S1; i++) {
+      if (i !== Math.floor(i)) continue;
+      const p = getPos(i);
+      if (!p) continue; // missing séance: skip, do not invent
+      pts.push({ p: [p[0], p[1]], t: i, seance: i, kind: 'year' });
+    }
+    return applyFades(pts.slice(-N));
+  }
+
+  function points(mode, args) {
+    return interpOf(mode) === 'year' ? pointsYear(args) : pointsTwoPass(args);
+  }
+
+  /* Class-4 rides the linear fil Z0(τ)=ZL(τ), not the cycloidal floater rule. */
+  function pointsC4TwoPass(args) {
+    const ZL = args.ZL;
+    const S0 = args.S0, S1 = args.S1;
+    if (typeof ZL !== 'function') return [];
+    const tCur = tCurTwoPass(args.playing, args.progress, args.parkedAt);
+    if (tCur <= 0) return [];
+    const frames = Math.max(N, args.frames || TWOPASS_FRAMES);
+    const dt = 1 / frames;
+    const pts = [];
+    for (let k = N; k >= 1; k--) {
+      const t = tCur - k * dt;
+      if (t < 0) continue;
+      const tau = S0 + t * (S1 - S0);
+      const p = ZL(tau);
+      if (p) pts.push({ p: [p[0], p[1]], t, tau, kind: 'twopass-c4' });
+    }
+    return applyFades(pts);
+  }
+
+  function pointsC4Year(args) {
+    const ZL = args.ZL;
+    const S0 = args.S0, S1 = args.S1;
+    const c = args.c, u = args.u || 0;
+    const tau = c + u;
+    if (typeof ZL !== 'function' || !(tau > S0)) return [];
+    const pts = [];
+    const from = Math.max(S0, Math.floor(tau) - N);
+    for (let i = from; i < tau && i <= S1; i++) {
+      if (i !== Math.floor(i)) continue;
+      const p = ZL(i);
+      if (!p) continue;
+      pts.push({ p: [p[0], p[1]], t: i, tau: i, kind: 'year-c4' });
+    }
+    return applyFades(pts.slice(-N));
+  }
+
+  return {
+    VERSION: 'v20.27',
+    N, TWOPASS_FRAMES, FADE_MIN, FADE_MAX,
+    fade, interpOf, isYear, parseInterpretation,
+    points, pointsTwoPass, pointsYear,
+    pointsC4TwoPass, pointsC4Year, defaultCyc, tCurTwoPass
+  };
+}));
+
+/* v20.27 — short trailing-sequence ghost (Éric, 12 nov 2026, America/Toronto).
+   Last N=8 steps, decaying opacity, on BOTH floor interpretations:
+   year (séance walk / trailFullYear / #sp500y) and twopass (T0→T1 / trailTwoPass / #sp500).
+   Not Fourier; not the v19 volGh arc-length activity trail. Math: floor-short-ghost.js. */
+function setFloorInterpretation(kind){
+  const year=(typeof window.FloorShortGhost==='object'&&window.FloorShortGhost.isYear)
+    ? window.FloorShortGhost.isYear(kind)
+    : /^(year|fullYear|annee|année|an)$/i.test(String(kind||''));
+  window.__FLOOR_INTERPRETATION=year?'year':'twopass';
+  window.__MARKET_Z0_TWOPASS=!year;
+  try{ if(typeof CACHE!=='undefined'&&CACHE&&CACHE.clear) CACHE.clear(); }catch(e){}
+  return window.__FLOOR_INTERPRETATION;
+}
+window.setFloorInterpretation=setFloorInterpretation;
+function floorInterpMode(){
+  if(window.__FLOOR_INTERPRETATION==='year'||window.__MARKET_Z0_TWOPASS===false) return 'year';
+  return 'twopass';
+}
+function shortGhostApi(){ return window.FloorShortGhost||null; }
+function shortGhostPointsFor(getPos, state){
+  const G=shortGhostApi(); if(!G) return [];
+  const cycFn=typeof cyc==='function'?cyc:G.defaultCyc;
+  const mode=floorInterpMode();
+  if(mode==='year') return G.pointsYear({getPos, cycFn, S0, S1, c:state.c, u:state.u});
+  let parked;
+  if(!window.__PLAYING){
+    if(state.c>=S1) parked='T1';
+    else if(state.c<=S0) parked='T0';
+    else parked=(S1>S0)?(state.c-S0)/(S1-S0):1;
+  }
+  return G.pointsTwoPass({getPos, cycFn, S0, S1, playing:!!window.__PLAYING, progress:state.u, parkedAt:parked});
+}
+function shortGhostC4(state){
+  const G=shortGhostApi(); if(!G||typeof ZL!=='function') return [];
+  const mode=floorInterpMode();
+  if(mode==='year') return G.pointsC4Year({ZL, S0, S1, c:state.c, u:state.u});
+  let parked;
+  if(!window.__PLAYING){
+    if(state.c>=S1) parked='T1';
+    else if(state.c<=S0) parked='T0';
+    else parked=(S1>S0)?(state.c-S0)/(S1-S0):1;
+  }
+  return G.pointsC4TwoPass({ZL, S0, S1, playing:!!window.__PLAYING, progress:state.u, parkedAt:parked});
+}
+function paintFloorShortGhosts(ctx, env){
+  if(window.__Z0_DOMAIN==='none') return;
+  if(!shortGhostApi()) return;
+  const {X,Y,cl,c,u}=env;
+  const vs=typeof volSys==='function'?volSys():1;
+  const paint=(pts,rad,col)=>{
+    if(!pts||!pts.length) return 0;
+    ctx.save();
+    for(const g of pts){
+      const q=cl(g.p[0],g.p[1]),px=X(q[0]),py=Y(q[1]);
+      ctx.globalAlpha=g.fade*vs;
+      ctx.beginPath(); ctx.arc(px,py,rad,0,7);
+      ctx.fillStyle=col; ctx.fill();
+    }
+    ctx.restore();
+    return pts.length;
+  };
+  const st={c,u};
+  let nC2=0,nC1=0,nC4=0,nC4n=0;
+  const many=GROUPS.length>30;
+  GROUPS.forEach(g=>{
+    if(sel&&sel.g!==g&&many) return;
+    const isS=sel&&sel.g===g;
+    const rad=isS?14:(many?4:7);
+    nC2+=paint(shortGhostPointsFor(i=>P2(g,i),st), rad, g.col||'#8aa0c8');
+  });
+  const mem=(sel&&sel.g&&sel.g.mem)?sel.g.mem:null;
+  if(mem&&mem.length<=200){
+    const rad=mem.length>80?1.8:2.4;
+    mem.forEach(k=>{ nC1+=paint(shortGhostPointsFor(i=>P1(k,i),st), rad, '#c5cddc'); });
+  } else if(typeof dep!=='undefined'&&dep&&dep.M){
+    dep.M.forEach(tr=>{ nC1+=paint(shortGhostPointsFor(i=>P1(tr.k,i),st), 2.4, '#c5cddc'); });
+  }
+  if(Z0&&Z0.a&&Z0.b) nC4+=paint(shortGhostC4(st), 8, '#e8c872');
+  if(Z0&&Z0.C4N){
+    Z0.C4N.forEach(n=>{
+      if(!n||!n.P) return;
+      nC4n+=paint(shortGhostPointsFor(i=>n.P[i]||null,st), 3, '#c9b56a');
+    });
+  }
+  window.__SHORT_GHOST={mode:floorInterpMode(), n:8, nC2, nC1, nC4, nC4n, volsys:vs};
+}
+window.paintFloorShortGhosts=paintFloorShortGhosts;
 function gtrail(g){if(window.__Z0_DOMAIN==='none'){return {G:[],path:[],S:0,nh:0,skipped:'static-no-z0'};}const col=$('col').value,key=SYS.id+'|'+$('ds').value+'|'+$('lvl').value+'|'+$('z2').checked+$('z3').checked+'|'+g.name+'|'+col+'|'+S0+'|'+S1+'|'+W+'x'+H;if(CACHE.has(key))return CACHE.get(key);
   const t0=performance.now();const vals=[];for(let i=S0;i<=S1;i++)vals.push(C2(g,i,col));const med=median(vals);
   let a=S0;while(a<=S1&&!P2(g,a))a++;const tr=trail(i=>P2(g,i),i=>{const v=C2(g,i,col);return v==null?0:v/med;},a,g.col);tr.med=med;tr.ms=performance.now()-t0;CACHE.set(key,tr);return tr;}
@@ -408,6 +688,8 @@ function draw(){if(window.__DRAW_OVERRIDE==='nhl'){drawNhlGalaxy();return;}const
     ctx.fillStyle='#e8c872';ctx.font='600 11px system-ui';[[A,'Z0(T₀)'],[Bz,'Z0(T₁)']].forEach(([p,l])=>{ctx.beginPath();ctx.arc(X(p[0]),Y(p[1]),4,0,7);ctx.fill();ctx.fillText(l,X(p[0])+6,Y(p[1])-6);});
     HIT.z0={px:X(zc[0]),py:Y(zc[1]),r:8+1.25,p:zc};HIT.c4={px:X(zc[0]),py:Y(zc[1]),r:22,p:zc,live:liveC4};
     ctx.restore();}
+  // v20.27 — short trailing-sequence ghost (last N steps, decaying opacity) on both interpretations.
+  try{ if(typeof paintFloorShortGhosts==='function') paintFloorShortGhosts(ctx,{X,Y,cl,c,u,sp,liveC4}); }catch(e){}
   // objets de Classe 2 à l'instant (déplacés sur leur trajet cycloïdal)
   const many=GROUPS.length>30;GROUPS.forEach((g,gi)=>{if(sel&&sel.g!==g&&many)return;const p0=P2(g,sp.i0);if(!p0)return;const p1=P2(g,sp.i1);const p=(p1&&sp.u>0)?cyc(p0,p1,sp.u,sp.i0,sp.i1):p0;const q=cl(p[0],p[1]),px=X(q[0]),py=Y(q[1]);
     const isS=sel&&sel.g===g;const rad=isS?28:(many?7:13);const gc=colMove(g.col,p0,p1,c,c+1,u);if(isS)window.__COLLOG.push([c,u,gc]);g._px=px;g._py=py;g._r=rad;HIT.c2.push({gi,px,py,r:rad+(isS?1.1:0.7),p});
@@ -494,15 +776,33 @@ function hitGhost(mx,my){if(!sel)return null;const v=view();const X=x=>L+(x-v.x0
 function doDeploy(gh,auto){const d0=gh.k===0?gh.e:(gh.t>=1?gh.e:gh.e-1);dep=deploy(sel.g,d0);dep.gh=gh;$('c').value=d0;progress=0;fit();draw();if(auto)startPlay(d0);}
 let timer=null;
 function startPlay(from){stopPlay();
-  // v20.11 / v20.20: market play = single T0→T1 transition (no full-year séance walk). Data kept.
+  // v20.27: year interpretation walks séance-by-séance (series already in the data).
+  // twopass (default, v20.11 / v20.20): single T0→T1 transition.
+  const year=window.__FLOOR_INTERPRETATION==='year'||window.__MARKET_Z0_TWOPASS===false;
   const t0=(from!=null?from:S0);
   $('c').value=t0; progress=0; window.__PLAYING=true; $('play').textContent='❚❚ Pause'; let sub=0;
-  const steps=(typeof playSubsteps==='function')?playSubsteps():SUB;
-  timer=setInterval(()=>{sub++;
-    if(sub>=steps){ $('c').value=S1; progress=0; stopPlay(); draw(); return; }
-    progress=sub/steps; // interpolate T0 → T1 within the single shared frame loop
-    draw();
-  },28); if(typeof syncGatePlayLabel==='function') syncGatePlayLabel();}
+  if(!year){
+    const steps=(typeof playSubsteps==='function')?playSubsteps():SUB;
+    timer=setInterval(()=>{sub++;
+      if(sub>=steps){ $('c').value=S1; progress=0; stopPlay(); draw(); return; }
+      progress=sub/steps; // interpolate T0 → T1 within the single shared frame loop
+      draw();
+    },28);
+  } else {
+    const steps=SUB; // 8 substeps per séance
+    timer=setInterval(()=>{sub++;
+      if(sub>=steps){
+        sub=0; progress=0;
+        const nxt=Math.min(S1, +$('c').value+1);
+        $('c').value=nxt;
+        if(nxt>=S1){ stopPlay(); draw(); return; }
+      } else {
+        progress=sub/steps;
+      }
+      draw();
+    },28);
+  }
+  if(typeof syncGatePlayLabel==='function') syncGatePlayLabel();}
 function stopPlay(){if(timer){clearInterval(timer);timer=null;}window.__PLAYING=false;progress=0;$('play').textContent='▶ Jouer'; if(typeof syncGatePlayLabel==='function') syncGatePlayLabel();}
 $('play').onclick=()=>{if(timer){stopPlay();draw();return;}startPlay(dep?dep.d0:S0);};
 $('c').oninput=()=>{stopPlay();draw();};
@@ -799,6 +1099,7 @@ function applyGate(route){
   window.__DRAW_OVERRIDE=null;
   window.__Z0_DOMAIN='finance';
   window.__GATE=true;
+  if(typeof setFloorInterpretation==='function') setFloorInterpretation((route&&route.interpretation)?route.interpretation:'twopass');
   window.__RW_NHL_LOCK=false;
   document.body.className='mode-floor mode-gate mode-galaxy';
   document.body.classList.remove('mode-home-vignette');
@@ -979,7 +1280,10 @@ window.analysisSportKey=analysisSportKey;
 
 /* === Z0 domain rules (v20.11) — static sports structures: NO Z0; market = T0→T1 only === */
 window.__Z0_DOMAIN='finance'; // 'finance' | 'none'
-window.__MARKET_Z0_TWOPASS=true;
+if(typeof window.__FLOOR_INTERPRETATION==='undefined'){
+  window.__FLOOR_INTERPRETATION='twopass';
+  window.__MARKET_Z0_TWOPASS=true;
+}
 function z0DomainForRoute(route){
   if(!route) return 'finance';
   if(route.mode==='nhl'||route.mode==='sports'||route.mode==='placeholder') return 'none';
@@ -1547,7 +1851,14 @@ function parseHash(){
   const q=new URLSearchParams(qi>=0?rawFull.slice(qi+1):'');
   const gateMode=q.get('mode')==='fourier'?'fourier':'libre';
   const p=raw.split('/').filter(Boolean);
-  if(!p.length) return {mode:'home', gateMode};
+  if(!p.length){
+    const r={mode:'home', gateMode};
+    const interp=(typeof window.FloorShortGhost==='object'&&window.FloorShortGhost.parseInterpretation)
+      ? window.FloorShortGhost.parseInterpretation(p,q)
+      : null;
+    if(interp) r.interpretation=interp;
+    return r;
+  }
   if(p[0]==='fields'){
     const r={mode:'fields', fields:'root'};
     if(p[1]==='sports'){ r.fields='sports'; }
@@ -1568,6 +1879,10 @@ function parseHash(){
       const r={mode:'galaxy', galaxy:'branch', branch:p[1], sys:b.floor||null, name:b.name};
       if(p[2]==='index'&&p[3]) r.worldSub={kind:'index', id:p[3]};
       if(p[2]==='ex'&&p[3]) r.worldSub={kind:'ex', id:p[3]};
+      const interp=(typeof window.FloorShortGhost==='object'&&window.FloorShortGhost.parseInterpretation)
+        ? window.FloorShortGhost.parseInterpretation(p,q)
+        : ((p.includes('year')||p.includes('annee')||p.includes('année'))?'year':((p.includes('t0t1')||p.includes('twopass'))?'twopass':null));
+      if(interp) r.interpretation=interp;
       return r;
     }
     return {mode:'galaxy', galaxy:'planet'};
@@ -1584,7 +1899,13 @@ function parseHash(){
       if(p[i]==='index'&&p[i+1]){r.index=p[++i];r.ds=r.index;r.lvl='x';}
       else if(p[i]==='ex'&&p[i+1]){r.ex=p[++i];r.lvl='f';}
       else if(p[i]==='ds'&&p[i+1]){r.ds=p[++i];}
+      else if(p[i]==='year'||p[i]==='annee'||p[i]==='année') r.interpretation='year';
+      else if(p[i]==='t0t1'||p[i]==='twopass'||p[i]==='seances'||p[i]==='deux-seances') r.interpretation='twopass';
     }
+    const interp=(typeof window.FloorShortGhost==='object'&&window.FloorShortGhost.parseInterpretation)
+      ? window.FloorShortGhost.parseInterpretation(p,q)
+      : null;
+    if(interp) r.interpretation=interp;
     return r;
   }
   if(p[0]==='sports'){
@@ -2691,7 +3012,7 @@ function applyGalaxy(route){
   if(window.WORLD_FLOORS && route.branch){
     const subId=sub&&sub.kind==='index'&&sub.id;
     if(subId && DATA[subId] && DATA[subId].meta && DATA[subId].meta.n_with_prices){
-      applyFloor({mode:'floor', sys:DATA[subId].meta.floor, ds:subId, index:subId, lvl:'x'});
+      applyFloor({mode:'floor', sys:DATA[subId].meta.floor, ds:subId, index:subId, lvl:'x', interpretation:route.interpretation});
       document.body.classList.add('mode-galaxy','mode-galaxy-branch');
       ensureRetourHubBar('Finance · '+(b?b.name:route.branch)+' · '+(DATA[subId].meta.name||subId));
       return;
@@ -2716,6 +3037,7 @@ function applyGalaxy(route){
 }
 
 function applyFloor(route){
+  if(typeof setFloorInterpretation==='function') setFloorInterpretation(route&&route.interpretation?route.interpretation:'twopass');
   document.body.className='mode-floor';
   document.body.classList.remove('ui-collapsed'); // will re-apply collapse below
   // v20.15/v20.23 — world index floors keep the NDX/SPX applyFloor path intact
