@@ -1,9 +1,8 @@
 /* um-engine.js — the real Manifestation engine in the HUB · Claude, 11 Nov. 2026 (Éric, 15 h 14: « the hub should just link to the
    real engine, as simple as that. And as we build the hub, it's just gonna be another new object in the engine for the hub »;
    15 h 36: « it's still not the real engine in the hub »).
-   v20.27, 12 nov 2026 — five finance macro-zones, one Class-2 cardinal each, ordered by WFE Aug 2026 market cap
-   (see js/data-finance-zones.js). New floor in the HUB = one entry in FINANCE_ZONES (the engine gets the new system
-   and its anchor first).
+   v20.28, 12 nov 2026 — applied Classe 4 founding rules (size factor, single solid object at origin, Class 3 solids, collapse rules, uniform application).
+   Reference engine updated to published artifact with applyC4 / SZ / SOLIDMAT.
    One line in the HUB page, BEFORE um-panels.js:
        <script src="um-engine.js" defer></script>
        <script src="um-panels.js" defer></script>
@@ -12,11 +11,20 @@
    at its anchor. The engine link never changes, so the HUB always opens the latest revision.
    Where: inside <div id="um-engine"></div> if the page has one, otherwise floating at the top left (movable and erasable with
    um-panels.js).
-   Optional: <script>window.UM_HIDE='#selector'</script> before it hides the HUB's own reproduction of the engine. */
+   Optional: <script>window.UM_HIDE='#selector'</script> before it hides the HUB's own reproduction of the engine.
+
+   CLASSE 4 — RÈGLES FONDATRICES (applied 12 nov 2026 from Claude note):
+   1. Taille : Classe 1 = base (rayon 0,1), Classe 2 = 2 fois (0,2), Classe 3 = 3 fois (0,3), Classe 4 = 4 fois (0,4). La Classe 4 se lit comme le plus grand objet du système. Même facteur de densité pour toutes les classes, et la molette de volume les met à l'échelle ensemble.
+   2. Classe 4 = UN seul objet solide, fixe au centre (0, 0, 0). Pas de cage filaire en plus du corps.
+   3. Classe 3 (Ω, Σ, α, etc.) : objets solides, opaques, hors brume, pour ressortir. Les pièges λ non activés restent des contours.
+   4. Effondrement de la Classe 4 : seulement les attributs physiques (forme, étirement, couleur, saturation) et angulaires (avant-arrière, rotation, centre-extérieur). X, Y, Z ne sont pas effondrés. Chaque attribut = moyenne sur le même ensemble que Z0 (Classe 1, plus Classe 2 et conteneurs Classe 3 si cochés). Sans donnée : objet masqué, rien d'inventé.
+   5. Mêmes règles pour tous les systèmes.
+   Ref engine: https://claude.ai/artifact/BhtoueP8EK52M5iEK38Fko
+   Spec: https://claude.ai/artifact/BPgoo9fhk4cJchZ9pqffVn (section 9) */
 (function () {
   'use strict';
   if (window.__umEngine) return; window.__umEngine = true;
-  var ENGINE = 'https://claude.ai/artifact/Mr4cUjAuszjdrQU8U6YRig';
+  var ENGINE = 'https://claude.ai/artifact/BhtoueP8EK52M5iEK38Fko';
 
   /* Fallback only if js/data-finance-zones.js cannot be loaded. Keep in sync with FINANCE_ZONES. */
   var FALLBACK_FLOORS = [
@@ -102,7 +110,7 @@
       g[1].forEach(function (f) {
         var cardinal = !!f[2];
         h += '<li><a class="' + (cardinal ? 'um-cardinal-door' : '') + '" href="' + ENGINE + '#' + f[0] +
-             '" target="_blank" rel="noopener"><span>' + String(f[1]).replace(/&/g, '&amp;') +
+             '" target="_blank" rel="noopener"><span>' + String(f[1]).replace(/&/g, '&') +
              (cardinal ? ' <em class="um-cardinal">cardinal</em>' : '') +
              '</span><code>#' + f[0] + '</code></a></li>';
       });
