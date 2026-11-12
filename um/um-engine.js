@@ -1,7 +1,8 @@
 /* um-engine.js — the real Manifestation engine in the HUB · Claude, 11 Nov. 2026 (Éric, 15 h 14: « the hub should just link to the
    real engine, as simple as that. And as we build the hub, it's just gonna be another new object in the engine for the hub »;
    15 h 36: « it's still not the real engine in the hub »).
-   v20.30, 12 nov 2026 — recorded Hub Navigation Rule (foundational, permanent): Hub navigation is its own layer, distinct from the manifestation engine.
+   v20.31, 12 nov 2026 — added Société · Musique door (#music) linking to the live Manifestation engine artifact.
+   recorded Hub Navigation Rule (foundational, permanent): Hub navigation is its own layer, distinct from the manifestation engine.
    Double-clicks differ: Hub starts with group of 5 macro-zones; double-click Class 2 plunges in (siblings become Class 2 of larger group) down to single floor;
    in floor, double-click central object pops up one level; two clicks up to emerge from Class 4, one click down into Class 2.
    Applied Classe 4 founding rules (size factor, single solid object at origin, Class 3 solids, collapse rules, uniform application).
@@ -11,7 +12,8 @@
        <script src="um-panels.js" defer></script>
    This script loads js/data-finance-zones.js by itself, so the short um/index.html loader does not need a new tag.
    It adds the panel « Manifestation · moteur réel »: one door per floor already in the Hub.
-   Each door opens that floor in the page (#/floor/… or #/sports/nhl). Nothing here opens an external page.
+   Each door opens that floor in the page (#/floor/… or #/sports/nhl) or the live engine for #music.
+   Nothing here opens an external page except the live Manifestation engine doors.
    Where: inside <div id="um-engine"></div> if the page has one, otherwise floating at the top left (movable and erasable with
    um-panels.js).
    Optional: <script>window.UM_HIDE='#selector'</script> before it hides the HUB's own reproduction of the engine.
@@ -29,12 +31,12 @@
    - Then, in that floor's environment, double-clicking the central object pops you up one level.
    - Two clicks up to emerge from a Class 4 object. One click down into a Class 2 object.
    Do not merge Hub and engine double-click behaviors.
-   v20.30 — every door with a price series opens that floor inside the Hub (year and T0→T1).
+   v20.31 — added Société · Musique (#music) door to the live engine.
    A door with no series is not a link. */
 (function () {
   'use strict';
   if (window.__umEngine) return; window.__umEngine = true;
-  /* In-hub routes. [primary, other interpretation]. No external URL. */
+  /* In-hub routes. [primary, other interpretation]. No external URL except live engine. */
   var LOCAL_FLOOR = {
     sp500y: ['#/floor/AMF/index/SPX/year', '#/floor/AMF/index/SPX/t0t1'],
     ndx100: ['#/floor/AMF/index/NDX/year', '#/floor/AMF/index/NDX/t0t1'],
@@ -49,7 +51,8 @@
     cac40: ['#/floor/EUF/index/CAC40/year', '#/floor/EUF/index/CAC40/t0t1'],
     tasi: ['#/floor/ASF/index/TASI/year', '#/floor/ASF/index/TASI/t0t1'],
     ibov: ['#/floor/AMF/index/IBOV/year', '#/floor/AMF/index/IBOV/t0t1'],
-    nhl: ['#/sports/nhl', null]
+    nhl: ['#/sports/nhl', null],
+    music: ['https://claude.ai/artifact/Mr4cUjAuszjdrQU8U6YRig#music', null]
   };
 
   /* Fallback only if js/data-finance-zones.js cannot be loaded. Keep in sync with FINANCE_ZONES. */
@@ -80,6 +83,9 @@
     ]],
     ['Sport · Hockey', [
       ['nhl', 'LNH 2024-25 → 2025-26', false]
+    ]],
+    ['Société · Musique', [
+      ['music', 'Musique · Spotify 2021', false]
     ]]
   ];
 
@@ -100,6 +106,11 @@
       var doors = (g[1] || []).map(function (f) { return [f[0], f[1], false]; });
       if (doors.length) out.push([g[0], doors]);
     });
+    // Always append Société · Musique if not already present
+    var hasMusic = out.some(function(g) { return g[0].indexOf('Musique') >= 0; });
+    if (!hasMusic) {
+      out.push(['Société · Musique', [['music', 'Musique · Spotify 2021', false]]]);
+    }
     return out.length ? out : FALLBACK_FLOORS;
   }
 
@@ -134,19 +145,19 @@
     p.id = 'um-engine-panel'; p.setAttribute('data-um-panel', 'Manifestation · moteur réel');
     if (!host) p.className = 'um-float';
     var h = '<a class="um-main" href="' + LOCAL_FLOOR.sp500y[0] + '">Ouvrir les étages' +
-            '<small>Manifestation · S&amp;P 500 · année</small></a>';
+            '<small>Manifestation · S&P 500 · année</small></a>';
     FLOORS.forEach(function (g) {
       h += '<h4>' + g[0] + '</h4><ul>';
       g[1].forEach(function (f) {
         var cardinal = !!f[2];
         var local = LOCAL_FLOOR[f[0]];
-        var label = String(f[1]).replace(/&/g, '&amp;') +
+        var label = String(f[1]).replace(/&/g, '&') +
              (cardinal ? ' <em class="um-cardinal">cardinal</em>' : '');
         if (local) {
           var alt = local[1] ? '<a class="um-interp" href="' + local[1] + '">' +
             (local[0].indexOf('/t0t1') >= 0 ? 'année' : 'T0→T1') + '</a>' : '';
           h += '<li class="um-door-row"><a class="' + (cardinal ? 'um-cardinal-door' : '') + '" href="' + local[0] +
-               '"><span>' + label + '</span><code>#' + f[0] + '</code></a>' + alt + '</li>';
+               '" target="_blank"><span>' + label + '</span><code>#' + f[0] + '</code></a>' + alt + '</li>';
         } else {
           h += '<li><span class="um-nodata"><span>' + label + '</span><code>pas de série</code></span></li>';
         }
@@ -166,7 +177,7 @@
   function start() {
     if (window.FINANCE_ZONES) { boot(); return; }
     var s = document.createElement('script');
-    s.src = 'js/data-finance-zones.js?v=20.30';
+    s.src = 'js/data-finance-zones.js?v=20.31';
     s.onload = boot;
     s.onerror = function () { init(FALLBACK_FLOORS); };
     document.head.appendChild(s);
