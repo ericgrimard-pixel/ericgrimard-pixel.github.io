@@ -775,7 +775,7 @@ function paintManifestMark(ctx,px,py,rad,col,label,ang){
 function fmt(n){return Math.round(n).toLocaleString('fr-CA');}
 function visible(gh,c,u){return gh.e<c||(gh.e===c&&gh.t<=0)||(gh.e===c+1&&gh.t<=u)||gh.k===0&&gh.e<=c;}
 let HIT={c1:[],c2:[],c4:null,z0:null,gr:0,c:0};
-function draw(){if(window.__DRAW_OVERRIDE==='nhl'){drawNhlGalaxy();return;}const c=+$('c').value,u=progress;HIT={c1:[],c2:[],c4:null,c4n:[],z0:null,gr:0,c,lib:[],libR:null};window.HIT=HIT;GROUPS.forEach(g=>g._px=null);if(typeof EMPTY==='undefined'||EMPTY||!ds||!ds.dates)return (typeof drawEmpty==='function'?drawEmpty():undefined);if(window.__Z0_DOMAIN==='none'&&!(document.body&&document.body.classList.contains('mode-floor'))){hideC4Panel();return;} $('d').textContent=ds.dates[S0]+' → '+ds.dates[S1]+'  ·  instant '+ds.dates[Math.max(0,Math.min(c,ds.dates.length-1))]+(u>0?' (+'+u.toFixed(2)+')':'');
+function draw(){if(window.__DRAW_OVERRIDE==='nhl'){ if(typeof window.drawNhlGalaxy==='function') window.drawNhlGalaxy(); return;}const c=+$('c').value,u=progress;HIT={c1:[],c2:[],c4:null,c4n:[],z0:null,gr:0,c,lib:[],libR:null};window.HIT=HIT;GROUPS.forEach(g=>g._px=null);if(typeof EMPTY==='undefined'||EMPTY||!ds||!ds.dates)return (typeof drawEmpty==='function'?drawEmpty():undefined);if(window.__Z0_DOMAIN==='none'&&!(document.body&&document.body.classList.contains('mode-floor'))){hideC4Panel();return;} $('d').textContent=ds.dates[S0]+' → '+ds.dates[S1]+'  ·  instant '+ds.dates[Math.max(0,Math.min(c,ds.dates.length-1))]+(u>0?' (+'+u.toFixed(2)+')':'');
   document.body.classList.add('manifest-primary');
   if(!document.body.classList.contains('c4-open')) document.body.classList.add('c4-collapsed');
   const sp0=playSpan(c,u);
@@ -2977,7 +2977,7 @@ function nhlXY(x,y){
   }
   return [px,py];
 }
-function drawNhlGalaxy(){
+function drawNhlGalaxy(){ window.drawNhlGalaxy=drawNhlGalaxy;
   window.ctx=ctx; window.W=W; window.H=H; window.nhlXY=nhlXY; window.moved=moved;
   if(typeof window.drawNhlLeagueGalaxy==='function'){
     window.drawNhlLeagueGalaxy();
