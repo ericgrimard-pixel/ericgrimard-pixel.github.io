@@ -1599,7 +1599,7 @@ function ascendOrEnter(e){
   const vis=HITS.filter(m=>{let p=m;while(p){if(!p.visible)return false;p=p.parent}return true});
   const onC4=ray.intersectObjects(vis,false).some(h=>h.object.userData.ref&&h.object.userData.ref.kind===4);
   if(SYS.id==='world'&&ref.kind===1){const id=TK[ref.idx]&&TK[ref.idx].floor;if(id){switchSys(id);return}}
-  if(onC4&&SYS.id!=='world'){switchSys('world');return}
+  if(onC4&&SYS.id!=='world'){const parent=window.UM_FLOOR_BY&&UM_FLOOR_BY[SYS.id]&&UM_FLOOR_BY[SYS.id].parent;switchSys(parent||'world');return}
   select(ref);
   if(ref.kind===4)enterPlan();else if(ref.kind===1||ref.kind===2)enterFocus(ref);
 }
@@ -1988,6 +1988,20 @@ window.__umSelect=select; /* hook for the soul (CLAVIS) bridge and for tests */
   sel.innerHTML=[...new Set(LIB.map(x=>x.silo))].map(s=>`<optgroup label="${esco(s)}">`+LIB.filter(x=>x.silo===s).map(x=>`<option value="${x.id}"${x.data?'':' disabled'}>${esco(x.name)}${x.data?'':' · en attente de YB1'}</option>`).join('')+'</optgroup>').join('');
   sel.addEventListener('change',()=>switchSys(sel.value));
   const hub=document.getElementById('hubHome'); if(hub) hub.addEventListener('click',()=>switchSys('world'));
-  try{history.replaceState(null,'',location.pathname+location.search+'#/world')}catch(e){}
-  switchSys('world');
+  function rawHash(){return (location.hash||'').replace(/^#/,'').replace(/^\//,'');}
+  function resolved(raw){
+    if(window.UM_RESOLVE) return window.UM_RESOLVE(raw);
+    if(!raw||raw==='world') return 'world';
+    return LIB.some(x=>x.id===raw&&x.data)?raw:'';
+  }
+  const start=resolved(rawHash())||'world';
+  switchSys(start);
+  if(!resolved(rawHash())&&rawHash()&&window.UM_MARK_INCOMPLET) window.UM_MARK_INCOMPLET(rawHash());
+  addEventListener('hashchange',()=>{
+    const raw=rawHash();
+    const id=resolved(raw);
+    if(!id){ if(window.UM_MARK_INCOMPLET) window.UM_MARK_INCOMPLET(raw); return; }
+    if(id!==CURSYS && LIB.some(x=>x.id===id&&x.data)) switchSys(id);
+    else if(window.UM_RENDER_NAV) window.UM_RENDER_NAV(id);
+  });
 })();

@@ -2,12 +2,6 @@
    Hockey uses the league's own points and games. Music uses its own popularity
    and duration. A second take that the source does not have is not invented. */
 (function(){
-  const REGION={
-    ndx100:'Amériques', sp500y:'Amériques', djia:'Amériques', sp500:'Amériques', ibov:'Amériques',
-    ftse100:'Europe', dax:'Europe', cac40:'Europe', sx5e:'Europe',
-    n225:'Asie-Pacifique', hsi:'Asie-Pacifique', sti:'Asie-Pacifique',
-    tasi:'Moyen-Orient', asx200:'Océanie'
-  };
   const missing=[];
   const titles=[];
   function pushFloor(sys, ser, sec, ind){
@@ -69,9 +63,18 @@
       pushFloor(sys, {c:[pop.v, pop.v], v:[vol, vol]}, 'Société · Musique', '[INCOMPLET] dérive — T₀ = T₁');
       return;
     }
+    const CARD={
+      sp500y:['Amérique du Nord','S&P 500'],
+      sx5e:['Europe','EURO STOXX 50'],
+      n225:['Asie-Pacifique','Nikkei 225'],
+      tasi:['Moyen-Orient et Afrique','Tadawul'],
+      ibov:['Amérique latine','Ibovespa']
+    };
     const ser=financeSeries(sys);
     if(!ser){ missing.push(sys.id); return; }
-    pushFloor(sys, ser, REGION[sys.id]||'World', 'Étage');
+    const card=CARD[sys.id];
+    if(!card) return;
+    pushFloor(sys, ser, card[0], card[1]);
   });
   window.__WORLD_INCOMPLET=missing;
   LIB.unshift({
