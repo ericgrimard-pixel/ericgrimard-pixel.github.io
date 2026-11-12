@@ -41,7 +41,7 @@
   document.head.appendChild(css);
 
   function init() {
-    if (window.UM_HIDE) try { document.querySelectorAll(window.UM_HIDE).forEach(function (el) { el.style.display = 'none'; }); } catch (e) {}
+    if (window.UM_HIDE) try { document.querySelectorAll(window.UM_HIDE).forEach(function (el) { el.style.setProperty('display', 'none', 'important'); }); } catch (e) {}
     var host = document.getElementById('um-engine');
     var p = document.createElement('section');
     p.id = 'um-engine-panel'; p.setAttribute('data-um-panel', 'Manifestation · moteur réel');
