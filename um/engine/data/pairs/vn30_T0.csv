@@ -1,0 +1,39 @@
+# etage: vn30
+# name: VN30
+# point: T0
+# date: 2026-01-02
+# currency: VND
+# mic: XSTC
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : communiqué officiel HoSE « Công bố thông tin danh mục cổ phiếu thành phần chỉ số VN30 », kỳ 7/2026, 30 titres, effectif le 3 août 2026 (PDF Vietstock, https://static2.vietstock.vn/vietstock/2026/7/15/15072026_cbtt___danh_muc_thanh_phan_hose_index_thang_7_2026.pdf). Entrées : MCH (Masan Consumer) et TCX (TCBS) ; sorties : TPB et PLX. Ce n'est pas la composition historique de T0. Cours ajustés et volumes : Yahoo Finance, séance du 2026-01-02. Secteur, industrie et pays : résumé de cotation Yahoo.
+s,sec,ind,cty,price,volume
+ACB.VN,Financial Services,Banks - Regional,Vietnam,20604.9746,0
+BID.VN,Financial Services,Banks - Regional,Vietnam,35991.5703,0
+BSR.VN,Energy,Oil & Gas Refining & Marketing,Vietnam,15920.4463,0
+CTG.VN,Financial Services,Banks - Regional,Vietnam,35208.332,0
+FPT.VN,Technology,Information Technology Services,Vietnam,85907.6094,0
+GAS.VN,Energy,Oil & Gas Integrated,Vietnam,70357.1094,0
+GVR.VN,Basic Materials,Specialty Chemicals,Vietnam,25841.0957,0
+HDB.VN,Financial Services,Banks - Regional,Vietnam,22846.1543,0
+HPG.VN,Basic Materials,Steel,Vietnam,23569.1191,0
+LPB.VN,Financial Services,Banks - Regional,Vietnam,39499.082,0
+MBB.VN,Financial Services,Banks - Regional,Vietnam,21153.8457,0
+MCH.VN,Consumer Defensive,Packaged Foods,Vietnam,177565.1094,0
+MSN.VN,Industrials,Conglomerates,Vietnam,77000,0
+MWG.VN,Consumer Cyclical,Specialty Retail,Vietnam,85898.8516,0
+SAB.VN,Consumer Defensive,Beverages - Brewers,Vietnam,43972.3398,0
+SHB.VN,Financial Services,Banks - Regional,Vietnam,16350,0
+SSB.VN,Financial Services,Banks - Regional,Vietnam,14478.9004,0
+SSI.VN,Financial Services,Capital Markets,Vietnam,23973.6406,0
+STB.VN,Financial Services,Banks - Regional,Vietnam,58000,0
+TCB.VN,Financial Services,Banks - Regional,Vietnam,22787.6465,0
+TCX.VN,Financial Services,Asset Management,Vietnam,32305.8398,0
+VCB.VN,Financial Services,Banks - Regional,Vietnam,57025.2305,0
+VHM.VN,Real Estate,Real Estate - Development,Vietnam,59703.7031,0
+VIB.VN,Financial Services,Banks - Regional,Vietnam,15369.1787,0
+VIC.VN,Real Estate,Real Estate Services,Vietnam,169600,0
+VJC.VN,Industrials,Airlines,Vietnam,160769.2344,0
+VNM.VN,Consumer Defensive,Packaged Foods,Vietnam,56699.3398,0
+VPB.VN,Financial Services,Banks - Regional,Vietnam,22333.9961,0
+VPL.VN,Consumer Cyclical,Resorts & Casinos,Vietnam,[INCOMPLET : pas de séance Yahoo à cette date],[INCOMPLET : pas de séance Yahoo à cette date]
+VRE.VN,Real Estate,Real Estate - Diversified,Vietnam,32497.6035,0

@@ -3542,6 +3542,13 @@ const FINANCE_INDEX_FLOORS=[
   {id:'KLCI',name:'FTSE Bursa Malaysia KLCI',route:'#/floor/ASF/index/KLCI'},
   {id:'BEL20',name:'BEL 20',route:'#/floor/EUF/index/BEL20'},
   {id:'OBX',name:'OBX',route:'#/floor/EUF/index/OBX'},
+  {id:'ATX',name:'ATX',route:'#/floor/EUF/index/ATX'},
+  {id:'OMXC25',name:'OMX Copenhagen 25',route:'#/floor/EUF/index/OMXC25'},
+  {id:'OMXH25',name:'OMX Helsinki 25',route:'#/floor/EUF/index/OMXH25'},
+  {id:'PSI',name:'PSI',route:'#/floor/EUF/index/PSI'},
+  {id:'ISEQ20',name:'ISEQ 20',route:'#/floor/EUF/index/ISEQ20'},
+  {id:'LQ45',name:'LQ45',route:'#/floor/ASF/index/LQ45'},
+  {id:'VN30',name:'VN30',route:'#/floor/ASF/index/VN30'},
   {id:'SPX',name:'S&P 500',route:'#/floor/AMF/index/SPX'},
   {id:'NDX',name:'Nasdaq-100',route:'#/floor/AMF/index/NDX'}
 ];

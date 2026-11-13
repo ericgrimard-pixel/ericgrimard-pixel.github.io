@@ -1,0 +1,54 @@
+# etage: lq45
+# name: LQ45
+# point: T0
+# date: 2026-01-02
+# currency: IDR
+# mic: XIDX
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : revue majeure IDX LQ45 effective du 2 nov. 2026 au 29 janv. 2027, liste de 45 codes publiée par Kontan (https://www.kontan.co.id/indeks-lq45) d'après l'annonce officielle BEI Peng-00205/BEI.POP/10-2026 (ELSA et SMGR en entrée ; CUAN et SCMA sortis par rapport à la table Wikipédia, qui n'a pas été utilisée). Ce n'est pas la composition historique de T0. Cours ajustés et volumes : Yahoo Finance, séance du 2026-01-02. Secteur, industrie et pays : résumé de cotation Yahoo.
+s,sec,ind,cty,price,volume
+AADI.JK,Energy,Thermal Coal,Indonesia,6642.9712,4330300
+ADMR.JK,Basic Materials,Coking Coal,Indonesia,1600.9419,83708700
+ADRO.JK,Energy,Thermal Coal,Indonesia,1734.2496,58883900
+AKRA.JK,Energy,Oil & Gas Refining & Marketing,Indonesia,1196.6886,9488900
+AMMN.JK,Basic Materials,Other Precious Metals & Mining,Indonesia,6800,20750200
+AMRT.JK,Consumer Defensive,Grocery Stores,Indonesia,1902.7581,10501900
+ANTM.JK,Basic Materials,Gold,Indonesia,2991.1482,80535600
+ASII.JK,Industrials,Conglomerates,Indonesia,6341.2666,19569100
+BBCA.JK,Financial Services,Banks - Regional,Indonesia,7634.334,68612400
+BBNI.JK,Financial Services,Banks - Regional,Indonesia,3920.9338,32693200
+BBRI.JK,Financial Services,Banks - Regional,Indonesia,3418.8489,191985100
+BBTN.JK,Financial Services,Banks - Regional,Indonesia,1160,8387700
+BMRI.JK,Financial Services,Banks - Regional,Indonesia,4500.0098,59263700
+BRPT.JK,Basic Materials,Chemicals,Indonesia,3186.4985,84250300
+BUMI.JK,Energy,Thermal Coal,Indonesia,420,11771094600
+CPIN.JK,Consumer Defensive,Farm Products,Indonesia,4338.7192,4267600
+ELSA.JK,Energy,Oil & Gas Equipment & Services,Indonesia,473.2717,33904100
+DEWA.JK,Energy,Thermal Coal,Indonesia,746.371,1993908700
+EMTK.JK,Communication Services,Broadcasting,Indonesia,1090.2655,60691000
+ESSA.JK,Basic Materials,Chemicals,Indonesia,563.4194,14079300
+EXCL.JK,Communication Services,Telecom Services,Indonesia,3750,10798500
+GOTO.JK,Technology,Software - Infrastructure,Indonesia,69,7020202800
+HRTA.JK,Consumer Cyclical,Luxury Goods,Indonesia,2101.9553,32471300
+ICBP.JK,Consumer Defensive,Packaged Foods,Indonesia,7765.9927,4906200
+INCO.JK,Basic Materials,Other Industrial Metals & Mining,Indonesia,5209.2593,26022500
+INDF.JK,Consumer Defensive,Packaged Foods,Indonesia,6394.4565,7568100
+INDY.JK,Energy,Thermal Coal,Indonesia,2249.6133,21431600
+INKP.JK,Basic Materials,Paper & Paper Products,Indonesia,8680.9824,8834600
+ISAT.JK,Communication Services,Telecom Services,Indonesia,2249.4685,3646300
+ITMG.JK,Energy,Thermal Coal,Indonesia,21166.5,797600
+JPFA.JK,Consumer Defensive,Farm Products,Indonesia,2592.6338,48460600
+KLBF.JK,Healthcare,Drug Manufacturers - General,Indonesia,1171.9863,33532500
+MAPI.JK,Consumer Cyclical,Department Stores,Indonesia,1172.2368,9808000
+MBMA.JK,Basic Materials,Other Industrial Metals & Mining,Indonesia,620,390788900
+MDKA.JK,Basic Materials,Other Industrial Metals & Mining,Indonesia,2318.7305,33768500
+MEDC.JK,Energy,Oil & Gas E&P,Indonesia,1411.8242,98009000
+NCKL.JK,Basic Materials,Other Industrial Metals & Mining,Indonesia,1104.7871,80059400
+PGAS.JK,Utilities,Utilities - Regulated Gas,Indonesia,1789.0568,27636600
+PGEO.JK,Utilities,Utilities - Renewable,Indonesia,1075.2257,16324700
+PTBA.JK,Energy,Thermal Coal,Indonesia,2216.6309,6217500
+SMGR.JK,Basic Materials,Building Materials,Indonesia,2618.9331,8286200
+TLKM.JK,Communication Services,Telecom Services,Indonesia,3208.3833,34812500
+UNTR.JK,Basic Materials,Other Industrial Metals & Mining,Indonesia,28532.4062,2932800
+UNVR.JK,Consumer Defensive,Household & Personal Products,Indonesia,2440.6125,7859600
+WIFI.JK,Communication Services,Telecom Services,Indonesia,3325.939,51232000

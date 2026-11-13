@@ -1,0 +1,25 @@
+# etage: psi
+# name: PSI
+# point: T0
+# date: 2026-01-02
+# currency: EUR
+# mic: XLIS
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : l'indice PSI (ex-PSI 20) compte 16 cotées. 14 mnémoniques et pondérations figurent sur la fiche Euronext du 30 sept. 2026 ; Ibersol (IBS) et Teixeira Duarte (TDSA, entrée le 21 sept. 2025) complètent la liste MarketScreener au 6 nov. 2026. La revue Euronext de juin 2026 n'a pas modifié la composition (Jornal Económico, 9 juin 2026). La table Wikipédia (Novabase, Pharol, Sonae Capital) est périmée et n'a pas été utilisée. Ce n'est pas la composition historique de T0. Cours ajustés et volumes : Yahoo Finance, séance du 2026-01-02. Secteur, industrie et pays : résumé de cotation Yahoo.
+s,sec,ind,cty,price,volume
+BCP.LS,Financial Services,Banks - Regional,Portugal,0.8718,56545542
+EDP.LS,Utilities,Utilities - Diversified,Portugal,3.8253,7133050
+GALP.LS,Energy,Oil & Gas Integrated,Portugal,14.1804,1668617
+EDPR.LS,Utilities,Utilities - Renewable,Spain,12.4737,817182
+SON.LS,Consumer Defensive,Grocery Stores,Portugal,1.5855,1912981
+JMT.LS,Consumer Defensive,Food Distribution,Portugal,19.7108,417792
+RENE.LS,Utilities,Utilities - Diversified,Portugal,3.1657,549490
+NOS.LS,Communication Services,Telecom Services,Portugal,3.717,661402
+NVG.LS,Basic Materials,Paper & Paper Products,Portugal,3.1025,1835126
+CTT.LS,Industrials,Integrated Freight & Logistics,Portugal,7.1999,195106
+EGL.LS,Industrials,Engineering & Construction,Portugal,4.8221,1877188
+SEM.LS,Basic Materials,Paper & Paper Products,Portugal,20.9867,25733
+COR.LS,Basic Materials,Lumber & Wood Production,Portugal,6.468,177313
+ALTR.LS,Basic Materials,Paper & Paper Products,Portugal,4.3329,241287
+IBS.LS,Consumer Cyclical,Restaurants,Portugal,9.2856,26687
+TDSA.LS,Industrials,Engineering & Construction,Portugal,0.644,5056553

@@ -1,0 +1,29 @@
+# etage: iseq20
+# name: ISEQ 20
+# point: T1
+# date: 2026-11-04
+# currency: EUR
+# mic: XDUB
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : table publique Wikipédia de l'ISEQ 20 « as of July 2026 » (https://en.wikipedia.org/wiki/ISEQ_20), 20 titres, recoupée avec la fiche Euronext du 30 sept. 2026 (les 10 plus lourds : RYA, A5G, BIRG, KRX, KRZ, GL9, HMSO, C5H, GVR, UPR) et whichindex. Le mnémonique officiel de Ryanair est RYA (Yahoo RYA.IR ; RY4C.IR n'a pas de série). Hammerson est pris en cotation Dublin (HMSO.IR). Ce n'est pas la composition historique de T0. Cours ajustés et volumes : Yahoo Finance, séance du 2026-11-04. Secteur, industrie et pays : résumé de cotation Yahoo.
+s,sec,ind,cty,price,volume
+RYA.IR,Industrials,Airlines,Ireland,25.33,3975311
+A5G.IR,Financial Services,Banks - Regional,Ireland,11.61,7207129
+BIRG.IR,Financial Services,Banks - Regional,Ireland,19.265,3186969
+KRX.IR,Industrials,Building Products & Equipment,Ireland,92.75,501358
+KRZ.IR,Consumer Defensive,Packaged Foods,Ireland,100,405058
+GL9.IR,Consumer Defensive,Packaged Foods,Ireland,21.88,776247
+HMSO.IR,Real Estate,REIT - Retail,United Kingdom,3.58,0
+C5H.IR,Consumer Cyclical,Residential Construction,Ireland,2.77,1130932
+GVR.IR,Consumer Cyclical,Residential Construction,Ireland,2.465,673862
+UPR.IR,Healthcare,Medical Distribution,Ireland,4.23,207432
+IR5B.IR,Industrials,Marine Shipping,Ireland,7.96,41761
+GRP.IR,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],0.771,0
+IRES.IR,Real Estate,REIT - Residential,Ireland,1.302,7672511
+PTSB.IR,Financial Services,Banks - Regional,Ireland,2.95,30708
+EG7.IR,Financial Services,Insurance - Property & Casualty,Ireland,19.6,1465
+OIZ.IR,Basic Materials,Agricultural Inputs,Ireland,4.19,19052
+DQ7A.IR,Consumer Defensive,Farm Products,Ireland,9.5,4
+KMR.IR,Basic Materials,Other Industrial Metals & Mining,Ireland,2.98,898
+MLC.IR,Healthcare,Drug Manufacturers - Specialty & Generic,Ireland,5.95,0
+MIO.IR,Industrials,Tools & Accessories,Ireland,0.9195,7

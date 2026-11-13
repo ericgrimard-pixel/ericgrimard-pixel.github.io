@@ -1,0 +1,29 @@
+# etage: atx
+# name: ATX
+# point: T0
+# date: 2026-01-02
+# currency: EUR
+# mic: XWBO
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : composition officielle de la Wiener Börse, page ATX (ISIN AT0000999982), 20 titres au 12 nov. 2026 (https://www.wienerborse.at/en/index/atx-AT0000999982/composition/), tickers recoupés avec whichindex (https://whichindex.com/indexes/atx/). Ce n'est pas la composition historique de T0. La table Wikipédia (Immofinanz, Schoeller-Bleckmann encore cités) est périmée et n'a pas été utilisée. Cours ajustés et volumes : Yahoo Finance, séance du 2026-01-02. Secteur, industrie et pays : résumé de cotation Yahoo.
+s,sec,ind,cty,price,volume
+EBS.VI,Financial Services,Banks - Regional,Austria,103.1383,342308
+BG.VI,Financial Services,Banks - Regional,Austria,124.6895,69373
+OMV.VI,Energy,Oil & Gas Integrated,Austria,44.9293,316134
+RBI.VI,Financial Services,Banks - Regional,Austria,36.3204,263744
+ANDR.VI,Industrials,Specialty Industrial Machinery,Austria,63.8618,49603
+VER.VI,Utilities,Utilities - Renewable,Austria,59.2878,97918
+VOE.VI,Basic Materials,Steel,Austria,37.7057,200990
+STR.VI,Industrials,Engineering & Construction,Austria,78.0138,24959
+ATS.VI,Technology,Electronic Components,Austria,32.8,76165
+VIG.VI,Financial Services,Insurance - Diversified,Austria,65.9983,48007
+UQA.VI,Financial Services,Insurance - Diversified,Austria,14.7415,91341
+DOC.VI,Industrials,Airports & Air Services,Austria,200.0062,8463
+WIE.VI,Basic Materials,Building Materials,Austria,29.057,190930
+EVN.VI,Utilities,Utilities - Diversified,Austria,26.5669,47589
+POST.VI,Industrials,Integrated Freight & Logistics,Austria,29.7248,32715
+CAI.VI,Real Estate,Real Estate Services,Austria,21.7873,55048
+POS.VI,Industrials,Engineering & Construction,Austria,31.5592,23514
+MMK.VI,Consumer Cyclical,Packaging & Containers,Austria,92.5949,12474
+PAL.VI,Industrials,Farm & Heavy Construction Machinery,Austria,32.9722,13807
+LNZ.VI,Consumer Cyclical,Textile Manufacturing,Austria,23.95,76033

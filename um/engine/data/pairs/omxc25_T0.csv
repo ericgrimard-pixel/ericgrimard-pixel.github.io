@@ -1,0 +1,34 @@
+# etage: omxc25
+# name: OMX Copenhagen 25
+# point: T0
+# date: 2026-01-02
+# currency: DKK
+# mic: XCSE
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : table publique Wikipédia de l'OMX Copenhagen 25 « as of July 2026 » (https://en.wikipedia.org/wiki/OMX_Copenhagen_25), 25 cotations (deux classes Maersk), recoupée avec la page des composants Yahoo ^OMXC25 (Nordea NDA-DK inclus ; Bavarian Nordic plus dans l'indice, contrairement à la fiche Nasdaq datée du 1er mai 2026). Ce n'est pas la composition historique de T0. Cours ajustés et volumes : Yahoo Finance, séance du 2026-01-02. Secteur, industrie et pays : résumé de cotation Yahoo.
+s,sec,ind,cty,price,volume
+MAERSK-A.CO,Industrials,Marine Shipping,Denmark,14321.1689,2951
+MAERSK-B.CO,Industrials,Marine Shipping,Denmark,14269.2842,11592
+ALSYDB.CO,Financial Services,Banks - Regional,Denmark,542.8862,92721
+AMBU-B.CO,Healthcare,Medical Devices,Denmark,86.25,885476
+CARL-B.CO,Consumer Defensive,Beverages - Brewers,Denmark,798.8009,139763
+COLO-B.CO,Healthcare,Medical Instruments & Supplies,Denmark,529.6833,301374
+DANSKE.CO,Financial Services,Banks - Regional,Denmark,291.1144,759248
+DEMANT.CO,Healthcare,Medical Devices,Denmark,213.4,139830
+DSV.CO,Industrials,Integrated Freight & Logistics,Denmark,1592.9404,147292
+FLS.CO,Industrials,Specialty Industrial Machinery,Denmark,446.4793,89048
+GMAB.CO,Healthcare,Biotechnology,Denmark,2007,98912
+GN.CO,Healthcare,Medical Devices,Denmark,109.9,773341
+ISS.CO,Industrials,Specialty Business Services,Denmark,212.7701,255284
+JYSK.CO,Financial Services,Banks - Regional,Denmark,852.6417,100633
+NKT.CO,Industrials,Electrical Equipment & Parts,Denmark,824,87997
+NDA-DK.CO,Financial Services,Banks - Regional,Finland,120.7081,305257
+NOVO-B.CO,Healthcare,Drug Manufacturers - General,Denmark,315.2255,4482888
+NSIS-B.CO,Basic Materials,Specialty Chemicals,Denmark,394.7569,393982
+PNDORA.CO,Consumer Cyclical,Luxury Goods,Denmark,663.0123,252150
+ROCK-B.CO,Industrials,Building Products & Equipment,Denmark,219.4029,214871
+RBREW.CO,Consumer Defensive,Beverages - Brewers,Denmark,539.6489,69037
+TRYG.CO,Financial Services,Insurance - Diversified,Denmark,156.2722,364051
+VWS.CO,Industrials,Specialty Industrial Machinery,Denmark,177.9524,2313451
+ZEAL.CO,Healthcare,Biotechnology,Denmark,460.1,295332
+ORSTED.CO,Utilities,Utilities - Renewable,Denmark,128,1671521

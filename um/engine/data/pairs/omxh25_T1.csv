@@ -1,0 +1,34 @@
+# etage: omxh25
+# name: OMX Helsinki 25
+# point: T1
+# date: 2026-11-04
+# currency: EUR
+# mic: XHEL
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : liste whichindex de l'OMX Helsinki 25 au 30 oct. 2026, citant Nasdaq Global Index Watch (https://whichindex.com/indexes/omx-helsinki-25/), 25 titres (Lumo Kodit et Bittium inclus ; Kojamo et Kalmar sortis par rapport à la table Wikipédia de juillet 2025). Ce n'est pas la composition historique de T0. Cours ajustés et volumes : Yahoo Finance, séance du 2026-11-04. Secteur, industrie et pays : résumé de cotation Yahoo.
+s,sec,ind,cty,price,volume
+NOKIA.HE,Technology,Communication Equipment,Finland,7.402,20034596
+KNEBV.HE,Industrials,Specialty Industrial Machinery,Finland,58.34,800349
+SAMPO.HE,Financial Services,Insurance - Diversified,Finland,9.85,6991174
+NESTE.HE,Energy,Oil & Gas Refining & Marketing,Finland,28.16,1716707
+FORTUM.HE,Utilities,Utilities - Renewable,Finland,23.05,1074911
+WRT1V.HE,Industrials,Specialty Industrial Machinery,Finland,25.38,1607156
+METSO.HE,Industrials,Farm & Heavy Construction Machinery,Finland,17,2048680
+ORNBV.HE,Healthcare,Drug Manufacturers - General,Finland,101.5,211959
+UPM.HE,Basic Materials,Paper & Paper Products,Finland,22.655,1616584
+KESKOB.HE,Consumer Defensive,Grocery Stores,Finland,25.8845,653398
+STERV.HE,Consumer Cyclical,Packaging & Containers,Finland,9.772,2049149
+KCR.HE,Industrials,Farm & Heavy Construction Machinery,Finland,28.26,428372
+VALMT.HE,Industrials,Specialty Industrial Machinery,Finland,29.22,294989
+ELISA.HE,Communication Services,Telecom Services,Finland,34.18,958502
+HIAB.HE,Industrials,Farm & Heavy Construction Machinery,Finland,49.5,158110
+MANTA.HE,Financial Services,Financial Conglomerates,Finland,5.995,1187884
+HUH1V.HE,Consumer Cyclical,Packaging & Containers,Finland,26.76,458607
+KEMIRA.HE,Basic Materials,Chemicals,Finland,15.79,243419
+OUT1V.HE,Basic Materials,Steel,Finland,4.594,1014775
+TIETO.HE,Technology,Information Technology Services,Finland,19.04,320033
+LUMO.HE,Real Estate,Real Estate Services,Finland,7.305,532697
+TYRES.HE,Consumer Cyclical,Auto Parts,Finland,13.82,362947
+BITTI.HE,Technology,Communication Equipment,Finland,34.85,141820
+QTCOM.HE,Technology,Software - Application,Finland,34.42,107463
+NDA-FI.HE,Financial Services,Banks - Regional,Finland,16.37,6480001

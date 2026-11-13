@@ -1,0 +1,39 @@
+# etage: vn30
+# name: VN30
+# point: T1
+# date: 2026-11-04
+# currency: VND
+# mic: XSTC
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : communiqué officiel HoSE « Công bố thông tin danh mục cổ phiếu thành phần chỉ số VN30 », kỳ 7/2026, 30 titres, effectif le 3 août 2026 (PDF Vietstock, https://static2.vietstock.vn/vietstock/2026/7/15/15072026_cbtt___danh_muc_thanh_phan_hose_index_thang_7_2026.pdf). Entrées : MCH (Masan Consumer) et TCX (TCBS) ; sorties : TPB et PLX. Ce n'est pas la composition historique de T0. Cours ajustés et volumes : Yahoo Finance, séance du 2026-11-04. Secteur, industrie et pays : résumé de cotation Yahoo.
+s,sec,ind,cty,price,volume
+ACB.VN,Financial Services,Banks - Regional,Vietnam,20500,11819700
+BID.VN,Financial Services,Banks - Regional,Vietnam,32450,4384800
+BSR.VN,Energy,Oil & Gas Refining & Marketing,Vietnam,26500,11872000
+CTG.VN,Financial Services,Banks - Regional,Vietnam,31050,10975700
+FPT.VN,Technology,Information Technology Services,Vietnam,53900,12822500
+GAS.VN,Energy,Oil & Gas Integrated,Vietnam,75600,593600
+GVR.VN,Basic Materials,Specialty Chemicals,Vietnam,29786.3008,1356000
+HDB.VN,Financial Services,Banks - Regional,Vietnam,22200,14181500
+HPG.VN,Basic Materials,Steel,Vietnam,21700,38465700
+LPB.VN,Financial Services,Banks - Regional,Vietnam,36300,1676800
+MBB.VN,Financial Services,Banks - Regional,Vietnam,19250,19527900
+MCH.VN,Consumer Defensive,Packaged Foods,Vietnam,133700,147400
+MSN.VN,Industrials,Conglomerates,Vietnam,72300,5245400
+MWG.VN,Consumer Cyclical,Specialty Retail,Vietnam,74500,2700200
+SAB.VN,Consumer Defensive,Beverages - Brewers,Vietnam,42350,482100
+SHB.VN,Financial Services,Banks - Regional,Vietnam,10750,46906600
+SSB.VN,Financial Services,Banks - Regional,Vietnam,15150,2378700
+SSI.VN,Financial Services,Capital Markets,Vietnam,20400,47036100
+STB.VN,Financial Services,Banks - Regional,Vietnam,67700,3662900
+TCB.VN,Financial Services,Banks - Regional,Vietnam,21850,12234200
+TCX.VN,Financial Services,Asset Management,Vietnam,28350,5485500
+VCB.VN,Financial Services,Banks - Regional,Vietnam,54800,4883500
+VHM.VN,Real Estate,Real Estate - Development,Vietnam,63200,4951200
+VIB.VN,Financial Services,Banks - Regional,Vietnam,14250,9168100
+VIC.VN,Real Estate,Real Estate Services,Vietnam,234000,1431900
+VJC.VN,Industrials,Airlines,Vietnam,134400,1143800
+VNM.VN,Consumer Defensive,Packaged Foods,Vietnam,54921.5898,3430600
+VPB.VN,Financial Services,Banks - Regional,Vietnam,22150,16232600
+VPL.VN,Consumer Cyclical,Resorts & Casinos,Vietnam,90600,757200
+VRE.VN,Real Estate,Real Estate - Diversified,Vietnam,24200,2763700

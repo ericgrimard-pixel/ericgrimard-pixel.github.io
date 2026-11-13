@@ -1,0 +1,29 @@
+# etage: atx
+# name: ATX
+# point: T1
+# date: 2026-11-04
+# currency: EUR
+# mic: XWBO
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : composition officielle de la Wiener Börse, page ATX (ISIN AT0000999982), 20 titres au 12 nov. 2026 (https://www.wienerborse.at/en/index/atx-AT0000999982/composition/), tickers recoupés avec whichindex (https://whichindex.com/indexes/atx/). Ce n'est pas la composition historique de T0. La table Wikipédia (Immofinanz, Schoeller-Bleckmann encore cités) est périmée et n'a pas été utilisée. Cours ajustés et volumes : Yahoo Finance, séance du 2026-11-04. Secteur, industrie et pays : résumé de cotation Yahoo.
+s,sec,ind,cty,price,volume
+EBS.VI,Financial Services,Banks - Regional,Austria,110.9,596149
+BG.VI,Financial Services,Banks - Regional,Austria,164.5,179400
+OMV.VI,Energy,Oil & Gas Integrated,Austria,72.4,297778
+RBI.VI,Financial Services,Banks - Regional,Austria,59.9,639202
+ANDR.VI,Industrials,Specialty Industrial Machinery,Austria,81.9,96154
+VER.VI,Utilities,Utilities - Renewable,Austria,69.4,115135
+VOE.VI,Basic Materials,Steel,Austria,41.82,212696
+STR.VI,Industrials,Engineering & Construction,Austria,102.8,30478
+ATS.VI,Technology,Electronic Components,Austria,130.6,246333
+VIG.VI,Financial Services,Insurance - Diversified,Austria,72.7,33465
+UQA.VI,Financial Services,Insurance - Diversified,Austria,18.16,100203
+DOC.VI,Industrials,Airports & Air Services,Austria,214,14502
+WIE.VI,Basic Materials,Building Materials,Austria,17.41,773168
+EVN.VI,Utilities,Utilities - Diversified,Austria,30.35,36006
+POST.VI,Industrials,Integrated Freight & Logistics,Austria,32,24365
+CAI.VI,Real Estate,Real Estate Services,Austria,21.4,45220
+POS.VI,Industrials,Engineering & Construction,Austria,32.25,59600
+MMK.VI,Consumer Cyclical,Packaging & Containers,Austria,67.7,22969
+PAL.VI,Industrials,Farm & Heavy Construction Machinery,Austria,27.35,40290
+LNZ.VI,Consumer Cyclical,Textile Manufacturing,Austria,11.48,292987

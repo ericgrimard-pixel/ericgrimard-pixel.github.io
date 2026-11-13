@@ -17,9 +17,9 @@
   };
   const MIC={
     XNYS:['na','United States'], XNAS:['na','United States'], BATS:['na','United States'],
-    XLON:['eur','United Kingdom'], XPAR:['eur','France'], XETR:['eur','Germany'], XWAR:['eur','Poland'], XBRU:['eur','Belgium'], XOSL:['eur','Norway'],
+    XLON:['eur','United Kingdom'], XPAR:['eur','France'], XETR:['eur','Germany'], XWAR:['eur','Poland'], XBRU:['eur','Belgium'], XOSL:['eur','Norway'], XWBO:['eur','Austria'], XCSE:['eur','Denmark'], XHEL:['eur','Finland'], XLIS:['eur','Portugal'], XDUB:['eur','Ireland'],
     XTKS:['apac','Japan'], XHKG:['apac','Hong Kong'], XSES:['apac','Singapore'],
-    XASX:['apac','Australia'], XBKK:['apac','Thailand'], XNZE:['apac','New Zealand'], XTAI:['apac','Taiwan'], XKLS:['apac','Malaysia'],
+    XASX:['apac','Australia'], XBKK:['apac','Thailand'], XNZE:['apac','New Zealand'], XTAI:['apac','Taiwan'], XKLS:['apac','Malaysia'], XIDX:['apac','Indonesia'], XSTC:['apac','Vietnam'],
     XSAU:['mea','Saudi Arabia'], XTAE:['mea','Israel'], DSMD:['mea','Qatar'], XCAI:['mea','Egypt'], XIST:['mea','Turkey'],
     XB3:['latam','Brazil'], XBOG:['latam','Colombia'], XBUE:['latam','Argentina'], XSGO:['latam','Chile']
   };
@@ -106,6 +106,8 @@
     'floor/MEF/index/TA35':'ta35', 'floor/MEF/index/QE':'qe', 'floor/MEF/index/EGX30':'egx30', 'floor/MEF/index/BIST30':'bist30',
     'floor/ASF/index/KLCI':'klci',
     'floor/EUF/index/BEL20':'bel20', 'floor/EUF/index/OBX':'obx',
+    'floor/EUF/index/ATX':'atx', 'floor/EUF/index/OMXC25':'omxc25', 'floor/EUF/index/OMXH25':'omxh25', 'floor/EUF/index/PSI':'psi', 'floor/EUF/index/ISEQ20':'iseq20',
+    'floor/ASF/index/LQ45':'lq45', 'floor/ASF/index/VN30':'vn30',
     'floor/NSF':'', 'floor/EWF':''
   };
   const ocf=floors.find(f=>f.level==='country'&&f.zone==='apac'&&f.cty==='Australia');
