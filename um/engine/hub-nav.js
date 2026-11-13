@@ -28,11 +28,40 @@
     if(!raw||raw==='world') return 'world';
     return (typeof LIB!=='undefined'&&LIB.some(x=>x.id===raw&&x.data))?raw:'';
   }
+  function bloomNow(){ return (window.UM_BLOOM|0); }
+  function bloomMax(){ return window.UM_BLOOM_MAX||0; }
+  function layerName(depth){
+    const names=window.UM_BLOOM_LAYER||[];
+    return names[depth]||('couche '+depth);
+  }
+  function applyWorldBloom(b){
+    window.UM_BLOOM=b;
+    window.UM_BLOOM_HOLD=b;
+    if(window.__umSetBloom) window.__umSetBloom(b);
+  }
+  function collapseBloom(){
+    if(typeof CURSYS==='string'&&CURSYS==='world'&&bloomNow()>0){ history.back(); return true; }
+    return false;
+  }
+  window.UM_BLOOM=0;
+  window.UM_BLOOM_STEP=function(){
+    if(typeof CURSYS!=='string'||CURSYS!=='world') return;
+    const cur=bloomNow();
+    const max=bloomMax();
+    if(!max||cur>=max) return;
+    const next=cur+1;
+    window.UM_BLOOM=next;
+    window.UM_BLOOM_HOLD=next;
+    try{ history.pushState({bloom:next},'',location.pathname+location.search+'#/world'); }catch(e){}
+    if(window.__umSetBloom) window.__umSetBloom(next);
+    render('world');
+  };
   function render(id){
     const f=floor(id);
     const name=f?f.name:(id==='world'?'Finance':id);
     const parent=f&&f.parent;
     const kids=(f&&f.children)||[];
+    const blooming=id==='world'&&bloomNow()>0;
     const bits=['<button type="button" id="hub-center" data-up="'+(parent||'')+'">'+esc(name)+'</button>'];
     kids.forEach(cid=>{
       const c=floor(cid); if(!c) return;
@@ -40,16 +69,22 @@
     });
     nav.innerHTML=bits.join('');
     const center=document.getElementById('hub-center');
-    if(center&&parent) center.addEventListener('click',()=>switchSys(parent));
+    if(center&&(parent||blooming)) center.addEventListener('click',()=>{ if(!collapseBloom()&&parent) switchSys(parent); });
     nav.querySelectorAll('[data-down]').forEach(btn=>{
       btn.addEventListener('click',()=>switchSys(btn.getAttribute('data-down')));
     });
     const parentName=parent?(floor(parent)?floor(parent).name:parent):'';
-    const upLabel=parent?('↑ '+parentName):name;
-    bar.innerHTML='<button type="button" id="hub-up-btn"'+(parent?'':' disabled')+'>'+esc(upLabel)+'</button>'
-      +'<p class="hint">Descendre : un clic sur une porte ou sur un étage. Remonter : ↑ ou un clic sur la Classe 4.</p>';
+    const upLabel=blooming?(bloomNow()<=1?'↑ Finance':'↑ '+layerName(bloomNow()-1)):(parent?('↑ '+parentName):name);
+    const max=bloomMax();
+    const hint=id==='world'
+      ? (max&&bloomNow()>=max
+        ? 'Vision complète du marché. Un clic sur un objet descend. ↑ ou Retour replie une couche.'
+        : 'Double-clic sur la Classe 4 : ouvrir la couche suivante ('+bloomNow()+'/'+max+'). Un clic sur un objet descend. ↑ ou Retour replie une couche.')
+      : 'Descendre : un clic sur une porte ou sur un étage. Remonter : ↑ ou un clic sur la Classe 4.';
+    bar.innerHTML='<button type="button" id="hub-up-btn"'+((parent||blooming)?'':' disabled')+'>'+esc(upLabel)+'</button>'
+      +'<p class="hint">'+esc(hint)+'</p>';
     const up=document.getElementById('hub-up-btn');
-    if(up&&parent) up.addEventListener('click',()=>switchSys(parent));
+    if(up&&(parent||blooming)) up.addEventListener('click',()=>{ if(!collapseBloom()&&parent) switchSys(parent); });
   }
   function esc(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
   function mark(raw){
@@ -65,14 +100,28 @@
   switchSys=function(id,keep){
     if(navigating) return;
     navigating=true;
-    try{ orig(id,keep); render(id); }
+    try{
+      if(typeof CURSYS==='string'&&CURSYS==='world'&&id!=='world') window.UM_BLOOM_HOLD=bloomNow();
+      orig(id,keep);
+      if(id==='world'){
+        const stated=history.state&&typeof history.state.bloom==='number';
+        const b=stated?history.state.bloom:(window.UM_BLOOM_HOLD||0);
+        applyWorldBloom(b);
+        if(!stated){ try{ history.replaceState({bloom:b},'',location.pathname+location.search+'#/world'); }catch(e){} }
+      }else window.UM_BLOOM=0;
+      render(id);
+    }
     finally{ navigating=false; }
   };
   function onRoute(){
     if(navigating) return;
     const id=resolve(rawHash())||'world';
-    if(id!==CURSYS) switchSys(id);
-    else render(id);
+    if(id!==CURSYS){ switchSys(id); return; }
+    if(id==='world'){
+      const b=(history.state&&typeof history.state.bloom==='number')?history.state.bloom:(window.UM_BLOOM_HOLD||0);
+      applyWorldBloom(b);
+    }
+    render(id);
   }
   /* These listeners must outlive a floor change. Listeners added while a
      system is running are aborted with that system, so this one carries
@@ -80,6 +129,7 @@
   const keep=new AbortController();
   addEventListener('hashchange', onRoute, {signal:keep.signal});
   addEventListener('popstate', onRoute, {signal:keep.signal});
+  try{ history.replaceState({bloom:0},'',location.pathname+location.search+'#/world'); }catch(e){}
   render(typeof CURSYS==='string'&&CURSYS?CURSYS:'world');
   const raw=rawHash();
   if(raw && !resolve(raw)) mark(raw);

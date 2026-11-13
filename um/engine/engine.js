@@ -468,7 +468,7 @@ function fixOrder(cu){
 }
 function normalizeAttr(k){
   const id=eff(k),raw=LN[id],P=[];
-  for(let i=0;i<N1;i++)for(const d of (TWO&&id==='ytd'?[S.T1]:[S.T0,S.T1])){const j=i*F+d;if(PRES[j]&&Number.isFinite(raw[j]))P.push(raw[j])}
+  for(let i=0;i<N1;i++)for(const d of (TWO&&id==='ytd'?[S.T1]:[S.T0,S.T1])){const j=i*F+d;if(PRES[j]&&!(TK[i]&&TK[i].nz0)&&Number.isFinite(raw[j]))P.push(raw[j])}
   P.sort((a,b)=>a-b);POOL[k]=P;
   const cu=S.cut[k];
   if(!S.session&&(cu.auto||cu.line!==id)){cu.c=[.2,.4,.6,.8].map(q=>quant(P,q));cu.auto=true}
@@ -502,7 +502,7 @@ function collapse(){
     for(let i=0;i<N1;i++){
       const j=i*F+d;if(!PRES0[j]){VI[j]=NaN;continue}
       let m=0;for(let k=0;k<9;k++)m+=TAU*(1+V[j*10+k]);
-      VI[j]=m/9;if(PRES[j]){s+=VI[j];n++}
+      VI[j]=m/9;if(PRES[j]&&!(TK[i]&&TK[i].nz0)){s+=VI[j];n++}
     }
     ZZ[d]=n?s/n:NaN;
   }
@@ -525,7 +525,7 @@ function cardinals(){
   const acc=new Float64Array(10);
   CARDS.forEach((c,ci)=>{for(let d=0;d<F;d++){
     acc.fill(0);let W=0,n=0;
-    for(const i of c.members){const j=i*F+d;if(!PRES0[j]||(c.tk&&!c.tk[j]))continue;const w=wOf(j);W+=w;n++;for(let k=0;k<10;k++)acc[k]+=w*V[j*10+k]}
+    for(const i of c.members){const j=i*F+d;if(!PRES0[j]||(c.tk&&!c.tk[j])||(TK[i]&&TK[i].nz0))continue;const w=wOf(j);W+=w;n++;for(let k=0;k<10;k++)acc[k]+=w*V[j*10+k]}
     const q=ci*F+d;CP[q]=n?1:0;CW[q]=W;CN[q]=n;
     for(let k=0;k<10;k++)CV[q*10+k]=n?acc[k]/W:0;
   }});
@@ -536,7 +536,7 @@ const c3v=(z,ti)=>C3N[z*2+ti]?Array.from(C3V.subarray((z*2+ti)*10,(z*2+ti)*10+10
 function containers(){
   C3V.fill(0);C3N.fill(0);
   [S.T0,S.T1].forEach((d,ti)=>{for(let z=0;z<5;z++){if(!C3ON[z])continue;const acc=new Float64Array(10);let W=0,n=0;
-    for(let i=0;i<N1;i++){const j=i*F+d;if(!PRES[j]||boxOf(V[j*10],V[j*10+1],V[j*10+2])!==z)continue;const w=wOf(j);W+=w;n++;for(let k=0;k<10;k++)acc[k]+=w*V[j*10+k]}
+    for(let i=0;i<N1;i++){const j=i*F+d;if(!PRES[j]||(TK[i]&&TK[i].nz0)||boxOf(V[j*10],V[j*10+1],V[j*10+2])!==z)continue;const w=wOf(j);W+=w;n++;for(let k=0;k<10;k++)acc[k]+=w*V[j*10+k]}
     C3N[z*2+ti]=n;for(let k=0;k<10;k++)C3V[(z*2+ti)*10+k]=n?acc[k]/W:0}});
 }
 /* Class 4 vivante (Éric, 10 Nov., 18 h 30, via YB1 v20.21: « in the core, everywhere »): one shared path for every system.
@@ -549,7 +549,7 @@ const C4V=new Float32Array(2*10),C4N=new Uint16Array(2),C4CE=new Float64Array(2)
 function c4live(){
   C4V.fill(0);C4N.fill(0);C4CE.fill(NaN);
   [S.T0,S.T1].forEach((d,ti)=>{const acc=new Float64Array(10);let m=0,n=0,ce=0;const Z=ti?Z0B:Z0A;
-    for(let i=0;i<N1;i++){const j=i*F+d;if(!PRES[j])continue;n++;m++;for(let k=0;k<10;k++)acc[k]+=V[j*10+k];
+    for(let i=0;i<N1;i++){const j=i*F+d;if(!PRES[j]||(TK[i]&&TK[i].nz0))continue;n++;m++;for(let k=0;k<10;k++)acc[k]+=V[j*10+k];
       ce+=Math.hypot(V[j*10]-Z[0],V[j*10+1]-Z[1],V[j*10+2]-Z[2])}
     if(S.layers.z0c2)for(let c=0;c<NC;c++){if(!S.layers[CARDS[c].ty])continue;const q=c*F+d;if(!CP[q])continue;m++;for(let k=0;k<10;k++)acc[k]+=CV[q*10+k]}
     if(S.layers.z0c3)for(let z=0;z<5;z++){if(!(C3ON[z]&&C3N[z*2+ti]))continue;m++;for(let k=0;k<10;k++)acc[k]+=k<3?C3T[z]:C3V[(z*2+ti)*10+k]}
@@ -1088,7 +1088,7 @@ function zp(VV,A,B,dA,dB,u,k){
 }
 function z0Compute(){
   [S.T0,S.T1].forEach((d,ti)=>{const s=[0,0,0];let n=0;
-    for(let i=0;i<N1;i++){const j=i*F+d;if(!PRES[j])continue;s[0]+=V[j*10];s[1]+=V[j*10+1];s[2]+=V[j*10+2];n++}
+    for(let i=0;i<N1;i++){const j=i*F+d;if(!PRES[j]||(TK[i]&&TK[i].nz0))continue;s[0]+=V[j*10];s[1]+=V[j*10+1];s[2]+=V[j*10+2];n++}
     if(S.layers.z0c2)for(let c=0;c<NC;c++){if(!S.layers[CARDS[c].ty])continue;const q=c*F+d;if(!CP[q])continue;s[0]+=CV[q*10];s[1]+=CV[q*10+1];s[2]+=CV[q*10+2];n++}
     if(S.layers.z0c3)for(let z=0;z<5;z++){if(C3ON[z]&&C3N[z*2+ti]){const t=C3T[z];s[0]+=t;s[1]+=t;s[2]+=t;n++}}
     const Z=ti?Z0B:Z0A;for(let a=0;a<3;a++)Z[a]=n?s[a]/n:0;Z0N[ti]=n;
@@ -1176,7 +1176,7 @@ function buildThrowFrame(d){
   THR.d=d;const h=S.thr,g=THR.pts.geometry;THR.now=null;THR.nowR=null;
   if(!S.ghost||!h){g.setDrawRange(0,0);THRREP.fill(EMPTYL);updThrSel();return}
   const items=[],D=[0,0,0],allow=repAllow(),q=new THREE.Quaternion(),e=new THREE.Euler();g.setDrawRange(0,0);
-  for(let i=0;i<N1;i++){const j=i*F+d;if(!PRES[j]||!S.layers.c1)continue;if(allow&&!allow.has(i))continue;if(!thrDelta(i,d,h,D))continue;
+  for(let i=0;i<N1;i++){const j=i*F+d;if(!PRES[j]||!S.layers.c1)continue;if(TK[i]&&TK[i].nz0&&TK[i].bloom>bloomLevel)continue;if(allow&&!allow.has(i))continue;if(!thrDelta(i,d,h,D))continue;
     for(let k=1;k<=h;k++){const u=k/h;items.push(i,clamp1(V[j*10]+CY(0,D[0],u)),clamp1(V[j*10+1]+CY(0,D[1],u)),clamp1(V[j*10+2]+CY(0,D[2],u)))}}
   THRREP.fill({n:items.length/4,zone:k=>zoneOf(V[(items[k*4]*F+d)*10+3]),get:(k,o)=>{const i=items[k*4],j=(i*F+d)*10,X=items[k*4+1],p=w3v(X,items[k*4+2],items[k*4+3]);
     e.set(LV.pitch[zoneOf(V[j+6])],Math.PI/2-AZ(X),-LV.roll[zoneOf(V[j+8])],'YXZ');q.setFromEuler(e);const c=satRGB(zoneOf(V[j+5]),LV.sat[zoneOf(V[j+9])]);
@@ -1243,16 +1243,55 @@ function focusDim(o){
   if(f.kind===1&&o.kind===2&&CARDS[o.idx].mset.has(f.idx))return .8;
   return .12;
 }
+let bloomLevel=0,bloomPrev=0,bloomT0=0;
+function bloomK(depth){
+  const u=Math.min(1,(performance.now()-bloomT0)/800),e=u*u*(3-2*u);
+  if(depth>bloomPrev&&depth<=bloomLevel) return e;
+  if(depth<=bloomPrev&&depth>bloomLevel) return 1-e;
+  return depth<=bloomLevel?1:0;
+}
+if(SYS.id==='world'){
+  window.__umSetBloom=function(level){
+    bloomPrev=bloomLevel;bloomLevel=level;bloomT0=performance.now();dirty=true;
+  };
+  window.__umBloomInfo=function(){
+    const layers={}, floors=[];
+    let vis=0;
+    O1.forEach(o=>{
+      if(!o.root.visible) return;
+      vis++;
+      const d=(TK[o.idx]&&TK[o.idx].bloom)||0;
+      layers[d]=(layers[d]||0)+1;
+      if(floors.length<8) floors.push(TK[o.idx]&&TK[o.idx].floor);
+    });
+    let c2=0; O2.forEach(o=>{ if(o.root.visible) c2++; });
+    return {level:bloomLevel, vis:vis, c2:c2, layers:layers, n1:N1, floors:floors, max:window.UM_BLOOM_MAX||0};
+  };
+}
+function cardBloom(idx){
+  const c=CARDS[idx];
+  if(!c) return 1;
+  if(c._bd!=null) return c._bd;
+  let m=0;
+  c.members.forEach(i=>{const b=TK[i]&&TK[i].bloom; if(b&&(!m||b<m)) m=b});
+  c._bd=m||1;
+  return c._bd;
+}
 function applyObj(o,d0,d1,t,dt){
   const isC=o.kind===2,P=isC?CP:PRES,VV=isC?CV:V,b=o.idx*F;
   const p0=P[b+d0],p1=P[b+d1];
   if(!(p0||p1)||!layerOn(o)){o.root.visible=false;o.cur=null;return}
+  let bk=1;
+  if(SYS.id==='world'&&isC) bk=bloomK(cardBloom(o.idx));
+  else if(SYS.id==='world'&&TK[o.idx]&&TK[o.idx].bloom) bk=bloomK(TK[o.idx].bloom);
+  if(bk<0.02){o.root.visible=false;o.cur=null;return}
   o.root.visible=true;
   const da=p0?d0:d1,db=p1?d1:d0,A=(b+da)*10,B=(b+db)*10;
   const v=k=>zp(VV,A,B,d0,d1,t,k);
   const X=v(0),Y=v(1),Z=v(2),a=AZ(X),r=2-Z;
   o.root.position.set(r*Math.sin(a),Y,-r*Math.cos(a));
   if(S.layers.spacing&&!S.ghost){const OF=isC?OFF2:OFF1,q0=o.idx*6,w=p0&&p1?t:(p0?0:1),u=1-w;o.root.position.x+=OF[q0]*u+OF[q0+3]*w;o.root.position.y+=OF[q0+1]*u+OF[q0+4]*w;o.root.position.z+=OF[q0+2]*u+OF[q0+5]*w}
+  if(bk<1)o.root.position.multiplyScalar(bk);
   const za=k=>zoneOf(VV[A+k]),zb=k=>zoneOf(VV[B+k]),zd=k=>t<.5?za(k):zb(k);
   setShape(o,zd(3));
   const L=(arr,k)=>CY(arr[za(k)],arr[zb(k)],t);
@@ -1261,7 +1300,7 @@ function applyObj(o,d0,d1,t,dt){
   o.spinA-=om*dt*(REDUCED?.25:1);o.spin.rotation.y=o.spinA;o.spin.scale.set(1,st,1);
   paint(o,za(5),zb(5),za(9),zb(9),t);
   const dim=focusDim(o);
-  const pf=p0&&p1?1:(p0?1-t:t);
+  const pf=(p0&&p1?1:(p0?1-t:t))*bk;
   if(o.kind===1){const fo=dim*pf;o.faceMat.opacity=fo;o.faceMat.depthWrite=fo>.97;o.edgeMat.opacity=.45*fo}
   else{o.edgeMat.opacity=.9*dim*pf;o.faceMat.opacity=.3*dim*pf}
   if(o.halo)o.halo.material.opacity=.55*dim;
@@ -1657,6 +1696,7 @@ function ascendOrEnter(e){
   if(ref.side){switchSys(ref.side);return}
   if(class4OnTop(e)){
     if(SYS.id!=='world'){goParent();return}
+    if(window.UM_BLOOM_STEP){UM_BLOOM_STEP();return}
     select({kind:4});enterPlan();return;
   }
   const rr=renderer.domElement.getBoundingClientRect();mouse.x=(e.clientX-rr.left)/rr.width*2-1;mouse.y=-(e.clientY-rr.top)/rr.height*2+1;
@@ -1676,10 +1716,14 @@ renderer.domElement.addEventListener('pointerup',e=>{
   const ref=pickAt(e);
   /* One click on the central picture climbs to the parent. One click on a
      door (an object that names a floor) steps down. A plain title stays selected. */
-  if(class4OnTop(e)&&SYS.id!=='world'){goParent();return}
-  if(ref&&ref.side){switchSys(ref.side);return}
-  if(ref&&ref.kind===1){const id=TK[ref.idx]&&TK[ref.idx].floor;if(id){switchSys(id);return}}
-  if(ref)select(ref);
+  if(class4OnTop(e)){
+    if(SYS.id!=='world'){goParent();return}
+    select({kind:4});
+  }else{
+    if(ref&&ref.side){switchSys(ref.side);return}
+    if(ref&&ref.kind===1){const id=TK[ref.idx]&&TK[ref.idx].floor;if(id){switchSys(id);return}}
+    if(ref)select(ref);
+  }
   const now=e.timeStamp,prev=tapMark;tapMark={t:now,x:e.clientX,y:e.clientY,type:e.pointerType||'mouse'};
   if(!prev||prev.type!==tapMark.type||now-prev.t<40||now-prev.t>520)return;
   if(Math.hypot(e.clientX-prev.x,e.clientY-prev.y)>28)return;
