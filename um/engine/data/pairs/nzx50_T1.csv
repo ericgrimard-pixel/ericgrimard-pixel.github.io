@@ -1,0 +1,59 @@
+# etage: nzx50
+# name: S&P/NZX 50
+# point: T1
+# date: 2026-11-04
+# currency: NZD
+# mic: XNZE
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : table publique Wikipédia de l'indice S&P/NZX 50 (https://en.wikipedia.org/wiki/S&P/NZX_50), 50 titres. Ce n'est pas la composition historique de T0. Cours ajustés et volumes : Yahoo Finance, séance du 2026-11-04. Secteur, industrie et pays : résumé de cotation Yahoo.
+s,sec,ind,cty,price,volume
+AIA.NZ,Industrials,Airports & Air Services,New Zealand,8.52,1649361
+AIR.NZ,Industrials,Airlines,New Zealand,0.38,362057
+ANZ.NZ,Financial Services,Banks - Diversified,Australia,48.9969,5013
+ARG.NZ,Real Estate,REIT - Diversified,New Zealand,1.02,388486
+ATM.NZ,Consumer Defensive,Packaged Foods,New Zealand,8.66,669293
+BGP.NZ,Consumer Cyclical,Department Stores,New Zealand,4.26,6817
+CEN.NZ,Utilities,Utilities - Renewable,New Zealand,8.45,1023597
+CHI.NZ,Energy,Oil & Gas Refining & Marketing,New Zealand,3.37,225842
+CNU.NZ,Communication Services,Telecom Services,New Zealand,8.25,170914
+EBO.NZ,Healthcare,Medical Distribution,Australia,21.48,232327
+FBU.NZ,Basic Materials,Building Materials,New Zealand,3.55,305311
+FPH.NZ,Healthcare,Medical Instruments & Supplies,New Zealand,46.75,704722
+FRW.NZ,Industrials,Integrated Freight & Logistics,New Zealand,12.58,137102
+FSF.NZ,Financial Services,Asset Management,New Zealand,8.99,64606
+GNE.NZ,Utilities,Utilities - Independent Power Producers,New Zealand,2.36,305457
+GNZ.NZ,Real Estate,REIT - Industrial,New Zealand,1.895,336373
+GTK.NZ,Technology,Software - Infrastructure,New Zealand,4.12,10231
+HGH.NZ,Financial Services,Banks - Regional,New Zealand,1.265,292510
+HLG.NZ,Consumer Cyclical,Apparel Retail,New Zealand,14.35,29338
+IFT.NZ,Industrials,Conglomerates,New Zealand,12.74,2853825
+IPL.NZ,Real Estate,REIT - Retail,New Zealand,0.99,340558
+KMD.NZ,Consumer Cyclical,Apparel Manufacturing,New Zealand,2.09,202189
+KPG.NZ,Real Estate,REIT - Diversified,New Zealand,0.91,596358
+MCY.NZ,Utilities,Utilities - Renewable,New Zealand,6.68,1088388
+MEL.NZ,Utilities,Utilities - Renewable,New Zealand,5.53,2767884
+MFT.NZ,Industrials,Integrated Freight & Logistics,New Zealand,68,59218
+NPH.NZ,Industrials,Marine Shipping,New Zealand,3.6,26378
+NZX.NZ,Financial Services,Financial Data & Stock Exchanges,New Zealand,1.5,1041666
+OCA.NZ,Healthcare,Medical Care Facilities,New Zealand,0.645,236501
+PCT.NZ,Real Estate,REIT - Diversified,New Zealand,1.0176,1238546
+PFI.NZ,Real Estate,REIT - Industrial,New Zealand,2.22,121204
+POT.NZ,Industrials,Marine Shipping,New Zealand,8.22,147303
+RYM.NZ,Healthcare,Medical Care Facilities,New Zealand,1.82,1400663
+SAN.NZ,Consumer Defensive,Farm Products,New Zealand,6.9,4327
+SCL.NZ,Consumer Defensive,Packaged Foods,New Zealand,6.6,80674
+SKC.NZ,Consumer Cyclical,Resorts & Casinos,New Zealand,0.695,903068
+SKL.NZ,Industrials,Specialty Industrial Machinery,New Zealand,7.55,67200
+SKO.NZ,Technology,Software - Infrastructure,New Zealand,1.24,77577
+SKT.NZ,Communication Services,Entertainment,New Zealand,3.6,70447
+SPG.NZ,Real Estate,Real Estate Services,New Zealand,1.08,105258
+SPK.NZ,Communication Services,Telecom Services,New Zealand,2.04,4910756
+SUM.NZ,Healthcare,Medical Care Facilities,New Zealand,6.2,150841
+THL.NZ,Consumer Cyclical,Recreational Vehicles,New Zealand,2.8,186380
+TRA.NZ,Consumer Cyclical,Auto & Truck Dealerships,New Zealand,6.99,33353
+TWR.NZ,Financial Services,Insurance - Property & Casualty,New Zealand,2.1,151428
+VCT.NZ,Utilities,Utilities - Diversified,New Zealand,4.5,177114
+VGL.NZ,Technology,Software - Application,New Zealand,2.73,241471
+VHP.NZ,Real Estate,REIT - Healthcare Facilities,New Zealand,1.82,517535
+VSL.NZ,Basic Materials,Steel,New Zealand,6.85,10298
+WBC.NZ,Financial Services,Banks - Diversified,Australia,44.98,11033

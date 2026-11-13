@@ -1,0 +1,60 @@
+# etage: tw50
+# name: FTSE TWSE Taiwan 50
+# point: T1
+# date: 2026-11-04
+# currency: TWD
+# mic: XTAI
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : modèle Wikipédia « FTSE TWSE Taiwan 50 companies » (https://en.wikipedia.org/wiki/Template:FTSE_TWSE_Taiwan_50), 51 sociétés nommées (l'indice officiel en compte 50) [INCOMPLET]. Les codes numériques TWSE / tickers Yahoo .TW ont été résolus depuis ces noms (voir le journal de résolution). Ce n'est pas la composition historique de T0. Codes numériques TWSE / tickers Yahoo .TW résolus depuis les noms du modèle, puis vérifiés sur Yahoo (ex. 2330.TW TSMC, 2317.TW Hon Hai, 1101.TW Taiwan Cement / TCC Group Holdings, 2887.TW Taishin / TS Financial Holding). Cours ajustés et volumes : Yahoo Finance, séance du 2026-11-04. Secteur, industrie et pays : résumé de cotation Yahoo.
+s,sec,ind,cty,price,volume
+2303.TW,Technology,Semiconductors,Taiwan,105.5,158027822
+2308.TW,Technology,Electronic Components,Taiwan,1220,24645914
+2317.TW,Technology,Electronic Components,Taiwan,240,60200063
+2327.TW,Technology,Electronic Components,Taiwan,449,48371356
+2330.TW,Technology,Semiconductors,Taiwan,2260,45456849
+2345.TW,Technology,Communication Equipment,Taiwan,1480,4336970
+2357.TW,Technology,Computer Hardware,Taiwan,877,3870495
+2379.TW,Technology,Semiconductors,Taiwan,748,3478717
+2382.TW,Technology,Computer Hardware,Taiwan,302.5,18367745
+2395.TW,Technology,Computer Hardware,Taiwan,629,2681354
+2408.TW,Technology,Semiconductors,Taiwan,399.5,67483073
+2454.TW,Technology,Semiconductors,Taiwan,3715,13883611
+3008.TW,Technology,Electronic Components,Taiwan,5010,2516056
+3034.TW,Technology,Semiconductors,Taiwan,533,5193421
+3037.TW,Technology,Electronic Components,Taiwan,888,31834295
+3045.TW,Consumer Cyclical,Specialty Retail,Taiwan,135,11151852
+3231.TW,Technology,Computer Hardware,Taiwan,176,30826939
+3481.TW,Technology,Electronic Components,Taiwan,40.9,144515838
+3711.TW,Technology,Semiconductors,Taiwan,627,31149713
+4904.TW,Communication Services,Telecom Services,Taiwan,114,7409196
+4938.TW,Technology,Computer Hardware,Taiwan,101.5,10722669
+6669.TW,Technology,Computer Hardware,Taiwan,1785,4339416
+1101.TW,Basic Materials,Building Materials,Taiwan,27.25,56812057
+1216.TW,Consumer Defensive,Packaged Foods,Taiwan,80.9,10427048
+1301.TW,Basic Materials,Specialty Chemicals,Taiwan,69.1,24184224
+1303.TW,Technology,Electronic Components,Taiwan,276.5,117996779
+1326.TW,Basic Materials,Chemicals,Taiwan,69.2,21238267
+1590.TW,Industrials,Specialty Industrial Machinery,Taiwan,1050,1486776
+2002.TW,Basic Materials,Steel,Taiwan,19.15,36085799
+2207.TW,Consumer Cyclical,Auto & Truck Dealerships,Taiwan,534,352018
+2301.TW,Technology,Computer Hardware,Taiwan,226,14910623
+2603.TW,Industrials,Marine Shipping,Taiwan,268,8874951
+2412.TW,Communication Services,Telecom Services,Taiwan,161.5,16144875
+2912.TW,Consumer Defensive,Grocery Stores,Taiwan,217.5,1853838
+6505.TW,Energy,Oil & Gas Refining & Marketing,Taiwan,97.6,20926247
+9910.TW,Consumer Cyclical,Footwear & Accessories,Taiwan,67.8,1688060
+2801.TW,Financial Services,Banks - Regional,Taiwan,29.35,28777981
+2880.TW,Financial Services,Banks - Regional,Taiwan,49.05,23810514
+2881.TW,Financial Services,Insurance - Life,Taiwan,154.5,22753057
+2882.TW,Financial Services,Insurance - Life,Taiwan,111,27850519
+2883.TW,Financial Services,Insurance - Life,Taiwan,34.8,57918421
+2884.TW,Financial Services,Banks - Regional,Taiwan,47.6,32317836
+2885.TW,Financial Services,Financial Conglomerates,Taiwan,69,28096283
+2886.TW,Financial Services,Banks - Regional,Taiwan,53.5,29804794
+2887.TW,Financial Services,Banks - Regional,Taiwan,40.25,85988044
+2890.TW,Financial Services,Banks - Regional,Taiwan,43.15,38390804
+2891.TW,Financial Services,Banks - Regional,Taiwan,73.2,41687660
+2892.TW,Financial Services,Banks - Regional,Taiwan,42.45,24983179
+5871.TW,Financial Services,Credit Services,Taiwan,104,7551818
+5876.TW,Financial Services,Banks - Regional,Taiwan,51.8,9716719
+5880.TW,Financial Services,Banks - Regional,Taiwan,28.5,19956935

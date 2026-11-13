@@ -17,9 +17,10 @@
   };
   const MIC={
     XNYS:['na','United States'], XNAS:['na','United States'], BATS:['na','United States'],
-    XLON:['eur','United Kingdom'], XPAR:['eur','France'], XETR:['eur','Germany'],
+    XLON:['eur','United Kingdom'], XPAR:['eur','France'], XETR:['eur','Germany'], XWAR:['eur','Poland'],
     XTKS:['apac','Japan'], XHKG:['apac','Hong Kong'], XSES:['apac','Singapore'],
-    XASX:['apac','Australia'], XSAU:['mea','Saudi Arabia'], XB3:['latam','Brazil']
+    XASX:['apac','Australia'], XBKK:['apac','Thailand'], XNZE:['apac','New Zealand'], XTAI:['apac','Taiwan'],
+    XSAU:['mea','Saudi Arabia'], XB3:['latam','Brazil'], XBOG:['latam','Colombia'], XBUE:['latam','Argentina']
   };
   function sys(id){ return LIB.find(x=>x.id===id); }
   function slug(s){
@@ -97,6 +98,10 @@
     'floor/ASF/index/N225':'n225', 'floor/ASF/index/HSI':'hsi', 'floor/ASF/index/STI':'sti', 'floor/ASF/index/TASI':'tasi',
     'floor/MEF/index/TASI':'tasi', 'floor/OCF/index/ASX200':'asx200',
     'floor/AFF':'jse40', 'floor/AFF/index/JSE40':'jse40', 'floor/MEF/index/JSE40':'jse40',
+    'floor/EUF/index/WIG20':'wig20',
+    'floor/ASF/index/SET50':'set50', 'floor/ASF/index/TW50':'tw50',
+    'floor/ASF/index/NZX50':'nzx50', 'floor/OCF/index/NZX50':'nzx50',
+    'floor/AMF/index/COLCAP':'colcap', 'floor/AMF/index/MERVAL':'merval',
     'floor/NSF':'', 'floor/EWF':''
   };
   const ocf=floors.find(f=>f.level==='country'&&f.zone==='apac'&&f.cty==='Australia');

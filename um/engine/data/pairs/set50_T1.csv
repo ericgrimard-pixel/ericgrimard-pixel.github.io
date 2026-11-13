@@ -1,0 +1,60 @@
+# etage: set50
+# name: SET 50
+# point: T1
+# date: 2026-11-04
+# currency: THB
+# mic: XBKK
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : table publique Wikipédia de l'indice SET50, « as of 2025 », citant le site officiel de la Stock Exchange of Thailand (https://www.set.or.th/en/market/index/set50/overview ; page https://en.wikipedia.org/wiki/SET50_Index_and_SET100_Index). 51 lignes dans la table publique (l'indice officiel en compte 50) [INCOMPLET]. Ce n'est pas la composition historique de T0. Cours ajustés et volumes : Yahoo Finance, séance du 2026-11-04. Secteur, industrie et pays : résumé de cotation Yahoo.
+s,sec,ind,cty,price,volume
+ADVANC.BK,Communication Services,Telecom Services,Thailand,338,12730900
+AOT.BK,Industrials,Airports & Air Services,Thailand,60.5,29070800
+AWC.BK,Consumer Cyclical,Lodging,Thailand,3.2,73629100
+BANPU.BK,Utilities,Utilities - Independent Power Producers,Thailand,[INCOMPLET : pas de séance Yahoo à cette date],[INCOMPLET : pas de séance Yahoo à cette date]
+BBL.BK,Financial Services,Banks - Regional,Thailand,183,6546700
+BCP.BK,Energy,Oil & Gas Refining & Marketing,Thailand,45.25,14620500
+BDMS.BK,Healthcare,Medical Care Facilities,Thailand,19.8,72305600
+BEM.BK,Industrials,Railroads,Thailand,6.2,78701800
+BH.BK,Healthcare,Medical Care Facilities,Thailand,198.5,2199700
+BJC.BK,Industrials,Conglomerates,Thailand,20.1,14495900
+BTS.BK,Industrials,Railroads,Thailand,1.82,33285500
+CBG.BK,Consumer Defensive,Beverages - Non-Alcoholic,Thailand,55,6997100
+CCET.BK,Technology,Computer Hardware,Thailand,8.1,143969500
+COM7.BK,Consumer Cyclical,Specialty Retail,Thailand,33.25,15432700
+CPALL.BK,Consumer Defensive,Grocery Stores,Thailand,44,28303700
+CPF.BK,Consumer Defensive,Farm Products,Thailand,20.2,43194900
+CPN.BK,Real Estate,Real Estate - Diversified,Thailand,65,9906000
+CRC.BK,Consumer Cyclical,Department Stores,Thailand,32.25,10578700
+DELTA.BK,Industrials,Electrical Equipment & Parts,Thailand,195,34782600
+EGCO.BK,Utilities,Utilities - Independent Power Producers,Thailand,134.5,1942100
+GPSC.BK,Utilities,Utilities - Regulated Electric,Thailand,49.5,12009600
+GULF.BK,Utilities,Utilities - Independent Power Producers,Thailand,61,45820400
+HMPRO.BK,Consumer Cyclical,Home Improvement Retail,Thailand,6.45,82571900
+IVL.BK,Basic Materials,Chemicals,Thailand,24.7,35351600
+KBANK.BK,Financial Services,Banks - Regional,Thailand,244,8865300
+KCE.BK,Technology,Electronic Components,Thailand,70.25,48348300
+KKP.BK,Financial Services,Banks - Regional,Thailand,114.5,5550100
+KTB.BK,Financial Services,Banks - Regional,Thailand,43.25,74539200
+KTC.BK,Financial Services,Credit Services,Thailand,35.25,9551400
+LH.BK,Real Estate,Real Estate - Development,Thailand,3.52,21388800
+MINT.BK,Consumer Cyclical,Lodging,Thailand,20.7,22377400
+MTC.BK,Financial Services,Credit Services,Thailand,29.5,29205600
+OR.BK,Energy,Oil & Gas Refining & Marketing,Thailand,12.5,29158900
+OSP.BK,Consumer Defensive,Beverages - Non-Alcoholic,Thailand,18.5,22696000
+PTT.BK,Energy,Oil & Gas Integrated,Thailand,40,95517500
+PTTEP.BK,Energy,Oil & Gas E&P,Thailand,150,21842500
+PTTGC.BK,Basic Materials,Chemicals,Thailand,44.75,49001700
+RATCH.BK,Utilities,Utilities - Regulated Electric,Thailand,37,10023500
+SCB.BK,Financial Services,Banks - Regional,Thailand,151.5,8773500
+SCC.BK,Industrials,Conglomerates,Thailand,244,5112400
+SCGP.BK,Consumer Cyclical,Packaging & Containers,Thailand,27.25,10062800
+TCAP.BK,Financial Services,Credit Services,Thailand,77,3318200
+TIDLOR.BK,Financial Services,Credit Services,Thailand,16.4,21287100
+TISCO.BK,Financial Services,Banks - Regional,Thailand,124.5,2425200
+TLI.BK,Financial Services,Insurance - Life,Thailand,11.4,13242200
+TOP.BK,Energy,Oil & Gas Refining & Marketing,Thailand,60.5,20439300
+TRUE.BK,Communication Services,Telecom Services,Thailand,12.8412,116907400
+TTB.BK,Financial Services,Banks - Regional,Thailand,2.7,372969900
+TU.BK,Consumer Defensive,Packaged Foods,Thailand,13.2,25451300
+VGI.BK,Industrials,Conglomerates,Thailand,0.91,197985800
+WHA.BK,Real Estate,Real Estate Services,Thailand,4.9,143476500

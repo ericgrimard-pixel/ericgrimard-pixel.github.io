@@ -1,0 +1,60 @@
+# etage: tw50
+# name: FTSE TWSE Taiwan 50
+# point: T0
+# date: 2026-01-02
+# currency: TWD
+# mic: XTAI
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : modèle Wikipédia « FTSE TWSE Taiwan 50 companies » (https://en.wikipedia.org/wiki/Template:FTSE_TWSE_Taiwan_50), 51 sociétés nommées (l'indice officiel en compte 50) [INCOMPLET]. Les codes numériques TWSE / tickers Yahoo .TW ont été résolus depuis ces noms (voir le journal de résolution). Ce n'est pas la composition historique de T0. Codes numériques TWSE / tickers Yahoo .TW résolus depuis les noms du modèle, puis vérifiés sur Yahoo (ex. 2330.TW TSMC, 2317.TW Hon Hai, 1101.TW Taiwan Cement / TCC Group Holdings, 2887.TW Taishin / TS Financial Holding). Cours ajustés et volumes : Yahoo Finance, séance du 2026-01-02. Secteur, industrie et pays : résumé de cotation Yahoo.
+s,sec,ind,cty,price,volume
+2303.TW,Technology,Semiconductors,Taiwan,47.8806,29250355
+2308.TW,Technology,Electronic Components,Taiwan,989.8242,13024209
+2317.TW,Technology,Electronic Components,Taiwan,225.2909,57704460
+2327.TW,Technology,Electronic Components,Taiwan,239.2831,52538458
+2330.TW,Technology,Semiconductors,Taiwan,1571.0175,37512761
+2345.TW,Technology,Communication Equipment,Taiwan,1136.0078,3913197
+2357.TW,Technology,Computer Hardware,Taiwan,521.7,4291815
+2379.TW,Technology,Semiconductors,Taiwan,470.7819,3457795
+2382.TW,Technology,Computer Hardware,Taiwan,265.6583,22740078
+2395.TW,Technology,Computer Hardware,Taiwan,280.4681,1544657
+2408.TW,Technology,Semiconductors,Taiwan,206.3368,137743889
+2454.TW,Technology,Semiconductors,Taiwan,1433.481,11449412
+3008.TW,Technology,Electronic Components,Taiwan,2507.011,1305334
+3034.TW,Technology,Semiconductors,Taiwan,351.4262,5332645
+3037.TW,Technology,Electronic Components,Taiwan,218.5525,21094592
+3045.TW,Consumer Cyclical,Specialty Retail,Taiwan,103.4656,8119296
+3231.TW,Technology,Computer Hardware,Taiwan,149.5171,90498843
+3481.TW,Technology,Electronic Components,Taiwan,17.6914,785675906
+3711.TW,Technology,Semiconductors,Taiwan,255.6632,23887655
+4904.TW,Communication Services,Telecom Services,Taiwan,85.6122,3455067
+4938.TW,Technology,Computer Hardware,Taiwan,65.9328,11274253
+6669.TW,Technology,Computer Hardware,Taiwan,1459.6726,4271358
+1101.TW,Basic Materials,Building Materials,Taiwan,22.2349,29582411
+1216.TW,Consumer Defensive,Packaged Foods,Taiwan,74.4307,8642963
+1301.TW,Basic Materials,Specialty Chemicals,Taiwan,38.0886,20186529
+1303.TW,Technology,Electronic Components,Taiwan,56.7261,100842545
+1326.TW,Basic Materials,Chemicals,Taiwan,30.6003,20131102
+1590.TW,Industrials,Specialty Industrial Machinery,Taiwan,935.9365,460070
+2002.TW,Basic Materials,Steel,Taiwan,18.6027,34666225
+2207.TW,Consumer Cyclical,Auto & Truck Dealerships,Taiwan,523.6915,261966
+2301.TW,Technology,Computer Hardware,Taiwan,162.5534,24372608
+2603.TW,Industrials,Marine Shipping,Taiwan,178.9955,14963800
+2412.TW,Communication Services,Telecom Services,Taiwan,127.0796,3213296
+2912.TW,Consumer Defensive,Grocery Stores,Taiwan,213.2282,2632473
+6505.TW,Energy,Oil & Gas Refining & Marketing,Taiwan,45.5644,5072619
+9910.TW,Consumer Cyclical,Footwear & Accessories,Taiwan,107.481,2661257
+2801.TW,Financial Services,Banks - Regional,Taiwan,19.2548,74791640
+2880.TW,Financial Services,Banks - Regional,Taiwan,30.2037,9862686
+2881.TW,Financial Services,Insurance - Life,Taiwan,92.4625,12895790
+2882.TW,Financial Services,Insurance - Life,Taiwan,72.6069,25677629
+2883.TW,Financial Services,Insurance - Life,Taiwan,16.6199,23498215
+2884.TW,Financial Services,Banks - Regional,Taiwan,32.7142,61401106
+2885.TW,Financial Services,Financial Conglomerates,Taiwan,37.034,51875001
+2886.TW,Financial Services,Banks - Regional,Taiwan,38.8518,10111627
+2887.TW,Financial Services,Banks - Regional,Taiwan,19.6176,46046043
+2890.TW,Financial Services,Banks - Regional,Taiwan,27.4571,11875557
+2891.TW,Financial Services,Banks - Regional,Taiwan,48.9829,37342935
+2892.TW,Financial Services,Banks - Regional,Taiwan,28.4509,13717087
+5871.TW,Financial Services,Credit Services,Taiwan,96.9341,18062767
+5876.TW,Financial Services,Banks - Regional,Taiwan,38.8335,4236219
+5880.TW,Financial Services,Banks - Regional,Taiwan,22.9152,6985397

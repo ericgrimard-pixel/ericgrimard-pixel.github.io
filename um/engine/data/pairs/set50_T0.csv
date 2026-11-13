@@ -1,0 +1,61 @@
+# etage: set50
+# name: SET 50
+# point: T0
+# date: 2026-01-05
+# currency: THB
+# mic: XBKK
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : table publique Wikipédia de l'indice SET50, « as of 2025 », citant le site officiel de la Stock Exchange of Thailand (https://www.set.or.th/en/market/index/set50/overview ; page https://en.wikipedia.org/wiki/SET50_Index_and_SET100_Index). 51 lignes dans la table publique (l'indice officiel en compte 50) [INCOMPLET]. Ce n'est pas la composition historique de T0. Cours ajustés et volumes : Yahoo Finance, séance du 2026-01-05. Secteur, industrie et pays : résumé de cotation Yahoo.
+# [INCOMPLET : la place n'a pas de séance le 2026-01-02 ; T0 réel = 2026-01-05]
+s,sec,ind,cty,price,volume
+ADVANC.BK,Communication Services,Telecom Services,Thailand,292.2314,8238300
+AOT.BK,Industrials,Airports & Air Services,Thailand,54.5,32172700
+AWC.BK,Consumer Cyclical,Lodging,Thailand,2.0215,56300300
+BANPU.BK,Utilities,Utilities - Independent Power Producers,Thailand,11.1674,277500
+BBL.BK,Financial Services,Banks - Regional,Thailand,162.0834,9713000
+BCP.BK,Energy,Oil & Gas Refining & Marketing,Thailand,24.2596,6382200
+BDMS.BK,Healthcare,Medical Care Facilities,Thailand,18.4217,37946300
+BEM.BK,Industrials,Railroads,Thailand,5.1568,15214900
+BH.BK,Healthcare,Medical Care Facilities,Thailand,147.8745,2713800
+BJC.BK,Industrials,Conglomerates,Thailand,13.5999,8937400
+BTS.BK,Industrials,Railroads,Thailand,2.32,23789900
+CBG.BK,Consumer Defensive,Beverages - Non-Alcoholic,Thailand,41.8323,1625100
+CCET.BK,Technology,Computer Hardware,Thailand,4.4814,24462200
+COM7.BK,Consumer Cyclical,Specialty Retail,Thailand,18.3564,18913400
+CPALL.BK,Consumer Defensive,Grocery Stores,Thailand,41.6816,27331200
+CPF.BK,Consumer Defensive,Farm Products,Thailand,21.1108,11466200
+CPN.BK,Real Estate,Real Estate - Diversified,Thailand,53.6994,5775800
+CRC.BK,Consumer Cyclical,Department Stores,Thailand,16.8863,12512900
+DELTA.BK,Industrials,Electrical Equipment & Parts,Thailand,185.0816,31995400
+EGCO.BK,Utilities,Utilities - Independent Power Producers,Thailand,108.5315,738500
+GPSC.BK,Utilities,Utilities - Regulated Electric,Thailand,34.6039,4761700
+GULF.BK,Utilities,Utilities - Independent Power Producers,Thailand,39.3246,22194800
+HMPRO.BK,Consumer Cyclical,Home Improvement Retail,Thailand,6.2145,25655300
+IVL.BK,Basic Materials,Chemicals,Thailand,15.8311,20124300
+KBANK.BK,Financial Services,Banks - Regional,Thailand,180.6167,9314200
+KCE.BK,Technology,Electronic Components,Thailand,17.6207,10262600
+KKP.BK,Financial Services,Banks - Regional,Thailand,63.4472,5487700
+KTB.BK,Financial Services,Banks - Regional,Thailand,26.639,64612600
+KTC.BK,Financial Services,Credit Services,Thailand,24.9494,17479200
+LH.BK,Real Estate,Real Estate - Development,Thailand,3.614,28139300
+MINT.BK,Consumer Cyclical,Lodging,Thailand,23.709,13783800
+MTC.BK,Financial Services,Credit Services,Thailand,30.6978,11126800
+OR.BK,Energy,Oil & Gas Refining & Marketing,Thailand,12.9089,15295400
+OSP.BK,Consumer Defensive,Beverages - Non-Alcoholic,Thailand,15.0863,6440100
+PTT.BK,Energy,Oil & Gas Integrated,Thailand,29.4605,35811000
+PTTEP.BK,Energy,Oil & Gas E&P,Thailand,104.9634,13457300
+PTTGC.BK,Basic Materials,Chemicals,Thailand,20.4347,20790200
+RATCH.BK,Utilities,Utilities - Regulated Electric,Thailand,28.3999,2620600
+SCB.BK,Financial Services,Banks - Regional,Thailand,131.1631,16659700
+SCC.BK,Industrials,Conglomerates,Thailand,185.2168,3592900
+SCGP.BK,Consumer Cyclical,Packaging & Containers,Thailand,16.2924,8791800
+TCAP.BK,Financial Services,Credit Services,Thailand,55.5001,3530900
+TIDLOR.BK,Financial Services,Credit Services,Thailand,15.6854,14159800
+TISCO.BK,Financial Services,Banks - Regional,Thailand,103.7894,5051400
+TLI.BK,Financial Services,Insurance - Life,Thailand,9.3158,22597800
+TOP.BK,Energy,Oil & Gas Refining & Marketing,Thailand,35.8087,19592800
+TRUE.BK,Communication Services,Telecom Services,Thailand,10.8419,204502100
+TTB.BK,Financial Services,Banks - Regional,Thailand,1.9432,648636700
+TU.BK,Consumer Defensive,Packaged Foods,Thailand,12.1617,12448400
+VGI.BK,Industrials,Conglomerates,Thailand,0.94,50995200
+WHA.BK,Real Estate,Real Estate Services,Thailand,3.1409,93407900

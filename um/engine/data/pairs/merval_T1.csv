@@ -1,0 +1,28 @@
+# etage: merval
+# name: S&P Merval
+# point: T1
+# date: 2026-11-04
+# currency: ARS
+# mic: XBUE
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : modèle Wikipédia « MERVAL Companies of Argentina (as of 4 February 2025) » (https://en.wikipedia.org/wiki/Template:MERVAL_companies), 19 sociétés. Les tickers Yahoo .BA ont été résolus depuis ces noms (voir le journal de résolution). Ce n'est pas la composition historique de T0. Tickers Yahoo de la place de Buenos Aires (.BA), résolus depuis les noms du modèle et vérifiés (Aluar = ALUA.BA, TGS = TGSU2.BA, Telecom = TECO2.BA, Ternium Argentina = TXAR.BA). Cours ajustés et volumes : Yahoo Finance, séance du 2026-11-04. Secteur, industrie et pays : résumé de cotation Yahoo.
+s,sec,ind,cty,price,volume
+ALUA.BA,Basic Materials,Aluminum,Argentina,806,701022
+BMA.BA,Financial Services,Banks - Regional,Argentina,10080,685322
+BBAR.BA,Financial Services,Banks - Regional,Argentina,6200,190257
+BYMA.BA,Financial Services,Capital Markets,Argentina,209,14705056
+CVH.BA,Communication Services,Telecom Services,Argentina,8570,32248
+CEPU.BA,Utilities,Utilities - Regulated Electric,Argentina,1690,778998
+EDN.BA,Utilities,Utilities - Regulated Electric,Argentina,1260,464836
+GGAL.BA,Financial Services,Banks - Regional,Argentina,5165,3283689
+SUPV.BA,Financial Services,Banks - Regional,Argentina,1983,1151993
+RICH.BA,Healthcare,Drug Manufacturers - Specialty & Generic,Argentina,1295,1050
+LOMA.BA,Basic Materials,Building Materials,Argentina,2970,239982
+MIRG.BA,Technology,Consumer Electronics,Argentina,1760,22025
+PAMP.BA,Industrials,Conglomerates,Argentina,4365,1415411
+COME.BA,Industrials,Conglomerates,Argentina,32.48,6108340
+TECO2.BA,Communication Services,Telecom Services,Argentina,3497.5,91412
+TXAR.BA,Basic Materials,Steel,Argentina,734,3577019
+TRAN.BA,Utilities,Utilities - Regulated Electric,Argentina,2073,1921997
+TGSU2.BA,Energy,Oil & Gas Integrated,Argentina,7820,253255
+YPFD.BA,Energy,Oil & Gas Integrated,Argentina,6995,3195261

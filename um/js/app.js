@@ -3528,6 +3528,12 @@ const FINANCE_INDEX_FLOORS=[
   {id:'STI',name:'Straits Times',route:'#/floor/ASF/index/STI'},
   {id:'TASI',name:'Tadawul (TASI)',route:'#/floor/MEF/index/TASI'},
   {id:'JSE40',name:'FTSE/JSE Top 40',route:'#/floor/AFF/index/JSE40'},
+  {id:'WIG20',name:'WIG20',route:'#/floor/EUF/index/WIG20'},
+  {id:'SET50',name:'SET 50',route:'#/floor/ASF/index/SET50'},
+  {id:'TW50',name:'FTSE TWSE Taiwan 50',route:'#/floor/ASF/index/TW50'},
+  {id:'NZX50',name:'S&P/NZX 50',route:'#/floor/ASF/index/NZX50'},
+  {id:'COLCAP',name:'COLCAP',route:'#/floor/AMF/index/COLCAP'},
+  {id:'MERVAL',name:'S&P Merval',route:'#/floor/AMF/index/MERVAL'},
   {id:'SPX',name:'S&P 500',route:'#/floor/AMF/index/SPX'},
   {id:'NDX',name:'Nasdaq-100',route:'#/floor/AMF/index/NDX'}
 ];

@@ -1,0 +1,29 @@
+# etage: colcap
+# name: COLCAP
+# point: T1
+# date: 2026-11-04
+# currency: COP
+# mic: XBOG
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : table publique Wikipédia « The COLCAP Index consists of the following 20 major Colombian companies » (https://en.wikipedia.org/wiki/COLCAP). Un ticker BVC principal par émetteur (20). La table mentionne aussi des lignes préférentielles pour 6 émetteurs (PFBCOLOMB, PFCEMARGOS, PFCORFICOL, PFGRUPOARG, PFAVAL, PFGRUPSURA), non prises comme membres distincts [INCOMPLET]. La table n'est pas datée précisément et n'est pas la composition historique de T0. Tickers Yahoo de la place de Bogotá (.CL). Bancolombia (BCOLOMBIA dans la table) est coté chez Yahoo sous le successeur CIBEST.CL (Grupo Cibest). Grupo Energía Bogotá (EEB dans la table) est coté sous GEB.CL. Grupo Bolívar est coté sous GRUBOLIVAR.CL. Cours ajustés et volumes : Yahoo Finance, séance du 2026-11-04. Secteur, industrie et pays : résumé de cotation Yahoo.
+s,sec,ind,cty,price,volume
+BOGOTA.CL,Financial Services,Banks - Regional,Colombia,38460,3480
+CIBEST.CL,Financial Services,Banks - Regional,Colombia,91940,112290
+CNEC.CL,Energy,Oil & Gas E&P,Canada,6240,0
+CELSIA.CL,Utilities,Utilities - Renewable,Colombia,4730,1620148
+CEMARGOS.CL,Basic Materials,Building Materials,Colombia,11500,456454
+BVC.CL,Financial Services,Financial Data & Stock Exchanges,Colombia,16700,672
+CORFICOLCF.CL,Financial Services,Asset Management,Colombia,21580,50374
+PFDAVVNDA.CL,Financial Services,Banks - Regional,Colombia,30220,25827
+ECOPETROL.CL,Energy,Oil & Gas Integrated,Colombia,2750,9576003
+GEB.CL,Utilities,Utilities - Regulated Gas,Colombia,3055,1329590
+GRUPOARGOS.CL,Industrials,Conglomerates,Colombia,21600,310037
+GRUPOAVAL.CL,Financial Services,Banks - Regional,Colombia,810,45195
+NUTRESA.CL,Consumer Defensive,Packaged Foods,Colombia,320240,234
+GRUPOSURA.CL,Financial Services,Insurance - Diversified,Colombia,70000,75392
+GRUBOLIVAR.CL,Financial Services,Asset Management,Colombia,80672.1953,2110
+ISA.CL,Utilities,Utilities - Regulated Electric,Colombia,29300,204689
+TERPEL.CL,Energy,Oil & Gas Refining & Marketing,Colombia,19300,23198
+ETB.CL,Communication Services,Telecom Services,Colombia,132,342311
+MINEROS.CL,Basic Materials,Gold,Colombia,23200,33958
+PROMIGAS.CL,Utilities,Utilities - Regulated Gas,Colombia,6210,55736

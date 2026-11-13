@@ -1,0 +1,28 @@
+# etage: merval
+# name: S&P Merval
+# point: T0
+# date: 2026-01-02
+# currency: ARS
+# mic: XBUE
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : modèle Wikipédia « MERVAL Companies of Argentina (as of 4 February 2025) » (https://en.wikipedia.org/wiki/Template:MERVAL_companies), 19 sociétés. Les tickers Yahoo .BA ont été résolus depuis ces noms (voir le journal de résolution). Ce n'est pas la composition historique de T0. Tickers Yahoo de la place de Buenos Aires (.BA), résolus depuis les noms du modèle et vérifiés (Aluar = ALUA.BA, TGS = TGSU2.BA, Telecom = TECO2.BA, Ternium Argentina = TXAR.BA). Cours ajustés et volumes : Yahoo Finance, séance du 2026-01-02. Secteur, industrie et pays : résumé de cotation Yahoo.
+s,sec,ind,cty,price,volume
+ALUA.BA,Basic Materials,Aluminum,Argentina,1004,388923
+BMA.BA,Financial Services,Banks - Regional,Argentina,13425.5938,200752
+BBAR.BA,Financial Services,Banks - Regional,Argentina,9242.3076,100344
+BYMA.BA,Financial Services,Capital Markets,Argentina,301.2358,4746356
+CVH.BA,Communication Services,Telecom Services,Argentina,7719.9761,9663
+CEPU.BA,Utilities,Utilities - Regulated Electric,Argentina,2504.6536,722041
+EDN.BA,Utilities,Utilities - Regulated Electric,Argentina,2320,279427
+GGAL.BA,Financial Services,Banks - Regional,Argentina,8082.3892,1295890
+SUPV.BA,Financial Services,Banks - Regional,Argentina,3595,618771
+RICH.BA,Healthcare,Drug Manufacturers - Specialty & Generic,Argentina,1905.6769,111
+LOMA.BA,Basic Materials,Building Materials,Argentina,3997.5,324865
+MIRG.BA,Technology,Consumer Electronics,Argentina,27000,1058
+PAMP.BA,Industrials,Conglomerates,Argentina,5440,892012
+COME.BA,Industrials,Conglomerates,Argentina,61.1,11017335
+TECO2.BA,Communication Services,Telecom Services,Argentina,3595,152398
+TXAR.BA,Basic Materials,Steel,Argentina,673.116,1151247
+TRAN.BA,Utilities,Utilities - Regulated Electric,Argentina,2933.468,635493
+TGSU2.BA,Energy,Oil & Gas Integrated,Argentina,9515,139240
+YPFD.BA,Energy,Oil & Gas Integrated,Argentina,5645,2108710

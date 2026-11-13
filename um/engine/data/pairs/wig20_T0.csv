@@ -1,0 +1,29 @@
+# etage: wig20
+# name: WIG20
+# point: T0
+# date: 2026-01-02
+# currency: PLN
+# mic: XWAR
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : portfel officiel GPW Benchmark, karta indeksu WIG20, séance du 12 nov. 2026 (https://gpwbenchmark.pl/karta-indeksu?isin=PL9999999987, onglet Portfel, 20 instruments). Ce n'est pas la composition historique de T0. Cours ajustés et volumes : Yahoo Finance, séance du 2026-01-02. Secteur, industrie et pays : résumé de cotation Yahoo.
+s,sec,ind,cty,price,volume
+PKO.WA,Financial Services,Banks - Regional,Poland,83.1593,2312679
+PKN.WA,Energy,Oil & Gas Integrated,Poland,95.4445,3073072
+ALE.WA,Consumer Cyclical,Internet Retail,Luxembourg,31.245,2893610
+PEO.WA,Financial Services,Banks - Regional,Poland,193.47,758831
+PZU.WA,Financial Services,Insurance - Property & Casualty,Poland,64.2299,1260596
+KGH.WA,Basic Materials,Copper,Poland,282.284,737439
+LPP.WA,Consumer Cyclical,Apparel Manufacturing,Poland,20430.3633,2973
+EBP.WA,Financial Services,Banks - Regional,Poland,515.0843,116461
+MBK.WA,Financial Services,Banks - Regional,Poland,1099,27470
+CDR.WA,Communication Services,Electronic Gaming & Multimedia,Poland,241.7,224702
+DNP.WA,Consumer Defensive,Grocery Stores,Poland,41,2614967
+ZAB.WA,Consumer Defensive,Grocery Stores,Luxembourg,23.1121,913811
+PGE.WA,Utilities,Utilities - Regulated Electric,Poland,9.1,4711030
+ALR.WA,Financial Services,Banks - Diversified,Poland,106.0198,245849
+KTY.WA,Basic Materials,Aluminum,Poland,895.3615,12089
+PCO.WA,Consumer Defensive,Discount Stores,United Kingdom,30.8724,1100814
+TPE.WA,Utilities,Utilities - Renewable,Poland,8.8572,2869931
+BDX.WA,Industrials,Engineering & Construction,Poland,611.1362,41040
+KRU.WA,Financial Services,Credit Services,Poland,475.3792,31756
+MDV.WA,Consumer Cyclical,Apparel Retail,Poland,121.2,338200
