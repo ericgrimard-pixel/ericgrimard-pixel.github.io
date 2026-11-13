@@ -1,0 +1,45 @@
+# etage: ta35
+# name: TA-35
+# point: T0
+# date: 2026-01-05
+# currency: ILS
+# mic: XTAE
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : liste whichindex du TA-35 au 11 nov. 2026, citant les composants officiels de la Bourse de Tel-Aviv (https://whichindex.com/indexes/ta-35/ ; source TASE), recoupée avec la composition Bizportal au 12 nov. 2026 (https://www.bizportal.co.il/capitalmarket/indices/indexcomposition/33343333), 35 titres. Entrées récentes notées par Finsights : El Al et Doral Energy le 6 nov. 2026 ; Palo Alto Networks le 10 août 2026 ; Mega Or et la Bourse de Tel-Aviv le 8 mai 2026. Ce n'est pas la composition historique de T0. Cours ajustés et volumes : Yahoo Finance, séance du 2026-01-05. Secteur, industrie et pays : résumé de cotation Yahoo. Devise Yahoo ILA convertie en ILS (÷ 100).
+# [INCOMPLET : la place n'a pas de séance le 2026-01-02 ; T0 réel = 2026-01-05]
+s,sec,ind,cty,price,volume
+TEVA.TA,Healthcare,Drug Manufacturers - Specialty & Generic,Israel,96.72,1743947
+ESLT.TA,Industrials,Aerospace & Defense,Israel,1960.3747,97967
+LUMI.TA,Financial Services,Banks - Regional,Israel,70.9784,4706547
+POLI.TA,Financial Services,Banks - Regional,Israel,72.6697,3976948
+TSEM.TA,Technology,Semiconductors,Israel,373,460720
+PHOE.TA,Financial Services,Insurance - Diversified,Israel,137.9682,818109
+DSCT.TA,Financial Services,Banks - Regional,Israel,34.648,3478642
+MZTF.TA,Financial Services,Banks - Regional,Israel,228.3233,453277
+NVMI.TA,Technology,Semiconductor Equipment & Materials,Israel,1170,102457
+ENLT.TA,Utilities,Utilities - Renewable,Israel,157,450244
+HARL.TA,Financial Services,Insurance - Diversified,Israel,130.5474,559796
+BEZQ.TA,Communication Services,Telecom Services,Israel,7.2668,8727996
+CLIS.TA,Financial Services,Insurance - Life,Israel,211.5579,202562
+CYBR.TA,Technology,Software - Infrastructure,United States,[INCOMPLET : pas de séance Yahoo à cette date],[INCOMPLET : pas de séance Yahoo à cette date]
+NICE.TA,Technology,Software - Application,Israel,362.4,166628
+OPCE.TA,Utilities,Utilities - Independent Power Producers,Israel,80.4,649466
+ORA.TA,Utilities,Utilities - Renewable,United States,359.9963,144217
+AZRG.TA,Real Estate,Real Estate Services,Israel,378.2441,160008
+NXSN.TA,Industrials,Aerospace & Defense,Israel,2.2356,1018284
+NVPT.TA,Energy,Oil & Gas E&P,Israel,1.0955,1186888
+BIG.TA,Real Estate,Real Estate Services,Israel,808.8999,137092
+TASE.TA,Financial Services,Financial Data & Stock Exchanges,Israel,100.7,291736
+FIBI.TA,Financial Services,Banks - Regional,Israel,255.665,236625
+MGOR.TA,Real Estate,Real Estate - Diversified,Israel,295.8752,88459
+MMHD.TA,Financial Services,Insurance - Life,Israel,406.1748,107198
+ICL.TA,Basic Materials,Agricultural Inputs,Israel,17.7052,1905072
+MGDL.TA,Financial Services,Insurance - Life,Israel,16.47,2228297
+CAMT.TA,Technology,Semiconductor Equipment & Materials,Israel,378.9,135812
+MLSR.TA,Real Estate,Real Estate Services,Israel,453.9396,146123
+NWMD.TA,Energy,Oil & Gas E&P,Israel,18.7383,1616762
+DORL.TA,Utilities,Utilities - Renewable,Israel,36.85,736866
+DLEKG.TA,Energy,Oil & Gas E&P,Israel,86.0713,421850
+STRS.TA,Consumer Defensive,Packaged Foods,Israel,110.868,177773
+ELAL.TA,Industrials,Airlines,Israel,16.8949,1664378
+SPEN.TA,Industrials,Engineering & Construction,Israel,34.1983,3107634

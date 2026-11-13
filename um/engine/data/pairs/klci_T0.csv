@@ -1,0 +1,39 @@
+# etage: klci
+# name: FTSE Bursa Malaysia KLCI
+# point: T0
+# date: 2026-01-02
+# currency: MYR
+# mic: XKLS
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : table publique Wikipédia « Constituents of the FTSE Bursa Malaysia KLCI » (https://en.wikipedia.org/wiki/FTSE_Bursa_Malaysia_KLCI), 30 titres (dont 99 Speed Mart et SD Guthrie, ex-Sime Darby Plantation). Le répertoire officiel Bursa Malaysia n'était pas extractible (HTTP 403). Ce n'est pas la composition historique de T0. Cours ajustés et volumes : Yahoo Finance, séance du 2026-01-02. Secteur, industrie et pays : résumé de cotation Yahoo.
+s,sec,ind,cty,price,volume
+5326.KL,Consumer Cyclical,Department Stores,Malaysia,3.7542,14564100
+6888.KL,Communication Services,Telecom Services,Malaysia,2.4401,2539100
+6947.KL,Communication Services,Telecom Services,Malaysia,3.1057,2793200
+1023.KL,Financial Services,Banks - Regional,Malaysia,7.6993,26041800
+5398.KL,Industrials,Engineering & Construction,Malaysia,4.8235,17770900
+5819.KL,Financial Services,Banks - Regional,Malaysia,21.2232,1625400
+1082.KL,Financial Services,Banks - Regional,Malaysia,18.1805,629900
+5225.KL,Healthcare,Medical Care Facilities,Malaysia,8.4889,1930700
+1961.KL,Consumer Defensive,Packaged Foods,Malaysia,3.8872,1031200
+2445.KL,Industrials,Conglomerates,Malaysia,19.2267,113100
+1155.KL,Financial Services,Banks - Regional,Malaysia,9.8467,4725100
+6012.KL,Communication Services,Telecom Services,Malaysia,3.6738,1129200
+3816.KL,Industrials,Marine Shipping,Malaysia,7.4218,644600
+5296.KL,Consumer Cyclical,Home Improvement Retail,Malaysia,1.4625,6734100
+4707.KL,Consumer Defensive,Packaged Foods,Malaysia,111.5906,13300
+5183.KL,Basic Materials,Chemicals,Malaysia,3.4032,1597000
+5681.KL,Energy,Oil & Gas Refining & Marketing,Malaysia,19.2011,343700
+6033.KL,Energy,Oil & Gas Integrated,Malaysia,17.6503,1046800
+4065.KL,Consumer Defensive,Packaged Foods,Malaysia,10.2158,901700
+8869.KL,Basic Materials,Aluminum,Malaysia,6.9896,10728600
+1295.KL,Financial Services,Banks - Regional,Malaysia,4.2874,12588900
+7084.KL,Consumer Defensive,Farm Products,Malaysia,3.8991,3297900
+1066.KL,Financial Services,Banks - Regional,Malaysia,7.2941,2236500
+4197.KL,Consumer Cyclical,Auto Manufacturers,Malaysia,1.9375,5135500
+5285.KL,Consumer Defensive,Packaged Foods,Malaysia,5.4481,5993000
+5211.KL,Industrials,Conglomerates,Malaysia,5.5914,2500500
+4863.KL,Communication Services,Telecom Services,Malaysia,7.5982,5594700
+5347.KL,Utilities,Utilities - Regulated Electric,Malaysia,13.255,3997900
+4677.KL,Utilities,Utilities - Diversified,Malaysia,1.9974,3783500
+6742.KL,Utilities,Utilities - Diversified,Malaysia,3.2754,2849600

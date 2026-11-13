@@ -1,0 +1,29 @@
+# etage: qe
+# name: QE Index
+# point: T1
+# date: 2026-11-04
+# currency: QAR
+# mic: DSMD
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : fichier de composition QE Index de Qatar Stock Exchange au 1er sept. 2026, tel que publié par whichindex (https://whichindex.com/indexes/qe-index/, 20 titres). L'avis officiel de revue du 1er sept. 2026 (Mubasher / Market Notice no 29) confirme l'absence de changement de constituants à cette date. Barwa Real Estate a remplacé Vodafone Qatar le 1er juin 2026 (Gulf Times). QEWS est le ticker de Nebras Energy (ex Qatar Electricity & Water). Ce n'est pas la composition historique de T0. Cours ajustés et volumes : Yahoo Finance, séance du 2026-11-04. Secteur, industrie et pays : résumé de cotation Yahoo.
+s,sec,ind,cty,price,volume
+QNBK.QA,Financial Services,Banks - Diversified,Qatar,18,4293788
+QIBK.QA,Financial Services,Banks - Regional,Qatar,21.5,1966798
+IQCD.QA,Basic Materials,Agricultural Inputs,Qatar,10.3,6149146
+ORDS.QA,Communication Services,Telecom Services,Qatar,12.77,2640812
+QGTS.QA,Energy,Oil & Gas Midstream,Qatar,4.249,5089733
+CBQK.QA,Financial Services,Banks - Regional,Qatar,4.16,5758063
+QIIK.QA,Financial Services,Banks - Regional,Qatar,10.69,1418991
+MARK.QA,Financial Services,Banks - Regional,Qatar,1.91,16694223
+DUBK.QA,Financial Services,Banks - Regional,Qatar,3.229,5762737
+QNNS.QA,Industrials,Marine Shipping,Qatar,10.26,3414529
+QFLS.QA,Energy,Oil & Gas Refining & Marketing,Qatar,13.18,1274353
+QEWS.QA,Utilities,Utilities - Diversified,Qatar,14.15,870687
+DHBK.QA,Financial Services,Banks - Diversified,Qatar,2.46,3943082
+MPHC.QA,Basic Materials,Chemicals,Qatar,0.95,59437088
+BRES.QA,Real Estate,Real Estate - Diversified,Qatar,2.302,16860846
+IGRD.QA,Industrials,Conglomerates,Qatar,3.905,3528317
+QAMC.QA,Basic Materials,Aluminum,Qatar,1.304,41200249
+GISS.QA,Industrials,Conglomerates,Qatar,1.723,10894534
+BLDN.QA,Consumer Defensive,Packaged Foods,Qatar,1.232,44849621
+ERES.QA,Real Estate,Real Estate Services,Qatar,0.8,46957862

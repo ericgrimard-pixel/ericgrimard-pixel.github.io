@@ -3534,6 +3534,14 @@ const FINANCE_INDEX_FLOORS=[
   {id:'NZX50',name:'S&P/NZX 50',route:'#/floor/ASF/index/NZX50'},
   {id:'COLCAP',name:'COLCAP',route:'#/floor/AMF/index/COLCAP'},
   {id:'MERVAL',name:'S&P Merval',route:'#/floor/AMF/index/MERVAL'},
+  {id:'TA35',name:'TA-35',route:'#/floor/MEF/index/TA35'},
+  {id:'QE',name:'QE Index',route:'#/floor/MEF/index/QE'},
+  {id:'EGX30',name:'EGX 30',route:'#/floor/MEF/index/EGX30'},
+  {id:'BIST30',name:'BIST 30',route:'#/floor/MEF/index/BIST30'},
+  {id:'IPSA',name:'IPSA',route:'#/floor/AMF/index/IPSA'},
+  {id:'KLCI',name:'FTSE Bursa Malaysia KLCI',route:'#/floor/ASF/index/KLCI'},
+  {id:'BEL20',name:'BEL 20',route:'#/floor/EUF/index/BEL20'},
+  {id:'OBX',name:'OBX',route:'#/floor/EUF/index/OBX'},
   {id:'SPX',name:'S&P 500',route:'#/floor/AMF/index/SPX'},
   {id:'NDX',name:'Nasdaq-100',route:'#/floor/AMF/index/NDX'}
 ];

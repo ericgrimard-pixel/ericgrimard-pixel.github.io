@@ -1,0 +1,30 @@
+# etage: qe
+# name: QE Index
+# point: T0
+# date: 2026-01-04
+# currency: QAR
+# mic: DSMD
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : fichier de composition QE Index de Qatar Stock Exchange au 1er sept. 2026, tel que publié par whichindex (https://whichindex.com/indexes/qe-index/, 20 titres). L'avis officiel de revue du 1er sept. 2026 (Mubasher / Market Notice no 29) confirme l'absence de changement de constituants à cette date. Barwa Real Estate a remplacé Vodafone Qatar le 1er juin 2026 (Gulf Times). QEWS est le ticker de Nebras Energy (ex Qatar Electricity & Water). Ce n'est pas la composition historique de T0. Cours ajustés et volumes : Yahoo Finance, séance du 2026-01-04. Secteur, industrie et pays : résumé de cotation Yahoo.
+# [INCOMPLET : la place n'a pas de séance le 2026-01-02 ; T0 réel = 2026-01-04]
+s,sec,ind,cty,price,volume
+QNBK.QA,Financial Services,Banks - Diversified,Qatar,18.4446,530477
+QIBK.QA,Financial Services,Banks - Regional,Qatar,23.4276,586692
+IQCD.QA,Basic Materials,Agricultural Inputs,Qatar,11.4916,503113
+ORDS.QA,Communication Services,Telecom Services,Qatar,12.3571,1176569
+QGTS.QA,Energy,Oil & Gas Midstream,Qatar,4.4207,1273095
+CBQK.QA,Financial Services,Banks - Regional,Qatar,3.9733,815268
+QIIK.QA,Financial Services,Banks - Regional,Qatar,11.1014,1464846
+MARK.QA,Financial Services,Banks - Regional,Qatar,2.0936,7212708
+DUBK.QA,Financial Services,Banks - Regional,Qatar,3.3983,650805
+QNNS.QA,Industrials,Marine Shipping,Qatar,10.3502,160681
+QFLS.QA,Energy,Oil & Gas Refining & Marketing,Qatar,14.6777,81393
+QEWS.QA,Utilities,Utilities - Diversified,Qatar,14.6334,167543
+DHBK.QA,Financial Services,Banks - Diversified,Qatar,2.7158,1599499
+MPHC.QA,Basic Materials,Chemicals,Qatar,1.0759,5961978
+BRES.QA,Real Estate,Real Estate - Diversified,Qatar,2.4392,438095
+IGRD.QA,Industrials,Conglomerates,Qatar,3.3675,1121468
+QAMC.QA,Basic Materials,Aluminum,Qatar,1.5884,16342388
+GISS.QA,Industrials,Conglomerates,Qatar,2.4446,1777482
+BLDN.QA,Consumer Defensive,Packaged Foods,Qatar,1.284,27030110
+ERES.QA,Real Estate,Real Estate Services,Qatar,1.06,5193820

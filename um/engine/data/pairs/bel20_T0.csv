@@ -1,0 +1,29 @@
+# etage: bel20
+# name: BEL 20
+# point: T0
+# date: 2026-01-02
+# currency: EUR
+# mic: XBRU
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : table publique Wikipédia du BEL 20 « as of March 31, 2026 » (https://en.wikipedia.org/wiki/BEL_20), 20 titres, citant la composition Euronext. Aperam est coté à Amsterdam. Ce n'est pas la composition historique de T0. Cours ajustés et volumes : Yahoo Finance, séance du 2026-01-02. Secteur, industrie et pays : résumé de cotation Yahoo.
+s,sec,ind,cty,price,volume
+ABI.BR,Consumer Defensive,Beverages - Brewers,Belgium,53.6268,1192193
+ACKB.BR,Industrials,Engineering & Construction,Belgium,228.7064,20387
+AED.BR,Real Estate,REIT - Healthcare Facilities,Belgium,64.0611,90891
+AGS.BR,Financial Services,Insurance - Diversified,Belgium,58.7787,362104
+ARGX.BR,Healthcare,Biotechnology,Netherlands,723.8,53919
+APAM.AS,Basic Materials,Steel,Luxembourg,36.0979,243521
+AZE.BR,Basic Materials,Specialty Chemicals,Belgium,9.127,366683
+DIE.BR,Consumer Cyclical,Auto & Truck Dealerships,Belgium,152.6783,87105
+ELI.BR,Utilities,Utilities - Regulated Electric,Belgium,110.5112,83540
+GBLB.BR,Financial Services,Asset Management,Belgium,71.5017,26762
+KBC.BR,Financial Services,Banks - Diversified,Belgium,108.3659,319354
+LOTB.BR,Consumer Defensive,Packaged Foods,Belgium,8151.2451,1001
+MELE.BR,Technology,Semiconductors,Belgium,55.7877,36875
+MONT.BR,Real Estate,REIT - Industrial,Belgium,67.892,19397
+SOF.BR,Financial Services,Asset Management,Belgium,243.1789,20646
+SOLB.BR,Basic Materials,Chemicals,Belgium,24.8942,222604
+SYENS.BR,Basic Materials,Chemicals,Belgium,68.0337,51530
+UCB.BR,Healthcare,Biotechnology,Belgium,232.7312,170390
+UMI.BR,Industrials,Waste Management,Belgium,18.1206,391394
+WDP.BR,Real Estate,REIT - Industrial,Belgium,20.8715,185295

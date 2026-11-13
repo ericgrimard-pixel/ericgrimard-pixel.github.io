@@ -1,0 +1,34 @@
+# etage: obx
+# name: OBX
+# point: T1
+# date: 2026-11-04
+# currency: NOK
+# mic: XOSL
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : table publique Wikipédia de l'indice OBX (https://en.wikipedia.org/wiki/OBX_Index), 25 titres, pondérations « as of 30 October 2024 » [INCOMPLET : table datée, revue trimestrielle possible depuis]. Ce n'est pas la composition historique de T0. Cours ajustés et volumes : Yahoo Finance, séance du 2026-11-04. Secteur, industrie et pays : résumé de cotation Yahoo.
+s,sec,ind,cty,price,volume
+AKRBP.OL,Energy,Oil & Gas E&P,Norway,354,1028597
+BWLPG.OL,Energy,Oil & Gas Midstream,Singapore,220.2,274712
+DNB.OL,Financial Services,Banks - Regional,Norway,323.4,1630464
+EQNR.OL,Energy,Oil & Gas Integrated,Norway,406.6,4169846
+FRO.OL,Energy,Oil & Gas Midstream,Cyprus,460.4,957557
+GJF.OL,Financial Services,Insurance - Property & Casualty,Norway,274.2,392679
+GOGL,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],[INCOMPLET : ticker Yahoo non résolu],[INCOMPLET : ticker Yahoo non résolu]
+HAFNI.OL,Industrials,Marine Shipping,Singapore,93.05,839404
+HAUTO.OL,Industrials,Marine Shipping,Norway,177.7,333132
+KOG.OL,Industrials,Aerospace & Defense,Norway,354.2,1530565
+MOWI.OL,Consumer Defensive,Farm Products,Norway,218,1821620
+MPCC.OL,Industrials,Marine Shipping,Norway,25.39,1456342
+NOD.OL,Technology,Semiconductors,Norway,181,987216
+NHY.OL,Basic Materials,Aluminum,Norway,67.88,4664688
+NAS.OL,Industrials,Airlines,Norway,12.4,9717381
+ORK.OL,Consumer Defensive,Packaged Foods,Norway,100,1486874
+SALM.OL,Consumer Defensive,Farm Products,Norway,597.5,408748
+STB.OL,Financial Services,Financial Conglomerates,Norway,201.2,669657
+SUBC.OL,Energy,Oil & Gas Equipment & Services,Luxembourg,322.8,546899
+TEL.OL,Communication Services,Telecom Services,Norway,134,1748155
+TGS.OL,Energy,Oil & Gas Equipment & Services,Norway,131.2,338146
+TOM.OL,Industrials,Waste Management,Norway,99.95,595015
+VAR.OL,Energy,Oil & Gas E&P,Norway,53.14,6147073
+WAWI.OL,Industrials,Marine Shipping,Norway,164.1,582552
+YAR.OL,Basic Materials,Agricultural Inputs,Norway,391.2,461836

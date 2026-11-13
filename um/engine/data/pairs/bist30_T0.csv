@@ -1,0 +1,39 @@
+# etage: bist30
+# name: BIST 30
+# point: T0
+# date: 2026-01-02
+# currency: TRY
+# mic: XIST
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : liste BIST 30 (XU030) du 12 nov. 2026 concordante entre artifinx (fichier d'indice quotidien Borsa Istanbul, https://artifinx.com/en/bist-index-constituents/xu030), lzzo (liste au 1er oct. 2026) et yatirimci.ai, 30 titres. Dernier changement relevé : TRMET est entré et DSTKF est sorti le 1er oct. 2026. Zone : Moyen-Orient et Afrique (parent tasi), convention retenue parce que cette zone du Hub est la plus mince ; la Turquie pourrait aussi se ranger en Europe. Ce n'est pas la composition historique de T0. Cours ajustés et volumes : Yahoo Finance, séance du 2026-01-02. Secteur, industrie et pays : résumé de cotation Yahoo.
+s,sec,ind,cty,price,volume
+AEFES.IS,Consumer Defensive,Beverages - Non-Alcoholic,Turkey,15.679,36858735
+AKBNK.IS,Financial Services,Banks - Regional,Turkey,71.2175,87346615
+ASELS.IS,Industrials,Aerospace & Defense,Turkey,230.2,20364261
+ASTOR.IS,Industrials,Electrical Equipment & Parts,Turkey,115.8694,21161519
+BIMAS.IS,Consumer Defensive,Grocery Stores,Turkey,268.4691,6487932
+EKGYO.IS,Real Estate,REIT - Residential,Turkey,20.6095,155662189
+ENKAI.IS,Industrials,Engineering & Construction,Turkey,77.4892,6869770
+EREGL.IS,Basic Materials,Steel,Turkey,23.8951,110878618
+FROTO.IS,Consumer Cyclical,Auto Manufacturers,Turkey,92.4279,11143630
+GARAN.IS,Financial Services,Banks - Regional,Turkey,143.8854,31195721
+GUBRF.IS,Basic Materials,Agricultural Inputs,Turkey,347.8591,1824150
+ISCTR.IS,Financial Services,Banks - Regional,Turkey,13.7909,598690454
+KCHOL.IS,Industrials,Conglomerates,Turkey,168.4998,33158442
+KRDMD.IS,Basic Materials,Steel,Turkey,26.08,31219797
+MGROS.IS,Consumer Defensive,Grocery Stores,Turkey,519.9725,1745272
+PETKM.IS,Basic Materials,Chemicals,Turkey,16.58,35201621
+PGSUS.IS,Industrials,Airlines,Turkey,195,13826375
+SAHOL.IS,Financial Services,Banks - Regional,Turkey,86.5102,36354372
+SASA.IS,Consumer Cyclical,Textile Manufacturing,Turkey,2.89,439054402
+SISE.IS,Industrials,Conglomerates,Turkey,38.6378,23747082
+TAVHL.IS,Industrials,Airports & Air Services,Turkey,306.6964,2776075
+TCELL.IS,Communication Services,Telecom Services,Turkey,96,24992694
+THYAO.IS,Industrials,Airlines,Turkey,274.25,28891002
+TOASO.IS,Consumer Cyclical,Auto Manufacturers,Turkey,242.0699,4599402
+TRALT.IS,Basic Materials,Gold,Turkey,41.4819,127254425
+TRMET.IS,Basic Materials,Other Industrial Metals & Mining,Turkey,108,5709330
+TTKOM.IS,Communication Services,Telecom Services,Turkey,58.1,24117946
+TUPRS.IS,Energy,Oil & Gas Refining & Marketing,Turkey,176.4712,9105038
+VAKBN.IS,Financial Services,Banks - Regional,Turkey,31.68,37407318
+YKBNK.IS,Financial Services,Banks - Regional,Turkey,38.12,170314158

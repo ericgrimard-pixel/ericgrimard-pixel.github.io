@@ -1,0 +1,40 @@
+# etage: ipsa
+# name: IPSA
+# point: T1
+# date: 2026-11-04
+# currency: CLP
+# mic: XSGO
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : IPSA / MSCI IPSA à 31 actions (Pampa Investments ajoutée lors du passage sous MSCI), listes concordantes de Rankia (septembre 2026, https://www.rankia.cl/blog/analisis-ipsa/3229498-que-empresas-forman-parte-ipsa) et de Pauta Financiera (nov. 2026, composition Bolsa de Santiago via Chócale). La table Wikipédia anglaise (au 13 janv. 2022) est périmée et n'a pas été utilisée. Ce n'est pas la composition historique de T0. Cours ajustés et volumes : Yahoo Finance, séance du 2026-11-04. Secteur, industrie et pays : résumé de cotation Yahoo.
+s,sec,ind,cty,price,volume
+AGUAS-A.SN,Utilities,Utilities - Regulated Water,Chile,332.3,1526031
+CHILE.SN,Financial Services,Banks - Regional,Chile,191.98,50893199
+BCI.SN,Financial Services,Banks - Regional,Chile,62500,359466
+ITAUCL.SN,Financial Services,Banks - Regional,Chile,22500,188128
+BSANTANDER.SN,Financial Services,Banks - Regional,Chile,80.25,121589296
+CAP.SN,Basic Materials,Steel,Chile,4246.2002,41335
+CENCOSUD.SN,Consumer Cyclical,Department Stores,Chile,1693.1,3052012
+CENCOMALLS.SN,Real Estate,Real Estate Services,Chile,2135,697680
+COLBUN.SN,Utilities,Utilities - Renewable,Chile,151.1,24347849
+CCU.SN,Consumer Defensive,Beverages - Brewers,Chile,5308,339796
+VAPORES.SN,Industrials,Marine Shipping,Chile,48.5,14169399
+ANDINA-B.SN,Consumer Defensive,Beverages - Non-Alcoholic,Chile,4718,413494
+ENTEL.SN,Communication Services,Telecom Services,Chile,4156,151253
+CMPC.SN,Basic Materials,Paper & Paper Products,Chile,904,4371455
+COPEC.SN,Industrials,Conglomerates,Chile,6520,906775
+ENELAM.SN,Utilities,Utilities - Regulated Electric,Chile,82.94,35792088
+ENELCHILE.SN,Utilities,Utilities - Renewable,Chile,84.95,26848990
+ECL.SN,Utilities,Utilities - Regulated Electric,Chile,2002,693238
+FALABELLA.SN,Consumer Cyclical,Department Stores,Chile,6560,858101
+IAM.SN,Utilities,Utilities - Regulated Water,Chile,883.73,98018
+ILC.SN,Financial Services,Insurance - Life,Chile,23610,83377
+LTM.SN,Industrials,Airlines,Chile,23.36,1500558291
+PARAUCO.SN,Real Estate,Real Estate - Diversified,Chile,3500,490493
+MALLPLAZA.SN,Real Estate,Real Estate Services,Chile,3246,1421330
+QUINENCO.SN,Energy,Oil & Gas Refining & Marketing,Chile,4589,657525
+RIPLEY.SN,Consumer Cyclical,Department Stores,Chile,435,1976850
+SALFACORP.SN,Industrials,Engineering & Construction,Chile,1260,633745
+SMU.SN,Consumer Cyclical,Department Stores,Chile,105,3917412
+SQM-B.SN,Basic Materials,Specialty Chemicals,Chile,55775,243084
+CONCHATORO.SN,Consumer Defensive,Beverages - Wineries & Distilleries,Chile,864.5,1172476
+PAMPA.SN,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],8.7,110175856

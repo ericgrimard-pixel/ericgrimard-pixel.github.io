@@ -17,10 +17,11 @@
   };
   const MIC={
     XNYS:['na','United States'], XNAS:['na','United States'], BATS:['na','United States'],
-    XLON:['eur','United Kingdom'], XPAR:['eur','France'], XETR:['eur','Germany'], XWAR:['eur','Poland'],
+    XLON:['eur','United Kingdom'], XPAR:['eur','France'], XETR:['eur','Germany'], XWAR:['eur','Poland'], XBRU:['eur','Belgium'], XOSL:['eur','Norway'],
     XTKS:['apac','Japan'], XHKG:['apac','Hong Kong'], XSES:['apac','Singapore'],
-    XASX:['apac','Australia'], XBKK:['apac','Thailand'], XNZE:['apac','New Zealand'], XTAI:['apac','Taiwan'],
-    XSAU:['mea','Saudi Arabia'], XB3:['latam','Brazil'], XBOG:['latam','Colombia'], XBUE:['latam','Argentina']
+    XASX:['apac','Australia'], XBKK:['apac','Thailand'], XNZE:['apac','New Zealand'], XTAI:['apac','Taiwan'], XKLS:['apac','Malaysia'],
+    XSAU:['mea','Saudi Arabia'], XTAE:['mea','Israel'], DSMD:['mea','Qatar'], XCAI:['mea','Egypt'], XIST:['mea','Turkey'],
+    XB3:['latam','Brazil'], XBOG:['latam','Colombia'], XBUE:['latam','Argentina'], XSGO:['latam','Chile']
   };
   function sys(id){ return LIB.find(x=>x.id===id); }
   function slug(s){
@@ -101,7 +102,10 @@
     'floor/EUF/index/WIG20':'wig20',
     'floor/ASF/index/SET50':'set50', 'floor/ASF/index/TW50':'tw50',
     'floor/ASF/index/NZX50':'nzx50', 'floor/OCF/index/NZX50':'nzx50',
-    'floor/AMF/index/COLCAP':'colcap', 'floor/AMF/index/MERVAL':'merval',
+    'floor/AMF/index/COLCAP':'colcap', 'floor/AMF/index/MERVAL':'merval', 'floor/AMF/index/IPSA':'ipsa',
+    'floor/MEF/index/TA35':'ta35', 'floor/MEF/index/QE':'qe', 'floor/MEF/index/EGX30':'egx30', 'floor/MEF/index/BIST30':'bist30',
+    'floor/ASF/index/KLCI':'klci',
+    'floor/EUF/index/BEL20':'bel20', 'floor/EUF/index/OBX':'obx',
     'floor/NSF':'', 'floor/EWF':''
   };
   const ocf=floors.find(f=>f.level==='country'&&f.zone==='apac'&&f.cty==='Australia');

@@ -1,0 +1,41 @@
+# etage: egx30
+# name: EGX 30
+# point: T0
+# date: 2026-01-04
+# currency: EGP
+# mic: XCAI
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : pondérations EGX 30 publiées le 13 oct. 2026 après la revue semestrielle d'août/septembre 2026, telles que reprises par OpenStock (https://openstockeg.com/learn/egx30-index), recoupées avec le communiqué officiel EGX du 16 août 2026 (entrées : Mopco, Alexandria Containers, Cleopatra Hospital, SIDPEC ; sorties : Arabian Cement, Kima, Oriental Weavers, Orascom Investment Holding, effectives le 1er sept. 2026). La table publique compte 31 lignes (VLMR et VLMRA, deux classes de Valmore Holding) pour un indice officiel de 30 sociétés [INCOMPLET]. Ce n'est pas la composition historique de T0. Cours ajustés et volumes : Yahoo Finance, séance du 2026-01-04. Secteur, industrie et pays : résumé de cotation Yahoo.
+# [INCOMPLET : la place n'a pas de séance le 2026-01-02 ; T0 réel = 2026-01-04]
+s,sec,ind,cty,price,volume
+COMI.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],95.7993,915458
+TMGH.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],76.7543,2310278
+ETEL.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],64.2858,872381
+FWRY.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],15.51,3540029
+EFIH.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],17.5497,2118591
+EAST.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],34.6667,594062
+ABUK.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],48.6559,754286
+HRHO.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],24.5462,1705706
+ORAS.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],71.05,0
+ADIB.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],29.03,1173445
+CCAP.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],3.7,76650082
+MFPC.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],27.4943,696411
+EFID.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],27.2185,936339
+EGS69082C013.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],[INCOMPLET : pas de séance Yahoo à cette date],[INCOMPLET : pas de séance Yahoo à cette date]
+ALCN.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],23.0326,873297
+PHDC.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],8.48,4258142
+GBCO.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],25.6642,1435246
+AMOC.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],6.611,2533544
+BTFH.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],3.39,34542204
+EGAL.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],253,486022
+ORHD.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],24.06,3792841
+SKPC.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],15.64,791660
+ISPH.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],11.0888,1137362
+HELI.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],3.3057,5343037
+CLHO.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],13.16,197280
+MCQE.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],173.0159,293268
+JUFO.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],24.8951,1137065
+EMFD.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],9.46,1030535
+RAYA.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],3.6,43663114
+RMDA.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],3.2808,3916124
+EGS69081C023.CA,[INCOMPLET : secteur Yahoo absent],[INCOMPLET : industrie Yahoo absente],[INCOMPLET : pays Yahoo absent],[INCOMPLET : pas de séance Yahoo à cette date],[INCOMPLET : pas de séance Yahoo à cette date]
