@@ -104,6 +104,7 @@
     'floor/ASF/index/NZX50':'nzx50', 'floor/OCF/index/NZX50':'nzx50',
     'floor/AMF/index/COLCAP':'colcap', 'floor/AMF/index/MERVAL':'merval', 'floor/AMF/index/IPSA':'ipsa',
     'floor/AMF/index/IBRX50':'ibrx50', 'floor/AMF/index/SMLL':'smll', 'floor/AMF/index/IFNC':'ifnc', 'floor/AMF/index/IMOB':'imob', 'floor/AMF/index/IDIV':'idiv',
+    'floor/AMF/index/SP100':'sp100', 'floor/AMF/index/DJCOMP':'djcomp', 'floor/AMF/index/ICON':'icon', 'floor/AMF/index/MLCX':'mlcx',
     'floor/MEF/index/TA35':'ta35', 'floor/MEF/index/QE':'qe', 'floor/MEF/index/EGX30':'egx30', 'floor/MEF/index/BIST30':'bist30',
     'floor/ASF/index/KLCI':'klci',
     'floor/EUF/index/BEL20':'bel20', 'floor/EUF/index/OBX':'obx',
