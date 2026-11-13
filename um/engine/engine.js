@@ -754,6 +754,28 @@ const LV={stretch:[.55,.78,1,1.28,1.6],pitch:[-32,-16,0,16,32].map(x=>x*Math.PI/
 const DENS=(N1+NC+5)>1234?Math.sqrt(1234/(N1+NC+5)):1;
 C4O.R=4*(.1*DENS); /* rev. 23.11: the central object = four times a Class 1 object (Class 1 = 0,1 × DENS) */
 core.add(hitSphere(C4O.R*1.15,{kind:4}));
+/* Finance stays the opening Class 4. Art and Sports are siblings beside the
+   galaxy: they are not members, so they never enter its aggregate or its drift. */
+if(SYS.id==='world'){
+  const fin=label('Finance','#e8c872',.26,500);
+  fin.position.set(0,C4O.R+.32,0);
+  core.add(fin);
+  function sibling(id,text,color,note,x,y,z){
+    const g=new THREE.Group();g.position.set(x,y,z);
+    const R=C4O.R;
+    const face=new THREE.MeshBasicMaterial({color:color,transparent:true,opacity:.62,depthWrite:false,side:THREE.DoubleSide});
+    const edge=new THREE.LineBasicMaterial({color:color,transparent:true,opacity:.95});
+    const geo=new THREE.DodecahedronGeometry(R);
+    g.add(new THREE.Mesh(geo,face));
+    g.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo),edge));
+    const lb=label(text,'#e6f2ff',.3,500);lb.position.set(0,R+.28,0);g.add(lb);
+    g.add(hitSphere(R*1.45,{kind:4,side:id,label:text,note:note}));
+    WORLD.add(g);
+  }
+  /* Above the chamber (height stops at 1) so a narrow phone still shows them beside Finance. */
+  sibling('art','Art',0xb388ff,'Musique · Spotify 2021 · [INCOMPLET] un seul instantané',-1.45,2.35,.2);
+  sibling('sports','Sports',0x4fa7ff,'LNH · 2024-25 → 2025-26',1.45,2.35,.2);
+}
 function makeObj(kind,idx){
   const R=(kind===1?.1:.2)*DENS;
   const root=new THREE.Group(),orient=new THREE.Group(),spin=new THREE.Group(),body=new THREE.Group();
@@ -1308,8 +1330,9 @@ function spacingTakes(){
   OFF1.fill(0);OFF2.fill(0);
   [S.T0,S.T1].forEach((d,ti)=>{
     const P=[],R=[],M=[],ref=[];
-    for(let i=0;i<N1;i++){const j=i*F+d;if(!PRES[j])continue;const p=posOf(V,j);P.push({x:p[0],y:p[1],z:p[2]});R.push(.1*DENS/S.exp);M.push(1);ref.push([OFF1,i,p])}
-    for(let c=0;c<NC;c++){const q=c*F+d;if(!CP[q])continue;const p=posOf(CV,q);P.push({x:p[0],y:p[1],z:p[2]});R.push(.2*DENS/S.exp);M.push(8);ref.push([OFF2,c,p])}
+    const gap=SYS.id==='world'?1.7:1; /* World doors must clear each other's hit sphere from the opening angle */
+    for(let i=0;i<N1;i++){const j=i*F+d;if(!PRES[j])continue;const p=posOf(V,j);P.push({x:p[0],y:p[1],z:p[2]});R.push(.1*DENS*gap/S.exp);M.push(1);ref.push([OFF1,i,p])}
+    for(let c=0;c<NC;c++){const q=c*F+d;if(!CP[q])continue;const p=posOf(CV,q);P.push({x:p[0],y:p[1],z:p[2]});R.push(.2*DENS*gap/S.exp);M.push(8);ref.push([OFF2,c,p])}
     const nd=P.length;
     C3.forEach(g=>{P.push({x:g.position.x,y:g.position.y,z:g.position.z});R.push(.3/S.exp);M.push(0)});
     P.push({x:0,y:0,z:0});R.push(C4O.R/S.exp);M.push(0); /* the central object in its reserved space (hollow centre): fixed, nothing overlaps it */
@@ -1594,11 +1617,12 @@ renderer.domElement.addEventListener('pointermove',e=>{
 renderer.domElement.addEventListener('pointerleave',()=>{tip.style.display='none'});
 function ascendOrEnter(e){
   const ref=pickAt(e);if(!ref)return;
+  if(ref.side){switchSys(ref.side);return}
   const rr=renderer.domElement.getBoundingClientRect();mouse.x=(e.clientX-rr.left)/rr.width*2-1;mouse.y=-(e.clientY-rr.top)/rr.height*2+1;
   ray.setFromCamera(mouse,camera);
   const vis=HITS.filter(m=>{let p=m;while(p){if(!p.visible)return false;p=p.parent}return true});
   const onC4=ray.intersectObjects(vis,false).some(h=>h.object.userData.ref&&h.object.userData.ref.kind===4);
-  if(SYS.id==='world'&&ref.kind===1){const id=TK[ref.idx]&&TK[ref.idx].floor;if(id){switchSys(id);return}}
+  if(ref.kind===1){const id=TK[ref.idx]&&TK[ref.idx].floor;if(id){switchSys(id);return}}
   if(onC4&&SYS.id!=='world'){const parent=window.UM_FLOOR_BY&&UM_FLOOR_BY[SYS.id]&&UM_FLOOR_BY[SYS.id].parent;switchSys(parent||'world');return}
   select(ref);
   if(ref.kind===4)enterPlan();else if(ref.kind===1||ref.kind===2)enterFocus(ref);
@@ -1650,6 +1674,7 @@ function vals(ref,d){
 }
 function tipHTML(ref){
   const d=curD();
+  if(ref.side)return `<div class="t">${esc(ref.label)}</div><div class="k">Classe 4 · à côté de Finance · hors de la galaxie</div><div class="k" style="margin-top:4px">${esc(ref.note||'')}</div>`;
   if(ref.kind===5)return `<div class="t">Z0 · moyenne de tout</div><div class="k">placeholder : moyennes · fil linéaire de Z0(T₀) à Z0(T₁)</div><div class="k" style="margin-top:5px">Z0(T₀) <b>${z0txt(Z0A)}</b> · ${Z0N[0]} points<br>Z0(T₁) <b>${z0txt(Z0B)}</b> · ${Z0N[1]} points</div><div class="k" style="margin-top:4px">dérive |Δ| <b>${Math.hypot(Z0B[0]-Z0A[0],Z0B[1]-Z0A[1],Z0B[2]-Z0A[2]).toFixed(5)}</b> · ancre des vecteurs de la Classe 4 vivante</div>`;
   if(ref.kind===4){
     const o0=zoneCounts(S.open,S.T0),o1=zoneCounts(S.open,S.T1);
@@ -1767,6 +1792,10 @@ function c4Block(){
 }
 function renderFiche(){
   const s=S.sel||{kind:4},d=curD(),k=S.open,id=eff(k);
+  if(s.side){
+    fiche.innerHTML=`<div class="cls">Classe 4 · à côté de Finance</div><h3>${esc(s.label)}</h3><div class="meta">${esc(s.note||'')}</div><p class="note">Hors de la galaxie finance : ni agrégat, ni zone, ni dérive de Finance. Double-clic pour entrer. La Classe 4 de cet étage remonte à Finance.</p>`;
+    return;
+  }
   let h='';
   if(s.kind===5){
     h=`<div class="cls">Z0 · moyenne de tout · placeholder</div><h3>Fil Z0</h3>
@@ -1994,14 +2023,9 @@ window.__umSelect=select; /* hook for the soul (CLAVIS) bridge and for tests */
     if(!raw||raw==='world') return 'world';
     return LIB.some(x=>x.id===raw&&x.data)?raw:'';
   }
-  const start=resolved(rawHash())||'world';
-  switchSys(start);
-  if(!resolved(rawHash())&&rawHash()&&window.UM_MARK_INCOMPLET) window.UM_MARK_INCOMPLET(rawHash());
-  addEventListener('hashchange',()=>{
-    const raw=rawHash();
-    const id=resolved(raw);
-    if(!id){ if(window.UM_MARK_INCOMPLET) window.UM_MARK_INCOMPLET(raw); return; }
-    if(id!==CURSYS && LIB.some(x=>x.id===id&&x.data)) switchSys(id);
-    else if(window.UM_RENDER_NAV) window.UM_RENDER_NAV(id);
-  });
+  /* The hub always opens on Finance. A bookmark does not open a floor. */
+  const arrived=rawHash();
+  try{history.replaceState(null,'',location.pathname+location.search+'#/world')}catch(e){}
+  switchSys('world');
+  if(arrived&&arrived!=='world'&&!resolved(arrived)) window.__umUnknown=arrived;
 })();

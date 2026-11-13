@@ -1,7 +1,19 @@
-/* World Class 4. Finance floors use the mean of their own closes.
-   Hockey uses the league's own points and games. Music uses its own popularity
-   and duration. A second take that the source does not have is not invented. */
+/* World is the finance Class 4 only. Hockey and music are not members:
+   they have no common measure with prices, so they stay out of this
+   aggregate, its zones and its drift. Art and Sports sit beside it. */
 (function(){
+  const REGION={
+    ndx100:'Amérique du Nord', sp500y:'Amérique du Nord', djia:'Amérique du Nord', sp500:'Amérique du Nord',
+    ftse100:'Europe', dax:'Europe', cac40:'Europe', sx5e:'Europe',
+    n225:'Asie-Pacifique', hsi:'Asie-Pacifique', sti:'Asie-Pacifique', asx200:'Asie-Pacifique',
+    tasi:'Moyen-Orient et Afrique', ibov:'Amérique latine'
+  };
+  const SHORT={
+    ndx100:'Nasdaq-100', sp500y:'S&P 500', djia:'Dow Jones', sp500:'S&P 500 · deux séances',
+    ftse100:'FTSE 100', dax:'DAX 40', cac40:'CAC 40', sx5e:'EURO STOXX 50',
+    n225:'Nikkei 225', hsi:'Hang Seng', sti:'Straits Times', asx200:'S&P/ASX 200',
+    tasi:'Tadawul', ibov:'Ibovespa'
+  };
   const missing=[];
   const titles=[];
   function pushFloor(sys, ser, sec, ind){
@@ -32,56 +44,22 @@
     const base=Math.exp(s0/n0);
     return {c:[base, base*(n1?Math.exp(s1/n1):1)], v:[nv0?v0/nv0:1, nv1?v1/nv1:(nv0?v0/nv0:1)]};
   }
-  function colMean(rows, take, col){
-    let s=0,n=0;
-    rows.forEach(function(t){
-      const st=t.st&&t.st[take];
-      if(!st) return;
-      const x=st[col];
-      if(x!=null&&isFinite(x)){ s+=x; n++; }
-    });
-    return n?{n:n,v:s/n}:null;
-  }
   LIB.forEach(function(sys){
     if(!sys||!sys.data||sys.id==='world') return;
-    if(sys.kind==='hockey'){
-      const rows=sys.data.t||[];
-      const pts0=colMean(rows,0,3), pts1=colMean(rows,1,3);
-      const gp0=colMean(rows,0,0), gp1=colMean(rows,1,0);
-      if(!(pts0&&pts0.v>0&&pts1&&pts1.v>0)){ missing.push(sys.id); return; }
-      pushFloor(sys, {
-        c:[pts0.v, pts1.v],
-        v:[(gp0&&gp0.v>0)?gp0.v:1, (gp1&&gp1.v>0)?gp1.v:1]
-      }, 'Sport · Hockey', 'Points moyens · matchs joués');
-      return;
-    }
-    if(sys.kind==='cols'){
-      const rows=sys.data.t||[];
-      const pop=colMean(rows,0,0), dur=colMean(rows,0,1);
-      if(!(pop&&pop.v>0)){ missing.push(sys.id); return; }
-      const vol=(dur&&dur.v>0)?dur.v:1;
-      pushFloor(sys, {c:[pop.v, pop.v], v:[vol, vol]}, 'Société · Musique', '[INCOMPLET] dérive — T₀ = T₁');
-      return;
-    }
-    const CARD={
-      sp500y:['Amérique du Nord','S&P 500'],
-      sx5e:['Europe','EURO STOXX 50'],
-      n225:['Asie-Pacifique','Nikkei 225'],
-      tasi:['Moyen-Orient et Afrique','Tadawul'],
-      ibov:['Amérique latine','Ibovespa']
-    };
+    if(sys.kind==='hockey'||sys.kind==='cols') return;
+    if(sys.silo==='Art'||sys.silo==='Sports') return;
     const ser=financeSeries(sys);
     if(!ser){ missing.push(sys.id); return; }
-    const card=CARD[sys.id];
-    if(!card) return;
-    pushFloor(sys, ser, card[0], card[1]);
+    const sec=sys.zone||REGION[sys.id];
+    if(!sec){ missing.push(sys.id); return; }
+    pushFloor(sys, ser, sec, sys.gap||SHORT[sys.id]||sys.short||'Étage');
   });
   window.__WORLD_INCOMPLET=missing;
   LIB.unshift({
     id:'world',
-    silo:'World',
-    name:'World',
-    source:'World — Classe 4. Finance : moyenne des clôtures réelles. Hockey : points moyens et matchs joués, T₀ 2024-25 → T₁ 2025-26. Musique : popularité et durée Spotify 2021 ; la dérive est [INCOMPLET] parce que la source n\'a qu\'un instantané.'+(missing.length?(' [INCOMPLET] non placés : '+missing.join(', ')+'.'):''),
+    silo:'Finance',
+    name:'Finance',
+    source:'Finance — Classe 4 du marché World. Seules les séries de prix entrent dans l\'agrégat, les zones et la dérive. Art et Sports sont deux Classes 4 à côté, hors de cette galaxie. Hockey et musique n\'y sont pas.'+(missing.length?(' [INCOMPLET] non placés : '+missing.join(', ')+'.'):''),
     data:{dates:['T₀','T₁'], t:titles}
   });
 })();

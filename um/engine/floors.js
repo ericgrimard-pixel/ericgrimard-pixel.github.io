@@ -29,7 +29,7 @@
   const floors=[];
   const by={};
   function addFloor(f){ floors.push(f); by[f.id]=f; if(!f.children) f.children=[]; }
-  addFloor({id:'world', name:'World', level:'world', parent:null, children:ZONES.map(z=>z.id)});
+  addFloor({id:'world', name:'Finance', level:'world', parent:null, children:ZONES.map(z=>z.id)});
   ZONES.forEach(z=>addFloor({id:z.id, name:z.name, level:'zone', parent:'world', children:[], n:(sys(z.id)&&sys(z.id).data.t.length)||0, source:z.id}));
   ['ndx100','djia','sp500','ftse100','dax','cac40','hsi','sti','asx200'].forEach(id=>{
     const s=sys(id); if(!s) return;
@@ -103,6 +103,15 @@
     ['floor/AMF/ex/','floor/EUF/ex/','floor/ASF/ex/','floor/OCF/ex/','floor/MEF/ex/','floor/AFF/ex/'].forEach(p=>{
       redir[p+mic]=hit?hit.id:'';
     });
+  });
+  const nhl=sys('nhl'), music=sys('music');
+  addFloor({id:'art', name:'Art', level:'silo', parent:'world', children:music?['music']:[], n:1});
+  addFloor({id:'sports', name:'Sports', level:'silo', parent:'world', children:nhl?['nhl']:[], n:1});
+  if(music) addFloor({id:'music', name:music.name, level:'index', parent:'art', children:[], n:music.data.t.length, source:'music'});
+  if(nhl) addFloor({id:'nhl', name:nhl.name, level:'index', parent:'sports', children:[], n:nhl.data.t.length, source:'nhl'});
+  LIB.forEach(s=>{
+    if(!s.market||by[s.id]) return;
+    addFloor({id:s.id, name:s.name, level:'index', parent:'world', children:[], n:(s.data&&s.data.t&&s.data.t.length)||0, source:s.id});
   });
   window.UM_FLOORS=floors;
   window.UM_FLOOR_BY=by;
