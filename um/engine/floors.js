@@ -105,6 +105,7 @@
     'floor/AMF/index/COLCAP':'colcap', 'floor/AMF/index/MERVAL':'merval', 'floor/AMF/index/IPSA':'ipsa',
     'floor/AMF/index/IBRX50':'ibrx50', 'floor/AMF/index/SMLL':'smll', 'floor/AMF/index/IFNC':'ifnc', 'floor/AMF/index/IMOB':'imob', 'floor/AMF/index/IDIV':'idiv',
     'floor/AMF/index/SP100':'sp100', 'floor/AMF/index/DJCOMP':'djcomp', 'floor/AMF/index/ICON':'icon', 'floor/AMF/index/MLCX':'mlcx',
+    'floor/AMF/index/SPX-TECH':'spx-tech', 'floor/AMF/index/SPX-IND':'spx-ind', 'floor/AMF/index/SPX-FIN':'spx-fin', 'floor/AMF/index/SPX-HLTH':'spx-hlth', 'floor/AMF/index/SPX-CYC':'spx-cyc',
     'floor/MEF/index/TA35':'ta35', 'floor/MEF/index/QE':'qe', 'floor/MEF/index/EGX30':'egx30', 'floor/MEF/index/BIST30':'bist30',
     'floor/MEF/index/TASI-MAT':'tasi-mat', 'floor/MEF/index/TASI-FIN':'tasi-fin', 'floor/MEF/index/TASI-IND':'tasi-ind', 'floor/MEF/index/TASI-RE':'tasi-re', 'floor/MEF/index/TASI-CYC':'tasi-cyc',
     'floor/ASF/index/KLCI':'klci',
