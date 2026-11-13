@@ -1,0 +1,51 @@
+# etage: jse40
+# name: FTSE/JSE Top 40
+# point: T1
+# date: 2026-11-03
+# currency: ZAR
+# mic: XJSE
+# window_requested: 2026-01-02 → 2026-11-04
+# source: Constituants courants : table Satrix 40 ETF (STX40), réplication déclarée de l'indice FTSE/JSE Top 40, informations au 10 nov. 2026, page mise à jour le 12 nov. 2026 (https://satrix.co.za/products/product-details?id=44). 41 lignes officielles (Investec Ltd INL et Investec PLC INP tous deux présents, comme le factsheet FTSE au 30 oct. 2026, 41 constituants). Ce n'est pas la composition historique de T0. Cours ajustés Yahoo Finance, devise Yahoo ZAc convertie en ZAR (÷ 100). Volumes Yahoo (titres). Secteur, industrie et pays : résumé de cotation Yahoo, pas l'ICB officiel.
+# [INCOMPLET : la place n'a pas de séance le 2026-11-04 (élections locales, JSE fermée) ; T1 réel = 2026-11-03]
+s,sec,ind,cty,price,volume
+ABG.JO,Financial Services,Banks - Regional,South Africa,222.17,7957851
+AGL.JO,Basic Materials,Other Industrial Metals & Mining,United Kingdom,840.18,1486615
+ANG.JO,Basic Materials,Gold,United States,1373.99,839342
+ANH.JO,Consumer Defensive,Beverages - Brewers,Belgium,1354.58,682128
+APN.JO,Healthcare,Drug Manufacturers - Specialty & Generic,South Africa,163.76,6187384
+BHG.JO,Basic Materials,Other Industrial Metals & Mining,Australia,656.46,274435
+BID.JO,Consumer Defensive,Food Distribution,South Africa,462.81,1220518
+BTI.JO,Consumer Defensive,Tobacco,United Kingdom,1012.07,486366
+BVT.JO,Industrials,Conglomerates,South Africa,241.8,1204513
+CFR.JO,Consumer Cyclical,Luxury Goods,Switzerland,3391.79,116746
+CLS.JO,Healthcare,Pharmaceutical Retailers,South Africa,221.19,1795151
+CPI.JO,Financial Services,Banks - Regional,South Africa,4630.0,273181
+DSY.JO,Financial Services,Insurance - Life,South Africa,274.74,1881337
+FSR.JO,Financial Services,Banks - Diversified,South Africa,91.87,11543629
+GFI.JO,Basic Materials,Gold,South Africa,587.4,3931200
+GLN.JO,Basic Materials,Other Industrial Metals & Mining,Switzerland,113.97,5969460
+GRT.JO,Real Estate,REIT - Diversified,South Africa,15.89,8482229
+HAR.JO,Basic Materials,Gold,South Africa,256.93,2302224
+IMP.JO,Basic Materials,Other Precious Metals & Mining,South Africa,173.46,4486040
+INL.JO,Financial Services,Banks - Regional,South Africa,133.73,1118823
+INP.JO,Financial Services,Capital Markets,South Africa,135.72,513209
+MRP.JO,Consumer Cyclical,Apparel Retail,South Africa,176.52,597030
+MTN.JO,Communication Services,Telecom Services,South Africa,211.5,5052845
+NED.JO,Financial Services,Banks - Regional,South Africa,286.82,1701503
+NPH.JO,Basic Materials,Other Precious Metals & Mining,South Africa,236.97,2095123
+NPN.JO,Consumer Cyclical,Internet Retail,South Africa,704.2,2316908
+NRP.JO,Real Estate,Real Estate - Diversified,Netherlands,145.0,1230122
+OMU.JO,Financial Services,Financial Conglomerates,South Africa,14.19,16954092
+OUT.JO,Financial Services,Insurance - Diversified,South Africa,88.45,1859692
+PAN.JO,Basic Materials,Gold,South Africa,23.53,5058792
+PPH.JO,Consumer Cyclical,Department Stores,South Africa,18.2,34715642
+PRX.JO,Consumer Cyclical,Internet Retail,Netherlands,655.9973,1980896
+REM.JO,Financial Services,Asset Management,South Africa,208.63,1218884
+RNI.JO,Financial Services,Asset Management,Luxembourg,456.13,310941
+SBK.JO,Financial Services,Banks - Regional,South Africa,298.5,2876632
+SHP.JO,Consumer Cyclical,Department Stores,South Africa,336.4,1347391
+SLM.JO,Financial Services,Insurance - Life,South Africa,86.1,4433198
+SOL.JO,Basic Materials,Specialty Chemicals,South Africa,265.5,4184543
+SSW.JO,Basic Materials,Other Precious Metals & Mining,South Africa,36.78,16097005
+VAL.JO,Basic Materials,Other Precious Metals & Mining,South Africa,1108.05,682878
+VOD.JO,Communication Services,Telecom Services,South Africa,162.4,2151998

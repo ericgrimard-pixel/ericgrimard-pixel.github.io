@@ -96,7 +96,8 @@
     'floor/EUF/index/SX5E':'sx5e', 'floor/EUF/index/FTSE100':'ftse100', 'floor/EUF/index/DAX':'dax', 'floor/EUF/index/CAC40':'cac40',
     'floor/ASF/index/N225':'n225', 'floor/ASF/index/HSI':'hsi', 'floor/ASF/index/STI':'sti', 'floor/ASF/index/TASI':'tasi',
     'floor/MEF/index/TASI':'tasi', 'floor/OCF/index/ASX200':'asx200',
-    'floor/AFF':'', 'floor/AFF/index/JSE40':'', 'floor/NSF':'', 'floor/EWF':''
+    'floor/AFF':'jse40', 'floor/AFF/index/JSE40':'jse40', 'floor/MEF/index/JSE40':'jse40',
+    'floor/NSF':'', 'floor/EWF':''
   };
   const ocf=floors.find(f=>f.level==='country'&&f.zone==='apac'&&f.cty==='Australia');
   if(ocf) redir['floor/OCF']=ocf.id;
@@ -128,8 +129,6 @@
   window.UM_FLOOR_BY=by;
   window.UM_REDIR=redir;
   window.UM_WHY={
-    'floor/AFF':'La bibliothèque du moteur n’a pas de cours pour le FTSE/JSE Top 40. Le pays n’est pas inventé.',
-    'floor/AFF/index/JSE40':'Même absence de série. Les noms seuls ne deviennent pas des prix.',
     'floor/NSF':'Les bibliothèques n’ont pas d’hémisphère. Mélanger leurs calendriers inventerait une série.',
     'floor/EWF':'Les bibliothèques n’ont pas d’est ni d’ouest. Mélanger leurs calendriers inventerait une série.'
   };

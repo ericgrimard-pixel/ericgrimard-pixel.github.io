@@ -2,6 +2,9 @@
    they have no common measure with prices, so they stay out of this
    aggregate, its zones and its drift. Art and Sports sit beside it. */
 (function(){
+  (window.LIB||[]).forEach(function(s){
+    if(s&&s.id&&!LIB.some(function(x){return x.id===s.id;})) LIB.push(s);
+  });
   const REGION={
     ndx100:'Amérique du Nord', sp500y:'Amérique du Nord', djia:'Amérique du Nord', sp500:'Amérique du Nord',
     ftse100:'Europe', dax:'Europe', cac40:'Europe', sx5e:'Europe',
