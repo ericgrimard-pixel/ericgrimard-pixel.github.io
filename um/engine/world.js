@@ -52,7 +52,8 @@
     if(!ser){ missing.push(sys.id); return; }
     const sec=sys.zone||REGION[sys.id];
     if(!sec){ missing.push(sys.id); return; }
-    pushFloor(sys, ser, sec, sys.gap||SHORT[sys.id]||sys.short||'Étage');
+    const label=sys.short||SHORT[sys.id]||'Étage';
+    pushFloor(sys, ser, sec, sys.gap?label+' · '+sys.gap:label);
   });
   window.__WORLD_INCOMPLET=missing;
   LIB.unshift({
