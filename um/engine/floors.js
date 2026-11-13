@@ -136,6 +136,86 @@
       });
     });
   });
+  /* One country floor per real country in a zone. Members are merged across
+     every deposited index of that zone and deduped by ticker. A large floor
+     already on a long calendar is left as it is. */
+  const ZID={}; ZONES.forEach(z=>{ ZID[z.name]=z.id; });
+  const PAIRS=[['2026-01-02','2026-11-04'],['2026-01-05','2026-11-04'],['2026-01-04','2026-11-04'],['2026-01-02','2026-11-03']];
+  function countryOf(t){
+    if(t&&t.cty&&t.cty!=='n/d'&&String(t.cty).indexOf('INCOMPLET')<0) return t.cty;
+    if(t&&t.s&&/\.CA$/.test(t.s)) return 'Egypt';
+    return '';
+  }
+  function zoneIdOf(s){
+    if(s.zone&&ZID[s.zone]) return ZID[s.zone];
+    const f=by[s.id];
+    if(f&&by[f.parent]&&by[f.parent].level==='zone') return f.parent;
+    return '';
+  }
+  function at(s,t,day){
+    const i=s.data.dates.indexOf(day);
+    if(i<0||!t.c||!(t.c[i]>0)) return null;
+    const v=t.v&&t.v[i];
+    return {c:+t.c[i], v:v>0?+v:0};
+  }
+  const bag={};
+  LIB.forEach(s=>{
+    if(!s||!s.data||!s.data.t||!s.data.dates) return;
+    if(s.silo==='Art'||s.silo==='Sports'||s.kind==='hockey'||s.kind==='cols') return;
+    if(/^cty-|^sec-|^ind-/.test(s.id)||s.id==='world') return;
+    const zid=zoneIdOf(s); if(!zid) return;
+    s.data.t.forEach(t=>{
+      const cty=countryOf(t); if(!cty||!t.s) return;
+      const key=zid+'|'+cty;
+      (bag[key]||(bag[key]=[])).push({s:s, t:t});
+    });
+  });
+  Object.keys(bag).sort().forEach(key=>{
+    const zid=key.slice(0,key.indexOf('|')), cty=key.slice(key.indexOf('|')+1);
+    const z=ZONE_BY_ID[zid]; if(!z) return;
+    const copies=bag[key];
+    let pair=null, bestN=-1;
+    PAIRS.forEach(p=>{
+      const seen={}; let n=0;
+      copies.forEach(c=>{ if(seen[c.t.s]) return; if(at(c.s,c.t,p[0])&&at(c.s,c.t,p[1])){ seen[c.t.s]=1; n++; } });
+      if(n>bestN){ bestN=n; pair=p; }
+    });
+    if(!pair||bestN<8) return;
+    const taken={}; const rows=[];
+    const curs={};
+    copies.forEach(c=>{
+      if(taken[c.t.s]) return;
+      const a=at(c.s,c.t,pair[0]), b=at(c.s,c.t,pair[1]);
+      if(!a||!b) return;
+      taken[c.t.s]=1;
+      curs[c.s.cur||'$']=(curs[c.s.cur||'$']||0)+1;
+      const sec=c.t.sec&&String(c.t.sec).indexOf('INCOMPLET')<0&&c.t.sec!=='n/d'?c.t.sec:'[INCOMPLET] secteur non publié';
+      const ind=c.t.ind&&String(c.t.ind).indexOf('INCOMPLET')<0&&c.t.ind!=='n/d'?c.t.ind:'[INCOMPLET] industrie non publiée';
+      rows.push({s:c.t.s, sec:sec, ind:ind, cty:cty, o:0, c:[a.c,b.c], v:[a.v,b.v]});
+    });
+    if(rows.length<8) return;
+    let topCur='$'; let topN=0;
+    Object.keys(curs).forEach(k=>{ if(curs[k]>topN){ topN=curs[k]; topCur=k; } });
+    const cid='cty-'+z.key+'-'+slug(cty);
+    const gap=pair[0]==='2026-01-02'?'':'[INCOMPLET] T₀ = '+pair[0]+', pas 2026-01-02. ';
+    const source=cty+' — '+rows.length+' titres fusionnés des indices déposés de '+z.name+', dédoublonnés par symbole. Séances communes : T₀ = '+pair[0]+' et T₁ = '+pair[1]+'. '+gap+'Secteur et industrie repris quand le champ déposé est réel.';
+    const prev=by[cid];
+    if(!prev){
+      LIB.push({id:cid, name:cty, silo:'Finance · '+z.name, cur:topCur, source:source, data:{dates:pair.slice(), t:rows}});
+      seen.add(cid);
+      addFloor({id:cid, name:cty, level:'country', parent:z.id, children:[], n:rows.length, source:'merge', silo:'Finance · '+z.name, zone:z.key, cty:cty});
+      by[z.id].children.push(cid);
+      return;
+    }
+    const host=LIB.find(x=>x.id===cid);
+    if(!host) return;
+    if(host.data.dates.length>2&&prev.n>=8) return;
+    if(prev.n>=40||rows.length<=prev.n) return;
+    host.data={dates:pair.slice(), t:rows};
+    host.cur=topCur;
+    host.source=source;
+    prev.n=rows.length;
+  });
   const redir={
     'floor/WF':'world', 'floor/world':'world', 'world':'world',
     'floor/AMF':'sp500y', 'floor/EUF':'sx5e', 'floor/ASF':'n225', 'floor/MEF':'tasi', 'floor/OCF':'',
