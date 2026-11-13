@@ -91,6 +91,51 @@
       });
     });
   });
+  /* Countries that sit on a deposited index outside the original zone
+     libraries. An existing country floor is left untouched. */
+  const EXTRA=[
+    ['tasi','ta35'],['tasi','qe'],['tasi','bist30'],['tasi','jse40'],
+    ['ibov','ipc'],['ibov','colcap'],['ibov','merval'],['ibov','ipsa'],
+    ['sx5e','atx'],['sx5e','omxc25'],['sx5e','omxh25'],['sx5e','psi'],['sx5e','iseq20'],['sx5e','bel20'],['sx5e','obx'],['sx5e','wig20'],
+    ['n225','set50'],['n225','tw50'],['n225','klci'],['n225','lq45'],['n225','vn30'],['n225','nzx50']
+  ];
+  const ZONE_BY_ID={}; ZONES.forEach(z=>{ ZONE_BY_ID[z.id]=z; });
+  EXTRA.forEach(([zid,lid])=>{
+    const z=ZONE_BY_ID[zid]; const s=sys(lid); if(!z||!s||!s.data||!s.data.t) return;
+    const g={};
+    s.data.t.forEach(t=>{
+      if(!t||!t.cty||t.cty==='n/d'||String(t.cty).indexOf('INCOMPLET')>=0) return;
+      (g[t.cty]||(g[t.cty]=[])).push(t);
+    });
+    Object.keys(g).sort().forEach(cty=>{
+      const rows=g[cty];
+      if(rows.length<8) return;
+      const cid='cty-'+z.key+'-'+slug(cty);
+      if(by[cid]) return;
+      addSys({id:cid, name:cty, level:'country', parent:z.id, children:[], n:rows.length, source:lid, silo:'Finance · '+z.name, zone:z.key, cty:cty}, lid, rows);
+      by[z.id].children.push(cid);
+      const bySec={};
+      rows.forEach(t=>{ if(t.sec && String(t.sec).indexOf('INCOMPLET')<0 && t.sec!=='n/d') (bySec[t.sec]||(bySec[t.sec]=[])).push(t); });
+      Object.keys(bySec).sort().forEach(sec=>{
+        const rs=bySec[sec];
+        if(rs.length<8) return;
+        const sid='sec-'+z.key+'-'+slug(cty)+'-'+slug(sec);
+        if(by[sid]) return;
+        addSys({id:sid, name:sec, level:'sector', parent:cid, children:[], n:rs.length, source:lid, silo:'Finance · '+z.name, zone:z.key, cty:cty, sec:sec}, lid, rs);
+        by[cid].children.push(sid);
+        const byInd={};
+        rs.forEach(t=>{ if(t.ind && String(t.ind).indexOf('INCOMPLET')<0 && t.ind!=='n/d') (byInd[t.ind]||(byInd[t.ind]=[])).push(t); });
+        const inds=Object.keys(byInd).filter(ind=>byInd[ind].length>=6 && byInd[ind].length<rs.length).sort((a,b)=>byInd[b].length-byInd[a].length);
+        inds.slice(0,1).forEach(ind=>{
+          const irows=byInd[ind];
+          const iid='ind-'+z.key+'-'+slug(cty)+'-'+slug(ind);
+          if(by[iid]) return;
+          addSys({id:iid, name:ind, level:'industry', parent:sid, children:[], n:irows.length, source:lid, silo:'Finance · '+z.name, zone:z.key, cty:cty, sec:sec, ind:ind}, lid, irows);
+          by[sid].children.push(iid);
+        });
+      });
+    });
+  });
   const redir={
     'floor/WF':'world', 'floor/world':'world', 'world':'world',
     'floor/AMF':'sp500y', 'floor/EUF':'sx5e', 'floor/ASF':'n225', 'floor/MEF':'tasi', 'floor/OCF':'',
