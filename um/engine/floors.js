@@ -112,6 +112,7 @@
     'floor/EUF/index/BEL20':'bel20', 'floor/EUF/index/OBX':'obx',
     'floor/EUF/index/ATX':'atx', 'floor/EUF/index/OMXC25':'omxc25', 'floor/EUF/index/OMXH25':'omxh25', 'floor/EUF/index/PSI':'psi', 'floor/EUF/index/ISEQ20':'iseq20',
     'floor/ASF/index/LQ45':'lq45', 'floor/ASF/index/VN30':'vn30',
+    'floor/ASF/index/N225-IND':'n225-ind', 'floor/ASF/index/N225-CYC':'n225-cyc', 'floor/ASF/index/N225-TECH':'n225-tech',
     'floor/NSF':'', 'floor/EWF':''
   };
   const ocf=floors.find(f=>f.level==='country'&&f.zone==='apac'&&f.cty==='Australia');
