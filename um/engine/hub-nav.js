@@ -62,10 +62,14 @@
     const parent=f&&f.parent;
     const kids=(f&&f.children)||[];
     const blooming=id==='world'&&bloomNow()>0;
-    const bits=['<button type="button" id="hub-center" data-up="'+(parent||'')+'">'+esc(name)+'</button>'];
+    const bits=['<button type="button" id="hub-center" data-up="'+(parent||'')+'">'+esc(shown(id,name))+'</button>'];
+    function shown(cid, name){
+      const card=window.UM_CARDINAL&&UM_CARDINAL[cid];
+      return card?card.h+' · '+name:name;
+    }
     kids.forEach(cid=>{
       const c=floor(cid); if(!c) return;
-      bits.push('<button type="button" class="hub-c2" data-down="'+esc(cid)+'">'+esc(c.name)+'</button>');
+      bits.push('<button type="button" class="hub-c2" data-down="'+esc(cid)+'">'+esc(shown(cid,c.name))+'</button>');
     });
     nav.innerHTML=bits.join('');
     const center=document.getElementById('hub-center');
@@ -74,13 +78,13 @@
       btn.addEventListener('click',()=>switchSys(btn.getAttribute('data-down')));
     });
     const parentName=parent?(floor(parent)?floor(parent).name:parent):'';
-    const upLabel=blooming?(bloomNow()<=1?'↑ Finance':'↑ '+layerName(bloomNow()-1)):(parent?('↑ '+parentName):name);
+    const upLabel=blooming?(bloomNow()<=1?'↑ Finance':'↑ '+layerName(bloomNow()-1)):(parent?('↑ '+shown(parent,parentName)):name);
     const max=bloomMax();
     const hint=id==='world'
       ? (max&&bloomNow()>=max
-        ? 'Vision complète du marché. Un clic sur un objet descend. ↑ ou Retour replie une couche.'
-        : 'Double-clic sur la Classe 4 : ouvrir la couche suivante ('+bloomNow()+'/'+max+'). Un clic sur un objet descend. ↑ ou Retour replie une couche.')
-      : 'Descendre : un clic sur une porte ou sur un étage. Remonter : ↑ ou un clic sur la Classe 4.';
+        ? 'Vision complète. Un clic sur une Classe 2 descend. Deux clics sur la Classe 4 restent ici. ↑ ou Retour replie une couche.'
+        : 'Deux clics sur la Classe 4 : couche suivante ('+bloomNow()+'/'+max+'). Un clic sur une Classe 2 descend. ↑ ou Retour replie.')
+      : 'Un clic sur une Classe 2 descend. Deux clics sur la Classe 4 remontent. ↑ aussi.';
     bar.innerHTML='<button type="button" id="hub-up-btn"'+((parent||blooming)?'':' disabled')+'>'+esc(upLabel)+'</button>'
       +'<p class="hint">'+esc(hint)+'</p>';
     const up=document.getElementById('hub-up-btn');

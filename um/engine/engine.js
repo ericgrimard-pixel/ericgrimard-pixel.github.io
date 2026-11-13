@@ -1067,7 +1067,10 @@ function ghostFrame(c){
   v.uSel.value=S.sel&&S.sel.kind===2?S.sel.idx:-1;
   if(S.sel&&(S.sel.kind===1||S.sel.kind===2))pathGeo.setDrawRange(0,Math.max(0,Math.min(pathN,Math.floor(c)-pathD0+1)));
 }
-function ensureTL(){O1.forEach((o,i)=>{if(o.tl)return;o.tl=HK?badgeSprite(i,o):label(TK[i].s,'#ffffff',o.R*.46,500);o.tl.position.set(0,0,0);o.tl.material.depthTest=false;o.tl.renderOrder=9;o.tl.visible=false;o.root.add(o.tl)})}
+function ensureTL(){O1.forEach((o,i)=>{if(o.tl)return;o.tl=HK?badgeSprite(i,o):label(TK[i].s,'#ffffff',o.R*.46,500);o.tl.position.set(0,0,0);o.tl.material.depthTest=false;o.tl.renderOrder=9;o.tl.visible=false;o.root.add(o.tl);
+  const card=SYS.id==='world'&&TK[i].floor&&window.UM_CARDINAL&&UM_CARDINAL[TK[i].floor];
+  if(card){const lb=label(card.h,'#e8c872',.34,700);lb.position.set(0,.42,0);lb.material.depthTest=false;lb.renderOrder=10;o.root.add(lb);o.cardinal=lb}})
+}
 function posOf(VV,q){const X=VV[q*10],Y=VV[q*10+1],Z=VV[q*10+2],a=AZ(X),r=2-Z;return [r*Math.sin(a),Y,-r*Math.cos(a)]}
 const NS=48;
 
@@ -1289,14 +1292,21 @@ function applyObj(o,d0,d1,t,dt){
   const da=p0?d0:d1,db=p1?d1:d0,A=(b+da)*10,B=(b+db)*10;
   const v=k=>zp(VV,A,B,d0,d1,t,k);
   const X=v(0),Y=v(1),Z=v(2),a=AZ(X),r=2-Z;
+  let heading=a;
   o.root.position.set(r*Math.sin(a),Y,-r*Math.cos(a));
-  if(S.layers.spacing&&!S.ghost){const OF=isC?OFF2:OFF1,q0=o.idx*6,w=p0&&p1?t:(p0?0:1),u=1-w;o.root.position.x+=OF[q0]*u+OF[q0+3]*w;o.root.position.y+=OF[q0+1]*u+OF[q0+4]*w;o.root.position.z+=OF[q0+2]*u+OF[q0+5]*w}
+  let zoneCard=!isC&&SYS.id==='world'&&TK[o.idx]&&TK[o.idx].floor&&window.UM_CARDINAL&&UM_CARDINAL[TK[o.idx].floor];
+  if(!zoneCard&&isC&&SYS.id==='world'&&window.UM_FLOORS){
+    const z=UM_FLOORS.find(f=>f.level==='zone'&&f.name===CARDS[o.idx].name);
+    if(z&&UM_CARDINAL[z.id]) zoneCard=UM_CARDINAL[z.id];
+  }
+  if(S.layers.spacing&&!S.ghost&&!zoneCard){const OF=isC?OFF2:OFF1,q0=o.idx*6,w=p0&&p1?t:(p0?0:1),u=1-w;o.root.position.x+=OF[q0]*u+OF[q0+3]*w;o.root.position.y+=OF[q0+1]*u+OF[q0+4]*w;o.root.position.z+=OF[q0+2]*u+OF[q0+5]*w}
+  if(zoneCard){heading=zoneCard.a;const R=isC?1.35:2.15;o.root.position.set(R*Math.sin(heading),isC?-.05:.42,-R*Math.cos(heading))}
   if(bk<1)o.root.position.multiplyScalar(bk);
   const za=k=>zoneOf(VV[A+k]),zb=k=>zoneOf(VV[B+k]),zd=k=>t<.5?za(k):zb(k);
   setShape(o,zd(3));
   const L=(arr,k)=>CY(arr[za(k)],arr[zb(k)],t);
   const st=L(LV.stretch,4),pit=L(LV.pitch,6),om=L(LV.spin,7),rol=L(LV.roll,8);
-  o.orient.rotation.set(pit,Math.PI/2-a,-rol,'YXZ');
+  o.orient.rotation.set(pit,Math.PI/2-heading,-rol,'YXZ');
   o.spinA-=om*dt*(REDUCED?.25:1);o.spin.rotation.y=o.spinA;o.spin.scale.set(1,st,1);
   paint(o,za(5),zb(5),za(9),zb(9),t);
   const dim=focusDim(o);
@@ -1691,6 +1701,26 @@ function goParent(){
   const parent=window.UM_FLOOR_BY&&UM_FLOOR_BY[SYS.id]&&UM_FLOOR_BY[SYS.id].parent;
   switchSys(parent||'world');
 }
+/* A Class 2 names a floor when that floor is the current system's child,
+   was built from this system, or is the zone whose name the card carries. */
+function class2Floor(idx){
+  const c=CARDS[idx]; if(!c||!window.UM_FLOORS) return '';
+  if(SYS.id==='world'&&c.ty==='sec'){
+    const z=UM_FLOORS.find(f=>f.level==='zone'&&f.name===c.name);
+    if(z) return z.id;
+  }
+  const want=c.ty==='sec'?'sector':c.ty==='cty'?'country':c.ty==='ind'?'industry':'';
+  if(!want) return '';
+  function under(id){
+    let f=UM_FLOOR_BY[id], n=0;
+    while(f&&n++<8){ if(f.id===SYS.id) return true; f=UM_FLOOR_BY[f.parent]; }
+    return false;
+  }
+  const hits=UM_FLOORS.filter(f=>f.level===want&&f.name===c.name&&(f.parent===SYS.id||f.source===SYS.id||under(f.id)));
+  if(!hits.length) return '';
+  hits.sort((a,b)=>(a.parent===SYS.id?-1:0)-(b.parent===SYS.id?-1:0)||(b.n||0)-(a.n||0));
+  return hits[0].id;
+}
 function ascendOrEnter(e){
   const ref=pickAt(e);if(!ref)return;
   if(ref.side){switchSys(ref.side);return}
@@ -1714,13 +1744,13 @@ renderer.domElement.addEventListener('pointerup',e=>{
   if(!downAt)return;const moved=Math.hypot(e.clientX-downAt[0],e.clientY-downAt[1]);downAt=null;
   if(moved>(e.pointerType==='touch'?14:5))return;
   const ref=pickAt(e);
-  /* One click on the central picture climbs to the parent. One click on a
-     door (an object that names a floor) steps down. A plain title stays selected. */
+  /* One click on a Class 2, or on a door, steps down. Two clicks on the
+     Class 4 climb (or, on the Hub, open the next bloom layer). */
   if(class4OnTop(e)){
-    if(SYS.id!=='world'){goParent();return}
     select({kind:4});
   }else{
     if(ref&&ref.side){switchSys(ref.side);return}
+    if(ref&&ref.kind===2){const id=class2Floor(ref.idx);if(id){switchSys(id);return}}
     if(ref&&ref.kind===1){const id=TK[ref.idx]&&TK[ref.idx].floor;if(id){switchSys(id);return}}
     if(ref)select(ref);
   }

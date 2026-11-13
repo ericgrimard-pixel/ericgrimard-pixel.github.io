@@ -3,11 +3,11 @@
    country, industry or sector is invented. */
 (function(){
   const ZONES=[
-    {id:'sp500y', key:'na', name:'Amérique du Nord', libs:['sp500y','ndx100','djia','sp500']},
-    {id:'sx5e', key:'eur', name:'Europe', libs:['sx5e','ftse100','dax','cac40']},
-    {id:'n225', key:'apac', name:'Asie-Pacifique', libs:['n225','hsi','sti','asx200']},
-    {id:'tasi', key:'mea', name:'Moyen-Orient et Afrique', libs:['tasi']},
-    {id:'ibov', key:'latam', name:'Amérique latine', libs:['ibov']}
+    {id:'sp500y', key:'na', name:'Amérique du Nord', libs:['sp500y','ndx100','djia','sp500'], cardinal:'W', heading:-Math.PI/2},
+    {id:'sx5e', key:'eur', name:'Europe', libs:['sx5e','ftse100','dax','cac40'], cardinal:'N', heading:0},
+    {id:'n225', key:'apac', name:'Asie-Pacifique', libs:['n225','hsi','sti','asx200'], cardinal:'E', heading:Math.PI/2},
+    {id:'tasi', key:'mea', name:'Moyen-Orient et Afrique', libs:['tasi'], cardinal:'S', heading:Math.PI},
+    {id:'ibov', key:'latam', name:'Amérique latine', libs:['ibov'], cardinal:'SW', heading:Math.PI*1.25}
   ];
   const ZONE_OF={
     sp500y:'sp500y', ndx100:'sp500y', djia:'sp500y', sp500:'sp500y',
@@ -136,6 +136,9 @@
     const p=by[parent];
     if(p&&!p.children.includes(s.id)) p.children.unshift(s.id);
   });
+  const cardinal={};
+  ZONES.forEach(z=>{ cardinal[z.id]={h:z.cardinal, a:z.heading, name:z.name}; });
+  window.UM_CARDINAL=cardinal;
   window.UM_FLOORS=floors;
   window.UM_FLOOR_BY=by;
   window.UM_REDIR=redir;
