@@ -615,6 +615,24 @@ const HOME={p:new THREE.Vector3(0,5.7,8.9),t:new THREE.Vector3(0,-.2,0)};
 camera.position.copy(HOME.p);
 const controls=new THREE.OrbitControls(camera,renderer.domElement);
 controls.enableDamping=true;controls.dampingFactor=.08;controls.target.copy(HOME.t);controls.minDistance=.8;controls.maxDistance=20;
+/* A click or a double-tap must not orbit, and must not zoom the page.
+   Rotation starts only after the pointer has actually moved. */
+renderer.domElement.style.touchAction='none';
+{
+  let arm=null;
+  renderer.domElement.addEventListener('pointerdown',e=>{
+    if(e.button===0||e.pointerType==='touch') arm=[e.clientX,e.clientY,e.pointerId];
+  },true);
+  renderer.domElement.addEventListener('pointermove',e=>{
+    if(!arm||e.pointerId!==arm[2]) return;
+    if(e.pointerType!=='touch'&&e.buttons===0){arm=null;return}
+    if(Math.hypot(e.clientX-arm[0],e.clientY-arm[1])<10) e.stopImmediatePropagation();
+  },true);
+  const clear=()=>{arm=null};
+  renderer.domElement.addEventListener('pointerup',clear,true);
+  renderer.domElement.addEventListener('pointercancel',clear,true);
+  renderer.domElement.addEventListener('contextmenu',e=>{e.preventDefault()});
+}
 function resize(){const r=stage.getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/Math.max(1,r.height);camera.updateProjectionMatrix()}
 const ro=new ResizeObserver(resize);ro.observe(stage);resize();
 
@@ -1615,15 +1633,38 @@ renderer.domElement.addEventListener('pointermove',e=>{
   tip.style.left=x+'px';tip.style.top=y+'px';
 });
 renderer.domElement.addEventListener('pointerleave',()=>{tip.style.display='none'});
+/* The central object is painted after everything else, so a click on its
+   picture is a click on it even when a title sits in front along the ray. */
+function class4OnTop(e){
+  if(!G.c4.visible||!core.parent) return false;
+  const r=renderer.domElement.getBoundingClientRect();
+  const p=core.getWorldPosition(new THREE.Vector3());
+  const sc=core.getWorldScale(new THREE.Vector3()).x||1;
+  const dist=Math.max(.2,camera.position.distanceTo(p));
+  const px=r.height/(2*Math.tan(camera.fov*Math.PI/360)*dist);
+  const rad=Math.max(22,C4O.R*sc*px*1.25);
+  p.project(camera);
+  if(p.z>1) return false;
+  const sx=(p.x*.5+.5)*r.width+r.left, sy=(-p.y*.5+.5)*r.height+r.top;
+  return Math.hypot(e.clientX-sx,e.clientY-sy)<=rad;
+}
+function goParent(){
+  const parent=window.UM_FLOOR_BY&&UM_FLOOR_BY[SYS.id]&&UM_FLOOR_BY[SYS.id].parent;
+  switchSys(parent||'world');
+}
 function ascendOrEnter(e){
   const ref=pickAt(e);if(!ref)return;
   if(ref.side){switchSys(ref.side);return}
+  if(class4OnTop(e)){
+    if(SYS.id!=='world'){goParent();return}
+    select({kind:4});enterPlan();return;
+  }
   const rr=renderer.domElement.getBoundingClientRect();mouse.x=(e.clientX-rr.left)/rr.width*2-1;mouse.y=-(e.clientY-rr.top)/rr.height*2+1;
   ray.setFromCamera(mouse,camera);
   const vis=HITS.filter(m=>{let p=m;while(p){if(!p.visible)return false;p=p.parent}return true});
   const onC4=ray.intersectObjects(vis,false).some(h=>h.object.userData.ref&&h.object.userData.ref.kind===4);
   if(ref.kind===1){const id=TK[ref.idx]&&TK[ref.idx].floor;if(id){switchSys(id);return}}
-  if(onC4&&SYS.id!=='world'){const parent=window.UM_FLOOR_BY&&UM_FLOOR_BY[SYS.id]&&UM_FLOOR_BY[SYS.id].parent;switchSys(parent||'world');return}
+  if(onC4&&SYS.id!=='world'){goParent();return}
   select(ref);
   if(ref.kind===4)enterPlan();else if(ref.kind===1||ref.kind===2)enterFocus(ref);
 }
@@ -1633,10 +1674,10 @@ renderer.domElement.addEventListener('pointerup',e=>{
   if(!downAt)return;const moved=Math.hypot(e.clientX-downAt[0],e.clientY-downAt[1]);downAt=null;
   if(moved>(e.pointerType==='touch'?14:5))return;
   const ref=pickAt(e);if(ref)select(ref);
-  if(e.pointerType!=='touch')return;
-  const now=e.timeStamp,prev=tapMark;tapMark={t:now,x:e.clientX,y:e.clientY};
-  if(!prev||now-prev.t<40||now-prev.t>520||Math.hypot(e.clientX-prev.x,e.clientY-prev.y)>28)return;
-  lastTouchNav=now;ascendOrEnter(e);
+  const now=e.timeStamp,prev=tapMark;tapMark={t:now,x:e.clientX,y:e.clientY,type:e.pointerType||'mouse'};
+  if(!prev||prev.type!==tapMark.type||now-prev.t<40||now-prev.t>520)return;
+  if(Math.hypot(e.clientX-prev.x,e.clientY-prev.y)>28)return;
+  lastTouchNav=performance.now();ascendOrEnter(e);
 });
 /* A finger double-tap never becomes a dblclick: the orbit handler cancels the touch. Mouse keeps dblclick. */
 renderer.domElement.addEventListener('dblclick',e=>{if(lastTouchNav&&performance.now()-lastTouchNav<700)return;ascendOrEnter(e)});
@@ -1862,7 +1903,7 @@ function renderFiche(){
       <button class="chip" type="button" data-sel="2:${cs[2]}"><span>${esc(t.ind)}</span><em>Classe 2 · industrie</em></button>
       <button class="chip" type="button" data-sel="3:${z0}"><span style="color:${ZCOL[z0]}">${C3ON[z0]?esc(ZNL[z0]):'champ '+ZN[z0]+' ouvert · '+C3SYM[z0]+' non activé'}</span><em>${C3ON[z0]?'Classe 3 · conteneur à T₁':'Classe 3 · aucun'}</em></button>
       <button class="chip" type="button" data-sel="4:0"><span>${esc(SYS.name)}</span><em>Classe 4 · système</em></button>
-      ${LIB.filter(x=>x.data&&x.id!==SYS.id&&x.silo===SYS.silo&&x.tickers.has(t.s)).map(x=>`<button class="chip" type="button" data-sys="${x.id}" data-tk="${esc(t.s)}"><span>aussi dans ${esc(x.name)}</span><em>Classe 4 · ouvrir</em></button>`).join('')}
+      ${LIB.filter(x=>x.data&&x.id!==SYS.id&&x.silo===SYS.silo&&x.tickers&&x.tickers.has(t.s)).map(x=>`<button class="chip" type="button" data-sys="${x.id}" data-tk="${esc(t.s)}"><span>aussi dans ${esc(x.name)}</span><em>Classe 4 · ouvrir</em></button>`).join('')}
     </div>`;
     if(S.ghost){const st=GHOST.stk&&GHOST.stk[s.idx],R=GHOST.ruler,x=v=>(v/R.dg).toFixed(v/R.dg<10?2:0).replace('.',',');
       h+=`<h2 style="margin-top:10px">${esc(GCLKL[S.gclk]||'')} séance par séance <span>×1 = médiane du titre = un fantôme</span></h2><canvas id="vbars" class="vbars" aria-label="Colonne d'horloge de chaque séance rapportée à la médiane du titre"></canvas>`;
