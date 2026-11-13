@@ -47,7 +47,7 @@
     const parentName=parent?(floor(parent)?floor(parent).name:parent):'';
     const upLabel=parent?('↑ '+parentName):name;
     bar.innerHTML='<button type="button" id="hub-up-btn"'+(parent?'':' disabled')+'>'+esc(upLabel)+'</button>'
-      +'<p class="hint">Descendre : double-clic sur un objet. Remonter : ↑ ou double-clic sur la Classe 4.</p>';
+      +'<p class="hint">Descendre : un clic sur une porte ou sur un étage. Remonter : ↑ ou un clic sur la Classe 4.</p>';
     const up=document.getElementById('hub-up-btn');
     if(up&&parent) up.addEventListener('click',()=>switchSys(parent));
   }

@@ -1673,7 +1673,13 @@ renderer.domElement.addEventListener('pointerdown',e=>{downAt=[e.clientX,e.clien
 renderer.domElement.addEventListener('pointerup',e=>{
   if(!downAt)return;const moved=Math.hypot(e.clientX-downAt[0],e.clientY-downAt[1]);downAt=null;
   if(moved>(e.pointerType==='touch'?14:5))return;
-  const ref=pickAt(e);if(ref)select(ref);
+  const ref=pickAt(e);
+  /* One click on the central picture climbs to the parent. One click on a
+     door (an object that names a floor) steps down. A plain title stays selected. */
+  if(class4OnTop(e)&&SYS.id!=='world'){goParent();return}
+  if(ref&&ref.side){switchSys(ref.side);return}
+  if(ref&&ref.kind===1){const id=TK[ref.idx]&&TK[ref.idx].floor;if(id){switchSys(id);return}}
+  if(ref)select(ref);
   const now=e.timeStamp,prev=tapMark;tapMark={t:now,x:e.clientX,y:e.clientY,type:e.pointerType||'mouse'};
   if(!prev||prev.type!==tapMark.type||now-prev.t<40||now-prev.t>520)return;
   if(Math.hypot(e.clientX-prev.x,e.clientY-prev.y)>28)return;

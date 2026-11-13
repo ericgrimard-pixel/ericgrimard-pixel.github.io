@@ -34,6 +34,8 @@
   ['ndx100','djia','sp500','ftse100','dax','cac40','hsi','sti','asx200'].forEach(id=>{
     const s=sys(id); if(!s) return;
     addFloor({id:id, name:s.name, level:'index', parent:ZONE_OF[id], children:[], n:s.data.t.length, source:id});
+    const z=by[ZONE_OF[id]];
+    if(z&&!z.children.includes(id)) z.children.unshift(id);
   });
   const seen=new Set(LIB.map(x=>x.id));
   function addSys(meta, sourceId, rows){
@@ -109,9 +111,18 @@
   addFloor({id:'sports', name:'Sports', level:'silo', parent:'world', children:nhl?['nhl']:[], n:1});
   if(music) addFloor({id:'music', name:music.name, level:'index', parent:'art', children:[], n:music.data.t.length, source:'music'});
   if(nhl) addFloor({id:'nhl', name:nhl.name, level:'index', parent:'sports', children:[], n:nhl.data.t.length, source:'nhl'});
+  if(by.world&&!by.world.children.includes('art')) by.world.children.push('art');
+  if(by.world&&!by.world.children.includes('sports')) by.world.children.push('sports');
+  const ZONE_NAME={
+    'Amérique du Nord':'sp500y','Europe':'sx5e','Asie-Pacifique':'n225',
+    'Moyen-Orient et Afrique':'tasi','Moyen-Orient':'tasi','Amérique latine':'ibov'
+  };
   LIB.forEach(s=>{
     if(!s.market||by[s.id]) return;
-    addFloor({id:s.id, name:s.name, level:'index', parent:'world', children:[], n:(s.data&&s.data.t&&s.data.t.length)||0, source:s.id});
+    const parent=ZONE_NAME[s.zone]||'world';
+    addFloor({id:s.id, name:s.name, level:'index', parent:parent, children:[], n:(s.data&&s.data.t&&s.data.t.length)||0, source:s.id});
+    const p=by[parent];
+    if(p&&!p.children.includes(s.id)) p.children.unshift(s.id);
   });
   window.UM_FLOORS=floors;
   window.UM_FLOOR_BY=by;
