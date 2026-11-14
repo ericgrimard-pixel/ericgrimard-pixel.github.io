@@ -2,8 +2,8 @@
 <html lang="fr"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="um-build" content="v20.58">
-<!-- um-deploy: v20.58 -->
+<meta name="um-build" content="v20.59">
+<!-- um-deploy: v20.59 -->
 <link rel="icon" href="data:,">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
@@ -252,118 +252,90 @@ canvas.vbars{width:100%;height:70px;display:block;margin-top:6px}
         <button id="mFree" type="button" aria-pressed="false">Libre</button>
       </div>
       <label class="chk" title="La saturation, 10ᵉ attribut, est le collapse de tous les résultats (G-4)"><input id="km" type="checkbox" checked> Kobayashi Maru</label>
-      <button id="session" type="button" aria-pressed="false">Ouvrir la session</button>
-      <button id="ghost" type="button" aria-pressed="false">Fantôme</button>
-      <label class="take" id="gwBox" hidden>Horloge <select id="gclk" aria-label="Colonne qui règle l'espacement des fantômes"><option value="vol">volume du jour</option><option value="tv">valeur échangée du jour</option><option value="aret">|rendement du jour|</option><option value="vol20">volatilité 20 séances</option><option value="sess">séance · témoin</option></select></label>
-      <label class="take" id="gvBox" hidden title="Volume du fantôme : densité et clarté de l'écho. Distinct du Volume du système, qui n'agit pas sur le fantôme.">Volume du fantôme <input id="gvol" type="range" min="-200" max="200" step="1" value="0" aria-label="Volume du fantôme, de ×0,25 à ×4" style="width:90px;accent-color:#b388ff"><b id="gvolN" style="font:500 11px var(--f-mono);color:var(--fg);min-width:38px">×1</b></label>
-      <label class="take" id="gtauBox" hidden>Mémoire <select id="gtau" aria-label="Mémoire des fantômes"><option value="0" selected>toute la période</option><option value="63">63 séances</option><option value="20">20 séances</option><option value="5">5 séances</option></select></label>
-      <button id="gContact" type="button" hidden title="Règle le Volume pour qu'au plus serré du système deux fantômes d'une même traîne se touchent bord à bord (×1)">Volume au contact</button>
-      <label class="take" id="thrBox" hidden>Lancer <select id="thr" aria-label="Horizon du lancer devant l'objet"><option value="0">non</option><option value="5">5 séances</option><option value="10" selected>10 séances</option><option value="20">20 séances</option></select><select id="thrW" aria-label="Poids porté par les objets de Classe 2"><option value="tv" selected>poids : valeur échangée</option><option value="eq">poids : égal</option></select></label>
-      <span class="vol" title="Volume (END GAME F3) : dilate ou contracte tout l'environnement autour de son centre. Les objets gardent les tailles du canon ; seul l'espacement change."><b>Volume</b><button id="volMinus" type="button" aria-label="Contracter">−</button><input id="vol" type="range" min="-200" max="400" step="1" value="0" aria-label="Volume de l'environnement"><button id="volPlus" type="button" aria-label="Dilater">+</button><input id="volNum" type="number" min="0.05" step="0.05" value="1" aria-label="Facteur de volume">×</span>
+      <button id="session" type="button" aria-pressed="false">Session</button>
     </div>
     <div class="readouts">
-      <button id="tgL" type="button" aria-pressed="true" title="Masquer ou afficher le panneau des attributs (touche [)">◧ Attributs</button>
-      <button id="tgR" type="button" aria-pressed="true" title="Masquer ou afficher la fiche (touche ])">Fiche ◨</button>
-      <button id="tgV" type="button" aria-pressed="false" title="Vue pleine : la métaphore seule, puis retour (touche \)">Vue pleine</button>
-      <span class="ro">Z-ZERO <b id="zzNow">—</b></span>
-      <span class="gep" title="Contrainte non négociable : le résidu reste visible. Source : OPEN">Résidu GEP 99 % · visible</span>
+      <span class="gep" id="gep">GEP</span>
+      <span class="vol">Vol <b id="volLbl">1×</b> <button type="button" id="volDown" aria-label="Moins fort">−</button><input id="vol" type="range" min="0" max="2" step="0.01" value="1" aria-label="Volume"><button type="button" id="volUp" aria-label="Plus fort">+</button> <input id="volNum" type="text" value="1.00" aria-label="Volume numérique"></span>
+      <span class="ro">Z <b id="zread">—</b></span>
+      <span class="ro">Δ <b id="dread">—</b></span>
     </div>
   </header>
-
   <aside id="left">
-    <section class="panel">
-      <h2>Attributs <span>icône : analyse et bornes</span></h2>
-      <div id="rack" class="tiles"></div>
-    </section>
-    <section class="panel">
-      <h2>Fenêtre gaussienne <span><span id="gk">—</span><button id="gClose" type="button" title="Replier (Échap)" aria-label="Replier la fenêtre gaussienne">×</button></span></h2>
-      <p class="gtitle" id="gtitle">—</p>
-      <label class="asel"><span>Analyse</span><select id="asel" aria-label="Ligne de données de l'attribut ouvert"></select></label>
-      <div class="gline" id="gline">—</div>
-      <canvas id="gauss" aria-label="Distribution de la ligne de données et ses quatre bornes"></canvas>
-      <table class="zt" id="ztab"></table>
-      <div class="gfoot"><span class="lock" id="lockmsg">Bornes déplaçables</span><button id="resetCut" type="button">Rétablir 20 / 40 / 60 / 80</button></div>
-    </section>
+    <div class="panel">
+      <div class="tiles" id="tiles"></div>
+    </div>
+    <div class="panel" id="gwin">
+      <h2>Gaussienne <button type="button" id="gClose" aria-label="Fermer">×</button></h2>
+      <canvas id="gauss"></canvas>
+      <div class="asel"><span>Analyse</span> <select id="asel"></select></div>
+      <div id="thrBox"></div>
+    </div>
   </aside>
-
-  <main id="stage" aria-label="Chambre toroïdale">
-    <div id="banner"><span id="bannerTxt"></span><button id="bannerExit" type="button">Sortir (Échap)</button></div>
+  <div id="stage">
+    <canvas id="c"></canvas>
     <div id="tip"></div>
-  </main>
-
+    <div id="banner"></div>
+    <div id="help"></div>
+  </div>
   <aside id="right">
-    <div class="rclose"><button id="rX" type="button" title="Masquer la fiche (touche ]) · Fiche ◨ la rappelle" aria-label="Masquer la fiche">×</button></div>
-    <section class="panel fiche" id="fiche"></section>
-    <section class="panel">
-      <h2>Légende</h2>
-      <div id="legend"></div>
-    </section>
-    <section class="panel">
-      <h2>Couches</h2>
-      <div class="layers" id="layers"></div>
-    </section>
-    <section class="panel src">
-      <h2>Source</h2>
-      <div id="srcText"></div>
-      <br><br>Bornes : une valeur égale à une borne passe dans la zone supérieure. Au-delà des queues (0,5 % et 99,5 %), l'objet se pose sur la paroi.
-    </section>
+    <div class="rclose"><button type="button" id="rClose" aria-label="Fermer la fiche">×</button></div>
+    <div class="panel fiche" id="fiche"></div>
   </aside>
 </div>
-
-
-<script src="engine/vendor/three.min.js?v=20.58"></script>
-<script src="engine/vendor/OrbitControls.js?v=20.58"></script>
-<script src="engine/lib.js?v=20.58"></script>
-<script src="engine/markets.js?v=20.58"></script>
-<script src="engine/markets-intl.js?v=20.58"></script>
-<script src="engine/data/lib-jse40.js?v=20.58"></script>
-<script src="engine/data/lib-wig20.js?v=20.58"></script>
-<script src="engine/data/lib-set50.js?v=20.58"></script>
-<script src="engine/data/lib-nzx50.js?v=20.58"></script>
-<script src="engine/data/lib-colcap.js?v=20.58"></script>
-<script src="engine/data/lib-merval.js?v=20.58"></script>
-<script src="engine/data/lib-tw50.js?v=20.58"></script>
-<script src="engine/data/lib-ta35.js?v=20.58"></script>
-<script src="engine/data/lib-qe.js?v=20.58"></script>
-<script src="engine/data/lib-egx30.js?v=20.58"></script>
-<script src="engine/data/lib-bist30.js?v=20.58"></script>
-<script src="engine/data/lib-ipsa.js?v=20.58"></script>
-<script src="engine/data/lib-klci.js?v=20.58"></script>
-<script src="engine/data/lib-bel20.js?v=20.58"></script>
-<script src="engine/data/lib-obx.js?v=20.58"></script>
-<script src="engine/data/lib-atx.js?v=20.58"></script>
-<script src="engine/data/lib-omxc25.js?v=20.58"></script>
-<script src="engine/data/lib-omxh25.js?v=20.58"></script>
-<script src="engine/data/lib-psi.js?v=20.58"></script>
-<script src="engine/data/lib-iseq20.js?v=20.58"></script>
-<script src="engine/data/lib-lq45.js?v=20.58"></script>
-<script src="engine/data/lib-vn30.js?v=20.58"></script>
-<script src="engine/data/lib-ibrx50.js?v=20.58"></script>
-<script src="engine/data/lib-smll.js?v=20.58"></script>
-<script src="engine/data/lib-ifnc.js?v=20.58"></script>
-<script src="engine/data/lib-imob.js?v=20.58"></script>
-<script src="engine/data/lib-idiv.js?v=20.58"></script>
-<script src="engine/data/lib-icon.js?v=20.58"></script>
-<script src="engine/data/lib-mlcx.js?v=20.58"></script>
-<script src="engine/data/lib-sp100.js?v=20.58"></script>
-<script src="engine/data/lib-djcomp.js?v=20.58"></script>
-<script src="engine/data/lib-tasi-mat.js?v=20.58"></script>
-<script src="engine/data/lib-tasi-fin.js?v=20.58"></script>
-<script src="engine/data/lib-tasi-ind.js?v=20.58"></script>
-<script src="engine/data/lib-tasi-re.js?v=20.58"></script>
-<script src="engine/data/lib-tasi-cyc.js?v=20.58"></script>
-<script src="engine/data/lib-spx-tech.js?v=20.58"></script>
-<script src="engine/data/lib-spx-ind.js?v=20.58"></script>
-<script src="engine/data/lib-spx-fin.js?v=20.58"></script>
-<script src="engine/data/lib-spx-hlth.js?v=20.58"></script>
-<script src="engine/data/lib-spx-cyc.js?v=20.58"></script>
-<script src="engine/data/lib-n225-ind.js?v=20.58"></script>
-<script src="engine/data/lib-n225-cyc.js?v=20.58"></script>
-<script src="engine/data/lib-n225-tech.js?v=20.58"></script>
-<script src="engine/world.js?v=20.58"></script>
-<script src="engine/silos.js?v=20.58"></script>
-<script src="engine/floors.js?v=20.58"></script>
-<script src="engine/bloom.js?v=20.58"></script>
-<script src="engine/engine.js?v=20.58"></script>
-<script src="engine/hub-nav.js?v=20.58"></script>
+<script src="engine/vendor/three.min.js?v=20.59"></script>
+<script src="engine/vendor/OrbitControls.js?v=20.59"></script>
+<script src="engine/lib.js?v=20.59"></script>
+<script src="engine/markets.js?v=20.59"></script>
+<script src="engine/markets-intl.js?v=20.59"></script>
+<script src="engine/data/lib-jse40.js?v=20.59"></script>
+<script src="engine/data/lib-wig20.js?v=20.59"></script>
+<script src="engine/data/lib-set50.js?v=20.59"></script>
+<script src="engine/data/lib-nzx50.js?v=20.59"></script>
+<script src="engine/data/lib-colcap.js?v=20.59"></script>
+<script src="engine/data/lib-merval.js?v=20.59"></script>
+<script src="engine/data/lib-tw50.js?v=20.59"></script>
+<script src="engine/data/lib-ta35.js?v=20.59"></script>
+<script src="engine/data/lib-qe.js?v=20.59"></script>
+<script src="engine/data/lib-egx30.js?v=20.59"></script>
+<script src="engine/data/lib-bist30.js?v=20.59"></script>
+<script src="engine/data/lib-ipsa.js?v=20.59"></script>
+<script src="engine/data/lib-klci.js?v=20.59"></script>
+<script src="engine/data/lib-bel20.js?v=20.59"></script>
+<script src="engine/data/lib-obx.js?v=20.59"></script>
+<script src="engine/data/lib-atx.js?v=20.59"></script>
+<script src="engine/data/lib-omxc25.js?v=20.59"></script>
+<script src="engine/data/lib-omxh25.js?v=20.59"></script>
+<script src="engine/data/lib-psi.js?v=20.59"></script>
+<script src="engine/data/lib-iseq20.js?v=20.59"></script>
+<script src="engine/data/lib-lq45.js?v=20.59"></script>
+<script src="engine/data/lib-vn30.js?v=20.59"></script>
+<script src="engine/data/lib-ibrx50.js?v=20.59"></script>
+<script src="engine/data/lib-smll.js?v=20.59"></script>
+<script src="engine/data/lib-ifnc.js?v=20.59"></script>
+<script src="engine/data/lib-imob.js?v=20.59"></script>
+<script src="engine/data/lib-idiv.js?v=20.59"></script>
+<script src="engine/data/lib-icon.js?v=20.59"></script>
+<script src="engine/data/lib-mlcx.js?v=20.59"></script>
+<script src="engine/data/lib-sp100.js?v=20.59"></script>
+<script src="engine/data/lib-djcomp.js?v=20.59"></script>
+<script src="engine/data/lib-tasi-mat.js?v=20.59"></script>
+<script src="engine/data/lib-tasi-fin.js?v=20.59"></script>
+<script src="engine/data/lib-tasi-ind.js?v=20.59"></script>
+<script src="engine/data/lib-tasi-re.js?v=20.59"></script>
+<script src="engine/data/lib-tasi-cyc.js?v=20.59"></script>
+<script src="engine/data/lib-spx-tech.js?v=20.59"></script>
+<script src="engine/data/lib-spx-ind.js?v=20.59"></script>
+<script src="engine/data/lib-spx-fin.js?v=20.59"></script>
+<script src="engine/data/lib-spx-hlth.js?v=20.59"></script>
+<script src="engine/data/lib-spx-cyc.js?v=20.59"></script>
+<script src="engine/data/lib-n225-ind.js?v=20.59"></script>
+<script src="engine/data/lib-n225-cyc.js?v=20.59"></script>
+<script src="engine/data/lib-n225-tech.js?v=20.59"></script>
+<script src="engine/world.js?v=20.59"></script>
+<script src="engine/silos.js?v=20.59"></script>
+<script src="engine/floors.js?v=20.59"></script>
+<script src="engine/bloom.js?v=20.59"></script>
+<script src="engine/engine.js?v=20.59"></script>
+<script src="engine/hub-nav.js?v=20.59"></script>
 </body></html>
