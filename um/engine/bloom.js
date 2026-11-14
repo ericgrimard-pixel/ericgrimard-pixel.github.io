@@ -86,9 +86,72 @@
     order.forEach(function(level){ if(kinds[d]&&kinds[d][level]) parts.push(WORD[level]); });
     labels[d]=parts.join(' et ')||('couche '+d);
   }
+  /* Class 1 to the limit (Éric, 14 nov 2026): past the floors, the bloom
+     keeps opening until every Class 1 title of every Finance floor is out.
+     Titles pop in the order of their floors: a title arrives one floor-depth
+     below the last floor layer, at the depth of the shallowest floor that
+     holds it. Each title appears once (one object per symbol) and dives to
+     that floor. Real closes only: first and last valid close of its floor,
+     with the volumes of those sessions. Kept out of Z-ZERO (nz0). */
+  const floorMax=max;
+  const pick={};
+  LIB.forEach(function(sys){
+    if(!sys||sys.id==='world'||sys.kind||!sys.data||!sys.data.t) return;
+    if(!underFinance(sys.id)) return;
+    const d=depth(sys.id);
+    if(!d) return;
+    const n=(sys.data.dates&&sys.data.dates.length)||0;
+    sys.data.t.forEach(function(t){
+      if(!t||!t.c||!t.s) return;
+      let a=null,b=null;
+      for(let i=0;i<t.c.length;i++){
+        const x=t.c[i];
+        if(x!=null&&isFinite(x)&&x>0){ if(a==null)a=i; b=i; }
+      }
+      if(a==null) return;
+      const p=pick[t.s];
+      if(p&&(p.d<d||(p.d===d&&p.n>=n))) return;
+      pick[t.s]={d:d,n:n,sys:sys,t:t,a:a,b:b};
+    });
+  });
+  /* No empty layer: the floor depths that hold titles get consecutive steps. */
+  const used=[];
+  Object.keys(pick).forEach(function(s){ if(used.indexOf(pick[s].d)<0) used.push(pick[s].d); });
+  used.sort(function(x,y){ return x-y; });
+  /* The titles are prepared now but joined to World only when the bloom
+     first reaches them, so the Hub opens as fast as before. */
+  const rowsC1=[];
+  let attached=false;
+  let noVol=0;
+  Object.keys(pick).forEach(function(s){
+    const p=pick[s], t=p.t;
+    const va=t.v&&t.v[p.a], vb=t.v&&t.v[p.b];
+    if(!(va>0)||!(vb>0)) noVol++;
+    const v0=va>0?va:(vb>0?vb:1), v1=vb>0?vb:v0;
+    rowsC1.push({
+      s:t.s, sec:t.sec, ind:t.ind, cty:t.cty, o:0,
+      c:[t.c[p.a], t.c[p.b]], v:[v0, v1],
+      floor:p.sys.id, bloom:floorMax+1+used.indexOf(p.d), nz0:1, c1:1
+    });
+  });
+  used.forEach(function(d,i){
+    const k=floorMax+1+i;
+    if(k>max) max=k;
+    labels[k]='titres des '+(labels[d]||('couche '+d));
+  });
+  window.UM_BLOOM_C1={titles:Object.keys(pick).length, from:floorMax+1, noVolume:noVol,
+    note:'[INCOMPLET] devises non converties entre places ; un titre sans volume garde le volume de l\'autre prise (ou 1).'};
   const n=[];
   for(let d=0;d<=max;d++) n[d]=0;
   world.data.t.forEach(function(t){ if(t.bloom) n[t.bloom]++; });
+  rowsC1.forEach(function(t){ n[t.bloom]++; });
+  window.UM_BLOOM_FLOORMAX=floorMax;
+  window.UM_BLOOM_ATTACH=function(){
+    if(attached||!rowsC1.length) return false;
+    rowsC1.forEach(function(t){ world.data.t.push(t); });
+    attached=true;
+    return true;
+  };
   window.UM_BLOOM_COUNTS=n;
   window.UM_BLOOM_MAX=max;
   window.UM_BLOOM_LAYER=labels;
