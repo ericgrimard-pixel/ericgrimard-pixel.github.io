@@ -35,6 +35,10 @@
     return names[depth]||('couche '+depth);
   }
   function applyWorldBloom(b){
+    /* Past the floor layers the Class 1 titles join World once, and World
+       is rebuilt by the real engine with them (no substitute renderer). */
+    const fm=window.UM_BLOOM_FLOORMAX;
+    if(fm&&b>fm&&typeof CURSYS==='string'&&CURSYS==='world'&&window.UM_BLOOM_ATTACH&&UM_BLOOM_ATTACH()) orig('world');
     window.UM_BLOOM=b;
     window.UM_BLOOM_HOLD=b;
     if(window.__umSetBloom) window.__umSetBloom(b);
@@ -53,7 +57,7 @@
     window.UM_BLOOM=next;
     window.UM_BLOOM_HOLD=next;
     try{ history.pushState({bloom:next},'',location.pathname+location.search+'#/world'); }catch(e){}
-    if(window.__umSetBloom) window.__umSetBloom(next);
+    applyWorldBloom(next);
     render('world');
   };
   function render(id){
