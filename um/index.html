@@ -1,1 +1,341 @@
-RESTORING_FROM_LOCAL_WILL_BE_FULL_IN_REAL_CALL
+<!DOCTYPE html>
+<html lang="fr"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="um-build" content="v20.61">
+<!-- um-deploy: v20.61 -->
+<link rel="icon" href="data:,">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Manifestation — Universal Metaphor</title>
+<script>
+(function(){
+  if(navigator.serviceWorker&&navigator.serviceWorker.getRegistrations){
+    navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister();});});
+  }
+  if(window.caches&&caches.keys){
+    caches.keys().then(function(keys){keys.forEach(function(k){caches.delete(k);});});
+  }
+})();
+</script>
+<style>
+
+/* Layout: an instrument bench. Transport bar across the top; the attribute rack and the isolated Gaussian window on the left;
+   the toroidal chamber in the centre; the reading card (fiche) and layers on the right. One column on phones. */
+:root{
+  --bg:#05080d;
+  --panel:#0a1019;
+  --raise:#101826;
+  --line:#1a2636;
+  --line-2:#2b3c55;
+  --fg:#dbe3ee;
+  --muted:#8b98ad;
+  --dim:#5c6a82;
+  --accent:#a6dcff;
+  --core:#e8c872;
+  --z0:#ff5c5c; --z1:#ffb347; --z2:#5fd690; --z3:#4fa7ff; --z4:#b388ff;
+  --f-display:Georgia,"Iowan Old Style",serif;
+  --f-sans:system-ui,"Segoe UI",sans-serif;
+  --f-mono:ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font:13px/1.45 var(--f-sans);overflow:hidden}
+.app{height:100%;box-sizing:border-box;display:grid;grid-template-columns:auto minmax(0,1fr) minmax(280px,340px);grid-template-rows:auto minmax(0,1fr);gap:10px;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;min-width:0}
+.brand{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.brand h1{font:400 30px/1 var(--f-display);margin:0;letter-spacing:.01em}
+.brand .sub{color:var(--muted);font-size:12px}
+.soul{font:500 11px/1 var(--f-mono);color:var(--core);text-decoration:none;border:1px solid #4a3f22;padding:5px 8px;border-radius:3px;letter-spacing:.04em}
+.soul:hover,.soul:focus-visible{background:#1a160b}
+.transport,.modes,.readouts{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.transport{flex:1 1 380px;min-width:0}
+button,select{font:inherit;color:var(--fg);background:var(--raise);border:1px solid var(--line-2);border-radius:3px;padding:4px 8px;cursor:pointer}
+button:hover:not(:disabled),select:hover:not(:disabled){border-color:var(--accent)}
+button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+button:disabled,select:disabled{opacity:.45;cursor:not-allowed}
+#play{width:34px;font-size:14px;padding:3px 0}
+#date{font:500 13px var(--f-mono);min-width:84px;text-align:right;font-variant-numeric:tabular-nums}
+.take{display:inline-flex;align-items:center;gap:4px;font:500 11px var(--f-mono);color:var(--muted)}
+.take select{font:12px var(--f-mono);padding:3px 4px}
+.row .zz{display:inline-flex;gap:3px;align-items:center;align-self:start}
+.row .zz i{color:var(--dim);font-style:normal;font-size:10px}
+#scrub{flex:1 1 140px;min-width:100px;accent-color:var(--accent)}
+.seg{display:inline-flex;border:1px solid var(--line-2);border-radius:3px;overflow:hidden}
+.seg button{border:0;border-radius:0;background:transparent;padding:4px 9px}
+.seg button[aria-pressed="true"]{background:#14273a;color:var(--accent)}
+label.chk{display:inline-flex;align-items:center;gap:5px;cursor:pointer;user-select:none}
+.ro{font:12px var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.ro b{color:var(--fg);font-weight:500}
+.gep{font:500 10.5px/1 var(--f-mono);letter-spacing:.06em;color:#ffcf8a;border:1px solid #5a4422;padding:5px 7px;border-radius:3px;text-transform:uppercase}
+#session[aria-pressed="true"]{background:#2a1e0c;border-color:var(--core);color:var(--core)}
+.vol{display:inline-flex;align-items:center;gap:5px;font:500 11px var(--f-mono);color:var(--muted);border:1px solid var(--line-2);border-radius:3px;padding:2px 6px}
+.vol b{color:var(--fg);font-weight:500;letter-spacing:.04em}
+.vol button{padding:1px 7px;font:500 13px var(--f-mono)}
+#vol{width:120px;accent-color:var(--core)}
+#volNum{width:64px;font:12px var(--f-mono);background:var(--raise);color:var(--fg);border:1px solid var(--line-2);border-radius:3px;padding:2px 4px;font-variant-numeric:tabular-nums}
+aside,#stage{min-height:0;min-width:0}
+aside{display:flex;flex-direction:column;gap:10px;overflow:auto}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:10px 11px;min-width:0}
+.panel h2{font:500 10.5px/1.2 var(--f-mono);text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:0 0 8px;display:flex;justify-content:space-between;gap:8px}
+.panel h2 span{color:var(--dim)}
+.attr{display:grid;grid-template-columns:28px minmax(0,96px) minmax(0,1fr);gap:0 8px;align-items:center;padding:4px 6px;border-radius:3px;cursor:pointer;border:1px solid transparent}
+.attr:hover{background:#0e1622}
+.attr[aria-current="true"]{border-color:var(--line-2);background:#0f1928}
+.attr .ico{width:26px;height:26px;display:block;align-self:start;margin-top:1px}
+img.ico{image-rendering:auto}
+#gk img{width:18px;height:18px;vertical-align:-5px;margin-right:5px}
+.row .a img.ico{width:16px;height:16px;vertical-align:-3px;margin-right:5px}
+#thrBox select{max-width:150px}
+#sys{max-width:200px}
+
+.attr .nm{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+.attr .nm b{font-weight:500}
+.attr .nm small{font:9.5px var(--f-mono);color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.attr select{width:100%;min-width:0;font-size:11px;padding:2px 3px}
+.zbar{grid-column:2/4;display:flex;height:3px;border-radius:2px;overflow:hidden;margin-top:4px;background:var(--line)}
+.zbar i{display:block;height:100%}
+#gauss{width:100%;height:128px;display:block;touch-action:none}
+/* rev. 23.9 (Éric, 10 Nov., 23 h 11): the ten icons stay in one vertical strip on the extreme left of the window, as designed;
+   a click on an icon develops, to its right, the choice of analysis and its Gaussian thresholds; a second click folds it. */
+#left{display:flex;flex-direction:row;gap:8px;align-items:stretch;min-height:0}
+#left>.panel:first-child{flex:0 0 74px;width:74px;min-width:0;box-sizing:border-box;display:flex;flex-direction:column;padding:6px 4px;min-height:0}
+#left>.panel:first-child h2{display:none}
+#left>.panel:last-child{flex:0 0 296px;width:296px;box-sizing:border-box;align-self:start;max-height:100%;overflow:auto;min-width:0}
+.app:not(.gOpen) #left>.panel:last-child{display:none}
+#gClose{padding:0 6px;font:500 13px/1.3 var(--f-mono);margin-left:6px}
+.tile[aria-expanded="true"]{border-color:var(--accent);background:#14273a}
+.tiles{flex:1;display:flex;flex-direction:column;justify-content:space-evenly;gap:4px;min-height:0}
+.tile{display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 2px 4px;background:transparent;border:1px solid transparent;border-radius:4px;min-width:0;cursor:pointer}
+.tile:hover{background:#0e1622}
+.tile[aria-pressed="true"]{border-color:var(--accent);background:#0f1928}
+.tile img.ico{width:30px;height:30px;display:block}
+.tile .tn{font:9px/1.15 var(--f-mono);color:var(--muted);text-align:center;overflow-wrap:break-word;word-break:normal;max-width:100%}
+.tile[aria-pressed="true"] .tn{color:var(--fg)}
+.tile .zbar{width:100%;margin-top:0}
+.asel{display:flex;align-items:center;gap:6px;font:500 10.5px var(--f-mono);color:var(--muted);margin:4px 0 6px;text-transform:uppercase;letter-spacing:.06em}
+/* rev. 23.10 (Éric, 11 Nov., 4 h 53: « keep the icons on the extreme left side; don't put them in a bunch; respect the original design;
+   when one is clicked, on its right develops where we choose the analysis and tweak the Gaussian curve »). The strip is fixed to the
+   left edge of the window, top to bottom, at every width, phones included. The window opens level with the clicked icon, over the
+   chamber, which keeps its size; a second click on the same icon, × or Escape folds it. Nothing scrolls. */
+:root{--strip:80px}
+.app{padding-left:calc(var(--strip) + 6px)}
+.app.noL{padding-left:max(16px,env(safe-area-inset-left,0px))}
+#left{position:fixed;left:0;top:0;bottom:0;width:var(--strip);z-index:30;display:block;overflow:visible;gap:0;padding:8px 0 8px max(6px,env(safe-area-inset-left,0px));box-sizing:border-box}
+#left>.panel:first-child{flex:none;width:100%;height:100%;box-sizing:border-box;padding:6px 4px;overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
+#left>.panel:first-child::-webkit-scrollbar{display:none}
+.tiles{flex:1 0 auto}
+#left>.panel:last-child{position:fixed;left:calc(var(--strip) + 6px);top:8px;flex:none;width:min(320px,calc(100vw - var(--strip) - 14px));max-height:calc(100vh - 16px);max-height:calc(100dvh - 16px);overflow:auto;z-index:31;align-self:auto;background:var(--panel);border-color:var(--line-2);border-left:2px solid var(--accent);box-shadow:0 14px 40px rgba(0,0,0,.62)}
+.zt img.ico{width:16px;height:16px;vertical-align:-3px;margin-right:5px}
+/* rev. 23.14 (Éric, 11 Nov., 15 h 14: « make the panels movable or erasable, because we do not see the engine; it's hidden behind
+   the panels »). The Gaussian window, the only panel that lies over the chamber, moves by its title bar (double click: back beside
+   its icon); × or Escape erases it. The reading card on the right has its own ×; the strip and the card also fold with
+   ◧ Attributs, Fiche ◨, Vue pleine or the keys [ ] \. */
+#left>.panel:last-child>h2{cursor:move;touch-action:none;user-select:none}
+#left>.panel:last-child.drag{opacity:.92;box-shadow:0 18px 48px rgba(0,0,0,.7)}
+#right{position:relative}
+.rclose{position:sticky;top:0;height:0;z-index:5;display:flex;justify-content:flex-end;overflow:visible}
+.rclose button{margin:5px 5px 0 0;padding:0 7px;font:500 13px/1.4 var(--f-mono);background:var(--raise)}
+@media (max-width:600px){:root{--strip:58px}.tile .tn{display:none}.tile img.ico{width:28px;height:28px}}
+@media (max-height:640px){.tile .tn{display:none}}
+.asel select{flex:1;min-width:0;font:12px var(--f-sans);text-transform:none;letter-spacing:0}
+#left{grid-column:1}#stage{grid-column:2}#right{grid-column:3}
+.app.noL{grid-template-columns:0 minmax(0,1fr) minmax(280px,340px)}
+.app.noR{grid-template-columns:auto minmax(0,1fr) 0}
+.app.noL.noR{grid-template-columns:0 minmax(0,1fr) 0}
+.app.noL #left,.app.noR #right{display:none}
+#tgL[aria-pressed="false"],#tgR[aria-pressed="false"]{color:var(--muted);border-style:dashed}
+#tgV[aria-pressed="true"]{background:#14273a;color:var(--accent);border-color:#3b5a7a}
+.gtitle{font:400 19px/1.15 var(--f-display);margin:0 0 2px}
+.gline{color:var(--muted);font-size:12px;margin-bottom:6px}
+.zt{width:100%;border-collapse:collapse;font:11px var(--f-mono);font-variant-numeric:tabular-nums;margin-top:6px}
+.zt td,.zt th{padding:3px 4px;text-align:right;border-top:1px solid var(--line)}
+.zt th{color:var(--dim);font-weight:400;text-align:right}
+.zt td:first-child,.zt th:first-child{text-align:left}
+.gfoot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}
+.lock{font:11px var(--f-mono);color:var(--muted)}
+#stage{position:relative;border:1px solid var(--line);border-radius:5px;overflow:hidden;background:var(--bg)}
+#stage canvas{display:block;width:100%;height:100%;touch-action:none}
+#tip{position:absolute;pointer-events:none;background:rgba(9,14,22,.96);border:1px solid var(--line-2);border-radius:4px;padding:8px 10px;max-width:300px;font-size:12px;line-height:1.4;display:none;z-index:3;box-shadow:0 6px 24px rgba(0,0,0,.45)}
+#tip .t{font:400 17px/1.1 var(--f-display);margin-bottom:3px}
+#tip .k{font:10.5px var(--f-mono);color:var(--muted)}
+#banner{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(9,14,22,.92);border:1px solid var(--line-2);border-radius:4px;padding:6px 10px;font-size:12px;display:none;gap:10px;align-items:center;z-index:2}
+#legend{display:flex;flex-wrap:wrap;gap:4px 12px;font:10.5px/1.5 var(--f-mono);color:var(--muted)}
+#legend .sw{display:inline-block;width:8px;height:8px;border-radius:1px;margin-right:4px;vertical-align:0}
+#help{position:absolute;right:10px;top:10px;font:10.5px var(--f-mono);color:var(--dim);text-align:right;pointer-events:none;line-height:1.5}
+.fiche .cls{font:500 10.5px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.fiche h3{font:400 26px/1.05 var(--f-display);margin:2px 0 4px;overflow-wrap:anywhere}
+.fiche .meta{color:var(--muted);font-size:12px;margin-bottom:8px}
+.chain{display:flex;flex-direction:column;gap:4px;margin:8px 0 10px}
+.chip{display:flex;justify-content:space-between;gap:8px;align-items:center;text-align:left;width:100%;font-size:12px;padding:5px 8px;background:#0d1520}
+.chip em{font:normal 10px var(--f-mono);color:var(--dim);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.rows{display:flex;flex-direction:column}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1px 8px;padding:5px 0;border-top:1px solid var(--line)}
+.row .a{font-size:12px}
+.row .z{font:500 11px var(--f-mono);padding:1px 6px;border-radius:2px;color:#05080d;align-self:start}
+.row .n{grid-column:1/-1;font:10.5px var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.big{font:500 15px var(--f-mono);font-variant-numeric:tabular-nums}
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:3px 10px;font-size:12px;margin:6px 0}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right;overflow-wrap:anywhere}
+.mig{border-collapse:collapse;font:10.5px var(--f-mono);margin-top:6px;font-variant-numeric:tabular-nums}
+.mig td,.mig th{width:30px;height:22px;text-align:center;border:1px solid var(--line)}
+.mig th{color:var(--muted);font-weight:400}
+.note{color:var(--muted);font-size:11.5px;margin:6px 0 0}
+.st{font:500 9.5px var(--f-mono);letter-spacing:.07em;padding:1px 5px;border-radius:2px;margin-right:5px;vertical-align:1px}
+.st.g{background:#1d2a14;color:#b9e48e}.st.p{background:#132436;color:#9fd0ff}.st.o{background:#3a2412;color:#ffbf7a}.st.v{background:#22183a;color:#cdb4ff}
+.status li{margin:3px 0;font-size:11.5px;color:var(--muted)}
+.status{padding-left:0;list-style:none;margin:4px 0 0}
+.members{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.members button{font:10.5px var(--f-mono);padding:2px 5px}
+.layers{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;font-size:12px}
+.src{font-size:11px;color:var(--dim);line-height:1.45}
+.src code{font-family:var(--f-mono);font-size:10.5px}
+canvas.spark{width:100%;height:58px;display:block;margin-top:6px}
+textarea.dump{width:100%;height:120px;background:#070b12;color:var(--fg);border:1px solid var(--line-2);font:10.5px var(--f-mono);margin-top:6px;box-sizing:border-box}
+#ghost[aria-pressed="true"]{background:#1d1530;border-color:#b388ff;color:#e2d6ff}
+canvas.vbars{width:100%;height:70px;display:block;margin-top:6px}
+#legend .gl{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:0}
+#legend .brk{flex-basis:100%;height:0}
+.hkid{display:grid;grid-template-columns:62px minmax(0,1fr);gap:8px;align-items:center;margin:4px 0 8px}
+.ph{height:78px;border:1px dashed var(--line-2);border-radius:3px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;text-align:center;font:9px/1.25 var(--f-mono);color:var(--dim)}
+.ph b{font-weight:500;color:#ffbf7a;font-size:8.5px}
+.rink{width:100%;height:auto;display:block}
+.phf{margin:0;display:flex;flex-direction:column;gap:2px}.phf img{width:62px;height:78px;object-fit:cover;border-radius:3px;border:1px solid var(--line-2)}.phf figcaption{font:8.5px/1.2 var(--f-mono);color:var(--dim);overflow-wrap:anywhere}.phf a{color:var(--muted)}
+.bdg{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:22px;padding:0 6px;border-radius:11px;border:2px solid #a6dcff;background:#05080d;font:600 11px var(--f-mono);color:#fff;letter-spacing:.03em}
+.bdg.w{border-color:#ffcf8a}
+.hklogo{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin:2px 0 8px}
+.hklogo i{font-style:normal;color:var(--dim)}
+.hklogo .tx{flex:1 1 180px;min-width:0}
+.hkd .zt td{white-space:nowrap}
+.hkd .row .n button{font:10.5px var(--f-mono);padding:1px 5px;margin:2px 2px 0 0}
+.hkd .zt{margin:4px 0}
+.chip.hkz{border-color:#3b5a7a}
+@media (max-width:980px){
+  html,body{height:auto}
+  body{overflow:auto}
+  .app{height:auto;grid-template-columns:minmax(0,1fr);grid-template-rows:auto}
+  #stage{height:60vh;order:1}
+  header{order:0}
+  #left{order:2}
+  #right{order:3}
+  aside{overflow:visible}
+  #help{display:none}
+  .app,.app.noL,.app.noR,.app.noL.noR{grid-template-columns:minmax(0,1fr)}
+  #left,#stage,#right{grid-column:1}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <h1>Manifestation</h1>
+      <span class="sub" id="sub">le corps · Universal Metaphor · moteur v2 · rév. 23.16 · deux prises</span>
+      <label class="take">Classe 4 <select id="sys" aria-label="Système de Classe 4 affiché"></select></label>
+      <button type="button" class="soul" id="hubHome">HUB</button>
+    </div>
+    <div class="transport">
+      <button id="play" type="button" aria-label="Lecture">▶</button>
+      <label class="take">T₀ <select id="selT0" aria-label="Prise T₀"></select></label>
+      <input id="scrub" type="range" min="0" max="1000" step="1" value="0" aria-label="Transition de T₀ à T₁">
+      <label class="take">T₁ <select id="selT1" aria-label="Prise T₁"></select></label>
+      <span id="date">—</span>
+      <select id="dur" aria-label="Durée de la transition"><option value="10">T₀ → T₁ en 10 s</option><option value="30">en 30 s</option><option value="60" selected>en 1 min</option></select>
+    </div>
+    <div class="modes">
+      <div class="seg" role="group" aria-label="Mode">
+        <button id="mFourier" type="button" aria-pressed="true">Fourier · 3 entrées</button>
+        <button id="mFree" type="button" aria-pressed="false">Libre</button>
+      </div>
+      <label class="chk" title="La saturation, 10ᵉ attribut, est le collapse de tous les résultats (G-4)"><input id="km" type="checkbox" checked> Kobayashi Maru</label>
+      <button id="session" type="button" aria-pressed="false">Session</button>
+    </div>
+    <div class="readouts">
+      <span class="gep" id="gep">GEP</span>
+      <span class="vol">Vol <b id="volLbl">1×</b> <button type="button" id="volDown" aria-label="Moins fort">−</button><input id="vol" type="range" min="0" max="2" step="0.01" value="1" aria-label="Volume"><button type="button" id="volUp" aria-label="Plus fort">+</button> <input id="volNum" type="text" value="1.00" aria-label="Volume numérique"></span>
+      <span class="ro">Z <b id="zread">—</b></span>
+      <span class="ro">Δ <b id="dread">—</b></span>
+    </div>
+  </header>
+  <aside id="left">
+    <div class="panel">
+      <div class="tiles" id="tiles"></div>
+    </div>
+    <div class="panel" id="gwin">
+      <h2>Gaussienne <button type="button" id="gClose" aria-label="Fermer">×</button></h2>
+      <canvas id="gauss"></canvas>
+      <div class="asel"><span>Analyse</span> <select id="asel"></select></div>
+      <div id="thrBox"></div>
+    </div>
+  </aside>
+  <div id="stage">
+    <canvas id="c"></canvas>
+    <div id="tip"></div>
+    <div id="banner"></div>
+    <div id="help"></div>
+  </div>
+  <aside id="right">
+    <div class="rclose"><button type="button" id="rClose" aria-label="Fermer la fiche">×</button></div>
+    <div class="panel fiche" id="fiche"></div>
+  </aside>
+</div>
+<script src="engine/vendor/three.min.js?v=20.61"></script>
+<script src="engine/vendor/OrbitControls.js?v=20.61"></script>
+<script src="engine/lib.js?v=20.61"></script>
+<script src="engine/markets.js?v=20.61"></script>
+<script src="engine/markets-intl.js?v=20.61"></script>
+<script src="engine/data/lib-jse40.js?v=20.61"></script>
+<script src="engine/data/lib-wig20.js?v=20.61"></script>
+<script src="engine/data/lib-set50.js?v=20.61"></script>
+<script src="engine/data/lib-nzx50.js?v=20.61"></script>
+<script src="engine/data/lib-colcap.js?v=20.61"></script>
+<script src="engine/data/lib-merval.js?v=20.61"></script>
+<script src="engine/data/lib-tw50.js?v=20.61"></script>
+<script src="engine/data/lib-ta35.js?v=20.61"></script>
+<script src="engine/data/lib-qe.js?v=20.61"></script>
+<script src="engine/data/lib-egx30.js?v=20.61"></script>
+<script src="engine/data/lib-bist30.js?v=20.61"></script>
+<script src="engine/data/lib-ipsa.js?v=20.61"></script>
+<script src="engine/data/lib-klci.js?v=20.61"></script>
+<script src="engine/data/lib-bel20.js?v=20.61"></script>
+<script src="engine/data/lib-obx.js?v=20.61"></script>
+<script src="engine/data/lib-atx.js?v=20.61"></script>
+<script src="engine/data/lib-omxc25.js?v=20.61"></script>
+<script src="engine/data/lib-omxh25.js?v=20.61"></script>
+<script src="engine/data/lib-psi.js?v=20.61"></script>
+<script src="engine/data/lib-iseq20.js?v=20.61"></script>
+<script src="engine/data/lib-lq45.js?v=20.61"></script>
+<script src="engine/data/lib-vn30.js?v=20.61"></script>
+<script src="engine/data/lib-ibrx50.js?v=20.61"></script>
+<script src="engine/data/lib-smll.js?v=20.61"></script>
+<script src="engine/data/lib-ifnc.js?v=20.61"></script>
+<script src="engine/data/lib-imob.js?v=20.61"></script>
+<script src="engine/data/lib-idiv.js?v=20.61"></script>
+<script src="engine/data/lib-icon.js?v=20.61"></script>
+<script src="engine/data/lib-mlcx.js?v=20.61"></script>
+<script src="engine/data/lib-sp100.js?v=20.61"></script>
+<script src="engine/data/lib-djcomp.js?v=20.61"></script>
+<script src="engine/data/lib-tasi-mat.js?v=20.61"></script>
+<script src="engine/data/lib-tasi-fin.js?v=20.61"></script>
+<script src="engine/data/lib-tasi-ind.js?v=20.61"></script>
+<script src="engine/data/lib-tasi-re.js?v=20.61"></script>
+<script src="engine/data/lib-tasi-cyc.js?v=20.61"></script>
+<script src="engine/data/lib-spx-tech.js?v=20.61"></script>
+<script src="engine/data/lib-spx-ind.js?v=20.61"></script>
+<script src="engine/data/lib-spx-fin.js?v=20.61"></script>
+<script src="engine/data/lib-spx-hlth.js?v=20.61"></script>
+<script src="engine/data/lib-spx-cyc.js?v=20.61"></script>
+<script src="engine/data/lib-n225-ind.js?v=20.61"></script>
+<script src="engine/data/lib-n225-cyc.js?v=20.61"></script>
+<script src="engine/data/lib-n225-tech.js?v=20.61"></script>
+<script src="engine/world.js?v=20.61"></script>
+<script src="engine/silos.js?v=20.61"></script>
+<script src="engine/floors.js?v=20.61"></script>
+<script src="engine/bloom.js?v=20.61"></script>
+<script src="engine/engine.js?v=20.61"></script>
+<script src="engine/hub-nav.js?v=20.61"></script>
+</body></html>
