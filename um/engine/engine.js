@@ -650,6 +650,31 @@ function ring(r,y,col,op,dashed){
   const m=dashed?new THREE.LineDashedMaterial({color:col,transparent:true,opacity:op,dashSize:.06,gapSize:.06}):new THREE.LineBasicMaterial({color:col,transparent:true,opacity:op});
   const l=new THREE.Line(g,m);if(dashed)l.computeLineDistances();return l;
 }
+/* Éric, 14 nov 2026. Two rings (horizontal + vertical) = a door: the click dives into another system.
+   One horizontal ring = focus: the click stays in this system and focuses the object.
+   The ring sits just outside the object and scales with its class size (0,1 · 0,2 · 0,3 · 0,4).
+   Colour is the object's own colour. [INCOMPLET] Éric has not fixed a ring colour.
+   The LNH conference ring stays on the player badge (blue East, amber West); players do not dive. */
+const RINGGEO={};
+function makeRings(R, door, color){
+  const key=R.toFixed(5);
+  if(!RINGGEO[key]) RINGGEO[key]=new THREE.TorusGeometry(R*1.22, Math.max(0.004, R*0.085), 8, 48);
+  const geo=RINGGEO[key];
+  const mat=()=>new THREE.MeshBasicMaterial({color:color==null?0xffffff:color, transparent:true, opacity:.95, depthWrite:false, side:THREE.DoubleSide});
+  const h=new THREE.Mesh(geo, mat());
+  h.rotation.x=Math.PI/2; /* torus is born vertical (XY); this lays it flat */
+  h.name='um-ring-h'; h.renderOrder=4;
+  let v=null;
+  if(door){ v=new THREE.Mesh(geo, mat()); v.name='um-ring-v'; v.renderOrder=4; }
+  return {h:h, v:v, door:!!door};
+}
+function addRings(parent, rings){ parent.add(rings.h); if(rings.v) parent.add(rings.v); return rings; }
+function syncRings(o, op){
+  if(!o.rings) return;
+  const c=o.faceMat.color, a=op==null?.95:op, on=a>0.02;
+  o.rings.h.material.color.copy(c); o.rings.h.material.opacity=a; o.rings.h.visible=on;
+  if(o.rings.v){ o.rings.v.material.color.copy(c); o.rings.v.material.opacity=a; o.rings.v.visible=on; }
+}
 function seg(pts,col,op){return new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:col,transparent:true,opacity:op}))}
 function label(text,col,h,weight){
   const c=document.createElement('canvas'),g=c.getContext('2d'),fs=48;
@@ -745,7 +770,8 @@ for(let z=0;z<5;z++){
     C3O[z]={kind:3,idx:z,R:.3,root:g,orient,spin,body,a:AZ(t),shape:-1,spinA:0,
       faceMat:new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.14,depthWrite:false,side:THREE.DoubleSide}),
       edgeMat:new THREE.LineBasicMaterial({color:ZCOL[z],transparent:true,opacity:.85})};
-    const id=ring(1,0,ZCOL[z],.7);id.scale.set(.4,1,.4);g.add(id);
+    /* A container leads to no other system: one horizontal ring, in its own colour. */
+    C3O[z].rings=addRings(g, makeRings(C3O[z].R, false, ZCOL[z]));
   } else {const e=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(.3,1)),new THREE.LineDashedMaterial({color:0x8b98ad,transparent:true,opacity:.35,dashSize:.025,gapSize:.03}));e.computeLineDistances();g.add(e);}
   const lb=label(C3SYM[z],C3ON[z]?ZCOL[z]:'#8b98ad',C3ON[z]?.2:.16);lb.position.set(0,0,0);g.add(lb);
   g.add(hitSphere(.33,{kind:3,idx:z}));
@@ -772,8 +798,11 @@ const LV={stretch:[.55,.78,1,1.28,1.6],pitch:[-32,-16,0,16,32].map(x=>x*Math.PI/
 const DENS=(N1+NC+5)>1234?Math.sqrt(1234/(N1+NC+5)):1;
 C4O.R=4*(.1*DENS); /* rev. 23.11: the central object = four times a Class 1 object (Class 1 = 0,1 × DENS) */
 core.add(hitSphere(C4O.R*1.15,{kind:4}));
+/* Class 4 is a door: two clicks climb a bloom layer, or leave for the parent floor. */
+C4O.rings=addRings(core, makeRings(C4O.R, true, 0xe8c872));
 /* Finance stays the opening Class 4. Art and Sports are siblings beside the
    galaxy: they are not members, so they never enter its aggregate or its drift. */
+window.__umSides=[];
 if(SYS.id==='world'){
   const fin=label('Finance','#e8c872',.26,500);
   fin.position.set(0,C4O.R+.32,0);
@@ -788,6 +817,8 @@ if(SYS.id==='world'){
     g.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo),edge));
     const lb=label(text,'#e6f2ff',.3,500);lb.position.set(0,R+.28,0);g.add(lb);
     g.add(hitSphere(R*1.45,{kind:4,side:id,label:text,note:note}));
+    const rings=addRings(g, makeRings(R, true, color));
+    window.__umSides.push({id:id, name:text, R:R, group:g, rings:rings});
     WORLD.add(g);
   }
   /* Above the chamber (height stops at 1) so a narrow phone still shows them beside Finance. */
@@ -803,9 +834,10 @@ function makeObj(kind,idx){
   const edgeMat=new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:1});
   const hit=hitSphere(R*1.55,{kind,idx});root.add(hit);
   const o={kind,idx,R,root,orient,spin,body,faceMat,edgeMat,hit,shape:-1,spinA:Math.random()*6.28,cur:null};
+  const door=(kind===1&&!!(TK[idx]&&TK[idx].floor))||(kind===2&&!!class2Floor(idx));
+  o.rings=addRings(root, makeRings(R, door));
   if(kind===2){
     const c=CARDS[idx];
-    o.halo=ring(1,0,0xa6dcff,.55);o.halo.scale.set(R*1.9,1,R*1.9);root.add(o.halo);
     /* the identifier sits inside the object, not beside it (règle commune 1) */
     const lb=label((HK||GC)?c.short:(c.ty==='sec'?'':c.ty==='cty'?'◇ ':'· ')+c.name,'#e6f2ff',.1,500),asp=lb.scale.x/lb.scale.y,hh=Math.min(R*.36,1.8*R/asp);
     lb.scale.set(hh*asp,hh,1);lb.position.set(0,0,0);lb.material.depthTest=false;lb.renderOrder=8;o.label=lb;root.add(lb);
@@ -1313,7 +1345,7 @@ function applyObj(o,d0,d1,t,dt){
   const pf=(p0&&p1?1:(p0?1-t:t))*bk;
   if(o.kind===1){const fo=dim*pf;o.faceMat.opacity=fo;o.faceMat.depthWrite=fo>.97;o.edgeMat.opacity=.45*fo}
   else{o.edgeMat.opacity=.9*dim*pf;o.faceMat.opacity=.3*dim*pf}
-  if(o.halo)o.halo.material.opacity=.55*dim;
+  syncRings(o, .95*dim*pf);
   if(o.label)o.label.visible=S.layers.labels&&dim>.5&&!o.card;
   if(HK&&o.tl){const ab=clubAt(o.idx,t<.5?da:db);if(ab&&o.tl.userData.ab!==ab){o.tl.material.map=objTex(o.idx,ab);o.tl.material.needsUpdate=true;o.tl.userData.ab=ab}} /* the logo changes, the object stays */
   if(o.tl){const sh=S.layers.tlabels&&dim>.5&&!o.card;o.tl.visible=sh;if(sh)o.tl.material.opacity=.95*pf}
@@ -1322,7 +1354,7 @@ function applyObj(o,d0,d1,t,dt){
 function applyC3(t,dt){
   C3O.forEach((o,z)=>{if(!o)return;
     const n0=C3N[z*2],n1=C3N[z*2+1];
-    if(!n0&&!n1){o.body.visible=false;return}o.body.visible=true;
+    if(!n0&&!n1){o.body.visible=false;syncRings(o,0);return}o.body.visible=true;
     const A=(z*2+(n0?0:1))*10,B=(z*2+(n1?1:0))*10;
     const za=k=>zoneOf(C3V[A+k]),zb=k=>zoneOf(C3V[B+k]),zd=k=>t<.5?za(k):zb(k);
     setShape(o,zd(3));
@@ -1330,6 +1362,7 @@ function applyC3(t,dt){
     o.orient.rotation.set(L(LV.pitch,6),Math.PI/2-o.a,-L(LV.roll,8),'YXZ');
     o.spinA-=L(LV.spin,7)*dt*(REDUCED?.25:1);o.spin.rotation.y=o.spinA;o.spin.scale.set(1,L(LV.stretch,4),1);
     paint(o,za(5),zb(5),za(9),zb(9),t);
+    syncRings(o, .9);
   });
 }
 /* Rev. 23.10: the central object holds its reserved space, the hollow centre; its position in space is not established.
@@ -1341,7 +1374,7 @@ function c4Frame(tau){
 }
 function applyC4(t,dt){
   const o=C4O,n0=C4N[0],n1=C4N[1];
-  if(!n0&&!n1){o.body.visible=false;return}o.body.visible=true;
+  if(!n0&&!n1){o.body.visible=false;syncRings(o,0);return}o.body.visible=true;
   const A=(n0?0:1)*10,B=(n1?1:0)*10;
   const za=k=>zoneOf(C4V[A+k]),zb=k=>zoneOf(C4V[B+k]),zd=k=>t<.5?za(k):zb(k);
   setShape(o,zd(3));
@@ -1349,6 +1382,7 @@ function applyC4(t,dt){
   o.orient.rotation.set(L(LV.pitch,6),Math.PI/2-o.a,-L(LV.roll,8),'YXZ'); /* same configuration everywhere: it faces the dial at its own X */
   o.spinA-=L(LV.spin,7)*dt*(REDUCED?.25:1);o.spin.rotation.y=o.spinA;o.spin.scale.set(1,L(LV.stretch,4),1);
   paint(o,za(5),zb(5),za(9),zb(9),t);
+  syncRings(o, .95);
 }
 /* Vectors from Z0(τ), the moving mean (gold marker), to every rendered object (Class 1 and Class 2); they follow its drift.
    Rev. 23.10: they do not start from the central object, whose position in space is not established. */
@@ -1752,7 +1786,11 @@ renderer.domElement.addEventListener('pointerup',e=>{
     if(ref&&ref.side){switchSys(ref.side);return}
     if(ref&&ref.kind===2){const id=class2Floor(ref.idx);if(id){switchSys(id);return}}
     if(ref&&ref.kind===1){const id=TK[ref.idx]&&TK[ref.idx].floor;if(id){switchSys(id);return}}
-    if(ref)select(ref);
+    if(ref){
+      select(ref);
+      /* One ring: the click focuses this object. Doors already returned above. */
+      if(ref.kind===1||ref.kind===2) enterFocus(ref);
+    }
   }
   const now=e.timeStamp,prev=tapMark;tapMark={t:now,x:e.clientX,y:e.clientY,type:e.pointerType||'mouse'};
   if(!prev||prev.type!==tapMark.type||now-prev.t<40||now-prev.t>520)return;
@@ -2111,6 +2149,37 @@ addEventListener('resize',()=>{drawGauss();renderFiche()});
 BOOT.destroy=()=>{alive=false;S.playing=false;BOOT.ac.abort();ro.disconnect();try{renderer.dispose();renderer.forceContextLoss()}catch(e){}renderer.domElement.remove();$('tip').style.display='none';$('banner').style.display='none'};
 if(keep&&keep.tk){const i=TK.findIndex(t=>t.s===keep.tk);if(i>=0)select({kind:1,idx:i})}
 window.__umSelect=select; /* hook for the soul (CLAVIS) bridge and for tests */
+window.__umProbe=function(){
+  const vis=[];
+  const pack=(o,name,floor)=>{
+    if(!o||!o.rings||!o.rings.h.visible) return;
+    const root=o.root;
+    if(root&&!root.visible) return;
+    vis.push({name:name, kind:o.kind, idx:o.idx, door:!!o.rings.v, n:o.rings.v?2:1, r:+o.R.toFixed(4), floor:floor||'', col:'#'+o.faceMat.color.getHexString()});
+  };
+  O1.forEach(o=>pack(o, TK[o.idx].s, TK[o.idx].floor||''));
+  O2.forEach(o=>pack(o, CARDS[o.idx].name, class2Floor(o.idx)||''));
+  C3O.forEach((o,z)=>{ if(o) pack(o, C3SYM[z], ''); });
+  pack(C4O, SYS.name, '');
+  const sides=(window.__umSides||[]).filter(s=>s.group.visible&&s.rings.h.visible).map(s=>({name:s.name, id:s.id, kind:4, door:!!s.rings.v, n:s.rings.v?2:1, r:+s.R.toFixed(4), col:'#'+s.rings.h.material.color.getHexString()}));
+  return {sys:SYS.id, z0:+ZZ[S.T0].toFixed(8), z1:+ZZ[S.T1].toFixed(8), focus:S.focus?{kind:S.focus.kind,idx:S.focus.idx}:null, sel:S.sel?{kind:S.sel.kind,idx:S.sel.idx,side:S.sel.side||''}:null, bloom:bloomLevel, canon:{c1:+(.1*DENS).toFixed(4), c2:+(.2*DENS).toFixed(4), c4:+C4O.R.toFixed(4)}, visible:vis, sides:sides};
+};
+window.__umRingAt=function(kind, idx){
+  let obj=null, pos=null;
+  if(kind===1) obj=O1[idx];
+  else if(kind===2) obj=O2[idx];
+  else if(kind===4) obj=C4O;
+  else if(kind==='side'){
+    const s=(window.__umSides||[]).find(x=>x.id===idx);
+    if(!s) return null;
+    pos=s.group.getWorldPosition(new THREE.Vector3());
+  }
+  if(!pos&&obj) pos=(obj.root||core).getWorldPosition(new THREE.Vector3());
+  if(!pos) return null;
+  pos.project(camera);
+  const r=renderer.domElement.getBoundingClientRect();
+  return {x:r.left+(pos.x*.5+.5)*r.width, y:r.top+(-pos.y*.5+.5)*r.height, z:pos.z};
+};
 })();
 }
 /* Side panels (Éric, 9 Nov.): either side can be cleared for a full view of the metaphor and brought back. */
