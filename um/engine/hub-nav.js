@@ -64,7 +64,13 @@
     const f=floor(id);
     const name=f?f.name:(id==='world'?'Finance':id);
     const parent=f&&f.parent;
-    const kids=(f&&f.children)||[];
+    let kids=(f&&f.children)||[];
+    if(id==='world'){
+      const special=['art','sports'];
+      const head=special.filter(k=>kids.includes(k));
+      const rest=kids.filter(k=>!special.includes(k));
+      kids=head.concat(rest);
+    }
     const blooming=id==='world'&&bloomNow()>0;
     const bits=['<button type="button" id="hub-center" data-up="'+(parent||'')+'">'+esc(shown(id,name))+'</button>'];
     function shown(cid, name){
@@ -94,7 +100,7 @@
     const up=document.getElementById('hub-up-btn');
     if(up&&(parent||blooming)) up.addEventListener('click',()=>{ if(!collapseBloom()&&parent) switchSys(parent); });
   }
-  function esc(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function esc(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&','<':'<','>':'>','"':'"',"'":'&#39;'}[c])); }
   function mark(raw){
     const why=(window.UM_WHY&&UM_WHY[String(raw).replace(/\/(year|t0t1)$/,'')])||'Pas de série réelle pour cet étage.';
     let el=document.getElementById('hub-gap');
@@ -138,6 +144,16 @@
   addEventListener('hashchange', onRoute, {signal:keep.signal});
   addEventListener('popstate', onRoute, {signal:keep.signal});
   try{ history.replaceState({bloom:0},'',location.pathname+location.search+'#/world'); }catch(e){}
+  /* Éric, 14 nov 2026 : le HUB s'ouvre sur la vision complète, Classe 4 → Classe 1. */
+  (function(){
+    const B0=window.UM_BLOOM_MAX||0;
+    if(typeof CURSYS!=='string'||CURSYS!=='world'||!B0) return;
+    for(let b=1;b<=B0;b++){
+      try{ history.pushState({bloom:b},'',location.pathname+location.search+'#/world'); }catch(e){}
+    }
+    window.UM_BLOOM_HOLD=B0;
+    applyWorldBloom(B0);
+  })();
   render(typeof CURSYS==='string'&&CURSYS?CURSYS:'world');
   const raw=rawHash();
   if(raw && !resolve(raw)) mark(raw);
