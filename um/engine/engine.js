@@ -8,8 +8,22 @@ EventTarget.prototype.addEventListener=function(t,f,o){
 };
 let CURSYS=null, lastTouchNav=0;
 function hubHash(id){return id==='world'?'/world':id}
+/* rev. 23.18 — the entry point of the drill-down (Éric, 15 Nov. 2026): a switch keeps the entry while it goes down the
+   floors under it (UM_FLOOR_BY); any other switch makes the new system its own entry. Art and Sports, beside Finance, start their
+   own descent. Without floors, every system is opened alone. */
+window.UM_MEASURE=window.UM_MEASURE||{};
+function umEntryFor(id){
+  const by=window.UM_FLOOR_BY,E=window.UM_ENTRY;
+  if(!by||!E||E===id||!by[id])return id;
+  let f=by[id],n=0;
+  while(f&&f.parent&&n++<32){
+    if(f.level==='silo')return id; /* Art and Sports sit beside Finance, not under it: their descent starts with them */
+    if(f.parent===E)return E;f=by[f.parent]}
+  return id;
+}
 function switchSys(id,keep){
   const SYSn=LIB.find(x=>x.id===id&&x.data);if(!SYSn)return;
+  window.UM_ENTRY=umEntryFor(id);
   CURSYS=id;$o('sys').value=id;
   try{const want=hubHash(id);if(location.hash.slice(1)!==want)location.hash=want}catch(e){}
   boot(SYSn,keep||{});
@@ -219,7 +233,7 @@ function hkFiche1(s){
     const e0=PRES[j0]?VI[j0]-ZZ[S.T0]:null,e1=PRES[j1]?VI[j1]-ZZ[S.T1]:null,rel=e0!=null&&e1!=null?e1-e0:null;
     const r0=PRES[j0]?k2=>fmt(eff(k2),LN[eff(k2)][j0]):null,r1=PRES[j1]?k2=>fmt(eff(k2),LN[eff(k2)][j1]):null;
     h+=`<dl class="kv"><dt>D₄ vertical (÷ 9)</dt><dd>${PRES[j0]?f8(VI[j0]):'—'} → ${PRES[j1]?f8(VI[j1]):'—'}</dd>
-    <dt>Mouvement relatif</dt><dd class="big">${rel!=null?((rel>=0?'+':'')+rel.toFixed(8)):'—'}</dd></dl>
+    <dt>Mouvement relatif</dt><dd class="big">${rel!=null?((rel>=0?'+':'')+rel.toFixed(8)):'—'}</dd></dl>${relRow1(s.idx)}
     <p class="note">${rel!=null?(rel>=0?'Il gagne contre son propre système entre les deux saisons.':'Il perd contre son propre système entre les deux saisons.')+' ':''}${curveTxt(v0,v1)}</p>
     <div class="rows">${attrRows(v0,v1,r0,r1)}</div>`;
   }
@@ -436,7 +450,7 @@ const S={
   T0:0,T1:F-1,
   ghost:!TWO&&(window.__umGhost!=null?window.__umGhost:(()=>{try{return localStorage.getItem('um.fantome')!=='0'}catch(e){return true}})()),
   gclk:window.__umGclk||'vol',gtau:window.__umGtau!=null?window.__umGtau:0,
-  layers:{c1:true,sec:true,cty:true,ind:false,genre:true,key:false,mode:false,expl:false,tsig:false,conf:true,div:true,club:true,nat:true,pos:true,drnd:false,dyr:false,age:false,hand:false,xfer:false,ptrail:false,c3:true,c4:true,bounds:true,trails:false,ghost:true,gpaths:false,tlabels:true,links:true,labels:true,spacing:true,z0:true,z0c2:true,z0c3:true,c4v:false,c3d:false,micro:false}, /* rev. 23.12 (Éric, 11 Nov., 13 h 38): on opening, no line between the objects; each one is a layer to switch on. Rev. 23.13: the LNH transfer trail too */
+  layers:{c1:true,sec:true,cty:true,ind:false,genre:true,key:false,mode:false,expl:false,tsig:false,conf:true,div:true,club:true,nat:true,pos:true,drnd:false,dyr:false,age:false,hand:false,xfer:false,ptrail:false,c3:true,c4:true,bounds:true,trails:false,ghost:true,gpaths:false,tlabels:true,links:true,labels:true,spacing:true,z0:false,z0c2:true,z0c3:true,c4v:false,c3d:false,micro:true}, /* rev. 23.12 (Éric, 11 Nov., 13 h 38): on opening, no line between the objects; each one is a layer to switch on. Rev. 23.13: the LNH transfer trail too */
   thr:window.__umThr!=null?window.__umThr:10,thrW:window.__umThrW||'tv',
   gvol:window.__umGvol||1,gvolI:{} /* Volume du fantôme (Grok spec, 9 Nov.): global and per stock; never merged with the system Volume */
 };
@@ -568,6 +582,7 @@ function rebuild(){
   z0Compute();
   c4live();
   spacingTakes();
+  relCompute();microSpacing();
   buildTrail();
   buildGhost();
   buildThrowWin();THR.d=-1;
@@ -738,29 +753,154 @@ const C4O=(()=>{const orient=new THREE.Group(),spin=new THREE.Group(),body=new T
 
 
 /* Class 3 — the five fixed containers, on the diagonal X = Y = Z (Ω at −1,−1,−1 · Σ at 0,0,0 · α at +1,+1,+1) */
-/* rev. 23.16 — Microcosm (Éric, 10 Nov., 23 h 20: « the space given inside the reserved space for the central object is a microcosm
-   of the entire space »; Canon: « tout s'emboîte dans tout », the same rule at every scale). The whole chamber is folded into the
-   reserved space, between the central object (radius 0,4) and the inner wall: radius r → 0,46 + (r − 1) × 0,24, height × 0,3, same
-   azimuth. Every rendered object is one point of its own colour; the five containers keep their zone colour. A mirror only: it places
-   nothing and projects nothing yet (provisional space: OPEN). Its own layer, off on opening. */
+/* rev. 23.18 — Microcosm, relative reading (Éric, 15 Nov. 2026, by voice; ÉCHANGE 1_LXb3tb… and 1MPbr6Uk…).
+   « When you do the drill down, you want to know the relativeness, but from the point where you're starting to drill down. »
+   The reference is the entry point of the drill-down (UM_ENTRY): opened from World, everything reads against World; opened from
+   Europe, Europe is the zero. A system opened alone is its own entry. The top-down reading holds only where the same measure runs
+   everywhere: if the entry's lines are not this system's lines, the system stands on its own (lecture indépendante).
+   Relative reading = the element read with the entry's measure (its lines and its five-zone cuts); relative Z-ZERO = that collapse
+   / the entry's Z-ZERO (ratio). The entry's thresholds tune it. The absolute Z-ZERO of this system is untouched.
+   The microcosm carries the relative reading, the outer chamber the absolute one: side by side they show the tensions.
+   Every element of the microcosm manifests its ten attributes. Class 4 takes a place in its microcosm: the collapse (one set,
+   one mean, the set of Z0) of the clash micro − macro, around Σ. Objects only in the microcosm: no line. */
 const MICRO=new THREE.Group();G.c4.add(MICRO);MICRO.visible=false;
-const mR=r=>.46+(r-1)*.24,mY=y=>y*.3;
-const microGeo=new THREE.BufferGeometry();
-{const nM=N1+64000;microGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array((N1+600)*3),3));microGeo.setAttribute('color',new THREE.BufferAttribute(new Float32Array((N1+600)*3),3));}
-const microPts=new THREE.Points(microGeo,new THREE.PointsMaterial({size:.05,vertexColors:true,transparent:true,opacity:.95,depthWrite:false,sizeAttenuation:true}));
-microPts.frustumCulled=false;MICRO.add(microPts);
-[[1,1],[1,-1],[3,1],[3,-1]].forEach(([r,y])=>MICRO.add(ring(mR(r),mY(y),0x8a7434,.7)));
-const MCOL=new THREE.Color();
-function microFrame(){
-  MICRO.visible=!!(S.layers.micro&&S.layers.c4);if(!MICRO.visible)return;
-  const P=microGeo.attributes.position.array,Cc=microGeo.attributes.color.array,cap=P.length/3;let m=0;
-  const put=(q,c)=>{if(m>=cap)return;const r=Math.hypot(q.x,q.z)||1,k=mR(Math.max(1,Math.min(3,r)))/r;
-    P[m*3]=q.x*k;P[m*3+1]=mY(Math.max(-1,Math.min(1,q.y)));P[m*3+2]=q.z*k;Cc[m*3]=c.r;Cc[m*3+1]=c.g;Cc[m*3+2]=c.b;m++};
-  O1.forEach(o=>{if(o.root.visible)put(o.root.position,o.faceMat.color)});
-  O2.forEach(o=>{if(o.root.visible)put(o.root.position,o.faceMat.color)});
-  if(S.layers.c3)C3.forEach((g,z)=>put(g.position,MCOL.set(ZCOL[z])));
-  microGeo.setDrawRange(0,m);microGeo.attributes.position.needsUpdate=true;microGeo.attributes.color.needsUpdate=true;
-  if(window.__C4LIVE)window.__C4LIVE.micro=m;
+const mR=r=>.5+(r-1)*.12,mY=y=>y*.3,MS=.24; /* radius 1 → 3 folded to 0,50 → 0,74 (inside the hollow centre, clear of the central object and of the inner wall); height × 0,3; sizes × 0,24 */
+const mpos=(X,Y,Z,q)=>{const a=AZ(X),r=mR(2-Z);q.x=r*Math.sin(a);q.y=mY(Y);q.z=-r*Math.cos(a);return q};
+[[1,1],[1,-1],[3,1],[3,-1]].forEach(([r,y])=>G.bounds.add(ring(mR(r),mY(y),0x8a7434,.45))); /* the microcosm's walls belong to the environment */
+const VR=new Float32Array(N1*20),VIR=new Float64Array(N1*2),CVR=new Float32Array(NC*20),C3VR=new Float32Array(100),C3NR=new Uint16Array(10),MC4=new Float32Array(20);
+const REL={entry:SYS.id,name:SYS.name,own:true,indep:false,miss:[],zz:[NaN,NaN],ezz:[NaN,NaN],ratio:[1,1],n4:[0,0]};
+let MEAS0=null; /* this system's own measure, unscoped: the entry of an inner zoom */
+const FOUR=/^f[sl][012]$/;
+const NZ=i=>!!(TK[i]&&TK[i].nz0);
+function measureNow(){return {id:SYS.id,name:SYS.name,kind:SYS.kind||'finance',eff:ATTR.map((_,k)=>eff(k)),cuts:S.cut.map(c=>({lo:c.lo,hi:c.hi,c:c.c.slice()})),zz:[ZZ[S.T0],ZZ[S.T1]],dates:[DATA.dates[S.T0],DATA.dates[S.T1]]}}
+function relFour(E,fn){ /* the entry's Fourier lines, read on this system's axes measured with the entry's cuts (same windows 5 / 63) */
+  const out={},W=[5,63];['fs0','fs1','fs2','fl0','fl1','fl2'].forEach(id=>out[id]=new Float64Array(N1*2).fill(NaN));
+  for(let ax=0;ax<3;ax++){const raw=LN[E.eff[ax]],f=fn[ax];if(!raw)continue;
+    for(let i=0;i<N1;i++)[S.T0,S.T1].forEach((d,ti)=>{if(!PRES[i*F+d])return;
+      for(let w=0;w<2;w++){const u=[];for(let e=d;e>=0&&u.length<W[w];e--){const j=i*F+e;if(!PRES[j])break;u.unshift(PRES0[j]?Math.fround(f(raw[j])):0)}
+        const n=u.length;let im=0;if(n>=3){for(let m=0;m<n;m++)im-=u[m]*Math.sin(2*Math.PI*m/n)}
+        out[(w?'fl':'fs')+ax][i*2+ti]=n<3?0:2*im/n}})}
+  return out;
+}
+function relCompute(){
+  const own=measureNow();window.UM_MEASURE=window.UM_MEASURE||{};
+  if(!SCOPE){MEAS0=own;window.UM_MEASURE[SYS.id]=own}
+  const ent=window.UM_ENTRY;let E=null;
+  if(ent&&ent!==SYS.id&&window.UM_MEASURE[ent])E=window.UM_MEASURE[ent];
+  const okLine=id=>id==='km'||(FOUR.test(id)?true:!!(LN[id]&&LINEINFO[id]));
+  let miss=E?E.eff.map((id,k)=>okLine(id)?-1:k).filter(k=>k>=0):[];
+  if(E&&E.eff.some(id=>FOUR.test(id))&&[0,1,2].some(k=>!okLine(E.eff[k])))miss=[...new Set(miss.concat([3,4,5,6,7,8].filter(k=>FOUR.test(E.eff[k]))))];
+  const indep=!!(E&&miss.length);
+  if(indep||!E){if(SCOPE&&MEAS0)E=MEAS0;else E=null}
+  REL.own=!E;REL.indep=indep;REL.miss=indep?miss.map(k=>ATTR[k].name):[];
+  REL.entry=E?E.id:SYS.id;REL.name=E?(E.id===SYS.id?SYS.name+' · avant le zoom':E.name):SYS.name;
+  const takes=[S.T0,S.T1],fn=E?E.cuts.map(c=>normFn({lo:c.lo,hi:c.hi,c:c.c})):null,R4=E&&E.eff.some(id=>FOUR.test(id))?relFour(E,fn):null;
+  takes.forEach((d,ti)=>{let s=0,n=0;
+    for(let i=0;i<N1;i++){const j=i*F+d,b=(i*2+ti)*10;
+      if(!E){for(let k=0;k<10;k++)VR[b+k]=V[j*10+k];VIR[i*2+ti]=VI[j]}
+      else{let m=0;
+        for(let k=0;k<9;k++){const id=E.eff[k];VR[b+k]=!PRES0[j]?0:FOUR.test(id)?fn[k](R4[id][i*2+ti]):fn[k](LN[id][j]);m+=TAU*(1+VR[b+k])}
+        VIR[i*2+ti]=PRES0[j]?m/9:NaN;
+        const id9=E.eff[9];VR[b+9]=!PRES0[j]?0:id9==='km'?fn[9](VIR[i*2+ti]-E.zz[ti]):fn[9](LN[id9][j])}
+      if(PRES[j]&&!NZ(i)&&Number.isFinite(VIR[i*2+ti])){s+=VIR[i*2+ti];n++}}
+    REL.zz[ti]=n?s/n:NaN;REL.ezz[ti]=E?E.zz[ti]:ZZ[d];REL.ratio[ti]=E?REL.zz[ti]/REL.ezz[ti]:1;
+    /* Class 2, relative: the same members and the same weights as the cardinals */
+    const acc=new Float64Array(10);
+    CARDS.forEach((c,ci)=>{acc.fill(0);let W=0,nn=0;
+      for(const i of c.members){const j=i*F+d;if(!PRES0[j]||(c.tk&&!c.tk[j])||NZ(i))continue;const w=wOf(j);W+=w;nn++;const b=(i*2+ti)*10;for(let k=0;k<10;k++)acc[k]+=w*VR[b+k]}
+      const b=(ci*2+ti)*10;for(let k=0;k<10;k++)CVR[b+k]=nn?acc[k]/W:0});
+    /* Class 3, relative: what each active container holds when read with the entry's measure */
+    for(let z=0;z<5;z++){acc.fill(0);let W=0,nn=0;
+      if(C3ON[z])for(let i=0;i<N1;i++){const j=i*F+d,b=(i*2+ti)*10;if(!PRES[j]||NZ(i)||boxOf(VR[b],VR[b+1],VR[b+2])!==z)continue;const w=wOf(j);W+=w;nn++;for(let k=0;k<10;k++)acc[k]+=w*VR[b+k]}
+      C3NR[z*2+ti]=nn;for(let k=0;k<10;k++)C3VR[(z*2+ti)*10+k]=nn?acc[k]/W:0}
+    /* Class 4 in its microcosm: the collapse of the clash micro − macro, over the set of Z0 (one set, one mean) */
+    acc.fill(0);let m=0;
+    for(let i=0;i<N1;i++){const j=i*F+d;if(!PRES[j]||NZ(i))continue;m++;const b=(i*2+ti)*10;for(let k=0;k<10;k++)acc[k]+=VR[b+k]-V[j*10+k]}
+    if(S.layers.z0c2)for(let c=0;c<NC;c++){if(!S.layers[CARDS[c].ty])continue;const q=c*F+d;if(!CP[q])continue;m++;const b=(c*2+ti)*10;for(let k=0;k<10;k++)acc[k]+=CVR[b+k]-CV[q*10+k]}
+    if(S.layers.z0c3)for(let z=0;z<5;z++){if(!(C3ON[z]&&C3N[z*2+ti]&&C3NR[z*2+ti]))continue;m++;for(let k=3;k<10;k++)acc[k]+=C3VR[(z*2+ti)*10+k]-C3V[(z*2+ti)*10+k]}
+    REL.n4[ti]=m;for(let k=0;k<10;k++)MC4[ti*10+k]=m?clamp1(acc[k]/m):0;
+  });
+}
+/* Spacing canon in the microcosm too: class sizes × 0,24, never overlapping; the central object, the containers and the
+   objects of the outer chamber that reach into the hollow centre are fixed obstacles. */
+const MOFF1=new Float32Array(N1*6),MOFF2=new Float32Array(NC*6),MOFF4=new Float32Array(6);
+function microSpacing(){
+  MOFF1.fill(0);MOFF2.fill(0);MOFF4.fill(0);const q=new THREE.Vector3();
+  [S.T0,S.T1].forEach((d,ti)=>{
+    const P=[],R=[],M=[],ref=[];
+    for(let i=0;i<N1;i++){const j=i*F+d;if(!PRES[j])continue;const b=(i*2+ti)*10;mpos(VR[b],VR[b+1],VR[b+2],q);P.push({x:q.x,y:q.y,z:q.z});R.push(.1*MS*DENS/S.exp);M.push(1);ref.push([MOFF1,i,q.clone()])}
+    for(let c=0;c<NC;c++){if(!CP[c*F+d])continue;const b=(c*2+ti)*10;mpos(CVR[b],CVR[b+1],CVR[b+2],q);P.push({x:q.x,y:q.y,z:q.z});R.push(.2*MS*DENS/S.exp);M.push(8);ref.push([MOFF2,c,q.clone()])}
+    if(REL.n4[ti]){const b=ti*10;mpos(MC4[b],MC4[b+1],MC4[b+2],q);P.push({x:q.x,y:q.y,z:q.z});R.push(C4O.R*MS/S.exp);M.push(64);ref.push([MOFF4,0,q.clone()])}
+    const nd=P.length;
+    for(let z=0;z<5;z++){if(!C3ON[z])continue;const t=C3T[z];mpos(t,t,t,q);P.push({x:q.x,y:q.y,z:q.z});R.push(.3*MS/S.exp);M.push(0)}
+    P.push({x:0,y:0,z:0});R.push(C4O.R/S.exp);M.push(0);
+    const lim=mR(3)+.1;
+    for(let i=0;i<N1;i++){const j=i*F+d;if(!PRES[j])continue;const p=posOf(V,j),b=(i*2+ti)*3,x=p[0]+OFF1[b],z=p[2]+OFF1[b+2],rr=.1*DENS/S.exp;if(Math.hypot(x,z)-rr<lim){P.push({x,y:p[1]+OFF1[b+1],z});R.push(rr);M.push(0)}}
+    for(let c=0;c<NC;c++){const qd=c*F+d;if(!CP[qd])continue;const p=posOf(CV,qd),b=(c*2+ti)*3,x=p[0]+OFF2[b],z=p[2]+OFF2[b+2],rr=.2*DENS/S.exp;if(Math.hypot(x,z)-rr<lim){P.push({x,y:p[1]+OFF2[b+1],z});R.push(rr);M.push(0)}}
+    relaxPts(P,R,M,nd,S.exp>=1?30:6);
+    for(let k=0;k<nd;k++){const [OF,idx,p]=ref[k],b=(idx*2+ti)*3;OF[b]=P[k].x-p.x;OF[b+1]=P[k].y-p.y;OF[b+2]=P[k].z-p.z}
+  });
+}
+/* Rendering: one instanced mesh per class and per shape; faces only (no edge, no line) */
+function mGeo(z){const g=geo(z,1);if(g.faces.length===1)return g.faces[0];
+  const pos=[],nor=[];g.faces.forEach(f0=>{const f=f0.index?f0.toNonIndexed():f0,p=f.attributes.position.array,nn=f.attributes.normal.array;for(let i=0;i<p.length;i++){pos.push(p[i]);nor.push(nn[i])}});
+  const m=new THREE.BufferGeometry();m.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));m.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));return m}
+function mMesh(kind,z,cap){
+  const mat=kind===1?new THREE.MeshStandardMaterial({color:0xffffff,flatShading:true,metalness:.05,roughness:.55})
+    :new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:kind===4?.7:kind===3?.38:.45,depthWrite:false,side:THREE.DoubleSide});
+  const m=new THREE.InstancedMesh(mGeo(z),mat,cap);m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  m.instanceColor=new THREE.InstancedBufferAttribute(new Float32Array(cap*3),3);m.instanceColor.setUsage(THREE.DynamicDrawUsage);
+  m.count=0;m.frustumCulled=false;MICRO.add(m);return m}
+let MB1=null,MB2=null,MB3=null,MB4=null,MBALL=[]; /* built on the first frame: the shape geometries are declared further down */
+function mBuild(){if(MB1)return;const Z5=[0,1,2,3,4];MB1=Z5.map(z=>mMesh(1,z,Math.max(1,N1)));MB2=Z5.map(z=>mMesh(2,z,Math.max(1,NC)));MB3=Z5.map(z=>mMesh(3,z,5));MB4=Z5.map(z=>mMesh(4,z,1));MBALL=[...MB1,...MB2,...MB3,...MB4]}
+const MSP1=new Float32Array(N1).map(()=>Math.random()*6.28),MSP2=new Float32Array(NC).map(()=>Math.random()*6.28),MSP3=new Float32Array(5),MSP4=new Float32Array(1);
+const MQ=new THREE.Vector3(),MM=new THREE.Matrix4(),MRo=new THREE.Matrix4(),MSp=new THREE.Matrix4(),MSc=new THREE.Matrix4(),ME=new THREE.Euler(),MCc=new THREE.Color();
+function mObj(VV,A,B,OF,oa,ob,t,R,SP,si,dt,MB,fix){
+  const X=fix!=null?fix:CY(VV[A],VV[B],t),Y=fix!=null?fix:CY(VV[A+1],VV[B+1],t),Z=fix!=null?fix:CY(VV[A+2],VV[B+2],t);
+  mpos(X,Y,Z,MQ);
+  if(OF&&S.layers.spacing){const u=1-t;MQ.x+=OF[oa]*u+OF[ob]*t;MQ.y+=OF[oa+1]*u+OF[ob+1]*t;MQ.z+=OF[oa+2]*u+OF[ob+2]*t}
+  const za=k=>zoneOf(VV[A+k]),zb=k=>zoneOf(VV[B+k]),L=(arr,k)=>CY(arr[za(k)],arr[zb(k)],t);
+  const zs=t<.5?za(3):zb(3),st=L(LV.stretch,4),pit=L(LV.pitch,6),om=L(LV.spin,7),rol=L(LV.roll,8);
+  SP[si]-=om*dt*(REDUCED?.25:1);
+  ME.set(pit,Math.PI/2-AZ(X),-rol,'YXZ');MRo.makeRotationFromEuler(ME);MSp.makeRotationY(SP[si]);MSc.makeScale(R,R*st,R);
+  MM.makeTranslation(MQ.x,MQ.y,MQ.z).multiply(MRo).multiply(MSp).multiply(MSc);
+  const P=satRGB(za(5),LV.sat[za(9)]),Q=satRGB(zb(5),LV.sat[zb(9)]);MCc.setRGB(CY(P[0],Q[0],t),CY(P[1],Q[1],t),CY(P[2],Q[2],t));
+  const m=MB[zs],n=m.count;if(n>=m.instanceMatrix.count)return;m.setMatrixAt(n,MM);m.setColorAt(n,MCc);m.count=n+1;
+}
+{const zn=document.getElementById('zzNow');if(zn&&zn.parentNode&&!document.getElementById('zzRel')){const sp=document.createElement('span');sp.className='ro';sp.id='zzRelRo';sp.innerHTML='Relatif <b id="zzRel">—</b>';zn.parentNode.after(sp)}}
+const f8r=x=>Number.isFinite(x)?x.toFixed(8):'—';
+function microFrame(t,dt){
+  t=Math.max(0,Math.min(1,+t||0));dt=+dt||0;
+  mBuild();
+  MICRO.visible=!!(S.layers.micro&&S.layers.c4);
+  MBALL.forEach(m=>m.count=0);
+  let n1=0,n2=0,n3=0;
+  if(MICRO.visible){const E=S.exp;
+    for(let i=0;i<N1;i++){if(!O1[i].root.visible)continue;const p0=PRES[i*F+S.T0],p1=PRES[i*F+S.T1];if(!p0&&!p1)continue;
+      const a=i*2+(p0?0:1),b=i*2+(p1?1:0);mObj(VR,a*10,b*10,MOFF1,a*3,b*3,t,.1*MS*DENS/E,MSP1,i,dt,MB1);n1++}
+    for(let c=0;c<NC;c++){if(!O2[c].root.visible)continue;const p0=CP[c*F+S.T0],p1=CP[c*F+S.T1];if(!p0&&!p1)continue;
+      const a=c*2+(p0?0:1),b=c*2+(p1?1:0);mObj(CVR,a*10,b*10,MOFF2,a*3,b*3,t,.2*MS*DENS/E,MSP2,c,dt,MB2);n2++}
+    if(S.layers.c3)for(let z=0;z<5;z++){if(!C3ON[z])continue;const h0=C3NR[z*2],h1=C3NR[z*2+1];if(!h0&&!h1)continue;
+      mObj(C3VR,(z*2+(h0?0:1))*10,(z*2+(h1?1:0))*10,null,0,0,t,.3*MS/E,MSP3,z,dt,MB3,C3T[z]);n3++}
+    if(REL.n4[0]||REL.n4[1])mObj(MC4,REL.n4[0]?0:10,REL.n4[1]?10:0,MOFF4,REL.n4[0]?0:3,REL.n4[1]?3:0,t,C4O.R*MS/E,MSP4,0,dt,MB4);
+  }
+  MBALL.forEach(m=>{if(m.count){m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true}});
+  const zr=document.getElementById('zzRel');
+  if(zr)zr.textContent=REL.own?(REL.indep?'indépendant':'1 · propre'):f8r(CY(REL.ratio[0],REL.ratio[1],t))+' / '+REL.name;
+  if(window.__C4LIVE){const c4p=mpos(CY(MC4[0],MC4[10],t),CY(MC4[1],MC4[11],t),CY(MC4[2],MC4[12],t),new THREE.Vector3());
+    window.__C4LIVE.micro={n1,n2,n3,c4:REL.n4[0]||REL.n4[1]?1:0,inst:MBALL.reduce((s,m)=>s+m.count,0)};
+    window.__C4LIVE.rel={entry:REL.entry,name:REL.name,own:REL.own,indep:REL.indep,miss:REL.miss.slice(),zz:REL.zz.map(x=>+(+x).toFixed(8)),ezz:REL.ezz.map(x=>+(+x).toFixed(8)),ratio:REL.ratio.map(x=>+(+x).toFixed(8)),
+      c4clash:[Array.from(MC4.subarray(0,10)).map(x=>+x.toFixed(6)),Array.from(MC4.subarray(10,20)).map(x=>+x.toFixed(6))],c4micro:[+c4p.x.toFixed(4),+c4p.y.toFixed(4),+c4p.z.toFixed(4)]};}
+}
+function relBlock(){
+  const r=REL;
+  if(r.own)return `<dl class="kv"><dt>Lecture relative</dt><dd>${r.indep?'indépendante':'ouvert seul · ratio 1'}</dd></dl><p class="note">${r.indep?`Le point d'entrée du drill-down ne mesure pas ce système avec les mêmes lignes (${esc(r.miss.join(', '))}) : il se lit seul, avec son propre Z-ZERO (Éric, 15 nov.).`:`Ce système est son propre point d'entrée : micro et macro se lisent de la même façon, et la Classe 4 du microcosme se tient en Σ.`}</p>`;
+  return `<dl class="kv"><dt>Point d'entrée du drill-down</dt><dd>${esc(r.name)}</dd><dt>Z-ZERO relatif(T₀)</dt><dd>${f8r(r.zz[0])} / ${f8r(r.ezz[0])}</dd><dt>Z-ZERO relatif(T₁)</dt><dd>${f8r(r.zz[1])} / ${f8r(r.ezz[1])}</dd><dt>Ratio T₀ → T₁</dt><dd class="big">${f8r(r.ratio[0])} → ${f8r(r.ratio[1])}</dd></dl>
+    <p class="note">Ce système lu avec la mesure de ${esc(r.name)} (ses lignes et ses seuils à cinq zones), divisé par le Z-ZERO de ${esc(r.name)} (Éric, 15 nov.). Déplacer les seuils au point d'entrée règle ce ratio. Le microcosme porte cette lecture ; la chambre extérieure, la lecture absolue. La Classe 4 s'y place au collapse du choc micro − macro : x ${f8r(MC4[0])} → ${f8r(MC4[10])}, y ${f8r(MC4[1])} → ${f8r(MC4[11])}, z ${f8r(MC4[2])} → ${f8r(MC4[12])}.</p>`;
+}
+function relRow1(i){
+  const p0=PRES[i*F+S.T0],p1=PRES[i*F+S.T1];
+  return `<dl class="kv"><dt>Lecture relative · ${esc(REL.name)}</dt><dd>${p0?f8r(VIR[i*2]/REL.ezz[0]):'—'} → ${p1?f8r(VIR[i*2+1]/REL.ezz[1]):'—'}</dd></dl>`;
 }
 const C3=[],C3O=[];
 let C3DIAG=null; /* rev. 23.12: the dashed diagonal Ω–Σ–α is a line between objects: its own layer, off on opening */
@@ -1611,8 +1751,8 @@ $('selT0').addEventListener('change',e=>setTake(0,+e.target.value));
 $('selT1').addEventListener('change',e=>setTake(1,+e.target.value));
 let spT=null;
 function scheduleSpacing(lazy){ /* while the knob turns, the spacing is recomputed at most every 140 ms; on release, at once */
-  if(lazy){if(!spT)spT=setTimeout(()=>{spT=null;spacingTakes();dirty=true},140);return}
-  if(spT){clearTimeout(spT);spT=null}spacingTakes();
+  if(lazy){if(!spT)spT=setTimeout(()=>{spT=null;spacingTakes();microSpacing();dirty=true},140);return}
+  if(spT){clearTimeout(spT);spT=null}spacingTakes();microSpacing();
 }
 function setExp(E,fromSlider){
   E=Math.max(.05,Math.min(1000,+E||1));const k=E/S.exp;S.exp=E;window.__umExp=E;
@@ -1658,7 +1798,7 @@ const FINLAY=[['c1','Classe 1 · titres'],['sec','Classe 2 · secteurs'],['cty',
 const LAY=HK?HKLAY:GC?[['c1','Classe 1 · '+UN],...Object.keys(CTYPE).map(ty=>[ty,'Classe 2 · '+CTYPE[ty].plural])].concat(FINLAY.filter(x=>!['c1','sec','cty','ind'].includes(x[0]))):FINLAY;
 if(!LAY.some(x=>x[0]==='c4v'))LAY.push(['c4v','Classe 4 · vecteurs depuis Z0(τ)']);
 if(!LAY.some(x=>x[0]==='c3d'))LAY.push(['c3d','Classe 3 · diagonale Ω–Σ–α']);
-if(!LAY.some(x=>x[0]==='micro'))LAY.push(['micro','Classe 4 · microcosme (espace réservé)']);
+if(!LAY.some(x=>x[0]==='micro'))LAY.push(['micro','Classe 4 · microcosme (lecture relative)']);
 $('layers').innerHTML=LAY.map(([k,l])=>`<label class="chk"><input type="checkbox" id="ly-${k}" ${S.layers[k]?'checked':''}> ${esc(l)}</label>`).join('');
 LAY.forEach(([k])=>$('ly-'+k).addEventListener('change',e=>{S.layers[k]=e.target.checked;G.bounds.visible=S.layers.bounds;G.c3.visible=S.layers.c3;G.c4.visible=S.layers.c4;
   if(['z0c2','z0c3','sec','cty','ind','c1',...CTYS].includes(k))rebuild(); /* push and pull: the set of Z0 and the weights of the throw change */
@@ -1678,7 +1818,7 @@ function syncGhostUI(){
   gBtn.setAttribute('aria-pressed',S.ghost?'true':'false');gBtn.disabled=TWO;
   gBtn.title=TWO?(HK?"Le fantôme demande la saison match par match ; ce système n'a que T₀ et T₁, deux saisons.":GC?"Le fantôme demande une suite de prises ; ce système n'a qu'un instantané (T₀ = T₁).":"Le fantôme demande toutes les séances ; ce système n'a que T₀ et T₁."):'Fantôme : chaque titre laisse ses fantômes de T₀ à T₁ ; la colonne d\'horloge en règle seulement l\'espacement (touche F)';
   $('gwBox').hidden=$('gtauBox').hidden=$('thrBox').hidden=$('gContact').hidden=$('gvBox').hidden=!S.ghost;$('gvol').value=String(Math.round(Math.log2(S.gvol)*100));$('gvolN').textContent='×'+fmtGV(S.gvol);$('gclk').value=S.gclk;$('gtau').value=String(S.gtau);$('thr').value=String(S.thr);$('thrW').value=S.thrW;
-  $('sub').textContent='le corps · Universal Metaphor · moteur v2 · rév. 23.16 · '+(S.ghost?'fantôme · horloge : '+(GCLKL[S.gclk]||'').toLowerCase()+(S.thr?' · lancer '+S.thr+' séances':''):(HK?'deux prises · deux saisons':GC?'un instantané · T₀ = T₁':'deux prises'));
+  $('sub').textContent='le corps · Universal Metaphor · moteur v2 · rév. 23.16 + relatif 23.18 · '+(S.ghost?'fantôme · horloge : '+(GCLKL[S.gclk]||'').toLowerCase()+(S.thr?' · lancer '+S.thr+' séances':''):(HK?'deux prises · deux saisons':GC?'un instantané · T₀ = T₁':'deux prises'));
   drawLegend();
 }
 function setGhost(on){
@@ -1883,11 +2023,13 @@ function statusBlock(){
   <li><span class="st g">GOVERNANCE</span>Lecture en deux prises : T₀ et T₁, chacune un état constitué complet, jointes par une seule transition cycloïdale par axe (G-1, G-3), sans les séances intermédiaires.</li>
   <li><span class="st g">GOVERNANCE</span>Conteneurs actifs : α en (+1, +1, +1), la tête du serpent, en haut, à l'intérieur, à 11 h 59 ; Ω en (−1, −1, −1), la queue, en bas, à l'extérieur, à 12 h 01 ; Σ en (0, 0, 0), le ventre, à 6 h. Z : +1 à l'intérieur, −1 à l'extérieur. Chaque conteneur actif manifeste les attributs physiques et angulaires du collapse de ses contenus. Les objets de Classe 1 sont solides. Volume (END GAME F3) : un bouton dilate ou contracte tout l'environnement, sans limite ; les positions s'écartent ou se rapprochent, les tailles restent au canon. Espacement selon le canon des tailles : 0,1 · 0,2 · 0,3 · 0,4, grille calibrée pour 1 234 objets, aucun chevauchement. Pièges λ⁻ (champ φ⁻) et λ⁺ (champ φ⁺) en place, non activés, prêts à être conditionnés pour recevoir leur cible. +1 à 11 h 59, −1 à 12 h 01. Quatre classes ; cinq zones, quatre bornes 20 / 40 / 60 / 80, fixées à l'ouverture de la session ; chaîne H → V → T par prise ; saturation = 10ᵉ résultat, le collapse (G-4 ; nom fixé par Éric le 6 nov.) ; tout cardinal est Classe 2 (G-5).</li>
   <li><span class="st g">GOVERNANCE</span>Ordre fixe des dix attributs (Éric, 6 nov.) : X, Y, Z ; forme, étirement-écrasement, couleur ; avant-arrière, rotation, centre-extérieur (les trois moments triangulaires, sur X, Y, Z) ; saturation. Chaque case porte son icône : sept icônes Fleur de vie (UM Investor Deck v11, diapo 10) et trois dessins d'Éric (étirement-écrasement, avant-arrière, centre-extérieur), tels quels.</li>
-  <li><span class="st g">GOVERNANCE</span>Objet central (Éric, 10 nov., 22 h 51 et 23 h 17 ; YB1 v20.21, « in the core, everywhere ») : la Classe 4 est un seul objet. Sa position dans l'espace n'est pas établie : il se tient dans son espace réservé, le centre creux de la chambre (rayon &lt; 1, où aucun objet de Classe 1, 2 ou 3 ne va), et ne fait que réagir. Son corps manifeste le collapse des attributs physiques et angulaires de tout le système, sur le même ensemble que Z0 (un seul ensemble, une seule moyenne). Il n'a pas d'enveloppe : ce corps est l'objet central, quatre fois la taille d'un objet de Classe 1, dessiné par-dessus tout (Éric, 11 nov., 5 h 32) ; il porte Z-ZERO. Le système est contenu dans sa borne ; les objets de Classe 2 y portent leur propre jeu de tensions. Les vecteurs or partent de Z0(τ), la moyenne de tout (marqueur or sur le fil), pas de lui. Rien ne le chevauche. Un seul chemin dans le cœur du moteur : toutes les ancres et tous les étages futurs le portent.</li>
+  <li><span class="st g">GOVERNANCE</span>Objet central (Éric, 10 nov., 22 h 51 et 23 h 17 ; YB1 v20.21, « in the core, everywhere ») : la Classe 4 est un seul objet. Sa position dans l'espace n'est pas établie : il se tient dans son espace réservé, le centre creux de la chambre (rayon &lt; 1, où aucun objet de Classe 1, 2 ou 3 ne va), et ne fait que réagir. Son corps manifeste le collapse des attributs physiques et angulaires de tout le système, sur le même ensemble que Z0 (un seul ensemble, une seule moyenne). Il n'a pas d'enveloppe : ce corps est l'objet central, quatre fois la taille d'un objet de Classe 1, dessiné par-dessus tout (Éric, 11 nov., 5 h 32) ; il porte Z-ZERO. Le système est contenu dans sa borne ; les objets de Classe 2 y portent leur propre jeu de tensions. Les vecteurs or partent de Z0(τ), la moyenne de tout (marqueur or sur le fil), pas de lui. Rien ne le chevauche. Un seul chemin dans le cœur du moteur : toutes les ancres et tous les étages futurs le portent. Rév. 23.18 (Éric, 15 nov.) : dans son microcosme, la Classe 4 occupe désormais une place, le collapse du choc micro − macro ; dans la chambre extérieure, elle garde son espace réservé.</li>
   <li><span class="st g">GOVERNANCE</span>Vue d'ouverture (Éric, 11 nov., 13 h 38) : seulement les objets et l'environnement, aucune ligne entre les objets. Vecteurs depuis Z0(τ), traînées des cardinaux, liens club ↔ club, traînée du transfert (LNH) et diagonale Ω–Σ–α attendent dans Couches ; les liens de la chaîne n'apparaissent qu'au choix d'un objet. Tous les liens de la page restent.</li>
   <li><span class="st g">GOVERNANCE</span>Panneaux déplaçables ou effaçables (Éric, 11 nov., 15 h 14) : rien ne doit cacher le moteur. La fenêtre gaussienne, seul panneau posé sur la chambre, se déplace par sa barre de titre (double clic : retour près de son icône) et s'efface par × ou Échap. La fiche s'efface par son ×, par Fiche ◨ ou la touche ] ; la colonne d'icônes par ◧ Attributs ou [ ; Vue pleine (\) efface les deux. Le HUB ne fait que relier le moteur réel ; chaque nouvel étage du HUB devient un nouvel objet du moteur.</li>
   <li><span class="st g">GOVERNANCE</span>Société · Musique (rév. 23.16, ancre #music ; Éric, 11 nov. : « as we build the hub, it's just gonna be another new object in the engine ») : le fichier Spotify 2021 de Gary Kivenko devient un système de Classe 4 du moteur, même squelette que la LNH. Un seul instantané (T₀ = T₁) : aucun mouvement, dérive [INCOMPLET]. Classe 1 montrée : 10 titres les plus populaires par genre (PROPOSED) ; Classe 2 : genres, tonalités, modes, contenu, mesures ; poids égal.</li>
-  <li><span class="st p">PROPOSED</span>Microcosme (rév. 23.16 ; Éric, 10 nov., 23 h 20 : « the space given inside the reserved space for the central object is a microcosm of the entire space » ; Canon : tout s'emboîte dans tout) : toute la chambre est repliée dans l'espace réservé, entre l'objet central et la paroi intérieure (rayon 1 → 3 ramené à 0,46 → 0,94, hauteur × 0,3, même azimut). Chaque objet rendu y est un point de sa couleur ; les conteneurs gardent la couleur de leur zone. Un miroir : il ne place rien. Couche « Classe 4 · microcosme », éteinte à l'ouverture.</li>
+  <li><span class="st g">GOVERNANCE</span>Z-ZERO relatif (Éric, 15 nov. 2026, vocal) : la référence est le point d'entrée du drill-down. Ouvert depuis World, tout se lit par rapport à World ; ouvert depuis Europe, Europe devient le zéro. Un système ouvert seul garde son propre Z-ZERO. La lecture du haut vers le bas ne vaut que si la même mesure court partout : sinon le sous-système se lit seul. La lecture relative est un ratio, Z-ZERO de l'élément lu avec la mesure du point d'entrée / Z-ZERO du point d'entrée, et les seuils la règlent. Le Z-ZERO absolu du système ne change pas.</li>
+  <li><span class="st g">GOVERNANCE</span>Microcosme (Éric, 15 nov. 2026, vocal ; rév. 23.18) : le microcosme porte la lecture relative, la chambre extérieure la lecture absolue ; côte à côte, elles montrent les tensions et servent au réglage. Chaque élément du microcosme manifeste ses dix attributs. La Classe 4 y occupe une place : le collapse du choc entre les deux systèmes, micro et macro. À l'ouverture : seulement des objets, aucune ligne, toutes les classes jusqu'à la Classe 1 (le fil Z0 devient une couche à allumer).</li>
+  <li><span class="st p">PROPOSED</span>Lecture de la règle (rév. 23.18) : l'élément est lu avec les lignes et les seuils à cinq zones publiés par le point d'entrée ; le choc est, attribut par attribut, micro − macro sur l'ensemble de Z0 (Classe 1 présente ; Classe 2 et Classe 3 selon les cases de Z0), moyenné et borné à ±1 ; la Classe 4 du microcosme se place en Σ + ce choc et en prend les dix attributs (sans choc : un cube vert, droit, immobile, en Σ). Microcosme : rayon 1 → 3 ramené à 0,50 → 0,74, hauteur × 0,3, tailles × 0,24, jamais de chevauchement. Lignes Fourier d'un point d'entrée : recalculées sur les axes lus avec sa mesure.</li>
   <li><span class="st o">OPEN</span>Espace provisoire (Éric, 10 nov., 23 h 20) : c'est du microcosme qu'on projettera un espace provisoire. La règle de projection n'est pas encore donnée ; rien n'est projeté.</li>
   <li><span class="st g">GOVERNANCE</span>Canon Z0 (Éric, 5 nov.) : Z0 est la moyenne de tout, calculée comme un seul ensemble (Classe 1 ; Classe 2 des niveaux actifs si la case est cochée ; conteneurs de Classe 3 actifs si la case est cochée). Fil Z0 linéaire de Z0(T₀) à Z0(T₁) ; chaque objet, chaque fantôme = fil + écart, et l'écart suit la demi-arche cycloïdale axe par axe : montée c(t) = (πt − sin πt)/π, descente 1 − c(1 − t), axe inchangé immobile. Les couleurs suivent la même règle, canal par canal. Pousser et tirer : cocher ou décocher recalcule aussitôt le fil, les positions, les fantômes et les lancers.</li>
   <li><span class="st g">GOVERNANCE</span>Axe de rotation des formes (Éric) : par les sommets, jamais par les faces. Dodécaèdre α de sommet à sommet opposé ; merkaba Ω de pointe à pointe ; tétraèdre φ⁺ sommet en haut, il roule sur sa base ; octaèdre φ⁻ de sommet à sommet ; cube Σ, seule exception, posé à plat sur une face. Survol exact : un objet de Classe 1 répond d'abord, même à l'intérieur d'une Classe 2.</li>
@@ -1938,8 +2080,8 @@ function drawSpark(series,cuts,label){
 function c4Place(){
   return `<dl class="kv"><dt>Place</dt><dd>espace réservé · centre creux de la chambre (rayon &lt; 1)</dd>
     <dt>Position dans l'espace</dt><dd>non établie</dd>
-    <dt>Microcosme</dt><dd>tout l'espace replié dans l'espace réservé (couche « Classe 4 · microcosme ») · projection d'un espace provisoire : pas encore</dd></dl>
-    <p class="note"><span class="st o">OPEN</span>Éric, 10 nov., 23 h 20 : l'espace réservé à l'objet central est un microcosme de tout l'espace ; c'est de lui qu'on projettera un espace provisoire. Rien n'y est projeté dans cette révision.</p>`;
+    <dt>Microcosme</dt><dd>lecture relative au point d'entrée du drill-down · dix attributs · Classe 4 au collapse du choc micro − macro (couche « Classe 4 · microcosme », allumée à l'ouverture) · projection d'un espace provisoire : pas encore</dd></dl>
+    <p class="note"><span class="st g">GOVERNANCE</span>Éric, 15 nov. : le microcosme et la couche extérieure forment le gabarit pour comparer les deux lectures, tracer les tensions et ajuster le réglage. <span class="st o">OPEN</span>La projection d'un espace provisoire depuis le microcosme (Éric, 10 nov.) n'a toujours pas de règle.</p>`;
 }
 function c4Block(){
   const D=[0,1,2].map(a=>Z0B[a]-Z0A[a]),mod=Math.hypot(D[0],D[1],D[2]),sg=x=>(x>=0?'+':'')+x.toFixed(5);
@@ -1975,6 +2117,7 @@ function renderFiche(){
     <div class="meta">${HK?hkMeta4():GC?`${N1} ${UN} · `+Object.keys(CTYPE).map(ty=>CARDS.filter(c=>c.ty===ty).length+' '+CTYPE[ty].plural).join(' · '):`${N1} titres · ${CARDS.filter(c=>c.ty==='sec').length} secteurs · ${CARDS.filter(c=>c.ty==='cty').length} pays · ${CARDS.filter(c=>c.ty==='ind').length} industries`} · 3 conteneurs actifs (Ω, Σ, α) · 2 pièges λ en attente</div>
     <dl class="kv"><dt>Z-ZERO(T₀) · ${DATA.dates[S.T0]}</dt><dd>${f8(ZZ[S.T0])}</dd><dt>Z-ZERO(T₁) · ${DATA.dates[S.T1]}</dt><dd>${f8(ZZ[S.T1])}</dd>
     <dt>ΔZ</dt><dd class="big">${(ZZ[S.T1]-ZZ[S.T0]>=0?'+':'')+f8(ZZ[S.T1]-ZZ[S.T0])}</dd></dl>
+    ${relBlock()}
     <dl class="kv"><dt>Z0(T₀) · fil</dt><dd>${z0txt(Z0A)}</dd><dt>Z0(T₁) · fil</dt><dd>${z0txt(Z0B)}</dd></dl>
     <p class="note">L'objet central se tient dans son espace réservé, au centre creux de la chambre ; sa position dans l'espace n'est pas établie. Il porte Z-ZERO, sortie scalaire de la chaîne. Le fil Z0 (or pointillé, marqueur or à l'instant) est le repère des mouvements et l'ancre des vecteurs : trois choses distinctes. Pousser et tirer : dans Couches, « Z0 compte la Classe 2 », « Z0 compte la Classe 3 » et les niveaux de Classe 2 changent l'ensemble ; le corps de l'objet central, le fil, les positions, les fantômes et les lancers se recalculent aussitôt.</p>
     ${c4Block()}
@@ -2038,7 +2181,7 @@ function renderFiche(){
       const r0=PRES[j0]?k2=>fmt(eff(k2),LN[eff(k2)][j0]):null,r1=PRES[j1]?k2=>fmt(eff(k2),LN[eff(k2)][j1]):null;
       h+=`<dl class="kv"><dt>Clôture</dt><dd>${PRES[j0]?fmt('lprice',LN.lprice[j0]):'—'} → ${PRES[j1]?fmt('lprice',LN.lprice[j1]):'—'}</dd>
       <dt>D₄ vertical (÷ 9)</dt><dd>${PRES[j0]?f8(VI[j0]):'—'} → ${PRES[j1]?f8(VI[j1]):'—'}</dd>
-      <dt>Mouvement relatif</dt><dd class="big">${rel!=null?((rel>=0?'+':'')+rel.toFixed(8)):'—'}</dd></dl>
+      <dt>Mouvement relatif</dt><dd class="big">${rel!=null?((rel>=0?'+':'')+rel.toFixed(8)):'—'}</dd></dl>${relRow1(s.idx)}
       <p class="note">${rel!=null?(rel>=0?'Il gagne contre son propre système entre les deux prises.':'Il perd contre son propre système entre les deux prises.')+' ':''}${curveTxt(v0,v1)}</p>
       <div class="rows">${attrRows(v0,v1,r0,r1)}</div>`;
     }
@@ -2095,7 +2238,7 @@ function drawVBars(i){
 }
 function copyState(){
   const d=curD();
-  const out={projet:'Manifestation',systeme:SYS.name,corps:'Universal Metaphor · moteur v2 · rév. 23.16',ame:'CLAVIS × Esmeralda · pont non branché',volume:+S.exp.toFixed(4),transition:'T₀ → T₁, courbe F cycloïdale par axe',mode:S.mode,kobayashi:S.km||S.mode==='fourier',fantome:{actif:S.ghost,horloge:GCLKL[S.gclk],regle:'v20 : un fantôme par médiane cumulée du titre (médiane standard sur la fenêtre [T₀ du titre, T₁]) ; même taille pour tous ; espacement seulement ; bord à bord (×1) au plus serré → écart le plus long du système',diametre:GHOST.ruler?+GHOST.ruler.dg.toPrecision(6):null,ecartMax:GHOST.ruler?+GHOST.ruler.max.toFixed(2):null,fantomes:GHOST.ruler?GHOST.ruler.n:0,horsRegle:GHOST.ruler?GHOST.ruler.out:0,memoire:S.gtau||'toute la période'},
+  const out={projet:'Manifestation',systeme:SYS.name,corps:'Universal Metaphor · moteur v2 · rév. 23.16 + relatif 23.18',ame:'CLAVIS × Esmeralda · pont non branché',volume:+S.exp.toFixed(4),transition:'T₀ → T₁, courbe F cycloïdale par axe',mode:S.mode,kobayashi:S.km||S.mode==='fourier',fantome:{actif:S.ghost,horloge:GCLKL[S.gclk],regle:'v20 : un fantôme par médiane cumulée du titre (médiane standard sur la fenêtre [T₀ du titre, T₁]) ; même taille pour tous ; espacement seulement ; bord à bord (×1) au plus serré → écart le plus long du système',diametre:GHOST.ruler?+GHOST.ruler.dg.toPrecision(6):null,ecartMax:GHOST.ruler?+GHOST.ruler.max.toFixed(2):null,fantomes:GHOST.ruler?GHOST.ruler.n:0,horsRegle:GHOST.ruler?GHOST.ruler.out:0,memoire:S.gtau||'toute la période'},
     z0:{T0:Z0A.map(x=>+x.toFixed(6)),T1:Z0B.map(x=>+x.toFixed(6)),ensemble:Z0N.slice(),classe2:S.layers.z0c2,classe3:S.layers.z0c3,regle:'moyenne de tout, un seul ensemble ; fil linéaire ; écart cycloïdal par axe'},
     lancer:{horizon:S.thr,poids:S.thrW,seance:THR.d>=0?DATA.dates[THR.d]:null,maintenant:THR.now,fenetre:THR.win},
     session:S.session,prises:{T0:{date:DATA.dates[S.T0],zzero:+ZZ[S.T0].toFixed(8)},T1:{date:DATA.dates[S.T1],zzero:+ZZ[S.T1].toFixed(8)},dZ:+(ZZ[S.T1]-ZZ[S.T0]).toFixed(8)},
@@ -2122,7 +2265,7 @@ function tick(now){
     O1.forEach(o=>applyObj(o,dA,dB,tt,dt));O2.forEach(o=>applyObj(o,dA,dB,tt,dt));applyC3(t,dt);relax();}
   else{O1.forEach(o=>applyObj(o,d0,d1,t,dt));O2.forEach(o=>applyObj(o,d0,d1,t,dt));applyC3(t,dt);if(t>0&&t<1)relax();}
   ghostFrame(gCur());
-  z0Frame(S.ghost?tauOf(gCur()):t);applyC4(t,dt);vecFrame(S.ghost?tauOf(gCur()):t);microFrame();
+  z0Frame(S.ghost?tauOf(gCur()):t);applyC4(t,dt);vecFrame(S.ghost?tauOf(gCur()):t);microFrame(S.ghost?tauOf(gCur()):t,dt);
   if(S.ghost&&S.thr){const dI=Math.min(S.T1,Math.floor(gCur()));if(dI!==THR.d)buildThrowFrame(dI);
     const U=THRREP.U;U.uSize.value=1/S.exp;U.uAll.value=1;U.uGain.value=.8;U.uSel.value=S.sel&&S.sel.kind===1?S.sel.idx:-1;
     THRREP.group.visible=S.layers.ghost;THR.pts.visible=false;}
