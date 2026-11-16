@@ -650,17 +650,20 @@ function ring(r,y,col,op,dashed){
   const m=dashed?new THREE.LineDashedMaterial({color:col,transparent:true,opacity:op,dashSize:.06,gapSize:.06}):new THREE.LineBasicMaterial({color:col,transparent:true,opacity:op});
   const l=new THREE.Line(g,m);if(dashed)l.computeLineDistances();return l;
 }
-/* Éric, 14 nov 2026. Two rings (horizontal + vertical) = a door: the click dives into another system.
+/* Éric, 15 nov 2026. Every ring is the same silver #C8CCD2, hair-thin (tube ≤ R×0,014).
+   Two rings (horizontal + vertical) = a door: the click dives into another system.
    One horizontal ring = focus: the click stays in this system and focuses the object.
-   The ring sits just outside the object and scales with its class size (0,1 · 0,2 · 0,3 · 0,4).
-   Colour is the object's own colour. [INCOMPLET] Éric has not fixed a ring colour.
+   The ring sits just outside the object (radius R×1,22) and scales with its class size.
+   The colour argument is ignored. No coloured halo.
    The LNH conference ring stays on the player badge (blue East, amber West); players do not dive. */
 const RINGGEO={};
+const RINGSILVER=0xC8CCD2;
 function makeRings(R, door, color){
   const key=R.toFixed(5);
-  if(!RINGGEO[key]) RINGGEO[key]=new THREE.TorusGeometry(R*1.22, Math.max(0.0015, R*0.028), 8, 48);
+  const tube=Math.min(R*0.014, Math.max(0.0006, R*0.010));
+  if(!RINGGEO[key]) RINGGEO[key]=new THREE.TorusGeometry(R*1.22, tube, 8, 48);
   const geo=RINGGEO[key];
-  const mat=()=>new THREE.MeshBasicMaterial({color:color==null?0xffffff:color, transparent:true, opacity:.95, depthWrite:false, side:THREE.DoubleSide});
+  const mat=()=>new THREE.MeshStandardMaterial({color:RINGSILVER, metalness:.45, roughness:.38, emissive:0x000000, transparent:true, opacity:.95, depthWrite:false, side:THREE.DoubleSide});
   const h=new THREE.Mesh(geo, mat());
   h.rotation.x=Math.PI/2; /* torus is born vertical (XY); this lays it flat */
   h.name='um-ring-h'; h.renderOrder=4;
@@ -671,9 +674,9 @@ function makeRings(R, door, color){
 function addRings(parent, rings){ parent.add(rings.h); if(rings.v) parent.add(rings.v); return rings; }
 function syncRings(o, op){
   if(!o.rings) return;
-  const c=o.faceMat.color, a=op==null?.95:op, on=a>0.02;
-  o.rings.h.material.color.copy(c); o.rings.h.material.opacity=a; o.rings.h.visible=on;
-  if(o.rings.v){ o.rings.v.material.color.copy(c); o.rings.v.material.opacity=a; o.rings.v.visible=on; }
+  const a=op==null?.95:op, on=a>0.02;
+  o.rings.h.material.color.setHex(RINGSILVER); o.rings.h.material.opacity=a; o.rings.h.visible=on;
+  if(o.rings.v){ o.rings.v.material.color.setHex(RINGSILVER); o.rings.v.material.opacity=a; o.rings.v.visible=on; }
 }
 function seg(pts,col,op){return new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:col,transparent:true,opacity:op}))}
 function label(text,col,h,weight){
@@ -798,8 +801,9 @@ const LV={stretch:[.55,.78,1,1.28,1.6],pitch:[-32,-16,0,16,32].map(x=>x*Math.PI/
 const DENS=(N1+NC+5)>1234?Math.sqrt(1234/(N1+NC+5)):1;
 C4O.R=4*(.1*DENS); /* rev. 23.11: the central object = four times a Class 1 object (Class 1 = 0,1 × DENS) */
 core.add(hitSphere(C4O.R*1.15,{kind:4}));
-/* Class 4 is a door: two clicks climb a bloom layer, or leave for the parent floor. */
-C4O.rings=addRings(core, makeRings(C4O.R, true, 0xe8c872));
+/* Central Class 4 carries one horizontal ring on every floor, including the Hub.
+   Two clicks still climb a bloom layer, or leave for the parent floor. */
+C4O.rings=addRings(core, makeRings(C4O.R, false, 0xe8c872));
 /* Finance stays the opening Class 4. Art and Sports are siblings beside the
    galaxy: they are not members, so they never enter its aggregate or its drift. */
 window.__umSides=[];
