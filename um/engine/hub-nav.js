@@ -75,7 +75,7 @@
     const bits=['<button type="button" id="hub-center" data-up="'+(parent||'')+'">'+esc(shown(id,name))+'</button>'];
     function shown(cid, name){
       const card=window.UM_CARDINAL&&UM_CARDINAL[cid];
-      return card?card.h+' · '+name:name;
+      return name; /* v20.72: no cardinal letters (Éric, 16 Nov 2026) */
     }
     kids.forEach(cid=>{
       const c=floor(cid); if(!c) return;

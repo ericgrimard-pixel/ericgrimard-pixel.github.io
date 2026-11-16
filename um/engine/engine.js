@@ -1244,8 +1244,7 @@ function ghostFrame(c){
   if(S.sel&&(S.sel.kind===1||S.sel.kind===2))pathGeo.setDrawRange(0,Math.max(0,Math.min(pathN,Math.floor(c)-pathD0+1)));
 }
 function ensureTL(){O1.forEach((o,i)=>{if(o.tl)return;o.tl=HK?badgeSprite(i,o):label(TK[i].s,'#ffffff',o.R*.46,500);o.tl.position.set(0,0,0);o.tl.material.depthTest=false;o.tl.renderOrder=9;o.tl.visible=false;o.root.add(o.tl);
-  const card=SYS.id==='world'&&TK[i].floor&&window.UM_CARDINAL&&UM_CARDINAL[TK[i].floor];
-  if(card){const lb=label(card.h,'#e8c872',.34,700);lb.position.set(0,.42,0);lb.material.depthTest=false;lb.renderOrder=10;o.root.add(lb);o.cardinal=lb}})
+  /* v20.72 (Éric, 16 Nov 2026): the large cardinal signs (N, E, S, W, SW) are erased from the chamber. */})
 }
 function posOf(VV,q){const X=VV[q*10],Y=VV[q*10+1],Z=VV[q*10+2],a=AZ(X),r=2-Z;return [r*Math.sin(a),Y,-r*Math.cos(a)]}
 const NS=48;
