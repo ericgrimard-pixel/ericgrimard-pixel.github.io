@@ -449,6 +449,7 @@ const S={
   sel:{kind:4},focus:null,plan:false,
   T0:0,T1:F-1,
   ghost:!TWO&&(window.__umGhost!=null?window.__umGhost:(()=>{try{return localStorage.getItem('um.fantome')!=='0'}catch(e){return true}})()),
+  sghost:TWO&&(()=>{try{return localStorage.getItem('um.fantomeCourt')!=='0'}catch(e){return true}})(), /* v20.75 short ghost */
   gclk:window.__umGclk||'vol',gtau:window.__umGtau!=null?window.__umGtau:0,
   layers:{c1:true,sec:true,cty:true,ind:false,genre:true,key:false,mode:false,expl:false,tsig:false,conf:true,div:true,club:true,nat:true,pos:true,drnd:false,dyr:false,age:false,hand:false,xfer:false,ptrail:false,c3:true,c4:true,bounds:true,trails:false,ghost:true,gpaths:false,tlabels:true,links:true,labels:true,spacing:true,z0:false,z0c2:true,z0c3:true,c4v:false,c3d:false,micro:true}, /* rev. 23.12 (Éric, 11 Nov., 13 h 38): on opening, no line between the objects; each one is a layer to switch on. Rev. 23.13: the LNH transfer trail too */
   thr:window.__umThr!=null?window.__umThr:10,thrW:window.__umThrW||'tv',
@@ -584,7 +585,7 @@ function rebuild(){
   spacingTakes();
   relCompute();microSpacing();
   buildTrail();
-  buildGhost();
+  buildGhost();buildShortGhost();
   buildThrowWin();THR.d=-1;
   dirty=true;
 }
@@ -1154,6 +1155,31 @@ void main(){
   return set;
 }
 const REP=makeReps(),THRREP=makeReps(),EMPTYL={n:0,zone:()=>-1,get:()=>{}};
+/* v20.75 (Éric, 16 Nov 2026): the short ghost (fantôme court). A system with only T₀ and T₁ gets about 8 faint copies of
+   each object, close behind it, on the general direction of its move from T₀ to T₁. One condensation rule for every object
+   (the copies cover SGL of its own move), so the trails stay comparable. Same real copies as the long ghost (makeReps);
+   the long ghost is unchanged when the sequence has enough sessions. Not the substitute renderer removed on 12 Nov. */
+const SGREP=makeReps(),SGN=8,SGL=.35;
+function buildShortGhost(){
+  if(!TWO||!S.sghost||SYS.id==='world'||S.T0===S.T1){SGREP.fill(EMPTYL);return}
+  const L=[],d0=S.T0,d1=S.T1,sp=S.layers.spacing;
+  for(let i=0;i<N1;i++){const j0=i*F+d0,j1=i*F+d1;if(!PRES[j0]||!PRES[j1])continue;
+    const a=posOf(V,j0),b=posOf(V,j1);if(sp){const q=i*6;a[0]+=OFF1[q];a[1]+=OFF1[q+1];a[2]+=OFF1[q+2];b[0]+=OFF1[q+3];b[1]+=OFF1[q+4];b[2]+=OFF1[q+5]}
+    const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2];if(dx*dx+dy*dy+dz*dz<1e-8)continue;
+    for(let k=1;k<=SGN;k++){const f=SGL*k/SGN;L.push(i,j0*10,j1*10,1-f,b[0]-dx*f,b[1]-dy*f,b[2]-dz*f)}}
+  const q=new THREE.Quaternion(),e=new THREE.Euler();
+  SGREP.fill({n:L.length/7,
+    zone:k=>zoneOf(V[(L[k*7+3]<.5?L[k*7+1]:L[k*7+2])+3]),
+    get:(k,o)=>{const m=k*7,A=L[m+1],B=L[m+2],u=L[m+3],Lz=(arr,kk)=>CY(arr[zoneOf(V[A+kk])],arr[zoneOf(V[B+kk])],u);
+      e.set(Lz(LV.pitch,6),Math.PI/2-AZ(CY(V[A],V[B],u)),-Lz(LV.roll,8),'YXZ');q.setFromEuler(e);
+      const ca=satRGB(zoneOf(V[A+5]),LV.sat[zoneOf(V[A+9])]),cb=satRGB(zoneOf(V[B+5]),LV.sat[zoneOf(V[B+9])]);
+      o.pos[0]=L[m+4];o.pos[1]=L[m+5];o.pos[2]=L[m+6];o.q[0]=q.x;o.q[1]=q.y;o.q[2]=q.z;o.q[3]=q.w;o.s=Lz(LV.stretch,4);
+      o.col[0]=CY(ca[0],cb[0],u);o.col[1]=CY(ca[1],cb[1],u);o.col[2]=CY(ca[2],cb[2],u);o.day=u;o.tk=L[m];o.out=0;o.org=1-SGL-.02;o.vol=1}});
+}
+function sgFrame(){
+  const on=TWO&&!!S.sghost&&SGREP.n>0&&S.layers.c1!==false;SGREP.group.visible=on;if(!on)return;
+  const U=SGREP.U;U.uCur.value=S.prog;U.uT0.value=0;U.uTau.value=0;U.uSize.value=1/S.exp;U.uGain.value=Math.max(.22,Math.min(.55,.5*Math.sqrt(101/N1)));U.uSel.value=S.sel&&S.sel.kind===1?S.sel.idx:-1;U.uAll.value=0;
+}
 /* Large systems: the copies unfold for the chosen stock, or for the members of the chosen Class 2 object. */
 function repAllow(){if(N1<=150)return null;const s=S.sel;return new Set(s&&s.kind===1?[s.idx]:s&&s.kind===2?CARDS[s.idx].members:[])}
 function buildReplicas(){
@@ -1751,8 +1777,8 @@ $('selT0').addEventListener('change',e=>setTake(0,+e.target.value));
 $('selT1').addEventListener('change',e=>setTake(1,+e.target.value));
 let spT=null;
 function scheduleSpacing(lazy){ /* while the knob turns, the spacing is recomputed at most every 140 ms; on release, at once */
-  if(lazy){if(!spT)spT=setTimeout(()=>{spT=null;spacingTakes();microSpacing();dirty=true},140);return}
-  if(spT){clearTimeout(spT);spT=null}spacingTakes();microSpacing();
+  if(lazy){if(!spT)spT=setTimeout(()=>{spT=null;spacingTakes();microSpacing();buildShortGhost();dirty=true},140);return}
+  if(spT){clearTimeout(spT);spT=null}spacingTakes();microSpacing();buildShortGhost();
 }
 function setExp(E,fromSlider){
   E=Math.max(.05,Math.min(1000,+E||1));const k=E/S.exp;S.exp=E;window.__umExp=E;
@@ -1815,14 +1841,15 @@ drawLegend();
 /* Ghost controls */
 const gBtn=$('ghost');
 function syncGhostUI(){
-  gBtn.setAttribute('aria-pressed',S.ghost?'true':'false');gBtn.disabled=TWO;
-  gBtn.title=TWO?(HK?"Le fantôme demande la saison match par match ; ce système n'a que T₀ et T₁, deux saisons.":GC?"Le fantôme demande une suite de prises ; ce système n'a qu'un instantané (T₀ = T₁).":"Le fantôme demande toutes les séances ; ce système n'a que T₀ et T₁."):'Fantôme : chaque titre laisse ses fantômes de T₀ à T₁ ; la colonne d\'horloge en règle seulement l\'espacement (touche F)';
+  gBtn.setAttribute('aria-pressed',(TWO?S.sghost:S.ghost)?'true':'false');gBtn.disabled=TWO&&GC;
+  gBtn.title=TWO&&!GC?'Fantôme court : environ 8 copies proches derrière chaque objet, direction générale de T₀ vers T₁, même règle de condensation pour tous ; ce système n\'a que T₀ et T₁ (touche F)':TWO?(HK?"Le fantôme demande la saison match par match ; ce système n'a que T₀ et T₁, deux saisons.":GC?"Le fantôme demande une suite de prises ; ce système n'a qu'un instantané (T₀ = T₁).":"Le fantôme demande toutes les séances ; ce système n'a que T₀ et T₁."):'Fantôme : chaque titre laisse ses fantômes de T₀ à T₁ ; la colonne d\'horloge en règle seulement l\'espacement (touche F)';
   $('gwBox').hidden=$('gtauBox').hidden=$('thrBox').hidden=$('gContact').hidden=$('gvBox').hidden=!S.ghost;$('gvol').value=String(Math.round(Math.log2(S.gvol)*100));$('gvolN').textContent='×'+fmtGV(S.gvol);$('gclk').value=S.gclk;$('gtau').value=String(S.gtau);$('thr').value=String(S.thr);$('thrW').value=S.thrW;
   $('sub').textContent='le corps · Universal Metaphor · moteur v2 · rév. 23.16 + relatif 23.18 · '+(S.ghost?'fantôme · horloge : '+(GCLKL[S.gclk]||'').toLowerCase()+(S.thr?' · lancer '+S.thr+' séances':''):(HK?'deux prises · deux saisons':GC?'un instantané · T₀ = T₁':'deux prises'));
   drawLegend();
 }
 function setGhost(on){
-  if(TWO)return;S.ghost=!!on;window.__umGhost=S.ghost;try{localStorage.setItem('um.fantome',S.ghost?'1':'0')}catch(e){}
+  if(TWO){if(GC)return;S.sghost=!S.sghost;try{localStorage.setItem('um.fantomeCourt',S.sghost?'1':'0')}catch(e){}buildShortGhost();syncGhostUI();dirty=true;return}
+  S.ghost=!!on;window.__umGhost=S.ghost;try{localStorage.setItem('um.fantome',S.ghost?'1':'0')}catch(e){}
   if(S.ghost)ensureTL();
   rebuild();syncGhostUI();drawGauss();renderFiche();
 }
@@ -2264,7 +2291,7 @@ function tick(now){
   if(S.ghost){const c=gCur(),dA=Math.min(S.T1,Math.floor(c)),dB=Math.min(S.T1,dA+1),tt=c-dA;
     O1.forEach(o=>applyObj(o,dA,dB,tt,dt));O2.forEach(o=>applyObj(o,dA,dB,tt,dt));applyC3(t,dt);relax();}
   else{O1.forEach(o=>applyObj(o,d0,d1,t,dt));O2.forEach(o=>applyObj(o,d0,d1,t,dt));applyC3(t,dt);if(t>0&&t<1)relax();}
-  ghostFrame(gCur());
+  ghostFrame(gCur());sgFrame();
   z0Frame(S.ghost?tauOf(gCur()):t);applyC4(t,dt);vecFrame(S.ghost?tauOf(gCur()):t);microFrame(S.ghost?tauOf(gCur()):t,dt);
   if(S.ghost&&S.thr){const dI=Math.min(S.T1,Math.floor(gCur()));if(dI!==THR.d)buildThrowFrame(dI);
     const U=THRREP.U;U.uSize.value=1/S.exp;U.uAll.value=1;U.uGain.value=.8;U.uSel.value=S.sel&&S.sel.kind===1?S.sel.idx:-1;
