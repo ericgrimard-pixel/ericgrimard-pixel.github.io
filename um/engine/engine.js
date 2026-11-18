@@ -1440,7 +1440,52 @@ const ZRGB=ZCOL.map(c=>{const k=new THREE.Color(c);return [k.r,k.g,k.b]});
 function satRGB(z,s){const c=ZRGB[z],g=.3*c[0]+.59*c[1]+.11*c[2];return [g+(c[0]-g)*s,g+(c[1]-g)*s,g+(c[2]-g)*s]}
 function paint(o,ca,cb,sa,sb,t){const A=satRGB(ca,LV.sat[sa]),B=satRGB(cb,LV.sat[sb]),r=CY(A[0],B[0],t),g=CY(A[1],B[1],t),b=CY(A[2],B[2],t);o.faceMat.color.setRGB(r,g,b);o.edgeMat.color.setRGB(r,g,b)}
 const layerOn=o=>o.kind===1?S.layers.c1:S.layers[CARDS[o.idx].ty];
+/* v20.76 (Éric, 16-18 Nov 2026): the net (filet) and the dance (replay with several actors).
+   Net: one click on a Class 2 still steps down one floor. Two clicks on the Class 4 climb, and the net brings that floor's
+   Class 1 objects back up: on the upper floor they stay lit, the others fade. The net is cumulative (each climb adds,
+   never replaces); "tout le banc" brings back every Class 1 of every Class 2 present, at once; "un à un" brings back one
+   family per climb (the floor just left). It lives across floors until its × empties it.
+   Dance: one click on a Class 1 engages it (it stays lit), two clicks on an engaged actor disengage it; "tous" engages all. */
+const NET=new Set(),ACT=new Set();
+function netKey(i){const t=TK[i];return t?String(t.s):''}
+function netApply(){NET.clear();const W=window.UM_NET;if(!W||!W.syms.size)return;for(let i=0;i<N1;i++)if(W.syms.has(netKey(i)))NET.add(i)}
+function netAscend(){
+  if(!window.UM_NET)window.UM_NET={mode:'banc',syms:new Set(),fams:[]};
+  const W=window.UM_NET,syms=[];for(let i=0;i<N1;i++){let p=0;for(let d=0;d<F&&!p;d++)p=PRES[i*F+d];if(p)syms.push(netKey(i))}
+  window.UM_NET_PENDING={from:SYS.id,name:SYS.name,syms,mode:W.mode};goParent();
+}
+function netArrive(){
+  const P=window.UM_NET_PENDING;window.UM_NET_PENDING=null;if(!P||P.from===SYS.id)return;const W=window.UM_NET;
+  if(P.mode==='banc'){CARDS.forEach(c=>c.members.forEach(i=>W.syms.add(netKey(i))));P.syms.forEach(k=>W.syms.add(k));W.fams.push(P.name+' · tout le banc')}
+  else{P.syms.forEach(k=>W.syms.add(k));W.fams.push(P.name)}
+}
+function netUI(){
+  let bar=document.getElementById('umNetBar');
+  if(!bar){bar=document.createElement('span');bar.id='umNetBar';bar.style.cssText='display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap';
+    bar.innerHTML='<button type="button" id="umNetMode" title="Filet : ce que deux clics sur la Classe 4 ramènent au niveau supérieur"></button><span id="umNetInfo"></span><button type="button" id="umNetClr" title="Vider le filet">×</button><button type="button" id="umActAll" title="Danse : engager tous les acteurs (clic = engager, double-clic = désengager)">Acteurs : tous</button><span id="umActInfo"></span><button type="button" id="umActClr" title="Désengager tous les acteurs">×</button>';
+    gBtn.insertAdjacentElement('afterend',bar);
+    bar.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&window.__umNetApi)window.__umNetApi(b.id)})}
+  const W=window.UM_NET||{mode:'banc',syms:new Set(),fams:[]};
+  $('umNetMode').textContent='Filet : '+(W.mode==='un'?'un à un':'tout le banc');
+  $('umNetInfo').textContent=W.fams.length?W.fams.length+(W.fams.length>1?' prises · ':' prise · ')+NET.size+' ici':'';
+  $('umNetInfo').title=W.fams.join(' + ');$('umNetClr').hidden=!W.fams.length;
+  $('umActInfo').textContent=ACT.size?ACT.size+(ACT.size>1?' acteurs engagés':' acteur engagé'):'';$('umActClr').hidden=!ACT.size;
+}
+window.__umNetApi=id=>{
+  if(!window.UM_NET)window.UM_NET={mode:'banc',syms:new Set(),fams:[]};const W=window.UM_NET;
+  if(id==='umNetMode')W.mode=W.mode==='un'?'banc':'un';
+  else if(id==='umNetClr'){W.syms.clear();W.fams.length=0;netApply()}
+  else if(id==='umActAll'){for(let i=0;i<N1;i++)if(PRES[i*F+S.T0]||PRES[i*F+S.T1])ACT.add(i)}
+  else if(id==='umActClr')ACT.clear();
+  netUI();dirty=true;
+};
 function focusDim(o){
+  const d=focusDim0(o);if(o.kind!==1)return d;
+  if(ACT.size)return ACT.has(o.idx)?1:Math.min(d,.12);
+  if(NET.size&&!S.focus)return NET.has(o.idx)?1:.16;
+  return d;
+}
+function focusDim0(o){
   if(!S.focus)return 1;
   const f=S.focus;
   if(f.kind===o.kind&&f.idx===o.idx)return 1;
@@ -1930,7 +1975,7 @@ function ascendOrEnter(e){
   const ref=pickAt(e);if(!ref)return;
   if(ref.side){switchSys(ref.side);return}
   if(class4OnTop(e)){
-    if(SYS.id!=='world'){goParent();return}
+    if(SYS.id!=='world'){netAscend();return}
     if(window.UM_BLOOM_STEP){UM_BLOOM_STEP();return}
     select({kind:4});enterPlan();return;
   }
@@ -1939,7 +1984,8 @@ function ascendOrEnter(e){
   const vis=HITS.filter(m=>{let p=m;while(p){if(!p.visible)return false;p=p.parent}return true});
   const onC4=ray.intersectObjects(vis,false).some(h=>h.object.userData.ref&&h.object.userData.ref.kind===4);
   if(ref.kind===1){const id=TK[ref.idx]&&TK[ref.idx].floor;if(id){switchSys(id);return}}
-  if(onC4&&SYS.id!=='world'){goParent();return}
+  if(onC4&&SYS.id!=='world'){netAscend();return}
+  if(ref.kind===1&&ACT.has(ref.idx)){ACT.delete(ref.idx);netUI();dirty=true;return} /* v20.76: two clicks disengage an actor */
   select(ref);
   if(ref.kind===4)enterPlan();else if(ref.kind===1||ref.kind===2)enterFocus(ref);
 }
@@ -1961,6 +2007,7 @@ renderer.domElement.addEventListener('pointerup',e=>{
       select(ref);
       /* One ring: the click focuses this object. Doors already returned above. */
       if(ref.kind===1||ref.kind===2) enterFocus(ref);
+      if(ref.kind===1){ACT.add(ref.idx);netUI();} /* v20.76: one click engages an actor */
     }
   }
   const now=e.timeStamp,prev=tapMark;tapMark={t:now,x:e.clientX,y:e.clientY,type:e.pointerType||'mouse'};
@@ -2313,6 +2360,7 @@ rebuild();
 firstFull=computeFirstFull();S.T0=firstFull;rebuild();
 fillTakes();syncControls();
 ensureTL();syncGhostUI();
+netArrive();netApply();netUI(); /* v20.76 net and dance */
 {const e0=S.exp;S.exp=1;setExp(e0);} /* the volume survives a change of system */
 setProg(REDUCED?1:0);
 renderFiche();drawGauss();refreshZbars(S.T0);
