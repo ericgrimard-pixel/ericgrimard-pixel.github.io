@@ -714,7 +714,8 @@ G.bounds.add(ring(2,0,0x2b4466,.55));G.bounds.add(ring(2,1,0x1c2a3c,.5));G.bound
 function wall(X,col,op,aAbs){const a=aAbs!=null?aAbs:AZ(X);G.bounds.add(seg([W3(a,1,-1),W3(a,3,-1),W3(a,3,1),W3(a,1,1),W3(a,1,-1)],col,op))}
 [-.6,-.2,.2,.6].forEach(X=>wall(X,0x2b4466,.7));
 wall(0,0xe8c872,.9,0);
-for(let h=1;h<=12;h++){const a=h/12*Math.PI*2,lb=label(String(h),h===12?'#e8c872':'#5c6a82',.2);lb.position.copy(W3(a,3.42,-1));G.bounds.add(lb);
+/* v20.73 (Éric, 16 Nov 2026): the dial numbers 1 to 12 are removed; the twelve ticks stay, ready for the chronometric bezel. */
+for(let h=1;h<=12;h++){const a=h/12*Math.PI*2;
   G.bounds.add(seg([W3(a,3.02,-1),W3(a,3.16,-1)],0x3a5272,.8));}
 {
 
