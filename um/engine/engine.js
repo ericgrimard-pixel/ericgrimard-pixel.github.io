@@ -1725,6 +1725,8 @@ addEventListener('resize',placeFly);rack.parentElement.addEventListener('scroll'
   bar.addEventListener('pointerup',end);bar.addEventListener('pointercancel',end);
   bar.addEventListener('dblclick',e=>{if(e.target.closest('button'))return;FLY.moved=false;placeFly()});
 })();
+/* v20.82 (Éric, 19 Nov 2026): the ten glyphs are crisp vectors; a resting icon is dim silver, the selected one bright, the activated one (window open) lit. */
+(function(){const s=document.createElement("style");s.textContent=".tile img.ico{opacity:.6;transition:opacity .15s,filter .15s}.tile:hover img.ico{opacity:.85}.tile[aria-pressed=\"true\"] img.ico{opacity:1}.tile[aria-expanded=\"true\"] img.ico{opacity:1;filter:drop-shadow(0 0 1.5px rgba(166,220,255,.95)) drop-shadow(0 0 5px rgba(166,220,255,.5))}";document.head.appendChild(s)})();
 ATTR.forEach((A,k)=>{
   const d=document.createElement('button');d.type='button';d.className='tile';d.dataset.k=k;
   d.title=(k+1)+'. '+A.name+' · '+A.tag+(A.desc?' · '+A.desc:'');d.setAttribute('aria-label',(k+1)+'. '+A.name);
