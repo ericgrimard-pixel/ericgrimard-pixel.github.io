@@ -667,7 +667,7 @@ function ring(r,y,col,op,dashed){
   const l=new THREE.Line(g,m);if(dashed)l.computeLineDistances();return l;
 }
 /* Éric, 15 nov 2026. Every ring is the same silver #C8CCD2, hair-thin (tube ≤ R×0,014).
-   Two rings (horizontal + vertical) = a door: the click dives into another system.
+   Two rings (horizontal + vertical) = a door: two clicks dive into another system (v20.81).
    One horizontal ring = focus: the click stays in this system and focuses the object.
    The ring sits just outside the object (radius R×1,22) and scales with its class size.
    The colour argument is ignored. No coloured halo.
@@ -1457,7 +1457,14 @@ function netApply(){NET.clear();const W=window.UM_NET;if(!W||!W.syms.size)return
 function netAscend(){
   if(!window.UM_NET)window.UM_NET={mode:'banc',syms:new Set(),fams:[]};
   const W=window.UM_NET,syms=[];for(let i=0;i<N1;i++){let p=0;for(let d=0;d<F&&!p;d++)p=PRES[i*F+d];if(p)syms.push(netKey(i))}
-  window.UM_NET_PENDING={from:SYS.id,name:SYS.name,syms,mode:W.mode};goParent();
+  window.UM_NET_PENDING=syms.length?{from:SYS.id,name:SYS.name,syms,mode:W.mode}:null; /* v20.81: an empty chamber brings nothing up */
+  /* v20.81 (Éric, 18 Nov; Claude 1AFT7v9g, 1SDM1lTC): the climb brings the subsystem with all its cousins. Arriving on
+     Finance, the bloom opens at the depth of the floor just left, so the same category level, extracted from every
+     containing system, stands in Finance. From the top of a silo (Art, Sports, Santé) the climb lands on the HUB home. */
+  const by=window.UM_FLOOR_BY||{},me=by[SYS.id],par=me&&me.parent;
+  if(!par||par==='world'){let d=0,f=me,n=0;while(f&&f.id!=='world'&&n++<16){if(f.level==='silo'){d=0;break}d++;f=by[f.parent]}
+    window.UM_BLOOM_HOLD=Math.min(d,window.UM_BLOOM_FLOORMAX||0);}
+  goParent();
 }
 function netArrive(){
   const P=window.UM_NET_PENDING;window.UM_NET_PENDING=null;if(!P||P.from===SYS.id)return;const W=window.UM_NET;
@@ -1976,44 +1983,63 @@ function class2Floor(idx){
   hits.sort((a,b)=>(a.parent===SYS.id?-1:0)-(b.parent===SYS.id?-1:0)||(b.n||0)-(a.n||0));
   return hits[0].id;
 }
-function ascendOrEnter(e){
-  const ref=pickAt(e);if(!ref)return;
-  if(ref.side){switchSys(ref.side);return}
-  if(class4OnTop(e)){
-    if(SYS.id!=='world'){netAscend();return}
-    if(window.UM_BLOOM_STEP){UM_BLOOM_STEP();return}
-    select({kind:4});enterPlan();return;
-  }
+/* v20.81 click grammar (Éric, 18 Nov 2026; Claude 1AFT7v9g, 1o6sRwg0, 1SDM1lTC): one click = focus (casts the net,
+   engages an actor); two clicks = drill. Two clicks on a Class 2 (or on a door) dive into it; two clicks on the central
+   object climb one level with the cousins; on Finance they open the next bloom layer, and once Finance is complete one
+   more pair of clicks returns to the HUB home. Two clicks on an actor engaged before them disengage it. The central
+   object is a Class 4, never an actor (ACT holds Class 1 indices only), so the two rules never meet. */
+function climbC4(){
+  if(SYS.id!=='world'){netAscend();return}
+  const b=window.UM_BLOOM|0,m=window.UM_BLOOM_MAX||0;
+  if(m&&b<m&&window.UM_BLOOM_STEP){UM_BLOOM_STEP();return}
+  if(window.UM_HUB_HOME)UM_HUB_HOME();else switchSys('world');
+}
+window.__umClimb=climbC4;
+function hitInfo(e){
+  const ref=pickAt(e);let top=class4OnTop(e);
+  /* a Class 1 whose picture is nearer the pointer than the central object's answers first (focus camera close to it) */
+  if(top&&ref&&ref.kind===1&&window.__umRingAt){const a=__umRingAt(1,ref.idx),b=__umRingAt(4,0);
+    if(a&&b&&Math.hypot(e.clientX-a.x,e.clientY-a.y)<Math.hypot(e.clientX-b.x,e.clientY-b.y))top=false}
   const rr=renderer.domElement.getBoundingClientRect();mouse.x=(e.clientX-rr.left)/rr.width*2-1;mouse.y=-(e.clientY-rr.top)/rr.height*2+1;
   ray.setFromCamera(mouse,camera);
   const vis=HITS.filter(m=>{let p=m;while(p){if(!p.visible)return false;p=p.parent}return true});
   const onC4=ray.intersectObjects(vis,false).some(h=>h.object.userData.ref&&h.object.userData.ref.kind===4);
+  return {ref,top,onC4,t:performance.now()};
+}
+/* The first click of a pair focuses and the camera starts to fly, so the pair is read where the first click landed. */
+let FIRST=null;
+function ascendOrEnter(e){
+  const H=(FIRST&&performance.now()-FIRST.t<800)?FIRST:hitInfo(e);FIRST=null;
+  const ref=H.ref,onC4=H.onC4;window.__umLastPair={ref:ref&&{kind:ref.kind,idx:ref.idx,side:ref.side||''},top:H.top,onC4,was:ACTWAS}; /* test hook */
+  if(H.top||(ref&&ref.kind===4&&!ref.side)){climbC4();return}
+  if(!ref)return;
+  if(ref.side){switchSys(ref.side);return}
+  if(ref.kind===2){const id=class2Floor(ref.idx);if(id){switchSys(id);return}}
+  /* A Class 1 door drills even when engaged (double-click = forer); an engaged actor without a floor is disengaged. */
   if(ref.kind===1){const id=TK[ref.idx]&&TK[ref.idx].floor;if(id){switchSys(id);return}}
-  if(onC4&&SYS.id!=='world'){netAscend();return}
-  if(ref.kind===1&&ACT.has(ref.idx)){ACT.delete(ref.idx);netUI();dirty=true;return} /* v20.76: two clicks disengage an actor */
+  if(ref.kind===1&&ACT.has(ref.idx)&&ACTWAS&&ACTWAS.idx===ref.idx&&ACTWAS.was){ACT.delete(ref.idx);netUI();dirty=true;return} /* two clicks disengage an actor engaged before them */
+  if(onC4&&ref.kind===3&&SYS.id!=='world'){climbC4();return} /* v20.81: a Class 1 or 2 in front of the central object is focused, never climbed through */
   select(ref);
   if(ref.kind===4)enterPlan();else if(ref.kind===1||ref.kind===2)enterFocus(ref);
 }
-let tapMark=null;
+let tapMark=null,ACTWAS=null;
 renderer.domElement.addEventListener('pointerdown',e=>{downAt=[e.clientX,e.clientY]});
 renderer.domElement.addEventListener('pointerup',e=>{
   if(!downAt)return;const moved=Math.hypot(e.clientX-downAt[0],e.clientY-downAt[1]);downAt=null;
   if(moved>(e.pointerType==='touch'?14:5))return;
-  const ref=pickAt(e);
-  /* One click on a Class 2, or on a door, steps down. Two clicks on the
-     Class 4 climb (or, on the Hub, open the next bloom layer). */
-  if(class4OnTop(e)){
+  const fresh0=!tapMark||e.timeStamp-tapMark.t>520;
+  if(fresh0)FIRST=hitInfo(e);
+  const ref=fresh0?FIRST.ref:pickAt(e);
+  /* v20.81: one click only focuses (casts the net, engages a Class 1 actor). Diving and climbing are two clicks. */
+  if(fresh0?FIRST.top:class4OnTop(e)){
     select({kind:4});
-  }else{
-    if(ref&&ref.side){switchSys(ref.side);return}
-    if(ref&&ref.kind===2){const id=class2Floor(ref.idx);if(id){switchSys(id);return}}
-    if(ref&&ref.kind===1){const id=TK[ref.idx]&&TK[ref.idx].floor;if(id){switchSys(id);return}}
-    if(ref){
-      select(ref);
-      /* One ring: the click focuses this object. Doors already returned above. */
-      if(ref.kind===1||ref.kind===2) enterFocus(ref);
-      if(ref.kind===1){ACT.add(ref.idx);netUI();} /* v20.76: one click engages an actor */
-    }
+  }else if(ref&&ref.side){
+    /* a pole beside Finance: one click shows its card; two clicks open it */
+  }else if(ref){
+    if(ref.kind===1&&fresh0)ACTWAS={idx:ref.idx,was:ACT.has(ref.idx)};
+    if(fresh0){select(ref);
+    if(ref.kind===1||ref.kind===2) enterFocus(ref);
+    if(ref.kind===1){ACT.add(ref.idx);netUI();}}
   }
   const now=e.timeStamp,prev=tapMark;tapMark={t:now,x:e.clientX,y:e.clientY,type:e.pointerType||'mouse'};
   if(!prev||prev.type!==tapMark.type||now-prev.t<40||now-prev.t>520)return;
@@ -2192,7 +2218,7 @@ function renderFiche(){
     const M=[0,1,2,3,4].map(()=>[0,0,0,0,0]);let migr=0;
     for(let i=0;i<N1;i++){const a=i*F+S.T0,b=i*F+S.T1;if(PRES[a]&&PRES[b]){const za=zoneOf(V[a*10+k]),zb=zoneOf(V[b*10+k]);M[za][zb]++;if(za!==zb)migr++}}
     const mx=Math.max(1,...M.flat());
-    h=`<div class="cls">Classe 4 · système contenu et borné</div><h3>${esc(SYS.name)}</h3>
+    h=`<div class="cls">Classe 4 · système contenu et borné</div><h3>${esc(SYS.name)}</h3>${SYS.empty?`<p class="note" style="color:#e8c872">[INCOMPLET] ${esc(SYS.name)} est vide : aucun étage ni donnée pour l'instant, rien n'est inventé. Deux clics sur l'objet central ramènent à l'accueil du HUB.</p>`:''}
     <div class="meta">${HK?hkMeta4():GC?`${N1} ${UN} · `+Object.keys(CTYPE).map(ty=>CARDS.filter(c=>c.ty===ty).length+' '+CTYPE[ty].plural).join(' · '):`${N1} titres · ${CARDS.filter(c=>c.ty==='sec').length} secteurs · ${CARDS.filter(c=>c.ty==='cty').length} pays · ${CARDS.filter(c=>c.ty==='ind').length} industries`} · 3 conteneurs actifs (Ω, Σ, α) · 2 pièges λ en attente</div>
     <dl class="kv"><dt>Z-ZERO(T₀) · ${DATA.dates[S.T0]}</dt><dd>${f8(ZZ[S.T0])}</dd><dt>Z-ZERO(T₁) · ${DATA.dates[S.T1]}</dt><dd>${f8(ZZ[S.T1])}</dd>
     <dt>ΔZ</dt><dd class="big">${(ZZ[S.T1]-ZZ[S.T0]>=0?'+':'')+f8(ZZ[S.T1]-ZZ[S.T0])}</dd></dl>

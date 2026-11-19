@@ -48,11 +48,17 @@
     return false;
   }
   window.UM_BLOOM=0;
+  /* v20.81: the HUB home is Finance as it opens (bloom 0, home view), reached by two clicks on the central object. */
+  window.UM_HUB_HOME=function(){
+    window.UM_BLOOM_HOLD=0;
+    try{ history.pushState({bloom:0},'',location.pathname+location.search+'#/world'); }catch(e){}
+    switchSys('world');
+  };
   window.UM_BLOOM_STEP=function(){
     if(typeof CURSYS!=='string'||CURSYS!=='world') return;
     const cur=bloomNow();
     const max=bloomMax();
-    if(!max||cur>=max) return;
+    if(!max||cur>=max){ window.UM_HUB_HOME(); return; } /* v20.81: Finance complete, two more clicks go home */
     const next=cur+1;
     window.UM_BLOOM=next;
     window.UM_BLOOM_HOLD=next;
@@ -92,9 +98,9 @@
     const max=bloomMax();
     const hint=id==='world'
       ? (max&&bloomNow()>=max
-        ? 'Vision complète. Un clic sur une Classe 2 descend. Deux clics sur la Classe 4 restent ici. ↑ ou Retour replie une couche.'
-        : 'Deux clics sur la Classe 4 : couche suivante ('+bloomNow()+'/'+max+'). Un clic sur une Classe 2 descend. ↑ ou Retour replie.')
-      : 'Un clic sur une Classe 2 descend. Deux clics sur la Classe 4 remontent. ↑ aussi.';
+        ? 'Vision complète. Un clic = focus. Deux clics sur une Classe 2 plongent. Deux clics sur la Classe 4 : accueil du HUB. ↑ ou Retour replie une couche.'
+        : 'Un clic = focus. Deux clics sur la Classe 4 : couche suivante ('+bloomNow()+'/'+max+'). Deux clics sur une Classe 2 plongent. ↑ ou Retour replie.')
+      : 'Un clic = focus. Deux clics sur une Classe 2 plongent. Deux clics sur la Classe 4 remontent avec les cousins, jusqu\'à l\'accueil du HUB. ↑ aussi.';
     bar.innerHTML='<button type="button" id="hub-up-btn"'+((parent||blooming)?'':' disabled')+'>'+esc(upLabel)+'</button>'
       +'<p class="hint">'+esc(hint)+'</p>';
     const up=document.getElementById('hub-up-btn');
