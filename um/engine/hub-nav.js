@@ -66,7 +66,7 @@
     const parent=f&&f.parent;
     let kids=(f&&f.children)||[];
     if(id==='world'){
-      const special=['art','sports'];
+      const special=['art','sports','health'];
       const head=special.filter(k=>kids.includes(k));
       const rest=kids.filter(k=>!special.includes(k));
       kids=head.concat(rest);

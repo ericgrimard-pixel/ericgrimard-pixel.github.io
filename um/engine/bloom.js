@@ -10,7 +10,7 @@
     let d=0, f=by[id], n=0;
     const seen={};
     while(f&&n++<16){
-      if(f.id==='art'||f.id==='sports') return 0;
+      if(f.id==='art'||f.id==='sports'||f.id==='health') return 0;
       if(f.id==='world') return d;
       if(seen[f.id]) break;
       seen[f.id]=1;
@@ -22,7 +22,7 @@
   function underFinance(id){
     let f=by[id], n=0;
     while(f&&n++<8){
-      if(f.id==='art'||f.id==='sports') return false;
+      if(f.id==='art'||f.id==='sports'||f.id==='health') return false;
       if(f.id==='world') return true;
       f=by[f.parent];
     }
