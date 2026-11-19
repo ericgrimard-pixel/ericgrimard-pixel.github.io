@@ -251,10 +251,12 @@
   const nhl=sys('nhl'), music=sys('music');
   addFloor({id:'art', name:'Art', level:'silo', parent:'world', children:music?['music']:[], n:1});
   addFloor({id:'sports', name:'Sports', level:'silo', parent:'world', children:nhl?['nhl']:[], n:1});
+  addFloor({id:'health', name:'Santé', level:'silo', parent:'world', children:[], n:0}); /* v20.80 placeholder */
   if(music) addFloor({id:'music', name:music.name, level:'index', parent:'art', children:[], n:music.data.t.length, source:'music'});
   if(nhl) addFloor({id:'nhl', name:nhl.name, level:'index', parent:'sports', children:[], n:nhl.data.t.length, source:'nhl'});
   if(by.world&&!by.world.children.includes('art')) by.world.children.push('art');
   if(by.world&&!by.world.children.includes('sports')) by.world.children.push('sports');
+  if(by.world&&!by.world.children.includes('health')) by.world.children.push('health');
   const ZONE_NAME={
     'Amérique du Nord':'sp500y','Europe':'sx5e','Asie-Pacifique':'n225',
     'Moyen-Orient et Afrique':'tasi','Moyen-Orient':'tasi','Amérique latine':'ibov'

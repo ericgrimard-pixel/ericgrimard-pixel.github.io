@@ -949,27 +949,32 @@ C4O.rings=addRings(core, makeRings(C4O.R, false, 0xe8c872));
 /* Finance stays the opening Class 4. Art and Sports are siblings beside the
    galaxy: they are not members, so they never enter its aggregate or its drift. */
 window.__umSides=[];
+const SIDEK=.55,SIDER=3.35,SIDEY=-1.12;
 if(SYS.id==='world'){
   const fin=label('Finance','#e8c872',.26,500);
   fin.position.set(0,C4O.R+.32,0);
   core.add(fin);
   function sibling(id,text,color,note,x,y,z){
     const g=new THREE.Group();g.position.set(x,y,z);
-    const R=C4O.R;
+    const R=C4O.R*SIDEK; /* v20.80: smaller than Finance, on the lower rim */
     const face=new THREE.MeshBasicMaterial({color:color,transparent:true,opacity:.62,depthWrite:false,side:THREE.DoubleSide});
     const edge=new THREE.LineBasicMaterial({color:color,transparent:true,opacity:.95});
     const geo=new THREE.DodecahedronGeometry(R);
     g.add(new THREE.Mesh(geo,face));
     g.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo),edge));
-    const lb=label(text,'#e6f2ff',.3,500);lb.position.set(0,R+.28,0);g.add(lb);
+    const lb=label(text,'#e6f2ff',.2,500);lb.position.set(0,R+.18,0);g.add(lb);
     g.add(hitSphere(R*1.45,{kind:4,side:id,label:text,note:note}));
     const rings=addRings(g, makeRings(R, true, color));
     window.__umSides.push({id:id, name:text, R:R, group:g, rings:rings});
     WORLD.add(g);
   }
-  /* Above the chamber (height stops at 1) so a narrow phone still shows them beside Finance. */
-  sibling('art','Art',0xb388ff,'Musique · Spotify 2021 · [INCOMPLET] un seul instantané',-1.45,2.35,.2);
-  sibling('sports','Sports',0x4fa7ff,'LNH · 2024-25 → 2025-26',1.45,2.35,.2);
+  /* v20.80 (Éric, 18-19 Nov 2026): Art, Sports and Santé are three poles under the system, evenly spaced (120°) on the
+     outer lower rim, just outside the chamber wall (radius 3) and below its floor (height −1): never in the way, always
+     reachable. Santé is an empty placeholder until its data arrive. */
+  const SIDEA={art:Math.PI*5/3,sports:Math.PI/3,health:Math.PI},sideAt=id=>W3(SIDEA[id],SIDER,SIDEY);
+  {const p=sideAt('art');sibling('art','Art',0xb388ff,'Musique · Spotify 2021 · [INCOMPLET] un seul instantané',p.x,p.y,p.z);}
+  {const p=sideAt('sports');sibling('sports','Sports',0x4fa7ff,'LNH · 2024-25 → 2025-26',p.x,p.y,p.z);}
+  {const p=sideAt('health');sibling('health','Santé',0x5fd690,'[INCOMPLET] aucun étage ni donnée pour l\'instant',p.x,p.y,p.z);}
 }
 function makeObj(kind,idx){
   const R=(kind===1?.1:.2)*DENS;

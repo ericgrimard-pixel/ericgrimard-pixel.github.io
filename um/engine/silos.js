@@ -30,6 +30,15 @@
       });
     }
   }
+  /* v20.80 (Éric, 18-19 Nov 2026): Santé, a third Class 4 beside Finance. Placeholder only: no floor, no data yet. */
+  LIB.push({
+    id:'health',
+    silo:'Santé',
+    name:'Santé',
+    source:'Santé — Classe 4 à côté de Finance, Art et Sports. [INCOMPLET] aucun étage ni donnée pour l\'instant : rien n\'est inventé. Hors de l\'agrégat finance.',
+    empty:true,
+    data:{dates:['T₀','T₁'], t:[]}
+  });
   if(music){
     const rows=music.data.t||[];
     const pop=colMean(rows,0,0), dur=colMean(rows,0,1);
