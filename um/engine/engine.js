@@ -1164,11 +1164,13 @@ const REP=makeReps(),THRREP=makeReps(),EMPTYL={n:0,zone:()=>-1,get:()=>{}};
    each object, close behind it, on the general direction of its move from T₀ to T₁. One condensation rule for every object
    (the copies cover SGL of its own move), so the trails stay comparable. Same real copies as the long ghost (makeReps);
    the long ghost is unchanged when the sequence has enough sessions. Not the substitute renderer removed on 12 Nov. */
-const SGREP=makeReps(),SGN=8,SGL=.35;
+/* v20.83 (Éric, 19 Nov 2026): every two-take animation carries it, Finance (the Hub) included: there only the Class 1 objects
+   the bloom has opened get copies, rebuilt at each bloom step. Copies 12 % brighter (SGK), same falloff and placement. */
+const SGREP=makeReps(),SGN=8,SGL=.35,SGK=1.12;
 function buildShortGhost(){
-  if(!TWO||!S.sghost||SYS.id==='world'||S.T0===S.T1){SGREP.fill(EMPTYL);return}
-  const L=[],d0=S.T0,d1=S.T1,sp=S.layers.spacing;
-  for(let i=0;i<N1;i++){const j0=i*F+d0,j1=i*F+d1;if(!PRES[j0]||!PRES[j1])continue;
+  if(!TWO||!S.sghost||S.T0===S.T1){SGREP.fill(EMPTYL);return}
+  const L=[],d0=S.T0,d1=S.T1,sp=S.layers.spacing,HUBW=SYS.id==='world',BL=HUBW?(window.UM_BLOOM|0):0;
+  for(let i=0;i<N1;i++){const j0=i*F+d0,j1=i*F+d1;if(!PRES[j0]||!PRES[j1])continue;if(HUBW&&((TK[i]&&TK[i].bloom)||0)>BL)continue;
     const a=posOf(V,j0),b=posOf(V,j1);if(sp){const q=i*6;a[0]+=OFF1[q];a[1]+=OFF1[q+1];a[2]+=OFF1[q+2];b[0]+=OFF1[q+3];b[1]+=OFF1[q+4];b[2]+=OFF1[q+5]}
     const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2];if(dx*dx+dy*dy+dz*dz<1e-8)continue;
     for(let k=1;k<=SGN;k++){const f=SGL*k/SGN;L.push(i,j0*10,j1*10,1-f,b[0]-dx*f,b[1]-dy*f,b[2]-dz*f)}}
@@ -1183,7 +1185,7 @@ function buildShortGhost(){
 }
 function sgFrame(){
   const on=TWO&&!!S.sghost&&SGREP.n>0&&S.layers.c1!==false;SGREP.group.visible=on;if(!on)return;
-  const U=SGREP.U;U.uCur.value=S.prog;U.uT0.value=0;U.uTau.value=0;U.uSize.value=1/S.exp;U.uGain.value=Math.max(.22,Math.min(.55,.5*Math.sqrt(101/N1)));U.uSel.value=S.sel&&S.sel.kind===1?S.sel.idx:-1;U.uAll.value=0;
+  const U=SGREP.U;U.uCur.value=S.prog;U.uT0.value=0;U.uTau.value=0;U.uSize.value=1/S.exp;U.uGain.value=SGK*Math.max(.22,Math.min(.55,.5*Math.sqrt(101/N1)));U.uSel.value=S.sel&&S.sel.kind===1?S.sel.idx:-1;U.uAll.value=0;
 }
 /* Large systems: the copies unfold for the chosen stock, or for the members of the chosen Class 2 object. */
 function repAllow(){if(N1<=150)return null;const s=S.sel;return new Set(s&&s.kind===1?[s.idx]:s&&s.kind===2?CARDS[s.idx].members:[])}
@@ -1515,6 +1517,7 @@ function bloomK(depth){
 if(SYS.id==='world'){
   window.__umSetBloom=function(level){
     bloomPrev=bloomLevel;bloomLevel=level;bloomT0=performance.now();dirty=true;
+    if(TWO&&S.sghost)buildShortGhost(); /* v20.83: the short ghost follows the opened layers */
   };
   window.__umBloomInfo=function(){
     const layers={}, floors=[];
@@ -2417,7 +2420,7 @@ window.__umProbe=function(){
   C3O.forEach((o,z)=>{ if(o) pack(o, C3SYM[z], ''); });
   pack(C4O, SYS.name, '');
   const sides=(window.__umSides||[]).filter(s=>s.group.visible&&s.rings.h.visible).map(s=>({name:s.name, id:s.id, kind:4, door:!!s.rings.v, n:s.rings.v?2:1, r:+s.R.toFixed(4), col:'#'+s.rings.h.material.color.getHexString()}));
-  return {sys:SYS.id, z0:+ZZ[S.T0].toFixed(8), z1:+ZZ[S.T1].toFixed(8), focus:S.focus?{kind:S.focus.kind,idx:S.focus.idx}:null, sel:S.sel?{kind:S.sel.kind,idx:S.sel.idx,side:S.sel.side||''}:null, bloom:bloomLevel, canon:{c1:+(.1*DENS).toFixed(4), c2:+(.2*DENS).toFixed(4), c4:+C4O.R.toFixed(4)}, visible:vis, sides:sides};
+  return {sg:SGREP.n, sghost:!!S.sghost, two:TWO, sys:SYS.id, z0:+ZZ[S.T0].toFixed(8), z1:+ZZ[S.T1].toFixed(8), focus:S.focus?{kind:S.focus.kind,idx:S.focus.idx}:null, sel:S.sel?{kind:S.sel.kind,idx:S.sel.idx,side:S.sel.side||''}:null, bloom:bloomLevel, canon:{c1:+(.1*DENS).toFixed(4), c2:+(.2*DENS).toFixed(4), c4:+C4O.R.toFixed(4)}, visible:vis, sides:sides};
 };
 window.__umRingAt=function(kind, idx){
   let obj=null, pos=null;
