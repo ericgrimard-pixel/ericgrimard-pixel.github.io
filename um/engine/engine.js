@@ -1166,26 +1166,48 @@ const REP=makeReps(),THRREP=makeReps(),EMPTYL={n:0,zone:()=>-1,get:()=>{}};
    the long ghost is unchanged when the sequence has enough sessions. Not the substitute renderer removed on 12 Nov. */
 /* v20.83 (Éric, 19 Nov 2026): every two-take animation carries it, Finance (the Hub) included: there only the Class 1 objects
    the bloom has opened get copies, rebuilt at each bloom step. Copies 12 % brighter (SGK), same falloff and placement. */
-const SGREP=makeReps(),SGN=8,SGL=.35,SGK=1.12;
+/* v20.84 (Éric, 19 Nov 2026, after the 23 h 13 report): the copies follow the object on its real path (the same dial
+   interpolation as applyObj, eased per axis), right behind where it is now, and are rebuilt as the run advances or the
+   slider moves, so the trail shows during the whole animation and at any paused position (T₁ included). Spacing keeps the
+   v20.75 rule: copy k sits k/8 of SGL of the object's own move behind it along the path, so fast phases do not stretch
+   the trail (never closer than SGMIN, about one object radius, so small moves still show outside the object); an
+   object that has not yet travelled that far shows only the copies it has earned. Zone cards on Finance sit still: no
+   copies. One gain for every system, SGG × SGK = 0.504 (v20.83 used SGK × 0.22–0.55 by system size). Reduce Motion never
+   autoplays and opens at T₁ (unchanged): the trail is now drawn there and at any slider position. */
+const SGREP=makeReps(),SGN=8,SGL=.35,SGK=1.12,SGS=24,SGMIN=.09,SGG=.45;
+{const f0=SGREP.fill;SGREP.fill=l=>{f0(l);SGREP.zones.forEach(Z=>Z.objs.forEach(o=>{o.geometry._maxInstanceCount=undefined}))}}
+/* v20.84: three.js caches an instanced geometry's maximum instance count the first time it is drawn. The copies are now
+   rebuilt as the run advances (empty at T₀, then growing), so the cache is cleared after each fill; otherwise a system
+   that opened at T₀ kept drawing at most one copy per shape (the cause of the trail missing on LNH and n225). */
+function sgAt(i,t){const b=i*F,A=(b+S.T0)*10,B=(b+S.T1)*10,v=k=>zp(V,A,B,S.T0,S.T1,t,k),X=v(0),Y=v(1),Z=v(2),a=AZ(X),r=2-Z,o=[r*Math.sin(a),Y,-r*Math.cos(a)];
+  if(S.layers.spacing&&!S.ghost){const q=i*6,u=1-t;o[0]+=OFF1[q]*u+OFF1[q+3]*t;o[1]+=OFF1[q+1]*u+OFF1[q+4]*t;o[2]+=OFF1[q+2]*u+OFF1[q+5]*t}return o}
 function buildShortGhost(){
+  S.sgp=S.prog;
   if(!TWO||!S.sghost||S.T0===S.T1){SGREP.fill(EMPTYL);return}
-  const L=[],d0=S.T0,d1=S.T1,sp=S.layers.spacing,HUBW=SYS.id==='world',BL=HUBW?(window.UM_BLOOM|0):0;
+  const L=[],d0=S.T0,d1=S.T1,HUBW=SYS.id==='world',BL=HUBW?(window.UM_BLOOM|0):0,P=S.prog;
+  if(P<=0){SGREP.fill(EMPTYL);return}
   for(let i=0;i<N1;i++){const j0=i*F+d0,j1=i*F+d1;if(!PRES[j0]||!PRES[j1])continue;if(HUBW&&((TK[i]&&TK[i].bloom)||0)>BL)continue;
-    const a=posOf(V,j0),b=posOf(V,j1);if(sp){const q=i*6;a[0]+=OFF1[q];a[1]+=OFF1[q+1];a[2]+=OFF1[q+2];b[0]+=OFF1[q+3];b[1]+=OFF1[q+4];b[2]+=OFF1[q+5]}
-    const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2];if(dx*dx+dy*dy+dz*dz<1e-8)continue;
-    for(let k=1;k<=SGN;k++){const f=SGL*k/SGN;L.push(i,j0*10,j1*10,1-f,b[0]-dx*f,b[1]-dy*f,b[2]-dz*f)}}
+    if(HUBW&&TK[i]&&TK[i].floor&&window.UM_CARDINAL&&UM_CARDINAL[TK[i].floor])continue;
+    const a=sgAt(i,0),b=sgAt(i,1),D=Math.hypot(b[0]-a[0],b[1]-a[1],b[2]-a[2]);if(D<1e-4)continue;
+    /* walk back along the path from the current point, dropping a copy every SGL·D/SGN of travelled length */
+    const step=Math.max(SGL*D/SGN,SGMIN/S.exp);let prev=sgAt(i,P),acc=0,k=1,tp=P;const dt=P/SGS;
+    for(let s2=1;s2<=SGS&&k<=SGN;s2++){const t=Math.max(0,P-dt*s2),c=sgAt(i,t),seg=Math.hypot(c[0]-prev[0],c[1]-prev[1],c[2]-prev[2]);
+      while(k<=SGN&&acc+seg>=step*k){const w=seg>0?(step*k-acc)/seg:0,tk=tp+(t-tp)*w;
+        L.push(i,j0*10,j1*10,tk,prev[0]+(c[0]-prev[0])*w,prev[1]+(c[1]-prev[1])*w,prev[2]+(c[2]-prev[2])*w,P-SGL*k/SGN);k++}
+      acc+=seg;prev=c;tp=t}}
   const q=new THREE.Quaternion(),e=new THREE.Euler();
-  SGREP.fill({n:L.length/7,
-    zone:k=>zoneOf(V[(L[k*7+3]<.5?L[k*7+1]:L[k*7+2])+3]),
-    get:(k,o)=>{const m=k*7,A=L[m+1],B=L[m+2],u=L[m+3],Lz=(arr,kk)=>CY(arr[zoneOf(V[A+kk])],arr[zoneOf(V[B+kk])],u);
+  SGREP.fill({n:L.length/8,
+    zone:k=>zoneOf(V[(L[k*8+3]<.5?L[k*8+1]:L[k*8+2])+3]),
+    get:(k,o)=>{const m=k*8,A=L[m+1],B=L[m+2],u=L[m+3],Lz=(arr,kk)=>CY(arr[zoneOf(V[A+kk])],arr[zoneOf(V[B+kk])],u);
       e.set(Lz(LV.pitch,6),Math.PI/2-AZ(CY(V[A],V[B],u)),-Lz(LV.roll,8),'YXZ');q.setFromEuler(e);
       const ca=satRGB(zoneOf(V[A+5]),LV.sat[zoneOf(V[A+9])]),cb=satRGB(zoneOf(V[B+5]),LV.sat[zoneOf(V[B+9])]);
       o.pos[0]=L[m+4];o.pos[1]=L[m+5];o.pos[2]=L[m+6];o.q[0]=q.x;o.q[1]=q.y;o.q[2]=q.z;o.q[3]=q.w;o.s=Lz(LV.stretch,4);
-      o.col[0]=CY(ca[0],cb[0],u);o.col[1]=CY(ca[1],cb[1],u);o.col[2]=CY(ca[2],cb[2],u);o.day=u;o.tk=L[m];o.out=0;o.org=1-SGL-.02;o.vol=1}});
+      o.col[0]=CY(ca[0],cb[0],u);o.col[1]=CY(ca[1],cb[1],u);o.col[2]=CY(ca[2],cb[2],u);o.day=L[m+7];o.tk=L[m];o.out=0;o.org=P-SGL-.02;o.vol=1}});
 }
 function sgFrame(){
+  if(TWO&&S.sghost&&Math.abs(S.prog-(S.sgp==null?-1:S.sgp))>.004)buildShortGhost(); /* v20.84: the trail follows the run and the slider */
   const on=TWO&&!!S.sghost&&SGREP.n>0&&S.layers.c1!==false;SGREP.group.visible=on;if(!on)return;
-  const U=SGREP.U;U.uCur.value=S.prog;U.uT0.value=0;U.uTau.value=0;U.uSize.value=1/S.exp;U.uGain.value=SGK*Math.max(.22,Math.min(.55,.5*Math.sqrt(101/N1)));U.uSel.value=S.sel&&S.sel.kind===1?S.sel.idx:-1;U.uAll.value=0;
+  const U=SGREP.U;U.uCur.value=S.prog;U.uT0.value=0;U.uTau.value=0;U.uSize.value=1/S.exp;U.uGain.value=SGK*SGG;U.uSel.value=S.sel&&S.sel.kind===1?S.sel.idx:-1;U.uAll.value=0;
 }
 /* Large systems: the copies unfold for the chosen stock, or for the members of the chosen Class 2 object. */
 function repAllow(){if(N1<=150)return null;const s=S.sel;return new Set(s&&s.kind===1?[s.idx]:s&&s.kind===2?CARDS[s.idx].members:[])}
