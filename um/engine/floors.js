@@ -250,10 +250,12 @@
   });
   const nhl=sys('nhl'), music=sys('music');
   addFloor({id:'art', name:'Art', level:'silo', parent:'world', children:music?['music']:[], n:1});
-  addFloor({id:'sports', name:'Sports', level:'silo', parent:'world', children:nhl?['nhl']:[], n:1});
+  const fbs=LIB.filter(x=>x.fbParent&&x.data); /* v20.85 SPORT 02: football floors, parent chain from the data */
+  addFloor({id:'sports', name:'Sports', level:'silo', parent:'world', children:(nhl?['nhl']:[]).concat(sys('football')?['football']:[]), n:1});
   addFloor({id:'health', name:'Santé', level:'silo', parent:'world', children:[], n:0}); /* v20.80 placeholder */
   if(music) addFloor({id:'music', name:music.name, level:'index', parent:'art', children:[], n:music.data.t.length, source:'music'});
   if(nhl) addFloor({id:'nhl', name:nhl.name, level:'index', parent:'sports', children:[], n:nhl.data.t.length, source:'nhl'});
+  fbs.forEach(s=>addFloor({id:s.id, name:s.name, level:'index', parent:s.fbParent, children:fbs.filter(c=>c.fbParent===s.id).map(c=>c.id), n:s.data.t.length, source:s.id}));
   if(by.world&&!by.world.children.includes('art')) by.world.children.push('art');
   if(by.world&&!by.world.children.includes('sports')) by.world.children.push('sports');
   if(by.world&&!by.world.children.includes('health')) by.world.children.push('health');

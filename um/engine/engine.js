@@ -34,6 +34,7 @@ BOOT={ac:new AbortController(),destroy:()=>{}};
 (function(){
 const DATA = SYS.data;
 const HK=SYS.kind==='hockey',GC=SYS.kind==='cols',UN=HK?'joueurs':GC?(DATA.unit||'objets'):'titres'; /* GC: column system (rev. 23.15) */
+const GCSNAP=GC&&!DATA.two; /* v20.85: a column system is a single snapshot unless it declares two real takes (football) */
 document.getElementById('srcText').innerHTML=SYS.source;
 const PHI=(1+Math.sqrt(5))/2, TAU=Math.sqrt(PHI*PHI+5);
 const F=DATA.dates.length, TK=DATA.t, N1=TK.length;
@@ -141,6 +142,7 @@ function objTex(i,ab){
     g.font='600 30px "IBM Plex Mono", ui-monospace, monospace';g.textAlign='center';g.textBaseline='middle';g.lineJoin='round';g.lineWidth=8;g.strokeStyle='rgba(5,8,13,.9)';g.strokeText(ab||'',96,160);g.fillStyle='#ffffff';g.fillText(ab||'',96,160)}};
   tx.userData.draw();return PTX[key]=tx;
 }
+function sigSprite(i,o){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:badgeTex(TK[i].sg),transparent:true,depthWrite:false}));sp.scale.set(o.R*1.1,o.R*1.1,1);return sp} /* v20.85: generated sigle (football clubs), no crest */
 function badgeSprite(i,o){const ab=clubAt(i,TK[i].cl[F-1]?F-1:0);const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:objTex(i,ab),transparent:true,depthWrite:false}));sp.scale.set(o.R*1.1,o.R*1.1,1);sp.userData.ab=ab;return sp}
 /* zoom descendant (YB1, 22 h 11): each click rewrites the system at that level; the rest stays visible as Class 2 */
 function hkParents(ci){
@@ -451,7 +453,7 @@ const S={
   ghost:!TWO&&(window.__umGhost!=null?window.__umGhost:(()=>{try{return localStorage.getItem('um.fantome')!=='0'}catch(e){return true}})()),
   sghost:TWO&&(()=>{try{return localStorage.getItem('um.fantomeCourt')!=='0'}catch(e){return true}})(), /* v20.75 short ghost */
   gclk:window.__umGclk||'vol',gtau:window.__umGtau!=null?window.__umGtau:0,
-  layers:{c1:true,sec:true,cty:true,ind:false,genre:true,key:false,mode:false,expl:false,tsig:false,conf:true,div:true,club:true,nat:true,pos:true,drnd:false,dyr:false,age:false,hand:false,xfer:false,ptrail:false,c3:true,c4:true,bounds:true,trails:false,ghost:true,gpaths:false,tlabels:true,links:true,labels:true,spacing:true,z0:false,z0c2:true,z0c3:true,c4v:false,c3d:false,micro:true}, /* rev. 23.12 (Éric, 11 Nov., 13 h 38): on opening, no line between the objects; each one is a layer to switch on. Rev. 23.13: the LNH transfer trail too */
+  layers:{c1:true,sec:true,cty:true,ind:false,genre:true,key:false,mode:false,expl:false,tsig:false,conf:true,assoc:true,league:true,lvl:false,mv:false,div:true,club:true,nat:true,pos:true,drnd:false,dyr:false,age:false,hand:false,xfer:false,ptrail:false,c3:true,c4:true,bounds:true,trails:false,ghost:true,gpaths:false,tlabels:true,links:true,labels:true,spacing:true,z0:false,z0c2:true,z0c3:true,c4v:false,c3d:false,micro:true}, /* rev. 23.12 (Éric, 11 Nov., 13 h 38): on opening, no line between the objects; each one is a layer to switch on. Rev. 23.13: the LNH transfer trail too */
   thr:window.__umThr!=null?window.__umThr:10,thrW:window.__umThrW||'tv',
   gvol:window.__umGvol||1,gvolI:{} /* Volume du fantôme (Grok spec, 9 Nov.): global and per stock; never merged with the system Volume */
 };
@@ -1299,7 +1301,7 @@ function ghostFrame(c){
   v.uSel.value=S.sel&&S.sel.kind===2?S.sel.idx:-1;
   if(S.sel&&(S.sel.kind===1||S.sel.kind===2))pathGeo.setDrawRange(0,Math.max(0,Math.min(pathN,Math.floor(c)-pathD0+1)));
 }
-function ensureTL(){O1.forEach((o,i)=>{if(o.tl)return;o.tl=HK?badgeSprite(i,o):label(TK[i].s,'#ffffff',o.R*.46,500);o.tl.position.set(0,0,0);o.tl.material.depthTest=false;o.tl.renderOrder=9;o.tl.visible=false;o.root.add(o.tl);
+function ensureTL(){O1.forEach((o,i)=>{if(o.tl)return;o.tl=HK?badgeSprite(i,o):(GC&&DATA.sigle&&TK[i].sg)?sigSprite(i,o):label(TK[i].s,'#ffffff',o.R*.46,500);o.tl.position.set(0,0,0);o.tl.material.depthTest=false;o.tl.renderOrder=9;o.tl.visible=false;o.root.add(o.tl);
   /* v20.72 (Éric, 16 Nov 2026): the large cardinal signs (N, E, S, W, SW) are erased from the chamber. */})
 }
 function posOf(VV,q){const X=VV[q*10],Y=VV[q*10+1],Z=VV[q*10+2],a=AZ(X),r=2-Z;return [r*Math.sin(a),Y,-r*Math.cos(a)]}
@@ -1895,7 +1897,7 @@ $('session').addEventListener('click',()=>{
 function syncControls(){
   $('mFourier').setAttribute('aria-pressed',S.mode==='fourier');$('mFree').setAttribute('aria-pressed',S.mode==='free');
   $('mFourier').disabled=!!S.session||TWO;$('mFree').disabled=!!S.session;
-  $('mFourier').title=TWO?(HK?"Le mode Fourier demande les matchs qui précèdent chaque prise ; ce système n'a que T₀ et T₁, deux saisons.":GC?"Le mode Fourier demande une suite de prises ; ce système n'a qu'un instantané (T₀ = T₁).":"Le mode Fourier demande les séances qui précèdent chaque prise ; ce système n'a que T₀ et T₁."):'';
+  $('mFourier').title=TWO?(HK?"Le mode Fourier demande les matchs qui précèdent chaque prise ; ce système n'a que T₀ et T₁, deux saisons.":GC?(GCSNAP?"Le mode Fourier demande une suite de prises ; ce système n'a qu'un instantané (T₀ = T₁).":"Le mode Fourier demande les matchs qui précèdent chaque prise ; ce système n'a que T₀ et T₁, deux saisons."):"Le mode Fourier demande les séances qui précèdent chaque prise ; ce système n'a que T₀ et T₁."):'';
   $('selT0').disabled=$('selT1').disabled=!!S.session;
   $('km').checked=S.km||S.mode==='fourier';$('km').disabled=!!S.session||S.mode==='fourier';
   const sb=$('session');sb.setAttribute('aria-pressed',!!S.session);
@@ -1925,14 +1927,14 @@ drawLegend();
 /* Ghost controls */
 const gBtn=$('ghost');
 function syncGhostUI(){
-  gBtn.setAttribute('aria-pressed',(TWO?S.sghost:S.ghost)?'true':'false');gBtn.disabled=TWO&&GC;
-  gBtn.title=TWO&&!GC?'Fantôme court : environ 8 copies proches derrière chaque objet, direction générale de T₀ vers T₁, même règle de condensation pour tous ; ce système n\'a que T₀ et T₁ (touche F)':TWO?(HK?"Le fantôme demande la saison match par match ; ce système n'a que T₀ et T₁, deux saisons.":GC?"Le fantôme demande une suite de prises ; ce système n'a qu'un instantané (T₀ = T₁).":"Le fantôme demande toutes les séances ; ce système n'a que T₀ et T₁."):'Fantôme : chaque titre laisse ses fantômes de T₀ à T₁ ; la colonne d\'horloge en règle seulement l\'espacement (touche F)';
+  gBtn.setAttribute('aria-pressed',(TWO?S.sghost:S.ghost)?'true':'false');gBtn.disabled=TWO&&GCSNAP;
+  gBtn.title=TWO&&!GCSNAP?'Fantôme court : environ 8 copies proches derrière chaque objet, direction générale de T₀ vers T₁, même règle de condensation pour tous ; ce système n\'a que T₀ et T₁ (touche F)':TWO?(HK?"Le fantôme demande la saison match par match ; ce système n'a que T₀ et T₁, deux saisons.":GC?"Le fantôme demande une suite de prises ; ce système n'a qu'un instantané (T₀ = T₁).":"Le fantôme demande toutes les séances ; ce système n'a que T₀ et T₁."):'Fantôme : chaque titre laisse ses fantômes de T₀ à T₁ ; la colonne d\'horloge en règle seulement l\'espacement (touche F)';
   $('gwBox').hidden=$('gtauBox').hidden=$('thrBox').hidden=$('gContact').hidden=$('gvBox').hidden=!S.ghost;$('gvol').value=String(Math.round(Math.log2(S.gvol)*100));$('gvolN').textContent='×'+fmtGV(S.gvol);$('gclk').value=S.gclk;$('gtau').value=String(S.gtau);$('thr').value=String(S.thr);$('thrW').value=S.thrW;
-  $('sub').textContent='le corps · Universal Metaphor · moteur v2 · rév. 23.16 + relatif 23.18 · '+(S.ghost?'fantôme · horloge : '+(GCLKL[S.gclk]||'').toLowerCase()+(S.thr?' · lancer '+S.thr+' séances':''):(HK?'deux prises · deux saisons':GC?'un instantané · T₀ = T₁':'deux prises'));
+  $('sub').textContent='le corps · Universal Metaphor · moteur v2 · rév. 23.16 + relatif 23.18 · '+(S.ghost?'fantôme · horloge : '+(GCLKL[S.gclk]||'').toLowerCase()+(S.thr?' · lancer '+S.thr+' séances':''):(HK||(GC&&!GCSNAP)?'deux prises · deux saisons':GC?'un instantané · T₀ = T₁':'deux prises'));
   drawLegend();
 }
 function setGhost(on){
-  if(TWO){if(GC)return;S.sghost=!S.sghost;try{localStorage.setItem('um.fantomeCourt',S.sghost?'1':'0')}catch(e){}buildShortGhost();syncGhostUI();dirty=true;return}
+  if(TWO){if(GCSNAP)return;S.sghost=!S.sghost;try{localStorage.setItem('um.fantomeCourt',S.sghost?'1':'0')}catch(e){}buildShortGhost();syncGhostUI();dirty=true;return}
   S.ghost=!!on;window.__umGhost=S.ghost;try{localStorage.setItem('um.fantome',S.ghost?'1':'0')}catch(e){}
   if(S.ghost)ensureTL();
   rebuild();syncGhostUI();drawGauss();renderFiche();
@@ -1994,6 +1996,7 @@ function goParent(){
    was built from this system, or is the zone whose name the card carries. */
 function class2Floor(idx){
   const c=CARDS[idx]; if(!c||!window.UM_FLOORS) return '';
+  if(GC&&DATA.c2f){const f=DATA.c2f[c.cid];return f&&UM_FLOOR_BY[f]?f:''} /* v20.85: football cards name their own floor */
   if(SYS.id==='world'&&c.ty==='sec'){
     const z=UM_FLOORS.find(f=>f.level==='zone'&&f.name===c.name);
     if(z) return z.id;
