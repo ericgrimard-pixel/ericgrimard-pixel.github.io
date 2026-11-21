@@ -1,0 +1,8 @@
+item,scope,missing,reason,suggested_source,status,tag
+CA physicians,13 provinces/territories,sex & age split,CIHI data-tables xlsx page returns 403 from box,CIHI supply-distribution-migration-physicians-in-canada-2024-data-tables-en.xlsx (manual download),OPEN,[INCOMPLET]
+US metro physicians total,393 MSAs,all-physician total,OEWS has no broad physician code; detailed codes suppressed in many MSAs — no summation done,AAMC State Physician Workforce Data Book; AMA Masterfile (licensed),OPEN,[INCOMPLET]
+CCBE lawyers per European country,46 CCBE countries,lawyer counts,CCBE statistics PDF not retrievable (ccbe.eu Statistics URLs 404 from box; only third-party 2018 copies found),CCBE Lawyers’ Statistics (ccbe.eu > Documents > Statistics) — manual download,OPEN,[INCOMPLET]
+GDL subnational life expectancy,"~1,800 regions / 160+ countries",LE0 by region,Global Data Lab requires free user registration (owner account) for full download; public table capped ~88 rows; NOT attempted,globaldatalab.org/shdi — register & download SHDI-SGDI database,OPEN,[INCOMPLET]
+Korea VSL,KOR,official WTP VSL,none found; only KRIHS accident-cost unit (secondary),KDI PIMAC preliminary feasibility guideline; MOLIT,OPEN,[INCOMPLET]
+EU VSL primary,EU,ECHA primary document,ECHA PDF download invalid,echa.europa.eu SEAC reference values,OPEN,[INCOMPLET]
+Urban Audit city poverty,non-EU/EFTA cities,poverty by city,Urban Audit EU-SILC city items exist only for a subset of EU cities,national SILC with DEGURBA,OPEN,[INCOMPLET]
