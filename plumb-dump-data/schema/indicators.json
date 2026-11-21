@@ -1,0 +1,297 @@
+{
+  "POP": {
+    "label": "Population (count)",
+    "unit": "count",
+    "target_sex": [
+      "T",
+      "M",
+      "F"
+    ],
+    "target_age": [
+      "ALL",
+      "0-14",
+      "15-64",
+      "65+"
+    ],
+    "target_quintile": [
+      "ALL",
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4",
+      "Q5"
+    ]
+  },
+  "LE0": {
+    "label": "Life expectancy at birth (yrs)",
+    "unit": "years",
+    "target_sex": [
+      "T",
+      "M",
+      "F"
+    ],
+    "target_age": [
+      "ALL"
+    ],
+    "target_quintile": [
+      "ALL",
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4",
+      "Q5"
+    ]
+  },
+  "LE60": {
+    "label": "Life expectancy at 60 (yrs)",
+    "unit": "years",
+    "target_sex": [
+      "T",
+      "M",
+      "F"
+    ],
+    "target_age": [
+      "ALL"
+    ],
+    "target_quintile": [
+      "ALL",
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4",
+      "Q5"
+    ]
+  },
+  "HALE0": {
+    "label": "Healthy life expectancy at birth (yrs)",
+    "unit": "years",
+    "target_sex": [
+      "T",
+      "M",
+      "F"
+    ],
+    "target_age": [
+      "ALL"
+    ],
+    "target_quintile": [
+      "ALL",
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4",
+      "Q5"
+    ]
+  },
+  "HALE60": {
+    "label": "HALE at 60 (yrs)",
+    "unit": "years",
+    "target_sex": [
+      "T",
+      "M",
+      "F"
+    ],
+    "target_age": [
+      "ALL"
+    ],
+    "target_quintile": [
+      "ALL",
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4",
+      "Q5"
+    ]
+  },
+  "U5MR": {
+    "label": "Under-5 mortality per 1,000 live births",
+    "unit": "per 1,000",
+    "target_sex": [
+      "T",
+      "M",
+      "F"
+    ],
+    "target_age": [
+      "ALL"
+    ],
+    "target_quintile": [
+      "ALL",
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4",
+      "Q5"
+    ]
+  },
+  "AMR": {
+    "label": "Adult mortality 15-60 per 1,000",
+    "unit": "per 1,000",
+    "target_sex": [
+      "M",
+      "F"
+    ],
+    "target_age": [
+      "ALL"
+    ],
+    "target_quintile": [
+      "ALL",
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4",
+      "Q5"
+    ]
+  },
+  "NCD3070": {
+    "label": "Probability of dying 30-70 from CVD/cancer/diabetes/CRD (%)",
+    "unit": "percent",
+    "target_sex": [
+      "T",
+      "M",
+      "F"
+    ],
+    "target_age": [
+      "ALL"
+    ],
+    "target_quintile": [
+      "ALL",
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4",
+      "Q5"
+    ]
+  },
+  "OBESITY18": {
+    "label": "Obesity prevalence 18+, age-std (%)",
+    "unit": "percent",
+    "target_sex": [
+      "T",
+      "M",
+      "F"
+    ],
+    "target_age": [
+      "ALL"
+    ],
+    "target_quintile": [
+      "ALL",
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4",
+      "Q5"
+    ]
+  },
+  "TOBACCO": {
+    "label": "Tobacco use 15+ (%)",
+    "unit": "percent",
+    "target_sex": [
+      "M",
+      "F"
+    ],
+    "target_age": [
+      "ALL"
+    ],
+    "target_quintile": [
+      "ALL",
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4",
+      "Q5"
+    ]
+  },
+  "GNIPC_PPP": {
+    "label": "GNI per capita, PPP (current intl $)",
+    "unit": "PPP $",
+    "target_sex": [
+      "T",
+      "M",
+      "F"
+    ],
+    "target_age": [
+      "ALL"
+    ],
+    "target_quintile": [
+      "ALL",
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4",
+      "Q5"
+    ]
+  },
+  "EARN_PPP": {
+    "label": "Mean monthly earnings of employees (PPP $)",
+    "unit": "PPP $",
+    "target_sex": [
+      "T",
+      "M",
+      "F"
+    ],
+    "target_age": [
+      "ALL",
+      "0-14",
+      "15-64",
+      "65+"
+    ],
+    "target_quintile": [
+      "ALL"
+    ]
+  },
+  "INCSHARE": {
+    "label": "Income/consumption share held by quintile (%)",
+    "unit": "percent",
+    "target_sex": [
+      "T"
+    ],
+    "target_age": [
+      "ALL"
+    ],
+    "target_quintile": [
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4",
+      "Q5"
+    ]
+  },
+  "GINI": {
+    "label": "Gini index",
+    "unit": "index",
+    "target_sex": [
+      "T"
+    ],
+    "target_age": [
+      "ALL"
+    ],
+    "target_quintile": [
+      "ALL"
+    ]
+  },
+  "UHC": {
+    "label": "UHC service coverage index",
+    "unit": "index",
+    "target_sex": [
+      "T"
+    ],
+    "target_age": [
+      "ALL"
+    ],
+    "target_quintile": [
+      "ALL"
+    ]
+  },
+  "CHE_PC_PPP": {
+    "label": "Current health expenditure per capita, PPP",
+    "unit": "PPP $",
+    "target_sex": [
+      "T"
+    ],
+    "target_age": [
+      "ALL"
+    ],
+    "target_quintile": [
+      "ALL"
+    ]
+  }
+}
