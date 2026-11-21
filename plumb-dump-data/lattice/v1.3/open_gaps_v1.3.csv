@@ -1,0 +1,12 @@
+item,scope,missing,reason,suggested_source,status,tag
+Australia health workforce by region,AUS SA4/state,AIHW/HWD workforce counts,Dept of Health HWD is a dashboard (no static public file located); not attempted,hwd.health.gov.au downloadable data tool,OPEN,[INCOMPLET]
+NZ territorial authorities LE,67 TAs,TA life tables,TA tables published in Stats NZ Excel not located as static file from box,Stats NZ subnational period life tables 2017–2019 (Excel),OPEN,[INCOMPLET]
+"Brazil municipalities LE/poverty, physicians (CFM)","5,570 municípios / 27 UF","LE, poverty, physicians",No municipal series in SIDRA API located without Census-microdata derivation; CFM Demografia Médica is a PDF (not parsed this pass); DATASUS TabNet is interactive,IBGE Censo 2022 SIDRA; CFM Demografia Médica 2025; DATASUS CNES,OPEN,[INCOMPLET]
+Japan e-Stat / municipal,JPN municipalities,LE by municipality (市区町村別生命表),e-Stat API needs appId (not used); MHLW municipal tables not fetched this pass,MHLW 市区町村別生命表 2020,OPEN,[INCOMPLET]
+CCBE current lawyer statistics,CCBE countries,"post-2015 counts; multi-body countries (BEL, GBR, DEU, POL, NOR, IRL) not summed",ccbe.eu statistics URLs 404 (site restructured); only 2015 third-party copy retrievable,CCBE secretariat / ccbe.eu document search,OPEN,[INCOMPLET]
+China provinces,CHN 31 provinces,"LE, poverty, workforce",NBS data portal (data.stats.gov.cn) not attempted/scriptable without session; no static file located,"China Statistical Yearbook 2025 tables 2-x, NHC Health Statistical Yearbook",OPEN,[INCOMPLET]
+Korea regions,KOR 17 sido,regional life tables,KOSIS OpenAPI requires key,KOSIS 시도별 생명표,OPEN,[INCOMPLET]
+Indonesia provinces/regencies,IDN 38 provinces / 514 kab-kota,"AHH (LE), poverty P0",BPS WebAPI requires key; static tables not fetched,BPS Angka Harapan Hidup menurut provinsi; Persentase penduduk miskin,OPEN,[INCOMPLET]
+US ACS city poverty,US places,S1701 poverty by place,Census API redirects without key (302); bulk ACS summary file not processed this pass,ACS 5-year Summary File (www2.census.gov/programs-surveys/acs/summary_file),OPEN,[INCOMPLET]
+WHO / World Bank city data,global cities,city health indicators,no consolidated public city dataset with sourced values located,WHO Urban Health Observatory; World Bank Urban,OPEN,[INCOMPLET]
+GDL subnational LE,"~1,800 regions",LE by region,registration required,globaldatalab.org,OPEN,[INCOMPLET]
