@@ -1,0 +1,286 @@
+{
+  "America": [
+    {
+      "iso3": "ABW",
+      "country": "Aruba"
+    },
+    {
+      "iso3": "ARG",
+      "country": "Argentina"
+    },
+    {
+      "iso3": "ATG",
+      "country": "Antigua and Barbuda"
+    },
+    {
+      "iso3": "BHS",
+      "country": "Bahamas, The"
+    },
+    {
+      "iso3": "BLZ",
+      "country": "Belize"
+    },
+    {
+      "iso3": "BMU",
+      "country": "Bermuda"
+    },
+    {
+      "iso3": "BOL",
+      "country": "Bolivia"
+    },
+    {
+      "iso3": "BRA",
+      "country": "Brazil"
+    },
+    {
+      "iso3": "BRB",
+      "country": "Barbados"
+    },
+    {
+      "iso3": "CUW",
+      "country": "Curacao"
+    },
+    {
+      "iso3": "CYM",
+      "country": "Cayman Islands"
+    },
+    {
+      "iso3": "DMA",
+      "country": "Dominica"
+    },
+    {
+      "iso3": "GRD",
+      "country": "Grenada"
+    },
+    {
+      "iso3": "KNA",
+      "country": "St. Kitts and Nevis"
+    },
+    {
+      "iso3": "LCA",
+      "country": "St. Lucia"
+    },
+    {
+      "iso3": "MAF",
+      "country": "St. Martin (French part)"
+    },
+    {
+      "iso3": "SXM",
+      "country": "Sint Maarten (Dutch part)"
+    },
+    {
+      "iso3": "TCA",
+      "country": "Turks and Caicos Islands"
+    },
+    {
+      "iso3": "VCT",
+      "country": "St. Vincent and the Grenadines"
+    },
+    {
+      "iso3": "VGB",
+      "country": "British Virgin Islands"
+    },
+    {
+      "iso3": "VIR",
+      "country": "Virgin Islands (U.S.)"
+    }
+  ],
+  "Europe": [
+    {
+      "iso3": "ALB",
+      "country": "Albania"
+    },
+    {
+      "iso3": "AND",
+      "country": "Andorra"
+    },
+    {
+      "iso3": "ARM",
+      "country": "Armenia"
+    },
+    {
+      "iso3": "AUT",
+      "country": "Austria"
+    },
+    {
+      "iso3": "AZE",
+      "country": "Azerbaijan"
+    },
+    {
+      "iso3": "BEL",
+      "country": "Belgium"
+    },
+    {
+      "iso3": "BIH",
+      "country": "Bosnia and Herzegovina"
+    },
+    {
+      "iso3": "CHI",
+      "country": "Channel Islands"
+    },
+    {
+      "iso3": "FRO",
+      "country": "Faroe Islands"
+    },
+    {
+      "iso3": "GIB",
+      "country": "Gibraltar"
+    },
+    {
+      "iso3": "IMN",
+      "country": "Isle of Man"
+    },
+    {
+      "iso3": "LIE",
+      "country": "Liechtenstein"
+    },
+    {
+      "iso3": "MCO",
+      "country": "Monaco"
+    },
+    {
+      "iso3": "MLT",
+      "country": "Malta"
+    },
+    {
+      "iso3": "SMR",
+      "country": "San Marino"
+    },
+    {
+      "iso3": "XKX",
+      "country": "Kosovo"
+    }
+  ],
+  "Africa": [
+    {
+      "iso3": "AGO",
+      "country": "Angola"
+    },
+    {
+      "iso3": "BWA",
+      "country": "Botswana"
+    },
+    {
+      "iso3": "COM",
+      "country": "Comoros"
+    },
+    {
+      "iso3": "CPV",
+      "country": "Cabo Verde"
+    },
+    {
+      "iso3": "MUS",
+      "country": "Mauritius"
+    },
+    {
+      "iso3": "STP",
+      "country": "Sao Tome and Principe"
+    },
+    {
+      "iso3": "SYC",
+      "country": "Seychelles"
+    }
+  ],
+  "Middle East": [
+    {
+      "iso3": "BHR",
+      "country": "Bahrain"
+    },
+    {
+      "iso3": "DZA",
+      "country": "Algeria"
+    }
+  ],
+  "East": [
+    {
+      "iso3": "AFG",
+      "country": "Afghanistan"
+    },
+    {
+      "iso3": "BGD",
+      "country": "Bangladesh"
+    },
+    {
+      "iso3": "BRN",
+      "country": "Brunei Darussalam"
+    },
+    {
+      "iso3": "BTN",
+      "country": "Bhutan"
+    },
+    {
+      "iso3": "HKG",
+      "country": "Hong Kong SAR, China"
+    },
+    {
+      "iso3": "MAC",
+      "country": "Macao SAR, China"
+    },
+    {
+      "iso3": "MDV",
+      "country": "Maldives"
+    },
+    {
+      "iso3": "SGP",
+      "country": "Singapore"
+    }
+  ],
+  "South Pacific": [
+    {
+      "iso3": "ASM",
+      "country": "American Samoa"
+    },
+    {
+      "iso3": "AUS",
+      "country": "Australia"
+    },
+    {
+      "iso3": "FSM",
+      "country": "Micronesia, Fed. Sts."
+    },
+    {
+      "iso3": "GUM",
+      "country": "Guam"
+    },
+    {
+      "iso3": "KIR",
+      "country": "Kiribati"
+    },
+    {
+      "iso3": "MHL",
+      "country": "Marshall Islands"
+    },
+    {
+      "iso3": "MNP",
+      "country": "Northern Mariana Islands"
+    },
+    {
+      "iso3": "NRU",
+      "country": "Naoero"
+    },
+    {
+      "iso3": "PLW",
+      "country": "Palau"
+    },
+    {
+      "iso3": "PYF",
+      "country": "French Polynesia"
+    },
+    {
+      "iso3": "SLB",
+      "country": "Solomon Islands"
+    },
+    {
+      "iso3": "TON",
+      "country": "Tonga"
+    },
+    {
+      "iso3": "TUV",
+      "country": "Tuvalu"
+    },
+    {
+      "iso3": "WSM",
+      "country": "Samoa"
+    }
+  ]
+}
