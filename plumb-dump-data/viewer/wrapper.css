@@ -1,0 +1,204 @@
+/* v2.00 sandbox viewer chrome — wrapper only.
+   Frozen snapshot/engine files are never modified.
+   Injected AFTER the engine stylesheet so these rules win the cascade.
+   Goal: one compact top line, more room for the chamber. */
+
+.app {
+  padding-block: 4px !important;
+  gap: 6px !important;
+}
+
+header.pdd-compact,
+header {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 6px 8px !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  min-height: 0 !important;
+  max-height: 40px;
+  padding: 0 !important;
+  scrollbar-width: thin;
+}
+
+/* Oversized title bar → compact wordmark. Long subtitle is hidden
+   (its text is copied onto h1[title] by wrapper.js). */
+.brand {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex: 0 0 auto !important;
+}
+.brand h1 {
+  font: 500 13px/1.2 var(--f-mono, ui-monospace, monospace) !important;
+  letter-spacing: 0.04em !important;
+  margin: 0 !important;
+}
+.brand .sub,
+#sub { display: none !important; }
+
+/* HUB ↗ points at the live hub; this sandbox must not open it.
+   The control is hidden, not deleted from the frozen markup. */
+.brand a.soul { display: none !important; }
+
+/* Classe 4 <select id="sys"> is a duplicate of the fiche chips
+   (button.chip[data-sys] in #right #fiche). Hidden, still in the DOM
+   so the engine can keep filling it; switching stays in the fiche. */
+.brand label.take { display: none !important; }
+
+.transport,
+.modes,
+.readouts {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+.brand, .modes, .readouts { flex-shrink: 0 !important; }
+.transport { flex: 1 1 auto !important; min-width: max-content !important; overflow: visible; }
+.modes { flex: 0 0 auto !important; margin-left: 4px; }
+.readouts { flex: 0 0 auto !important; margin-left: auto; }
+#play, .transport .take, #dur, #date { flex-shrink: 0 !important; }
+
+#play { width: 26px !important; font-size: 12px !important; padding: 1px 0 !important; }
+.take { font-size: 10px !important; }
+.take select { font-size: 11px !important; padding: 1px 3px !important; }
+#scrub { flex: 1 1 80px !important; min-width: 60px !important; }
+#date { font-size: 11px !important; min-width: 48px !important; }
+#dur { font-size: 11px !important; padding: 1px 3px !important; max-width: 110px !important; }
+
+.seg button { padding: 2px 7px !important; font-size: 11px !important; }
+label.chk { font-size: 11px !important; gap: 3px !important; }
+#session, #ghost, #gContact { padding: 2px 7px !important; font-size: 11px !important; }
+.vol { padding: 0 4px !important; gap: 3px !important; }
+.vol button { padding: 0 5px !important; font-size: 12px !important; }
+#vol { width: 72px !important; }
+#volNum { width: 48px !important; font-size: 11px !important; }
+
+/* Panel toggles stay — they have no equivalent until a panel is already open. */
+#tgL, #tgR, #tgV { padding: 2px 6px !important; font-size: 11px !important; }
+
+/* Top-line Z-ZERO ticker is the same live value the fiche already
+   shows in detail. Keep a compact always-visible badge so the figure
+   is not lost when the fiche is folded. */
+.readouts .ro { font-size: 10px !important; }
+.readouts .ro b { font-size: 11px !important; }
+
+/* GEP residue must stay visible (non-negotiable). Compact badge. */
+.gep { padding: 2px 5px !important; font-size: 9px !important; letter-spacing: 0.04em !important; }
+
+#stage { min-height: 0; }
+
+/* Right-panel Class 2 selector + scene buttons (Éric, 22:33).
+   Injected at the top of #right; frozen engine markup is not edited. */
+#right {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+#pdd-dock {
+  flex: 0 0 auto; /* must not shrink under the fiche — the scene list scrolls inside */
+  min-height: 0;
+  max-height: 48%;
+  padding: 8px 10px 10px;
+  margin: 0 0 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border: 1px solid var(--line, #243044);
+  border-radius: 5px;
+  background: var(--panel, #0c1118);
+  overflow: hidden;
+}
+#pdd-dock h2 {
+  margin: 6px 0 2px;
+  font: 500 10px/1.2 var(--f-mono, ui-monospace, monospace);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted, #8b98ad);
+}
+#pdd-dock h2:first-child { margin-top: 0; }
+.pdd-c2-lab {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font: 500 11px var(--f-mono, ui-monospace, monospace);
+  color: var(--muted, #8b98ad);
+}
+#pdd-c2 {
+  width: 100%;
+  min-height: 26px;
+  box-sizing: border-box;
+  font: 12px var(--f-mono, ui-monospace, monospace);
+  padding: 3px 4px;
+  background: #0a0e14;
+  color: var(--fg, #e6f2ff);
+  border: 1px solid var(--line-2, #2a3a4e);
+  border-radius: 3px;
+}
+#pdd-c2:disabled {
+  opacity: 0.65;
+  color: var(--muted, #8b98ad);
+}
+.pdd-scene {
+  overflow-y: auto;
+  max-height: min(36vh, 340px);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-height: 0;
+  padding-right: 2px;
+  scrollbar-width: thin;
+}
+.pdd-scene button {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  padding: 4px 7px;
+  font: 12px/1.3 var(--f-sans, inherit);
+  color: var(--fg, #e6f2ff);
+  background: transparent;
+  border: 1px solid var(--line, #243044);
+  border-radius: 3px;
+  cursor: pointer;
+}
+.pdd-scene button:hover,
+.pdd-scene button:focus-visible {
+  border-color: var(--accent, #a6dcff);
+  background: #14273a;
+}
+.pdd-scene button[aria-pressed="true"] {
+  border-color: var(--accent, #a6dcff);
+  background: #14273a;
+}
+.pdd-k {
+  flex: 0 0 auto;
+  font: 500 9px/1.2 var(--f-mono, ui-monospace, monospace);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted, #8b98ad);
+  font-style: normal;
+  min-width: 4.6em;
+}
+.pdd-n {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pdd-empty {
+  margin: 0;
+  font: 11px var(--f-mono, ui-monospace, monospace);
+  color: var(--muted, #8b98ad);
+}
+#right .fiche,
+#right .panel:not(#pdd-dock) {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
