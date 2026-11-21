@@ -1,0 +1,346 @@
+{
+  "id": "cell-schema-v1.1",
+  "title": "Santé lattice cell schema v1.1",
+  "version": "1.1",
+  "status": "draft for alignment (Claude + YB1)",
+  "written": "2026-11-20T23:5x America/Toronto",
+  "sources": [
+    " /workspace/sante-lattice/lattice.json (treillis v1, 20 Nov 2026)",
+    " /workspace/sante-lattice/coverage.csv",
+    " CLAUDE → GROK — SANTÉ — 1wyesVckYgsqCRhjkWixWIQP1x_xwaiGS2aoQRd5AZ6M §4",
+    " CLAUDE → GROK — CONTINUITÉ — passage 26 — 1_AggmzUVa6Oxa5oNuYSLmoIQvQIPNKXHES1Kud-WKz0 (value-age, provisional if weight coverage <50%)",
+    " /workspace/sante-lattice/v1.1/lattice_v1.1.json (treillis v1.1, 20 Nov 2026)"
+  ],
+  "rules": [
+    "Nothing is derived or invented. Unmappable columns or rows are reported as OPEN/unmapped, never guessed.",
+    "Country → zone is taken only from the lattice assignment (schema/country-zone.csv, extracted from lattice.json). Unknown countries stay unmapped; zone is not guessed.",
+    "Income quintiles stay Q1–Q5 (or ALL). They are population slices and are NEVER mapped onto the Manifestation zones Ω φ⁻ Σ φ⁺ α (20/40/60/80). Those protocol zones apply only to normalized attribute values inside the frozen engine.",
+    "City labels and definitions are kept as the source published them (place, greater city, built-up area, WUP city, …) and are never merged.",
+    "Ethnic-group labels are kept verbatim from the source. No cross-country harmonisation.",
+    "Age bands are the source bounds, verbatim. They are not rewritten into ALL/0-14/15-64/65+ unless the source already uses those exact labels.",
+    "No derived cross (e.g. city × ethnic) if the source does not publish it; the cell stays OPEN.",
+    "No interpolation between years.",
+    "Provisional is true only when a numeric weight_coverage is present and is < 50. If coverage is unknown, provisional is left empty.",
+    "value_age is the whole number of calendar years between period_year and read_date when both are known; otherwise empty.",
+    "v1.1: Geographic chain is zone → country → region → city. A region cell carries region_code AND region_code_system; codes from different systems are never merged or cross-walked.",
+    "v1.1: Overlay indicators (VSL_*, BIGMAC_*) are country-level relative-value overlays. They are not split by sex, age or income quintile; those split cells are OPEN by definition.",
+    "v1.1: VSL values keep currency, price year and method verbatim. Values the source model-transferred (e.g. Viscusi & Masterman 2017 income-elasticity transfer) carry vsl_basis='source-modelled' and are never labelled national-official. No transfers are computed here.",
+    "v1.1: Big Mac euro-area entry (EUZ) is a single entity. Euro members carry it only with bigmac_scope='euro-area aggregate', never as a national value.",
+    "v1.1: POVERTY_* cells must carry poverty_line verbatim (e.g. '$3.00 a day (2021 PPP)', 'national line', '60% of national median', 'MBM 2018 base', 'US official threshold', 'global MPI k=33.3%'). Rates on different lines are never compared or averaged together.",
+    "v1.1: WORKFORCE_* cells carry occupation_code_system (WHO NHWA, ISCO-08, US SOC 2018) verbatim; ISCO 26 is not a proxy for ISCO 261 lawyers.",
+    "v1.1: Zone aggregates are population-weighted; provisional=true when weight coverage <50%."
+  ],
+  "cell_key": [
+    {
+      "name": "zone",
+      "type": "string",
+      "required": false,
+      "description": "One of the six lattice zones: Africa, Europe, East, Middle East, South Pacific, America. Filled only via country-zone.csv / lattice assignment."
+    },
+    {
+      "name": "country_iso3",
+      "type": "string",
+      "required": false,
+      "description": "ISO 3166-1 alpha-3, as in the lattice. Empty if the source country cannot be matched."
+    },
+    {
+      "name": "country_name",
+      "type": "string",
+      "required": false,
+      "description": "Lattice name when iso3 is known; otherwise the source label, unmapped."
+    },
+    {
+      "name": "region_code",
+      "type": "string",
+      "required": false,
+      "description": "Region code as published (e.g. NUTS2 FR10, US state FIPS 06, Canada SGC 35, OPHI survey region label slug). Empty for country-level cells."
+    },
+    {
+      "name": "region_code_system",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "NUTS 2 (2024)",
+        "US state FIPS",
+        "Canada SGC province/territory code",
+        "OPHI/DHS-MICS survey subnational region (no standard code)",
+        "ISO 3166-2",
+        "other-verbatim",
+        ""
+      ],
+      "description": "System of region_code. Mandatory when region_code is set."
+    },
+    {
+      "name": "region_label_verbatim",
+      "type": "string",
+      "required": false,
+      "description": "Region name exactly as in the source."
+    },
+    {
+      "name": "geo_level",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "world",
+        "zone",
+        "country",
+        "region",
+        "city"
+      ],
+      "description": "Level of the cell in the lattice chain."
+    },
+    {
+      "name": "city_source_code",
+      "type": "string",
+      "required": false,
+      "description": "City code as published by the source (e.g. WUP code, ONS built-up area code, US place code)."
+    },
+    {
+      "name": "city_definition",
+      "type": "string",
+      "required": false,
+      "description": "Source definition of the city unit (place, city, greater city, built-up area, WUP urban agglomeration, …). Never fused across definitions."
+    },
+    {
+      "name": "city_label_verbatim",
+      "type": "string",
+      "required": false,
+      "description": "City name exactly as in the source."
+    },
+    {
+      "name": "ethnic_group_source_label",
+      "type": "string",
+      "required": false,
+      "description": "Ethnic/population-group label exactly as published. Empty if the source has none."
+    },
+    {
+      "name": "sex",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "T",
+        "M",
+        "F",
+        ""
+      ],
+      "description": "T/M/F only when the source clearly says total/male/female (or equivalent). Otherwise unmapped."
+    },
+    {
+      "name": "age_band_source",
+      "type": "string",
+      "required": false,
+      "description": "Age band as the source wrote it (bounds or label), verbatim."
+    },
+    {
+      "name": "income_quintile",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "ALL",
+        "Q1",
+        "Q2",
+        "Q3",
+        "Q4",
+        "Q5",
+        ""
+      ],
+      "description": "ALL or Q1–Q5 only when clearly labelled. Never inferred from a value, and never mapped to Ω…α."
+    }
+  ],
+  "value_fields": [
+    {
+      "name": "value",
+      "type": "number|empty",
+      "description": "Numeric value from the source. Empty when status is OPEN."
+    },
+    {
+      "name": "unit",
+      "type": "string",
+      "description": "Unit from the source or, when the indicator_code is a known lattice indicator, the unit already recorded for that code. Never invented."
+    },
+    {
+      "name": "indicator_code",
+      "type": "string",
+      "description": "Lattice indicator code (LE0, POP, …) only when the source column/code matches a known indicator. Otherwise empty and listed unmapped."
+    },
+    {
+      "name": "indicator_label",
+      "type": "string",
+      "description": "Source or lattice label for the indicator."
+    },
+    {
+      "name": "source_org",
+      "type": "string",
+      "description": "Publishing organisation as stated."
+    },
+    {
+      "name": "source_table",
+      "type": "string",
+      "description": "Table identifier as stated."
+    },
+    {
+      "name": "period_year",
+      "type": "string",
+      "description": "Period or year as stated by the source (may be a range)."
+    },
+    {
+      "name": "url",
+      "type": "string",
+      "description": "URL if the source provides one."
+    },
+    {
+      "name": "read_date",
+      "type": "string",
+      "description": "Date the deposited file was read (ISO date)."
+    },
+    {
+      "name": "file_sha256",
+      "type": "string",
+      "description": "SHA-256 of the deposited file."
+    },
+    {
+      "name": "value_age",
+      "type": "integer|empty",
+      "description": "Calendar years between period_year and read_date when both are known."
+    },
+    {
+      "name": "weight_coverage",
+      "type": "number|empty",
+      "description": "Population-weight coverage in percent, only if the source or a lattice aggregate provides it."
+    },
+    {
+      "name": "provisional",
+      "type": "boolean|empty",
+      "description": "true when weight_coverage is present and < 50; false when ≥ 50; empty when coverage is unknown."
+    },
+    {
+      "name": "status",
+      "type": "string",
+      "enum": [
+        "FILLED",
+        "OPEN"
+      ],
+      "description": "FILLED if a value is present and the cell key is usable; otherwise OPEN."
+    },
+    {
+      "name": "quality_note",
+      "type": "string",
+      "description": "Quality note copied from the source when present (e.g. official statistics in development)."
+    },
+    {
+      "name": "unmapped_fields",
+      "type": "string",
+      "description": "Semicolon-separated list of source columns or key parts that could not be mapped."
+    },
+    {
+      "name": "row_disposition",
+      "type": "string",
+      "enum": [
+        "mapped",
+        "unmapped"
+      ],
+      "description": "unmapped when the row cannot form a usable cell; it is still recorded, never dropped in silence."
+    }
+  ],
+  "csv_column_order": [
+    "zone",
+    "country_iso3",
+    "country_name",
+    "city_source_code",
+    "city_definition",
+    "city_label_verbatim",
+    "ethnic_group_source_label",
+    "sex",
+    "age_band_source",
+    "income_quintile",
+    "value",
+    "unit",
+    "indicator_code",
+    "indicator_label",
+    "source_org",
+    "source_table",
+    "period_year",
+    "url",
+    "read_date",
+    "file_sha256",
+    "value_age",
+    "weight_coverage",
+    "provisional",
+    "status",
+    "quality_note",
+    "unmapped_fields",
+    "row_disposition"
+  ],
+  "known_indicator_codes": "schema/indicators.json (from lattice.json)",
+  "country_zone_table": "schema/country-zone.csv (from lattice.json assignment; 217 rows)",
+  "quintiles_and_protocol": "Q1–Q5 are income (or wealth) slices of a population. Ω φ⁻ Σ φ⁺ α are the engine's five zones on a normalized attribute, at 20/40/60/80 of the [−1,+1] axis (zoneOf). The door and the lattice must not superimpose them.",
+  "supersedes_not_overwrites": "cell-schema-v1.json (kept unchanged)",
+  "value_fields_v1_1_added": [
+    {
+      "name": "overlay",
+      "type": "boolean",
+      "required": false,
+      "description": "True for relative-value overlays (VSL_*, BIGMAC_*), which are never sex/age/quintile split."
+    },
+    {
+      "name": "vsl_basis",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "national-official",
+        "source-modelled",
+        "regional meta-analysis base",
+        ""
+      ],
+      "description": "Only for VSL_* indicators."
+    },
+    {
+      "name": "currency_price_year_verbatim",
+      "type": "string",
+      "required": false,
+      "description": "Currency and price year as published (e.g. \"USD million (2015 dollars)\", \"£ 2023 prices and 2023 values\")."
+    },
+    {
+      "name": "bigmac_scope",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "national",
+        "euro-area aggregate",
+        ""
+      ],
+      "description": "Only for BIGMAC_*."
+    },
+    {
+      "name": "poverty_line",
+      "type": "string",
+      "required": false,
+      "description": "Exact poverty line used, verbatim. Required for POVERTY_*."
+    },
+    {
+      "name": "occupation_code_system",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "WHO NHWA",
+        "ISCO-08",
+        "US SOC 2018",
+        "other-verbatim",
+        ""
+      ],
+      "description": "Required for WORKFORCE_* occupation cells."
+    },
+    {
+      "name": "occupation_code",
+      "type": "string",
+      "required": false,
+      "description": "e.g. HWF_0001, ISCO-08 26, SOC 23-1011."
+    },
+    {
+      "name": "source_url",
+      "type": "string",
+      "required": false,
+      "description": "URL of the table/file read."
+    }
+  ]
+}

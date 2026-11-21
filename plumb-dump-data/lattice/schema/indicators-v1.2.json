@@ -1,0 +1,699 @@
+{
+ "version": "v1.2",
+ "date": "2026-11-21",
+ "note": "Additive to indicators-v1.1.json (unchanged). Values sourced only; no derivation.",
+ "indicators": [
+  {
+   "id": "EMPLOYMENT_TOTAL_N",
+   "new_in_v1.2": true,
+   "levels": [
+    "city"
+   ],
+   "unit": "employed persons",
+   "primary_source": "BLS OEWS May 2024 metropolitan area estimates",
+   "table": "MSA_M2024_dl.xlsx OCC_CODE=00-0000",
+   "url": "https://www.bls.gov/oes/special-requests/oesm24ma.zip",
+   "n_units": 393,
+   "year_range": [
+    "2024",
+    "2024"
+   ]
+  },
+  {
+   "id": "INCOME_MEDIAN_DISP_HH_EUR",
+   "new_in_v1.2": true,
+   "levels": [
+    "city"
+   ],
+   "unit": "EUR",
+   "primary_source": "Eurostat urb_clivcon — Living conditions by cities (updated 2026-11-12T23:00:00+0100)",
+   "table": "urb_clivcon indic_ur=EC3039V",
+   "url": "https://ec.europa.eu/eurostat/databrowser/view/urb_clivcon/default/table",
+   "n_units": 216,
+   "year_range": [
+    "2017",
+    "2020"
+   ]
+  },
+  {
+   "id": "INCOME_MEDIAN_HH_USD",
+   "new_in_v1.2": true,
+   "levels": [
+    "county"
+   ],
+   "unit": "USD",
+   "primary_source": "US Census Bureau SAIPE 2023 state & county estimates",
+   "table": "est23all.txt fixed-width",
+   "url": "https://www2.census.gov/programs-surveys/saipe/datasets/2023/2023-state-and-county/est23all.txt",
+   "n_units": 3143,
+   "year_range": [
+    "2023",
+    "2023"
+   ]
+  },
+  {
+   "id": "LE0_YEARS",
+   "new_in_v1.2": true,
+   "levels": [
+    "region"
+   ],
+   "unit": "years",
+   "primary_source": "NCHS, NVSR Vol 74 No 12 (Dec 4 2025) U.S. State Life Tables, 2022",
+   "table": "Table A. Life expectancy at birth by sex",
+   "url": "https://www.cdc.gov/nchs/data/nvsr/nvsr74/nvsr74-12.pdf",
+   "n_units": 51,
+   "year_range": [
+    "2022",
+    "2022"
+   ]
+  },
+  {
+   "id": "LE65_YEARS",
+   "new_in_v1.2": true,
+   "levels": [
+    "region"
+   ],
+   "unit": "years",
+   "primary_source": "NCHS, NVSR Vol 74 No 12 (Dec 4 2025) U.S. State Life Tables, 2022",
+   "table": "Table B. Life expectancy at age 65 by sex",
+   "url": "https://www.cdc.gov/nchs/data/nvsr/nvsr74/nvsr74-12.pdf",
+   "n_units": 51,
+   "year_range": [
+    "2022",
+    "2022"
+   ]
+  },
+  {
+   "id": "POVERTY_AROPE_PCT",
+   "new_in_v1.2": true,
+   "levels": [
+    "city",
+    "region"
+   ],
+   "unit": "% population",
+   "primary_source": "Eurostat ilc_peps11n — persons at risk of poverty or social exclusion by NUTS 2 (updated 2026-10-20T23:00:00+0200)",
+   "table": "ilc_peps11n unit=PC",
+   "url": "https://ec.europa.eu/eurostat/databrowser/view/ilc_peps11n/default/table",
+   "n_units": 295,
+   "year_range": [
+    "2017",
+    "2025"
+   ]
+  },
+  {
+   "id": "POVERTY_AROP_AFTER_TRANSFERS_PCT",
+   "new_in_v1.2": true,
+   "levels": [
+    "city"
+   ],
+   "unit": "% persons",
+   "primary_source": "Eurostat urb_clivcon — Living conditions by cities (updated 2026-11-12T23:00:00+0100)",
+   "table": "urb_clivcon indic_ur=EC3065V",
+   "url": "https://ec.europa.eu/eurostat/databrowser/view/urb_clivcon/default/table",
+   "n_units": 281,
+   "year_range": [
+    "2015",
+    "2020"
+   ]
+  },
+  {
+   "id": "POVERTY_MPI_AGE",
+   "new_in_v1.2": true,
+   "levels": [
+    "country"
+   ],
+   "unit": "index 0–1",
+   "primary_source": "OPHI Global MPI 2025 disaggregation (Alkire, Mishra, Selden, Suppa 2025, MN62)",
+   "table": "Table 3.1 MPI results by age group",
+   "url": "https://ophi.org.uk/global-mpi/2025",
+   "n_units": 109,
+   "year_range": [
+    "2013",
+    "2024"
+   ]
+  },
+  {
+   "id": "POVERTY_MPI_HEADCOUNT_AGE_PCT",
+   "new_in_v1.2": true,
+   "levels": [
+    "country"
+   ],
+   "unit": "% population",
+   "primary_source": "OPHI Global MPI 2025 disaggregation (Alkire, Mishra, Selden, Suppa 2025, MN62)",
+   "table": "Table 3.1 MPI results by age group",
+   "url": "https://ophi.org.uk/global-mpi/2025",
+   "n_units": 109,
+   "year_range": [
+    "2013",
+    "2024"
+   ]
+  },
+  {
+   "id": "POVERTY_MPI_INTENSITY_AGE_PCT",
+   "new_in_v1.2": true,
+   "levels": [
+    "country"
+   ],
+   "unit": "% weighted deprivations",
+   "primary_source": "OPHI Global MPI 2025 disaggregation (Alkire, Mishra, Selden, Suppa 2025, MN62)",
+   "table": "Table 3.1 MPI results by age group",
+   "url": "https://ophi.org.uk/global-mpi/2025",
+   "n_units": 109,
+   "year_range": [
+    "2013",
+    "2024"
+   ]
+  },
+  {
+   "id": "POVERTY_MPI_SEVERE_AGE_PCT",
+   "new_in_v1.2": true,
+   "levels": [
+    "country"
+   ],
+   "unit": "% population",
+   "primary_source": "OPHI Global MPI 2025 disaggregation (Alkire, Mishra, Selden, Suppa 2025, MN62)",
+   "table": "Table 3.1 MPI results by age group",
+   "url": "https://ophi.org.uk/global-mpi/2025",
+   "n_units": 109,
+   "year_range": [
+    "2013",
+    "2024"
+   ]
+  },
+  {
+   "id": "POVERTY_SAIPE_PCT",
+   "new_in_v1.2": true,
+   "levels": [
+    "county"
+   ],
+   "unit": "% persons",
+   "primary_source": "US Census Bureau SAIPE 2023 state & county estimates",
+   "table": "est23all.txt fixed-width",
+   "url": "https://www2.census.gov/programs-surveys/saipe/datasets/2023/2023-state-and-county/est23all.txt",
+   "n_units": 3143,
+   "year_range": [
+    "2023",
+    "2023"
+   ]
+  },
+  {
+   "id": "VSL_OECD2014",
+   "new_in_v1.2": true,
+   "levels": [
+    "country"
+   ],
+   "unit": "USD million (PPP-based, 2005 USD)",
+   "primary_source": "OECD (2014) The Cost of Air Pollution: Health Impacts of Road Transport",
+   "table": "Table 2.13, col. \"VSL 2005 in USD millions\"",
+   "url": "https://doi.org/10.1787/9789264210448-en",
+   "n_units": 34,
+   "year_range": [
+    "2005",
+    "2010"
+   ]
+  },
+  {
+   "id": "VSL_OFFICIAL",
+   "new_in_v1.2": false,
+   "levels": [
+    "country"
+   ],
+   "unit": "NZD million (VOSL)",
+   "primary_source": "ITF/OECD Road Safety Annual Report 2023 — New Zealand country profile",
+   "table": "Section \"Economic costs of road crashes\"",
+   "url": "https://www.itf-oecd.org/sites/default/files/new-zealand-road-safety.pdf",
+   "n_units": 3,
+   "year_range": [
+    "2009",
+    "2022"
+   ]
+  },
+  {
+   "id": "WORKFORCE_CENSUS2011_EMPLOYED_TOTAL_N",
+   "new_in_v1.2": true,
+   "levels": [
+    "region"
+   ],
+   "unit": "persons",
+   "primary_source": "Eurostat cens_11ao_r2 — 2011 Census, employed persons by occupation, sex, NUTS 2",
+   "table": "cens_11ao_r2 isco08=TOTAL",
+   "url": "https://ec.europa.eu/eurostat/databrowser/view/cens_11ao_r2/default/table",
+   "n_units": 320,
+   "year_range": [
+    "2011",
+    "2011"
+   ]
+  },
+  {
+   "id": "WORKFORCE_CENSUS2011_ISCO1_MANAGERS_N",
+   "new_in_v1.2": true,
+   "levels": [
+    "region"
+   ],
+   "unit": "persons",
+   "primary_source": "Eurostat cens_11ao_r2 — 2011 Census, employed persons by occupation, sex, NUTS 2",
+   "table": "cens_11ao_r2 isco08=OC1",
+   "url": "https://ec.europa.eu/eurostat/databrowser/view/cens_11ao_r2/default/table",
+   "n_units": 311,
+   "year_range": [
+    "2011",
+    "2011"
+   ]
+  },
+  {
+   "id": "WORKFORCE_CENSUS2011_ISCO2_PROFESSIONALS_N",
+   "new_in_v1.2": true,
+   "levels": [
+    "region"
+   ],
+   "unit": "persons",
+   "primary_source": "Eurostat cens_11ao_r2 — 2011 Census, employed persons by occupation, sex, NUTS 2",
+   "table": "cens_11ao_r2 isco08=OC2",
+   "url": "https://ec.europa.eu/eurostat/databrowser/view/cens_11ao_r2/default/table",
+   "n_units": 311,
+   "year_range": [
+    "2011",
+    "2011"
+   ]
+  },
+  {
+   "id": "WORKFORCE_DENTISTS_GENERAL_N",
+   "new_in_v1.2": false,
+   "levels": [
+    "city"
+   ],
+   "unit": "employed persons",
+   "primary_source": "BLS OEWS May 2024 metropolitan area estimates",
+   "table": "MSA_M2024_dl.xlsx OCC_CODE=29-1021",
+   "url": "https://www.bls.gov/oes/special-requests/oesm24ma.zip",
+   "n_units": 314,
+   "year_range": [
+    "2024",
+    "2024"
+   ]
+  },
+  {
+   "id": "WORKFORCE_DENTISTS_GENERAL_PER1000JOBS",
+   "new_in_v1.2": true,
+   "levels": [
+    "city"
+   ],
+   "unit": "per 1,000 jobs",
+   "primary_source": "BLS OEWS May 2024 metropolitan area estimates",
+   "table": "MSA_M2024_dl.xlsx OCC_CODE=29-1021",
+   "url": "https://www.bls.gov/oes/special-requests/oesm24ma.zip",
+   "n_units": 314,
+   "year_range": [
+    "2024",
+    "2024"
+   ]
+  },
+  {
+   "id": "WORKFORCE_DENTISTS_N",
+   "new_in_v1.2": false,
+   "levels": [
+    "region"
+   ],
+   "unit": "number",
+   "primary_source": "Eurostat hlth_rs_prsrg — Health personnel by NUTS 2 region (updated 2024-01-10T11:00:00+0100)",
+   "table": "hlth_rs_prsrg unit=NR isco08=OC2261",
+   "url": "https://ec.europa.eu/eurostat/databrowser/view/hlth_rs_prsrg/default/table",
+   "n_units": 254,
+   "year_range": [
+    "2014",
+    "2016"
+   ]
+  },
+  {
+   "id": "WORKFORCE_DENTISTS_PER100K",
+   "new_in_v1.2": true,
+   "levels": [
+    "region"
+   ],
+   "unit": "per 100 000 inhabitants",
+   "primary_source": "Eurostat hlth_rs_prsrg — Health personnel by NUTS 2 region (updated 2024-01-10T11:00:00+0100)",
+   "table": "hlth_rs_prsrg unit=P_HTHAB isco08=OC2261",
+   "url": "https://ec.europa.eu/eurostat/databrowser/view/hlth_rs_prsrg/default/table",
+   "n_units": 250,
+   "year_range": [
+    "2013",
+    "2016"
+   ]
+  },
+  {
+   "id": "WORKFORCE_DOCTORS_N",
+   "new_in_v1.2": false,
+   "levels": [
+    "region"
+   ],
+   "unit": "number",
+   "primary_source": "Eurostat hlth_rs_prsrg — Health personnel by NUTS 2 region (updated 2024-01-10T11:00:00+0100)",
+   "table": "hlth_rs_prsrg unit=NR isco08=OC221",
+   "url": "https://ec.europa.eu/eurostat/databrowser/view/hlth_rs_prsrg/default/table",
+   "n_units": 313,
+   "year_range": [
+    "2014",
+    "2024"
+   ]
+  },
+  {
+   "id": "WORKFORCE_DOCTORS_N_CIHI",
+   "new_in_v1.2": true,
+   "levels": [
+    "country"
+   ],
+   "unit": "physicians",
+   "primary_source": "CIHI SMDB 2024",
+   "table": "Table 5",
+   "url": "https://www.cihi.ca/sites/default/files/rot/supply-distribution-migration-physicians-2024-meth-notes-en.pdf",
+   "n_units": 1,
+   "year_range": [
+    "2024",
+    "2024"
+   ]
+  },
+  {
+   "id": "WORKFORCE_DOCTORS_PER100K",
+   "new_in_v1.2": true,
+   "levels": [
+    "region"
+   ],
+   "unit": "per 100 000 inhabitants",
+   "primary_source": "Eurostat hlth_rs_prsrg — Health personnel by NUTS 2 region (updated 2024-01-10T11:00:00+0100)",
+   "table": "hlth_rs_prsrg unit=P_HTHAB isco08=OC221",
+   "url": "https://ec.europa.eu/eurostat/databrowser/view/hlth_rs_prsrg/default/table",
+   "n_units": 293,
+   "year_range": [
+    "2013",
+    "2020"
+   ]
+  },
+  {
+   "id": "WORKFORCE_LAWYERS_N",
+   "new_in_v1.2": false,
+   "levels": [
+    "city"
+   ],
+   "unit": "employed persons",
+   "primary_source": "BLS OEWS May 2024 metropolitan area estimates",
+   "table": "MSA_M2024_dl.xlsx OCC_CODE=23-1011",
+   "url": "https://www.bls.gov/oes/special-requests/oesm24ma.zip",
+   "n_units": 389,
+   "year_range": [
+    "2024",
+    "2024"
+   ]
+  },
+  {
+   "id": "WORKFORCE_LAWYERS_PER1000JOBS",
+   "new_in_v1.2": true,
+   "levels": [
+    "city"
+   ],
+   "unit": "per 1,000 jobs",
+   "primary_source": "BLS OEWS May 2024 metropolitan area estimates",
+   "table": "MSA_M2024_dl.xlsx OCC_CODE=23-1011",
+   "url": "https://www.bls.gov/oes/special-requests/oesm24ma.zip",
+   "n_units": 389,
+   "year_range": [
+    "2024",
+    "2024"
+   ]
+  },
+  {
+   "id": "WORKFORCE_LAWYERS_RESIDENT_ACTIVE_N",
+   "new_in_v1.2": true,
+   "levels": [
+    "country",
+    "region"
+   ],
+   "unit": "resident active attorneys",
+   "primary_source": "ABA National Lawyer Population Survey 2025 (ABA Center for Bar Leadership)",
+   "table": "\"Resident Active Attorney Population By State/Territory\" 2015–2025, column 2025",
+   "url": "https://practicesource.com/wp-content/uploads/2025/12/2025-natl-lawyer-population-survey.pdf (ABA publication; mirror copy)",
+   "n_units": 56,
+   "year_range": [
+    "2025",
+    "2025"
+   ]
+  },
+  {
+   "id": "WORKFORCE_NURSEMIDWIFE_N",
+   "new_in_v1.2": false,
+   "levels": [
+    "region"
+   ],
+   "unit": "number",
+   "primary_source": "Eurostat hlth_rs_prsrg — Health personnel by NUTS 2 region (updated 2024-01-10T11:00:00+0100)",
+   "table": "hlth_rs_prsrg unit=NR isco08=OC222_322",
+   "url": "https://ec.europa.eu/eurostat/databrowser/view/hlth_rs_prsrg/default/table",
+   "n_units": 235,
+   "year_range": [
+    "2013",
+    "2016"
+   ]
+  },
+  {
+   "id": "WORKFORCE_NURSEMIDWIFE_PER100K",
+   "new_in_v1.2": true,
+   "levels": [
+    "region"
+   ],
+   "unit": "per 100 000 inhabitants",
+   "primary_source": "Eurostat hlth_rs_prsrg — Health personnel by NUTS 2 region (updated 2024-01-10T11:00:00+0100)",
+   "table": "hlth_rs_prsrg unit=P_HTHAB isco08=OC222_322",
+   "url": "https://ec.europa.eu/eurostat/databrowser/view/hlth_rs_prsrg/default/table",
+   "n_units": 231,
+   "year_range": [
+    "2013",
+    "2016"
+   ]
+  },
+  {
+   "id": "WORKFORCE_NURSE_MIDWIVES_N",
+   "new_in_v1.2": false,
+   "levels": [
+    "city"
+   ],
+   "unit": "employed persons",
+   "primary_source": "BLS OEWS May 2024 metropolitan area estimates",
+   "table": "MSA_M2024_dl.xlsx OCC_CODE=29-1161",
+   "url": "https://www.bls.gov/oes/special-requests/oesm24ma.zip",
+   "n_units": 38,
+   "year_range": [
+    "2024",
+    "2024"
+   ]
+  },
+  {
+   "id": "WORKFORCE_NURSE_MIDWIVES_PER1000JOBS",
+   "new_in_v1.2": true,
+   "levels": [
+    "city"
+   ],
+   "unit": "per 1,000 jobs",
+   "primary_source": "BLS OEWS May 2024 metropolitan area estimates",
+   "table": "MSA_M2024_dl.xlsx OCC_CODE=29-1161",
+   "url": "https://www.bls.gov/oes/special-requests/oesm24ma.zip",
+   "n_units": 38,
+   "year_range": [
+    "2024",
+    "2024"
+   ]
+  },
+  {
+   "id": "WORKFORCE_PHARMACISTS_N",
+   "new_in_v1.2": false,
+   "levels": [
+    "city",
+    "region"
+   ],
+   "unit": "number",
+   "primary_source": "Eurostat hlth_rs_prsrg — Health personnel by NUTS 2 region (updated 2024-01-10T11:00:00+0100)",
+   "table": "hlth_rs_prsrg unit=NR isco08=OC2262",
+   "url": "https://ec.europa.eu/eurostat/databrowser/view/hlth_rs_prsrg/default/table",
+   "n_units": 599,
+   "year_range": [
+    "2014",
+    "2024"
+   ]
+  },
+  {
+   "id": "WORKFORCE_PHARMACISTS_PER1000JOBS",
+   "new_in_v1.2": true,
+   "levels": [
+    "city"
+   ],
+   "unit": "per 1,000 jobs",
+   "primary_source": "BLS OEWS May 2024 metropolitan area estimates",
+   "table": "MSA_M2024_dl.xlsx OCC_CODE=29-1051",
+   "url": "https://www.bls.gov/oes/special-requests/oesm24ma.zip",
+   "n_units": 389,
+   "year_range": [
+    "2024",
+    "2024"
+   ]
+  },
+  {
+   "id": "WORKFORCE_PHARMACISTS_PER100K",
+   "new_in_v1.2": true,
+   "levels": [
+    "region"
+   ],
+   "unit": "per 100 000 inhabitants",
+   "primary_source": "Eurostat hlth_rs_prsrg — Health personnel by NUTS 2 region (updated 2024-01-10T11:00:00+0100)",
+   "table": "hlth_rs_prsrg unit=P_HTHAB isco08=OC2262",
+   "url": "https://ec.europa.eu/eurostat/databrowser/view/hlth_rs_prsrg/default/table",
+   "n_units": 206,
+   "year_range": [
+    "2013",
+    "2016"
+   ]
+  },
+  {
+   "id": "WORKFORCE_PHYSIOTHERAPISTS_N",
+   "new_in_v1.2": true,
+   "levels": [
+    "region"
+   ],
+   "unit": "number",
+   "primary_source": "Eurostat hlth_rs_prsrg — Health personnel by NUTS 2 region (updated 2024-01-10T11:00:00+0100)",
+   "table": "hlth_rs_prsrg unit=NR isco08=OC2264",
+   "url": "https://ec.europa.eu/eurostat/databrowser/view/hlth_rs_prsrg/default/table",
+   "n_units": 225,
+   "year_range": [
+    "2014",
+    "2016"
+   ]
+  },
+  {
+   "id": "WORKFORCE_PHYSIOTHERAPISTS_PER100K",
+   "new_in_v1.2": true,
+   "levels": [
+    "region"
+   ],
+   "unit": "per 100 000 inhabitants",
+   "primary_source": "Eurostat hlth_rs_prsrg — Health personnel by NUTS 2 region (updated 2024-01-10T11:00:00+0100)",
+   "table": "hlth_rs_prsrg unit=P_HTHAB isco08=OC2264",
+   "url": "https://ec.europa.eu/eurostat/databrowser/view/hlth_rs_prsrg/default/table",
+   "n_units": 221,
+   "year_range": [
+    "2013",
+    "2016"
+   ]
+  },
+  {
+   "id": "WORKFORCE_PHYS_FAMILYMED_N",
+   "new_in_v1.2": true,
+   "levels": [
+    "city",
+    "region"
+   ],
+   "unit": "physicians (head count, Dec 31 2024)",
+   "primary_source": "CIHI, Supply, Distribution and Migration of Physicians in Canada, 2024 — Methodology Notes",
+   "table": "Table 5 Total physicians included, by physician type and jurisdiction",
+   "url": "https://www.cihi.ca/sites/default/files/rot/supply-distribution-migration-physicians-2024-meth-notes-en.pdf",
+   "n_units": 271,
+   "year_range": [
+    "2024",
+    "2024"
+   ]
+  },
+  {
+   "id": "WORKFORCE_PHYS_FAMILYMED_N_CIHI",
+   "new_in_v1.2": true,
+   "levels": [
+    "country"
+   ],
+   "unit": "physicians",
+   "primary_source": "CIHI SMDB 2024",
+   "table": "Table 5",
+   "url": "https://www.cihi.ca/sites/default/files/rot/supply-distribution-migration-physicians-2024-meth-notes-en.pdf",
+   "n_units": 1,
+   "year_range": [
+    "2024",
+    "2024"
+   ]
+  },
+  {
+   "id": "WORKFORCE_PHYS_FAMILYMED_PER1000JOBS",
+   "new_in_v1.2": true,
+   "levels": [
+    "city"
+   ],
+   "unit": "per 1,000 jobs",
+   "primary_source": "BLS OEWS May 2024 metropolitan area estimates",
+   "table": "MSA_M2024_dl.xlsx OCC_CODE=29-1215",
+   "url": "https://www.bls.gov/oes/special-requests/oesm24ma.zip",
+   "n_units": 258,
+   "year_range": [
+    "2024",
+    "2024"
+   ]
+  },
+  {
+   "id": "WORKFORCE_PHYS_SPECIALIST_N",
+   "new_in_v1.2": true,
+   "levels": [
+    "region"
+   ],
+   "unit": "physicians (head count, Dec 31 2024)",
+   "primary_source": "CIHI, Supply, Distribution and Migration of Physicians in Canada, 2024 — Methodology Notes",
+   "table": "Table 5 Total physicians included, by physician type and jurisdiction",
+   "url": "https://www.cihi.ca/sites/default/files/rot/supply-distribution-migration-physicians-2024-meth-notes-en.pdf",
+   "n_units": 13,
+   "year_range": [
+    "2024",
+    "2024"
+   ]
+  },
+  {
+   "id": "WORKFORCE_PHYS_SPECIALIST_N_CIHI",
+   "new_in_v1.2": true,
+   "levels": [
+    "country"
+   ],
+   "unit": "physicians",
+   "primary_source": "CIHI SMDB 2024",
+   "table": "Table 5",
+   "url": "https://www.cihi.ca/sites/default/files/rot/supply-distribution-migration-physicians-2024-meth-notes-en.pdf",
+   "n_units": 1,
+   "year_range": [
+    "2024",
+    "2024"
+   ]
+  },
+  {
+   "id": "WORKFORCE_REGISTERED_NURSES_N",
+   "new_in_v1.2": false,
+   "levels": [
+    "city"
+   ],
+   "unit": "employed persons",
+   "primary_source": "BLS OEWS May 2024 metropolitan area estimates",
+   "table": "MSA_M2024_dl.xlsx OCC_CODE=29-1141",
+   "url": "https://www.bls.gov/oes/special-requests/oesm24ma.zip",
+   "n_units": 391,
+   "year_range": [
+    "2024",
+    "2024"
+   ]
+  },
+  {
+   "id": "WORKFORCE_REGISTERED_NURSES_PER1000JOBS",
+   "new_in_v1.2": true,
+   "levels": [
+    "city"
+   ],
+   "unit": "per 1,000 jobs",
+   "primary_source": "BLS OEWS May 2024 metropolitan area estimates",
+   "table": "MSA_M2024_dl.xlsx OCC_CODE=29-1141",
+   "url": "https://www.bls.gov/oes/special-requests/oesm24ma.zip",
+   "n_units": 391,
+   "year_range": [
+    "2024",
+    "2024"
+   ]
+  }
+ ]
+}

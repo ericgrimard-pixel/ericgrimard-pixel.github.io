@@ -1,0 +1,43 @@
+{
+ "version": "v1.2",
+ "extends": "cell-schema-v1.1.json (unchanged)",
+ "node_levels": [
+  "world",
+  "zone",
+  "country",
+  "region (NUTS2 / US USPS state / CA SGC province / OPHI survey region)",
+  "county (US FIPS 5-digit) — NEW v1.2, sub-region",
+  "city (Urban Audit URAU code / US OEWS MSA code / StatCan CMA)"
+ ],
+ "cell_key": "INDICATOR|SEX|AGE|QUINTILE (QUINTILE=ALL unless source splits)",
+ "age_bands_added": [
+  "0-9",
+  "10-17",
+  "18-59",
+  "60+",
+  "0-17 (OPHI)",
+  "5-17 related children in families (SAIPE)",
+  "65 (LE at age 65)"
+ ],
+ "value_record": {
+  "value": "number (verbatim from source)",
+  "unit": "string",
+  "year": "int|string",
+  "flag": "source-type / caveat flag (official, source-modelled, secondary-reported, survey, census 2011 dated)",
+  "source": "publisher + title",
+  "table": "table / series code",
+  "url": "url"
+ },
+ "gap_record": {
+  "status": "OPEN",
+  "tag": "[INCOMPLET]",
+  "missing": "list",
+  "reason": "string",
+  "suggested_source": "string"
+ },
+ "zone_aggregate": {
+  "weight": "country total population (POP|T|ALL, v1)",
+  "status": "FILLED if weight coverage >=50% of zone population, else PROVISIONAL (<50% population coverage)"
+ },
+ "quintile_rule": "income quintiles 20/40/60/80 align with Manifestation partition edges; never mapped onto protocol zones"
+}
