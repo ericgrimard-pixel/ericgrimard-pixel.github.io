@@ -1,0 +1,1266 @@
+{
+ "version": "v1.3",
+ "date": "2026-11-21",
+ "note": "Additive; v1/v1.1/v1.2 schema files unchanged. Values sourced verbatim; no derivation.",
+ "indicators": [
+  {
+   "id": "DHS_AN_NUTS_W_OBS",
+   "new_in_v1.3": true,
+   "levels": [
+    "region"
+   ],
+   "countries": [
+    "AGO",
+    "ALB",
+    "ARM",
+    "AZE",
+    "BDI",
+    "BEN",
+    "BFA",
+    "BGD",
+    "BOL",
+    "BRA",
+    "CAF",
+    "CIV",
+    "CMR",
+    "COD",
+    "COG",
+    "COL",
+    "COM",
+    "DOM",
+    "EGY",
+    "ERI",
+    "ETH",
+    "GAB",
+    "GHA",
+    "GIN",
+    "GMB",
+    "GTM",
+    "GUY",
+    "HND",
+    "HTI",
+    "IND",
+    "JOR",
+    "KAZ",
+    "KEN",
+    "KGZ",
+    "KHM",
+    "LBR",
+    "LSO",
+    "MAR",
+    "MDA",
+    "MDG",
+    "MDV",
+    "MLI",
+    "MMR",
+    "MOZ",
+    "MRT",
+    "MWI",
+    "NAM",
+    "NER",
+    "NGA",
+    "NIC",
+    "NPL",
+    "PAK",
+    "PER",
+    "RWA",
+    "SEN",
+    "SLE",
+    "STP",
+    "SWZ",
+    "TCD",
+    "TGO"
+   ],
+   "n_units": 1169,
+   "unit": "(see indicator definition)",
+   "primary_source": "DHS Program STATcompiler API: Women who are obese according to BMI (>=30.0)",
+   "table": "indicator AN_NUTS_W_OBS, breakdown=subnational",
+   "url": "https://api.dhsprogram.com/rest/dhs/data?breakdown=subnational&indicatorIds=AN_NUTS_W_OBS",
+   "years": [
+    "1994",
+    "2025"
+   ]
+  },
+  {
+   "id": "DHS_CH_VACC_C_BAS",
+   "new_in_v1.3": true,
+   "levels": [
+    "region"
+   ],
+   "countries": [
+    "AFG",
+    "AGO",
+    "ALB",
+    "ARM",
+    "AZE",
+    "BDI",
+    "BEN",
+    "BFA",
+    "BGD",
+    "BOL",
+    "BRA",
+    "CAF",
+    "CIV",
+    "CMR",
+    "COD",
+    "COG",
+    "COL",
+    "COM",
+    "DOM",
+    "EGY",
+    "ERI",
+    "ETH",
+    "GAB",
+    "GHA",
+    "GIN",
+    "GMB",
+    "GTM",
+    "GUY",
+    "HND",
+    "HTI",
+    "IDN",
+    "IND",
+    "JOR",
+    "KAZ",
+    "KEN",
+    "KGZ",
+    "KHM",
+    "LBR",
+    "LSO",
+    "MAR",
+    "MDA",
+    "MDG",
+    "MDV",
+    "MEX",
+    "MLI",
+    "MOZ",
+    "MRT",
+    "MWI",
+    "NAM",
+    "NER",
+    "NGA",
+    "NIC",
+    "NPL",
+    "PAK",
+    "PER",
+    "PHL",
+    "PNG",
+    "PRY",
+    "RWA",
+    "SEN"
+   ],
+   "n_units": 1280,
+   "unit": "(see indicator definition)",
+   "primary_source": "DHS Program STATcompiler API: Fully vaccinated (8 basic antigens)",
+   "table": "indicator CH_VACC_C_BAS, breakdown=subnational",
+   "url": "https://api.dhsprogram.com/rest/dhs/data?breakdown=subnational&indicatorIds=CH_VACC_C_BAS",
+   "years": [
+    "1987",
+    "2025"
+   ]
+  },
+  {
+   "id": "DHS_CM_ECMR_C_U5M",
+   "new_in_v1.3": true,
+   "levels": [
+    "region"
+   ],
+   "countries": [
+    "AFG",
+    "AGO",
+    "ALB",
+    "ARM",
+    "AZE",
+    "BDI",
+    "BEN",
+    "BFA",
+    "BGD",
+    "BOL",
+    "BRA",
+    "CAF",
+    "CIV",
+    "CMR",
+    "COD",
+    "COG",
+    "COL",
+    "COM",
+    "DOM",
+    "ECU",
+    "EGY",
+    "ERI",
+    "ETH",
+    "GAB",
+    "GHA",
+    "GIN",
+    "GMB",
+    "GTM",
+    "GUY",
+    "HND",
+    "HTI",
+    "IDN",
+    "IND",
+    "JOR",
+    "KAZ",
+    "KEN",
+    "KGZ",
+    "KHM",
+    "LBR",
+    "LKA",
+    "LSO",
+    "MAR",
+    "MDA",
+    "MDG",
+    "MDV",
+    "MEX",
+    "MLI",
+    "MMR",
+    "MOZ",
+    "MRT",
+    "MWI",
+    "NAM",
+    "NER",
+    "NGA",
+    "NIC",
+    "NPL",
+    "PAK",
+    "PER",
+    "PHL",
+    "PNG"
+   ],
+   "n_units": 1320,
+   "unit": "(see indicator definition)",
+   "primary_source": "DHS Program STATcompiler API: Under-five mortality rate",
+   "table": "indicator CM_ECMR_C_U5M, breakdown=subnational",
+   "url": "https://api.dhsprogram.com/rest/dhs/data?breakdown=subnational&indicatorIds=CM_ECMR_C_U5M",
+   "years": [
+    "1987",
+    "2025"
+   ]
+  },
+  {
+   "id": "DHS_CN_NUTS_C_HA2",
+   "new_in_v1.3": true,
+   "levels": [
+    "region"
+   ],
+   "countries": [
+    "AGO",
+    "ALB",
+    "ARM",
+    "AZE",
+    "BDI",
+    "BEN",
+    "BFA",
+    "BGD",
+    "BOL",
+    "BRA",
+    "CAF",
+    "CIV",
+    "CMR",
+    "COD",
+    "COG",
+    "COL",
+    "COM",
+    "DOM",
+    "EGY",
+    "ERI",
+    "ETH",
+    "GAB",
+    "GHA",
+    "GIN",
+    "GMB",
+    "GTM",
+    "GUY",
+    "HND",
+    "HTI",
+    "IND",
+    "JOR",
+    "KAZ",
+    "KEN",
+    "KGZ",
+    "KHM",
+    "LBR",
+    "LSO",
+    "MAR",
+    "MDA",
+    "MDG",
+    "MDV",
+    "MLI",
+    "MMR",
+    "MOZ",
+    "MRT",
+    "MWI",
+    "NAM",
+    "NER",
+    "NGA",
+    "NIC",
+    "NPL",
+    "PAK",
+    "PER",
+    "PRY",
+    "RWA",
+    "SEN",
+    "SLE",
+    "STP",
+    "SWZ",
+    "TCD"
+   ],
+   "n_units": 1154,
+   "unit": "(see indicator definition)",
+   "primary_source": "DHS Program STATcompiler API: Children stunted",
+   "table": "indicator CN_NUTS_C_HA2, breakdown=subnational",
+   "url": "https://api.dhsprogram.com/rest/dhs/data?breakdown=subnational&indicatorIds=CN_NUTS_C_HA2",
+   "years": [
+    "1990",
+    "2025"
+   ]
+  },
+  {
+   "id": "DHS_ED_LITR_M_LIT",
+   "new_in_v1.3": true,
+   "levels": [
+    "region"
+   ],
+   "countries": [
+    "AFG",
+    "AGO",
+    "ALB",
+    "BDI",
+    "BEN",
+    "BFA",
+    "BGD",
+    "BOL",
+    "CIV",
+    "CMR",
+    "COD",
+    "COG",
+    "COM",
+    "DOM",
+    "ETH",
+    "GAB",
+    "GHA",
+    "GIN",
+    "GMB",
+    "GTM",
+    "GUY",
+    "HND",
+    "HTI",
+    "IDN",
+    "IND",
+    "JOR",
+    "KEN",
+    "KHM",
+    "LBR",
+    "LSO",
+    "MDA",
+    "MDG",
+    "MDV",
+    "MLI",
+    "MMR",
+    "MOZ",
+    "MRT",
+    "MWI",
+    "NAM",
+    "NER",
+    "NGA",
+    "NPL",
+    "PAK",
+    "PHL",
+    "PNG",
+    "RWA",
+    "SEN",
+    "SLE",
+    "STP",
+    "SWZ",
+    "TCD",
+    "TGO",
+    "TLS",
+    "TZA",
+    "UGA",
+    "ZAF",
+    "ZMB",
+    "ZWE"
+   ],
+   "n_units": 1046,
+   "unit": "(see indicator definition)",
+   "primary_source": "DHS Program STATcompiler API: Men who are literate",
+   "table": "indicator ED_LITR_M_LIT, breakdown=subnational",
+   "url": "https://api.dhsprogram.com/rest/dhs/data?breakdown=subnational&indicatorIds=ED_LITR_M_LIT",
+   "years": [
+    "2003",
+    "2025"
+   ]
+  },
+  {
+   "id": "DHS_ED_LITR_W_LIT",
+   "new_in_v1.3": true,
+   "levels": [
+    "region"
+   ],
+   "countries": [
+    "AFG",
+    "AGO",
+    "ALB",
+    "BDI",
+    "BEN",
+    "BFA",
+    "BGD",
+    "BOL",
+    "CIV",
+    "CMR",
+    "COD",
+    "COG",
+    "COM",
+    "DOM",
+    "EGY",
+    "ETH",
+    "GAB",
+    "GHA",
+    "GIN",
+    "GMB",
+    "GTM",
+    "GUY",
+    "HND",
+    "HTI",
+    "IDN",
+    "IND",
+    "JOR",
+    "KEN",
+    "KHM",
+    "LBR",
+    "LSO",
+    "MAR",
+    "MDA",
+    "MDG",
+    "MDV",
+    "MLI",
+    "MMR",
+    "MOZ",
+    "MRT",
+    "MWI",
+    "NAM",
+    "NER",
+    "NGA",
+    "NIC",
+    "NPL",
+    "PAK",
+    "PER",
+    "PHL",
+    "PNG",
+    "RWA",
+    "SEN",
+    "SLE",
+    "STP",
+    "SWZ",
+    "TCD",
+    "TGO",
+    "TJK",
+    "TLS",
+    "TZA",
+    "UGA"
+   ],
+   "n_units": 1130,
+   "unit": "(see indicator definition)",
+   "primary_source": "DHS Program STATcompiler API: Women who are literate",
+   "table": "indicator ED_LITR_W_LIT, breakdown=subnational",
+   "url": "https://api.dhsprogram.com/rest/dhs/data?breakdown=subnational&indicatorIds=ED_LITR_W_LIT",
+   "years": [
+    "2001",
+    "2025"
+   ]
+  },
+  {
+   "id": "DHS_FE_FRTR_W_TFR",
+   "new_in_v1.3": true,
+   "levels": [
+    "region"
+   ],
+   "countries": [
+    "AFG",
+    "AGO",
+    "ALB",
+    "ARM",
+    "AZE",
+    "BDI",
+    "BEN",
+    "BFA",
+    "BGD",
+    "BOL",
+    "BRA",
+    "CAF",
+    "CIV",
+    "CMR",
+    "COD",
+    "COG",
+    "COL",
+    "COM",
+    "DOM",
+    "ECU",
+    "EGY",
+    "ERI",
+    "ETH",
+    "GAB",
+    "GHA",
+    "GIN",
+    "GMB",
+    "GTM",
+    "GUY",
+    "HND",
+    "HTI",
+    "IDN",
+    "IND",
+    "JOR",
+    "KAZ",
+    "KEN",
+    "KGZ",
+    "KHM",
+    "LBR",
+    "LKA",
+    "LSO",
+    "MAR",
+    "MDA",
+    "MDG",
+    "MDV",
+    "MEX",
+    "MLI",
+    "MMR",
+    "MOZ",
+    "MRT",
+    "MWI",
+    "NAM",
+    "NER",
+    "NGA",
+    "NIC",
+    "NPL",
+    "PAK",
+    "PER",
+    "PHL",
+    "PNG"
+   ],
+   "n_units": 1323,
+   "unit": "(see indicator definition)",
+   "primary_source": "DHS Program STATcompiler API: Total fertility rate 15-49",
+   "table": "indicator FE_FRTR_W_TFR, breakdown=subnational",
+   "url": "https://api.dhsprogram.com/rest/dhs/data?breakdown=subnational&indicatorIds=FE_FRTR_W_TFR",
+   "years": [
+    "1987",
+    "2025"
+   ]
+  },
+  {
+   "id": "DHS_HA_HIVP_M_HIV",
+   "new_in_v1.3": true,
+   "levels": [
+    "region"
+   ],
+   "countries": [
+    "AGO",
+    "BDI",
+    "BFA",
+    "CIV",
+    "CMR",
+    "COD",
+    "COG",
+    "DOM",
+    "ETH",
+    "GAB",
+    "GHA",
+    "GIN",
+    "GMB",
+    "HTI",
+    "IND",
+    "KEN",
+    "KHM",
+    "LBR",
+    "LSO",
+    "MLI",
+    "MOZ",
+    "MWI",
+    "NAM",
+    "NER",
+    "RWA",
+    "SEN",
+    "SLE",
+    "STP",
+    "SWZ",
+    "TCD",
+    "TGO",
+    "TZA",
+    "UGA",
+    "VNM",
+    "ZAF",
+    "ZMB",
+    "ZWE"
+   ],
+   "n_units": 448,
+   "unit": "(see indicator definition)",
+   "primary_source": "DHS Program STATcompiler API: HIV prevalence among men",
+   "table": "indicator HA_HIVP_M_HIV, breakdown=subnational",
+   "url": "https://api.dhsprogram.com/rest/dhs/data?breakdown=subnational&indicatorIds=HA_HIVP_M_HIV",
+   "years": [
+    "2005",
+    "2025"
+   ]
+  },
+  {
+   "id": "DHS_HA_HIVP_W_HIV",
+   "new_in_v1.3": true,
+   "levels": [
+    "region"
+   ],
+   "countries": [
+    "AGO",
+    "BDI",
+    "BFA",
+    "CIV",
+    "CMR",
+    "COD",
+    "COG",
+    "DOM",
+    "ETH",
+    "GAB",
+    "GHA",
+    "GIN",
+    "GMB",
+    "HTI",
+    "IND",
+    "KEN",
+    "KHM",
+    "LBR",
+    "LSO",
+    "MLI",
+    "MOZ",
+    "MWI",
+    "NAM",
+    "NER",
+    "RWA",
+    "SEN",
+    "SLE",
+    "STP",
+    "SWZ",
+    "TCD",
+    "TGO",
+    "TZA",
+    "UGA",
+    "VNM",
+    "ZAF",
+    "ZMB",
+    "ZWE"
+   ],
+   "n_units": 467,
+   "unit": "(see indicator definition)",
+   "primary_source": "DHS Program STATcompiler API: HIV prevalence among women",
+   "table": "indicator HA_HIVP_W_HIV, breakdown=subnational",
+   "url": "https://api.dhsprogram.com/rest/dhs/data?breakdown=subnational&indicatorIds=HA_HIVP_W_HIV",
+   "years": [
+    "2005",
+    "2025"
+   ]
+  },
+  {
+   "id": "DHS_HC_WIXQ_P_LOW",
+   "new_in_v1.3": true,
+   "levels": [
+    "region"
+   ],
+   "countries": [
+    "AFG",
+    "AGO",
+    "ALB",
+    "ARM",
+    "AZE",
+    "BDI",
+    "BEN",
+    "BFA",
+    "BGD",
+    "BOL",
+    "BRA",
+    "CAF",
+    "CIV",
+    "CMR",
+    "COD",
+    "COG",
+    "COL",
+    "COM",
+    "DOM",
+    "EGY",
+    "ERI",
+    "ETH",
+    "GAB",
+    "GHA",
+    "GIN",
+    "GMB",
+    "GTM",
+    "GUY",
+    "HND",
+    "HTI",
+    "IDN",
+    "IND",
+    "JOR",
+    "KAZ",
+    "KEN",
+    "KGZ",
+    "KHM",
+    "LBR",
+    "LSO",
+    "MAR",
+    "MDA",
+    "MDG",
+    "MDV",
+    "MLI",
+    "MMR",
+    "MOZ",
+    "MRT",
+    "MWI",
+    "NAM",
+    "NER",
+    "NGA",
+    "NIC",
+    "NPL",
+    "PAK",
+    "PER",
+    "PHL",
+    "PNG",
+    "PRY",
+    "RWA",
+    "SEN"
+   ],
+   "n_units": 1281,
+   "unit": "(see indicator definition)",
+   "primary_source": "DHS Program STATcompiler API: Population in the lowest wealth quintile",
+   "table": "indicator HC_WIXQ_P_LOW, breakdown=subnational",
+   "url": "https://api.dhsprogram.com/rest/dhs/data?breakdown=subnational&indicatorIds=HC_WIXQ_P_LOW",
+   "years": [
+    "1990",
+    "2025"
+   ]
+  },
+  {
+   "id": "DHS_RH_DELA_C_SKP",
+   "new_in_v1.3": true,
+   "levels": [
+    "region"
+   ],
+   "countries": [
+    "AFG",
+    "AGO",
+    "ALB",
+    "ARM",
+    "AZE",
+    "BDI",
+    "BEN",
+    "BFA",
+    "BGD",
+    "BOL",
+    "BRA",
+    "CAF",
+    "CIV",
+    "CMR",
+    "COD",
+    "COG",
+    "COL",
+    "COM",
+    "DOM",
+    "ECU",
+    "EGY",
+    "ERI",
+    "ETH",
+    "GAB",
+    "GHA",
+    "GIN",
+    "GMB",
+    "GTM",
+    "GUY",
+    "HND",
+    "HTI",
+    "IDN",
+    "IND",
+    "JOR",
+    "KAZ",
+    "KEN",
+    "KGZ",
+    "KHM",
+    "LBR",
+    "LKA",
+    "LSO",
+    "MAR",
+    "MDA",
+    "MDG",
+    "MDV",
+    "MEX",
+    "MLI",
+    "MMR",
+    "MOZ",
+    "MRT",
+    "MWI",
+    "NAM",
+    "NER",
+    "NGA",
+    "NIC",
+    "NPL",
+    "PAK",
+    "PER",
+    "PHL",
+    "PNG"
+   ],
+   "n_units": 1349,
+   "unit": "(see indicator definition)",
+   "primary_source": "DHS Program STATcompiler API: Assistance during delivery from a skilled provider",
+   "table": "indicator RH_DELA_C_SKP, breakdown=subnational",
+   "url": "https://api.dhsprogram.com/rest/dhs/data?breakdown=subnational&indicatorIds=RH_DELA_C_SKP",
+   "years": [
+    "1987",
+    "2025"
+   ]
+  },
+  {
+   "id": "LE0_YEARS",
+   "new_in_v1.3": false,
+   "levels": [
+    "city",
+    "country",
+    "region"
+   ],
+   "countries": [
+    "AUS",
+    "BRA",
+    "GBR",
+    "JPN",
+    "NZL"
+   ],
+   "n_units": 587,
+   "unit": "years",
+   "primary_source": "ABS Life expectancy 2022–2024 (cat. 3302.0.55.001)",
+   "table": "Table 1: Life expectancy at birth, sex by Statistical Areas Level 4, 2022–2024 columns",
+   "url": "https://www.abs.gov.au/statistics/people/population/life-expectancy/2022-2024/3302055001DO002_20222024.xlsx",
+   "years": [
+    "2018",
+    "2024"
+   ]
+  },
+  {
+   "id": "LE65_YEARS",
+   "new_in_v1.3": false,
+   "levels": [
+    "city",
+    "country",
+    "region"
+   ],
+   "countries": [
+    "AUS",
+    "GBR"
+   ],
+   "n_units": 408,
+   "unit": "years",
+   "primary_source": "ABS Life tables 2022–2024 (cat. 3302.0.55.001)",
+   "table": "Table 1: Life tables, age and sex by New South Wales—2022–2024",
+   "url": "https://www.abs.gov.au/statistics/people/population/life-expectancy/2022-2024/3302055001DO001_20222024.xlsx",
+   "years": [
+    "2022",
+    "2023"
+   ]
+  },
+  {
+   "id": "PLACES_DEPRESSION_PCT",
+   "new_in_v1.3": true,
+   "levels": [
+    "city"
+   ],
+   "countries": [
+    "USA"
+   ],
+   "n_units": 27529,
+   "unit": "% adults (crude, model-based)",
+   "primary_source": "CDC PLACES: Place Data (GIS Friendly Format), 2025 release",
+   "table": "DEPRESSION_CrudePrev",
+   "url": "https://data.cdc.gov/api/views/vgc8-iyc4/rows.csv?accessType=DOWNLOAD",
+   "years": [
+    "2023",
+    "2023"
+   ]
+  },
+  {
+   "id": "PLACES_DIABETES_PCT",
+   "new_in_v1.3": true,
+   "levels": [
+    "city"
+   ],
+   "countries": [
+    "USA"
+   ],
+   "n_units": 27529,
+   "unit": "% adults (crude, model-based)",
+   "primary_source": "CDC PLACES: Place Data (GIS Friendly Format), 2025 release",
+   "table": "DIABETES_CrudePrev",
+   "url": "https://data.cdc.gov/api/views/vgc8-iyc4/rows.csv?accessType=DOWNLOAD",
+   "years": [
+    "2023",
+    "2023"
+   ]
+  },
+  {
+   "id": "PLACES_FAIR_POOR_HEALTH_PCT",
+   "new_in_v1.3": true,
+   "levels": [
+    "city"
+   ],
+   "countries": [
+    "USA"
+   ],
+   "n_units": 27529,
+   "unit": "% adults (crude, model-based)",
+   "primary_source": "CDC PLACES: Place Data (GIS Friendly Format), 2025 release",
+   "table": "GHLTH_CrudePrev",
+   "url": "https://data.cdc.gov/api/views/vgc8-iyc4/rows.csv?accessType=DOWNLOAD",
+   "years": [
+    "2023",
+    "2023"
+   ]
+  },
+  {
+   "id": "PLACES_HYPERTENSION_PCT",
+   "new_in_v1.3": true,
+   "levels": [
+    "city"
+   ],
+   "countries": [
+    "USA"
+   ],
+   "n_units": 27529,
+   "unit": "% adults (crude, model-based)",
+   "primary_source": "CDC PLACES: Place Data (GIS Friendly Format), 2025 release",
+   "table": "BPHIGH_CrudePrev",
+   "url": "https://data.cdc.gov/api/views/vgc8-iyc4/rows.csv?accessType=DOWNLOAD",
+   "years": [
+    "2023",
+    "2023"
+   ]
+  },
+  {
+   "id": "PLACES_OBESITY_PCT",
+   "new_in_v1.3": true,
+   "levels": [
+    "city"
+   ],
+   "countries": [
+    "USA"
+   ],
+   "n_units": 27529,
+   "unit": "% adults (crude, model-based)",
+   "primary_source": "CDC PLACES: Place Data (GIS Friendly Format), 2025 release",
+   "table": "OBESITY_CrudePrev",
+   "url": "https://data.cdc.gov/api/views/vgc8-iyc4/rows.csv?accessType=DOWNLOAD",
+   "years": [
+    "2023",
+    "2023"
+   ]
+  },
+  {
+   "id": "PLACES_ROUTINE_CHECKUP_PCT",
+   "new_in_v1.3": true,
+   "levels": [
+    "city"
+   ],
+   "countries": [
+    "USA"
+   ],
+   "n_units": 27529,
+   "unit": "% adults (crude, model-based)",
+   "primary_source": "CDC PLACES: Place Data (GIS Friendly Format), 2025 release",
+   "table": "CHECKUP_CrudePrev",
+   "url": "https://data.cdc.gov/api/views/vgc8-iyc4/rows.csv?accessType=DOWNLOAD",
+   "years": [
+    "2023",
+    "2023"
+   ]
+  },
+  {
+   "id": "PLACES_SMOKING_PCT",
+   "new_in_v1.3": true,
+   "levels": [
+    "city"
+   ],
+   "countries": [
+    "USA"
+   ],
+   "n_units": 27529,
+   "unit": "% adults (crude, model-based)",
+   "primary_source": "CDC PLACES: Place Data (GIS Friendly Format), 2025 release",
+   "table": "CSMOKING_CrudePrev",
+   "url": "https://data.cdc.gov/api/views/vgc8-iyc4/rows.csv?accessType=DOWNLOAD",
+   "years": [
+    "2023",
+    "2023"
+   ]
+  },
+  {
+   "id": "PLACES_UNINSURED_18_64_PCT",
+   "new_in_v1.3": true,
+   "levels": [
+    "city"
+   ],
+   "countries": [
+    "USA"
+   ],
+   "n_units": 27529,
+   "unit": "% adults (crude, model-based)",
+   "primary_source": "CDC PLACES: Place Data (GIS Friendly Format), 2025 release",
+   "table": "ACCESS2_CrudePrev",
+   "url": "https://data.cdc.gov/api/views/vgc8-iyc4/rows.csv?accessType=DOWNLOAD",
+   "years": [
+    "2023",
+    "2023"
+   ]
+  },
+  {
+   "id": "POP_USUAL_RESIDENT",
+   "new_in_v1.3": true,
+   "levels": [
+    "city"
+   ],
+   "countries": [
+    "AUS"
+   ],
+   "n_units": 565,
+   "unit": "persons",
+   "primary_source": "ABS SEIFA 2021 by LGA (Data API dataflow ABS_SEIFA2021_LGA)",
+   "table": "IRSD URP",
+   "url": "https://data.api.abs.gov.au/rest/data/ABS_SEIFA2021_LGA/all",
+   "years": [
+    "2021",
+    "2021"
+   ]
+  },
+  {
+   "id": "POVERTY_CHILD_RELATIVE_AHC_SHARE",
+   "new_in_v1.3": true,
+   "levels": [
+    "city"
+   ],
+   "countries": [
+    "GBR"
+   ],
+   "n_units": 361,
+   "unit": "proportion (0–1) of children",
+   "primary_source": "DWP, Children in low income families: local area statistics FYE 2022–2025",
+   "table": "Table 2: Relative low income, After Housing Costs, Local Authority — Percentage FYE 2025",
+   "url": "https://assets.publishing.service.gov.uk/media/69b809619d8b52961a62b49a/children-in-low-income-families-local-area-statistics-2022-2025.ods",
+   "years": [
+    "2025",
+    "2025"
+   ]
+  },
+  {
+   "id": "POVERTY_CHILD_RELATIVE_BHC_SHARE",
+   "new_in_v1.3": true,
+   "levels": [
+    "ward"
+   ],
+   "countries": [
+    "GBR"
+   ],
+   "n_units": 7563,
+   "unit": "proportion (0–1) of children",
+   "primary_source": "DWP, Children in low income families: local area statistics FYE 2022–2025",
+   "table": "Table 11: Relative low income, Before Housing Costs, Ward — Percentage FYE 2025",
+   "url": "https://assets.publishing.service.gov.uk/media/69b809619d8b52961a62b49a/children-in-low-income-families-local-area-statistics-2022-2025.ods",
+   "years": [
+    "2025",
+    "2025"
+   ]
+  },
+  {
+   "id": "POVERTY_CONEVAL_EXTREME_PCT",
+   "new_in_v1.3": true,
+   "levels": [
+    "municipality"
+   ],
+   "countries": [
+    "MEX"
+   ],
+   "n_units": 2466,
+   "unit": "% population",
+   "primary_source": "CONEVAL, Indicadores de pobreza municipal 2020 (datos abiertos)",
+   "table": "column pobreza_e",
+   "url": "https://www.coneval.org.mx/Informes/Pobreza/Datos_abiertos/pobreza_municipal_2010-2020/indicadores%20de%20pobreza%20municipal_2020.csv",
+   "years": [
+    "2020",
+    "2020"
+   ]
+  },
+  {
+   "id": "POVERTY_CONEVAL_INCOME_LINE_PCT",
+   "new_in_v1.3": true,
+   "levels": [
+    "municipality"
+   ],
+   "countries": [
+    "MEX"
+   ],
+   "n_units": 2466,
+   "unit": "% population",
+   "primary_source": "CONEVAL, Indicadores de pobreza municipal 2020 (datos abiertos)",
+   "table": "column plp",
+   "url": "https://www.coneval.org.mx/Informes/Pobreza/Datos_abiertos/pobreza_municipal_2010-2020/indicadores%20de%20pobreza%20municipal_2020.csv",
+   "years": [
+    "2020",
+    "2020"
+   ]
+  },
+  {
+   "id": "POVERTY_CONEVAL_MULTIDIM_PCT",
+   "new_in_v1.3": true,
+   "levels": [
+    "municipality"
+   ],
+   "countries": [
+    "MEX"
+   ],
+   "n_units": 2466,
+   "unit": "% population",
+   "primary_source": "CONEVAL, Indicadores de pobreza municipal 2020 (datos abiertos)",
+   "table": "column pobreza",
+   "url": "https://www.coneval.org.mx/Informes/Pobreza/Datos_abiertos/pobreza_municipal_2010-2020/indicadores%20de%20pobreza%20municipal_2020.csv",
+   "years": [
+    "2020",
+    "2020"
+   ]
+  },
+  {
+   "id": "POVERTY_NMPI",
+   "new_in_v1.3": true,
+   "levels": [
+    "district"
+   ],
+   "countries": [
+    "IND"
+   ],
+   "n_units": 616,
+   "unit": "index 0–1",
+   "primary_source": "NITI Aayog, National Multidimensional Poverty Index: A Progress Review 2023",
+   "table": "Andhra Pradesh: Overview of Districts — NFHS-5 (2019-21) columns",
+   "url": "https://www.niti.gov.in/sites/default/files/2023-08/India-National-Multidimentional-Poverty-Index-2023.pdf",
+   "years": [
+    "2021",
+    "2021"
+   ]
+  },
+  {
+   "id": "POVERTY_NMPI_HEADCOUNT_PCT",
+   "new_in_v1.3": true,
+   "levels": [
+    "district"
+   ],
+   "countries": [
+    "IND"
+   ],
+   "n_units": 616,
+   "unit": "% population",
+   "primary_source": "NITI Aayog, National Multidimensional Poverty Index: A Progress Review 2023",
+   "table": "Andhra Pradesh: Overview of Districts — NFHS-5 (2019-21) columns",
+   "url": "https://www.niti.gov.in/sites/default/files/2023-08/India-National-Multidimentional-Poverty-Index-2023.pdf",
+   "years": [
+    "2021",
+    "2021"
+   ]
+  },
+  {
+   "id": "POVERTY_NMPI_INTENSITY_PCT",
+   "new_in_v1.3": true,
+   "levels": [
+    "district"
+   ],
+   "countries": [
+    "IND"
+   ],
+   "n_units": 616,
+   "unit": "% weighted deprivations",
+   "primary_source": "NITI Aayog, National Multidimensional Poverty Index: A Progress Review 2023",
+   "table": "Andhra Pradesh: Overview of Districts — NFHS-5 (2019-21) columns",
+   "url": "https://www.niti.gov.in/sites/default/files/2023-08/India-National-Multidimentional-Poverty-Index-2023.pdf",
+   "years": [
+    "2021",
+    "2021"
+   ]
+  },
+  {
+   "id": "SEIFA_IRSD_DECILE_AUS",
+   "new_in_v1.3": true,
+   "levels": [
+    "city"
+   ],
+   "countries": [
+    "AUS"
+   ],
+   "n_units": 547,
+   "unit": "decile 1 (most disadvantaged) – 10",
+   "primary_source": "ABS SEIFA 2021 by LGA (Data API dataflow ABS_SEIFA2021_LGA)",
+   "table": "IRSD RWAD",
+   "url": "https://data.api.abs.gov.au/rest/data/ABS_SEIFA2021_LGA/all",
+   "years": [
+    "2021",
+    "2021"
+   ]
+  },
+  {
+   "id": "SEIFA_IRSD_SCORE",
+   "new_in_v1.3": true,
+   "levels": [
+    "city"
+   ],
+   "countries": [
+    "AUS"
+   ],
+   "n_units": 547,
+   "unit": "index score (mean 1000)",
+   "primary_source": "ABS SEIFA 2021 by LGA (Data API dataflow ABS_SEIFA2021_LGA)",
+   "table": "IRSD SCORE",
+   "url": "https://data.api.abs.gov.au/rest/data/ABS_SEIFA2021_LGA/all",
+   "years": [
+    "2021",
+    "2021"
+   ]
+  },
+  {
+   "id": "WORKFORCE_LAWYERS_BAR_MEMBERS_N",
+   "new_in_v1.3": true,
+   "levels": [
+    "country"
+   ],
+   "countries": [
+    "AND",
+    "AUT",
+    "BGR",
+    "CYP",
+    "CZE",
+    "ESP",
+    "EST",
+    "FIN",
+    "FRA",
+    "GRC",
+    "HRV",
+    "HUN",
+    "ISL",
+    "ITA",
+    "LIE",
+    "LTU",
+    "PRT",
+    "ROU",
+    "SMR",
+    "SVK",
+    "SVN",
+    "SWE",
+    "TUR"
+   ],
+   "n_units": 23,
+   "unit": "lawyer members of the Bar",
+   "primary_source": "CCBE Lawyers’ Statistics 2015",
+   "table": "column \"Total no° of lawyer members of the Bar\"",
+   "url": "https://www.juridice.ro/wp-content/uploads/2016/07/2015_Table_of_Lawyer1_1433140834.pdf",
+   "years": [
+    "2015",
+    "2015"
+   ]
+  }
+ ]
+}

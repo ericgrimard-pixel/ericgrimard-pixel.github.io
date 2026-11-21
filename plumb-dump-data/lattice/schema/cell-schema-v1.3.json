@@ -1,0 +1,32 @@
+{
+ "version": "v1.3",
+ "extends": "cell-schema-v1.2.json (unchanged)",
+ "node_levels": [
+  "world",
+  "zone",
+  "country",
+  "region (NUTS2 / US state / CA province / AU SA4 & state / NZ regional council / BR UF / JP prefecture / ZA province / DHS survey region / OPHI region)",
+  "district / municipality / county (IN district – NITI; MX municipio – INEGI code; US county – FIPS)",
+  "city (US Census place – PLACES; AU LGA 2021; GB local authority; Urban Audit city; US MSA; CA CMA)",
+  "ward (GB electoral ward – ONS code) — NEW v1.3, sub-city"
+ ],
+ "cell_key": "INDICATOR|SEX|AGE|QUINTILE",
+ "value_record": [
+  "value",
+  "unit",
+  "year",
+  "flag",
+  "source",
+  "table",
+  "url"
+ ],
+ "gap_record": {
+  "status": "OPEN",
+  "tag": "[INCOMPLET]"
+ },
+ "notes": [
+  "DHS values keep the indicator's own denominator/age definition (age field = \"(indicator-defined)\")",
+  "proportions kept verbatim (DWP 0–1 shares not rescaled)",
+  "projections and model estimates flagged in \"flag\""
+ ]
+}
