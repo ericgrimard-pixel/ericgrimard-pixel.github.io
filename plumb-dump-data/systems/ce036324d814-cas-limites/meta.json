@@ -1,0 +1,16 @@
+{
+  "title": "Cas-limites",
+  "source_file": "SAMPLE-cas-limites.csv",
+  "sha256": "ce036324d814f0d52ac66cd1f1c72eedec29a1792a29fc35d01c700bab63a3d8",
+  "prefix": "ce036324d814",
+  "kind": "cols",
+  "family": "v1 dans la visionneuse v2",
+  "viewer": "v2 wrapper on frozen snapshot/engine (rev. 23.16). Protocol unchanged.",
+  "published_without": [
+    "receipts",
+    "guest registry",
+    "tokens",
+    "ledger",
+    "sender addresses"
+  ]
+}
