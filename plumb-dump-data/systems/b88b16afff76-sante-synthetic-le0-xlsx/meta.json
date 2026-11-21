@@ -1,0 +1,23 @@
+{
+  "title": "Santé SYNTHETIC — LE0 (xlsx)",
+  "source_file": "synthetic-health-le0.xlsx",
+  "sha256": "b88b16afff7647260f33b15803e435ab5522456670d325e971ca617f3509b3c3",
+  "prefix": "b88b16afff76",
+  "kind": "cols",
+  "family": "v2 · Santé",
+  "viewer": "v2 wrapper on frozen snapshot/engine (rev. 23.16). Protocol unchanged.",
+  "published_without": [
+    "receipts",
+    "guest registry",
+    "tokens",
+    "ledger",
+    "sender addresses"
+  ],
+  "conformance": {
+    "ok": true,
+    "n_cells": 8,
+    "n_filled": 6,
+    "n_open": 2,
+    "n_unmapped": 2
+  }
+}
