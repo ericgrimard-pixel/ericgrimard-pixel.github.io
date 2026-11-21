@@ -1,0 +1,10 @@
+nom,categorie,valeur,note
+Élodie,Équipe été,"12,5",accents UTF-8
+François,Équipe été,8,
+Zoë,Équipe hiver,,cellule vide
+,,,
+Test formule,Équipe hiver,=SOMME(A1:A3),texte qui ressemble à une formule
+Test injection,Équipe hiver,+cmd|' /C calc'!A0,texte qui ressemble à une commande
+nom,categorie,valeur,note
+Renée,Équipe été,20,en-tête répété juste au-dessus
+"Marc ""le grand""",Équipe hiver,5,guillemets échappés

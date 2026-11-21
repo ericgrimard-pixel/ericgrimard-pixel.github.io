@@ -1,0 +1,16 @@
+{
+  "title": "Deux onglets (xlsx)",
+  "source_file": "SAMPLE-deux-onglets.xlsx",
+  "sha256": "907b94d35964c6d4c3112afafe96598d06c57f6517be6432cc0d6b85edf77355",
+  "prefix": "907b94d35964",
+  "kind": "finance + cols",
+  "family": "v1 dans la visionneuse v2",
+  "viewer": "v2 wrapper on frozen snapshot/engine (rev. 23.16). Protocol unchanged.",
+  "published_without": [
+    "receipts",
+    "guest registry",
+    "tokens",
+    "ledger",
+    "sender addresses"
+  ]
+}
