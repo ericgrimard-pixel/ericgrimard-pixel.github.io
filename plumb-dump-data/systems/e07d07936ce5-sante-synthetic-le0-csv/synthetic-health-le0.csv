@@ -1,0 +1,9 @@
+label,country_iso3,country,sex,age_band_source,income_quintile,indicator_code,value,unit,period_year,source_org,source_table,weight_coverage,quality_note,url
+SYNTHETIC,CAN,Canada,T,ALL,ALL,LE0,82.1,years,2024,SYNTHETIC — not an official figure,table-S,100,SYNTHETIC values for door-v2 offline test,
+SYNTHETIC,CAN,Canada,M,ALL,ALL,LE0,80.0,years,2024,SYNTHETIC — not an official figure,table-S,100,SYNTHETIC,
+SYNTHETIC,CAN,Canada,F,ALL,ALL,LE0,84.2,years,2024,SYNTHETIC — not an official figure,table-S,100,SYNTHETIC,
+SYNTHETIC,USA,United States,T,ALL,ALL,LE0,77.5,years,2024,SYNTHETIC — not an official figure,table-S,100,SYNTHETIC,
+SYNTHETIC,FRA,France,T,ALL,ALL,LE0,83.0,years,2024,SYNTHETIC — not an official figure,table-S,88,SYNTHETIC,
+SYNTHETIC,CAN,Canada,T,ALL,Q1,LE0,78.0,years,2024,SYNTHETIC — not an official figure,table-S,40,SYNTHETIC; coverage under 50 so provisional must be true,
+SYNTHETIC,,Atlantis,T,ALL,ALL,LE0,99.9,years,2024,SYNTHETIC — not an official figure,table-S,,"SYNTHETIC fictional country, must stay unmapped",
+SYNTHETIC,CAN,Canada,T,ALL,ALL,NOT_A_LATTICE_IND,1.23,,2024,SYNTHETIC — not an official figure,table-S,,SYNTHETIC unknown indicator,
