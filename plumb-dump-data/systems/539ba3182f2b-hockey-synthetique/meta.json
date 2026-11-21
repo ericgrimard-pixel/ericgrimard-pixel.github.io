@@ -1,0 +1,16 @@
+{
+  "title": "Hockey synthétique",
+  "source_file": "SAMPLE-hockey-synthetique.csv",
+  "sha256": "539ba3182f2be7902dd9fb1462b9bfcfc7a8f47e8f8c632eb11fd5e442eaa403",
+  "prefix": "539ba3182f2b",
+  "kind": "cols",
+  "family": "v1 dans la visionneuse v2",
+  "viewer": "v2 wrapper on frozen snapshot/engine (rev. 23.16). Protocol unchanged.",
+  "published_without": [
+    "receipts",
+    "guest registry",
+    "tokens",
+    "ledger",
+    "sender addresses"
+  ]
+}
