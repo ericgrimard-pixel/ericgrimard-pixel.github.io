@@ -1,0 +1,23 @@
+{
+  "title": "Extrait réel du treillis — LE0 / POP / HALE0",
+  "source_file": "lattice-excerpt-le0-pop-hale0.csv",
+  "sha256": "0cf92c4aa33cc0c930b414e8a3d436cf07f33a562bd6133208ba3e80ce4016fa",
+  "prefix": "0cf92c4aa33c",
+  "kind": "cols",
+  "family": "v2 · Santé",
+  "viewer": "v2 wrapper on frozen snapshot/engine (rev. 23.16). Protocol unchanged.",
+  "published_without": [
+    "receipts",
+    "guest registry",
+    "tokens",
+    "ledger",
+    "sender addresses"
+  ],
+  "conformance": {
+    "ok": true,
+    "n_cells": 30,
+    "n_filled": 30,
+    "n_open": 0,
+    "n_unmapped": 0
+  }
+}

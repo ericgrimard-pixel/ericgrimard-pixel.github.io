@@ -1,0 +1,16 @@
+{
+  "title": "Finance synthétique (échantillon Claude)",
+  "source_file": "SAMPLE-finance-synthetique.csv",
+  "sha256": "a912f92cb325f3757102d188cb8ffdce8d4a784144cb1ec0b3abf1e8a015bc3b",
+  "prefix": "a912f92cb325",
+  "kind": "finance",
+  "family": "v2 · Finance",
+  "viewer": "v2 wrapper on frozen snapshot/engine (rev. 23.16). Protocol unchanged.",
+  "published_without": [
+    "receipts",
+    "guest registry",
+    "tokens",
+    "ledger",
+    "sender addresses"
+  ]
+}

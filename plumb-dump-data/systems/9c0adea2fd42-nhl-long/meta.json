@@ -1,0 +1,16 @@
+{
+  "title": "NHL long 2024-25 / 2025-26",
+  "source_file": "NHL_players_long_2024-25_2025-26.csv",
+  "sha256": "9c0adea2fd4259bc591ad6f51af3379bc1f350bb237aa9bed62d4b8a6da94d09",
+  "prefix": "9c0adea2fd42",
+  "kind": "cols",
+  "family": "v1 dans la visionneuse v2",
+  "viewer": "v2 wrapper on frozen snapshot/engine (rev. 23.16). Protocol unchanged.",
+  "published_without": [
+    "receipts",
+    "guest registry",
+    "tokens",
+    "ledger",
+    "sender addresses"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "door_version": "v1",
+  "source": "https://ericgrimard-pixel.github.io/um/engine/",
+  "hub_query": "v=20.85",
+  "protocol": "Manifestation rev. 23.16",
+  "fetched_at": "2026-11-20T22:16:00-05:00",
+  "note": "Read-only snapshot of engine code only (no live lib-*.js market data). Protocol reused unchanged, including zoneOf 20/40/60/80.",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "03f9cb5495e7ecae8b2f87827dec25c32d67e004bb35411610931230c7197d30",
+      "bytes": 5376
+    },
+    {
+      "path": "data/icons.js",
+      "sha256": "dda4aff2527c51f9f0f42847d4b196f5861ae437353b2de066a158dfaa26267f",
+      "bytes": 9364
+    },
+    {
+      "path": "engine.js",
+      "sha256": "dedecf6a61844435f3cf96b156e768a3c713851f897c3be98df8ef24924b1f21",
+      "bytes": 227534
+    },
+    {
+      "path": "manifestation-engine.html",
+      "sha256": "4f6e7057c4b92b76a930363c3b10bcb2e84dd44fb4101d4914e6f1820eee1f94",
+      "bytes": 212886
+    },
+    {
+      "path": "vendor/OrbitControls.js",
+      "sha256": "02bb4ade710f3e607329e37a21f098bc3ac70eb6e33daf8a65e79f4db785e7b2",
+      "bytes": 26375
+    },
+    {
+      "path": "vendor/three.min.js",
+      "sha256": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2",
+      "bytes": 603445
+    }
+  ],
+  "readme_head": "# MANIFESTATION ENGINE — real source for the Hub (rev. 23.16)"
+}
