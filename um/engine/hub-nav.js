@@ -159,3 +159,78 @@
   const raw=rawHash();
   if(raw && !resolve(raw)) mark(raw);
 })();
+
+/* v20.86 — Éric, 22 nov 2026 00:27–00:28 (Toronto): entrée SANTÉ / Health vers le treillis,
+   et règle des champs clairsemés (LACUNE / GAP). Ajout seulement : aucun calcul du moteur,
+   aucune zone du protocole, ni Q1–Q5, ni anneau chronométrique, ni pièges λ, ni anneau Amérique ne sont touchés.
+   Les comptes viennent uniquement de UM_FLOORS (données du Hub) et de gaps_v1.4.json (treillis). */
+(function(){
+  const LAT='/plumb-dump-data/lattice/';
+  const MIN_KIDS=3, MIN_N=5, TH=25;
+  const css=document.createElement('style');
+  css.textContent='#um-gaps{flex:1 1 100%;order:-1;background:#2a0f0d;border:2px solid #e0533f;border-radius:6px;padding:4px 8px;margin:2px 0;color:#ffd9d2;font:12px/1.35 system-ui,sans-serif;max-height:24vh;overflow:auto}'
+    +'#um-gaps summary{cursor:pointer;font-weight:700;color:#ffb4a6}'
+    +'#um-gaps ul{margin:4px 0 2px 16px;padding:0}#um-gaps li{margin:1px 0}'
+    +'#um-gaps button,#um-gaps a{font:600 12px system-ui,sans-serif;color:#ffe9a8;background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}'
+    +'.um-gap-badge{display:inline-block;background:#e0533f;color:#fff;font:700 10px/1.2 system-ui,sans-serif;padding:1px 5px;border-radius:3px;margin-right:4px;white-space:nowrap}'
+    +'.um-gap-tag{color:#e8c872;font:600 10px ui-monospace,monospace}'
+    +'#hub-nav .um-thin{outline:2px dashed #e0533f;outline-offset:1px}'
+    +'#hub-health-link{font:600 12px/1.3 system-ui,sans-serif;background:#0f2216;color:#9ff0bd;border:2px dashed #e0533f;border-radius:4px;padding:3px 8px;text-decoration:none}';
+  document.head.appendChild(css);
+  function by(id){ return (window.UM_FLOOR_BY&&UM_FLOOR_BY[id])||null; }
+  function thin(f){
+    if(!f||f.level==='world') return null;
+    const kids=(f.children||[]).filter(by).length;
+    if(f.level==='silo'||f.level==='zone'){
+      if(kids<MIN_KIDS) return kids+' étage'+(kids>1?'s':'')+' enfant'+(kids>1?'s':'');
+      return null;
+    }
+    if((f.n|0)===0) return '0 objet';
+    if((f.n|0)<MIN_N) return (f.n|0)+' objets';
+    return null;
+  }
+  const flagged=(window.UM_FLOORS||[]).map(f=>({f:f,why:thin(f)})).filter(x=>x.why);
+  const FL={}; flagged.forEach(x=>{FL[x.f.id]=x.why;});
+  function esc(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function parentName(f){ const p=by(f.parent); return p?p.name:''; }
+  const box=document.createElement('details');
+  box.id='um-gaps'; box.open=true;
+  let li=['<li><span class="um-gap-badge">LACUNE / GAP</span><b>SANTÉ / Health</b> : l’étage Santé du Hub a 0 étage enfant et 0 objet. Le treillis santé est publié ici : <a id="um-gaps-health" href="'+LAT+'">SANTÉ / Health lattice ↗</a> <span class="um-gap-tag">[À CONFIRMER]</span><ul id="um-gaps-lat"><li>Chargement des lacunes du treillis…</li></ul></li>'];
+  flagged.forEach(x=>{
+    if(x.f.id==='health') return;
+    li.push('<li><span class="um-gap-badge">LACUNE / GAP</span><button type="button" data-gap="'+esc(x.f.id)+'">'+esc(x.f.name)+'</button>'
+      +(x.f.parent?' <span style="opacity:.75">('+esc(parentName(x.f))+')</span>':'')+' : '+esc(x.why)+' <span class="um-gap-tag">[À CONFIRMER]</span></li>');
+  });
+  Object.keys(window.UM_WHY||{}).forEach(k=>{
+    li.push('<li><span class="um-gap-badge">LACUNE / GAP</span>'+esc(k)+' : 0 série. '+esc(UM_WHY[k])+' <span class="um-gap-tag">[INCOMPLET]</span></li>');
+  });
+  box.innerHTML='<summary>Gaps / LACUNES : index ('+li.length+')</summary>'
+    +'<div>Seuil : moins de '+TH+' % de couverture, ou moins de '+MIN_KIDS+' étages enfants (silo ou zone), ou moins de '+MIN_N+' objets (étage). Comptes réels du Hub, rien d’inventé.</div><ul>'+li.join('')+'</ul>';
+  const header=document.querySelector('header');
+  const navEl=document.getElementById('hub-nav');
+  if(header){ if(navEl&&navEl.parentNode===header) header.insertBefore(box,navEl); else header.appendChild(box); }
+  box.querySelectorAll('[data-gap]').forEach(b=>b.addEventListener('click',()=>{ try{ switchSys(b.getAttribute('data-gap')); }catch(e){} }));
+  fetch(LAT+'v1.4/gaps_v1.4.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{
+    const ul=document.getElementById('um-gaps-lat'); if(!ul) return;
+    if(!j||!j.gaps){ ul.innerHTML='<li>gaps_v1.4.json indisponible <span class="um-gap-tag">[INCOMPLET]</span></li>'; return; }
+    ul.innerHTML=j.gaps.map(g=>'<li><span class="um-gap-badge">LACUNE / GAP</span><a href="'+LAT+'#'+(g.id.indexOf('gap-subnat')===0?'subnat':'field-'+g.id.slice(4))+'">'+esc(g.section)+'</a> : '+Number(g.coverage_pct_all).toFixed(1)+' % <span class="um-gap-tag">'+esc(g.tag||'[À CONFIRMER]')+'</span></li>').join('');
+  }).catch(()=>{});
+  function decorate(){
+    const nav=document.getElementById('hub-nav'); if(!nav) return;
+    nav.querySelectorAll('[data-down]').forEach(b=>{
+      const id=b.getAttribute('data-down');
+      if(FL[id]&&!b.classList.contains('um-thin')){ b.classList.add('um-thin'); b.title='LACUNE / GAP : '+FL[id]+' [À CONFIRMER]'; }
+    });
+    const c=document.getElementById('hub-center');
+    const showHealth=nav.querySelector('[data-down="health"]')||(c&&c.textContent.trim()==='Santé');
+    if(showHealth&&!document.getElementById('hub-health-link')){
+      const a=document.createElement('a');
+      a.id='hub-health-link'; a.href=LAT;
+      a.innerHTML='SANTÉ / Health lattice ↗ <span class="um-gap-badge">LACUNE / GAP</span>';
+      nav.appendChild(a);
+    }
+  }
+  const nav=document.getElementById('hub-nav');
+  if(nav){ new MutationObserver(()=>decorate()).observe(nav,{childList:true}); }
+  decorate();
+})();
