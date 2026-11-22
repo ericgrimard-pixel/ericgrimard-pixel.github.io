@@ -2,7 +2,7 @@
 import worker, { _test } from './worker.js';
 import { randomBytes, createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
-const tok = () => randomBytes(32).toString('hex');
+const tok = () => randomBytes(32).toString('base64url');
 const H = t => createHash('sha256').update(t).digest('hex');
 const T = { eric: tok(), gary: tok(), samuel: tok() };
 class MemKV { constructor() { this.m = new Map(); }
@@ -86,6 +86,7 @@ for (let i = 0; i < 22; i++) { const x = await f(req({ ip: '10.8.8.8', auth: B('
 ok(codes.slice(0, 20).every(c => c === 202) && codes.slice(20).every(c => c === 429), 'volume rate limit (20 / min) → 429', codes.slice(18).join(','));
 
 console.log('— hygiene');
+r = await f(req({ auth: 'Bearer short' })); ok(r.status === 401, 'too-short key → 401');
 ok(_test.ctEqual('ab', 'ab') && !_test.ctEqual('ab', 'ac') && !_test.ctEqual('ab', 'abc'), 'constant-time compare basics');
 const src = readFileSync(new URL('./worker.js', import.meta.url), 'utf8');
 ok(!/\bfetch\s*\(/.test(src.replace(/async fetch\(request, env\)/, '')) && !/mailchannels|sendgrid|smtp|resend/i.test(src), 'no outbound fetch / mail API in worker.js');

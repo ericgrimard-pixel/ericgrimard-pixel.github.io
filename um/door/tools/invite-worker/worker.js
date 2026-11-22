@@ -53,8 +53,8 @@ function ctEqual(a, b) {
   let d = 0; for (let i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i); return d === 0;
 }
 async function whoIs(token, env) {
-  if (!/^[0-9a-f]{64}$/i.test(token)) return null;
-  const h = await sha256hex(token.toLowerCase());
+  if (!/^[A-Za-z0-9_-]{22,128}$/.test(token)) return null; /* base64url keys (v20.88), ≥128-bit */
+  const h = await sha256hex(token);
   let found = null;
   for (const a of ADMINS) { const want = String(env[a.secret] || '').trim().toLowerCase(); if (want.length === 64 && ctEqual(h, want) && !found) found = a; }
   return found;

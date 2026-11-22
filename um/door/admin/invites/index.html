@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
-<meta name="um-ledger" content="v1 · hub v20.87">
+<meta name="um-ledger" content="v1.1 · hub v20.88">
 <title>Universal Metaphor · Mes invités (administration)</title>
 <style>
 :root{--bg:#070a0e;--panel:#10161d;--line:#26303b;--fg:#e6e9ee;--muted:#9aa3ad;--accent:#e8c872;--gap:#e0533f;--ok:#5fd690}
@@ -43,18 +43,14 @@ button.danger{border-color:var(--gap);color:#ffb4a6}
 <section><h2>Invités <span id="count" class="cov"></span></h2><div id="list"></div></section>
 <p class="cov">Envoi bloqué — en attente du feu vert d’Éric sur les modèles. Rien n’est envoyé depuis cette page. Frais et conservation : visibles ici seulement, jamais sur la carte d’invitation. Sur un site statique, cette page est cachée, pas protégée ; la vraie protection est le point d’entrée serveur.</p>
 </main>
+<script src="/um/door/admin/fingerprints.js?v=20.88"></script>
 <script>
 (function(){
-  var ADM=[{"id": "eric-grimard", "name": "Éric Grimard", "sha256": "21669f81997d77778ff0a49bd074280f3014886b2b82d208b7658d73eca39dca"}, {"id": "gary-kivenko", "name": "Gary Kivenko", "sha256": "70e470961f91196ebef1ca2f12c6c513f0da49d411e61648e1fe12525f17fb77"}, {"id": "samuel-le-flaguais", "name": "Samuel Le Flaguais", "sha256": "2d5b286b362b467d5aa4601639ca72bd316fe73d39e5ffa42381878292ba2e44"}], LS='um.hubGuestKey';
   var UM_INVITE_ENDPOINT=''; /* même constante que hub-nav.js ; vide = non déployé */
-  var tok=null; try{tok=localStorage.getItem(LS);}catch(e){}
+  var tok=window.UM_ADMIN?UM_ADMIN.key():null;
   function deny(){ document.getElementById('denied').hidden=false; }
-  if(!tok||!window.crypto||!crypto.subtle) return deny();
-  crypto.subtle.digest('SHA-256',new TextEncoder().encode(tok)).then(function(b){
-    var hex=Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('');
-    var me=ADM.filter(function(a){return a.sha256===hex})[0]; if(!me) return deny();
-    start(me);
-  });
+  if(!window.UM_ADMIN) return deny();
+  UM_ADMIN.current().then(function(me){ if(!me) return deny(); start(me); });
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
   var F=[['label','Nom ou libellé'],['invited_at','Date d’invitation'],['status','Statut'],['mode','Mode d’interaction'],['meetings','Liens de réunion'],['files','Choix de remise des fichiers'],['card','Autres données de la carte'],['notes','Notes libres']];
   function start(me){

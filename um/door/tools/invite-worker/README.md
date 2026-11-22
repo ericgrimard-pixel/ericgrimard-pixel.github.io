@@ -27,7 +27,7 @@ Server-side enforcement at the invite endpoint for the Hub's admin-only **Guest*
 
 **Not deployed** (22 Nov 2026). It has been tested locally only:
 
-- `node test.mjs`: 37 checks pass, covering tokens, CORS, per-admin scoping, the card and invitee purge with tombstones, and rate limits.
+- `node test.mjs`: 38 checks pass, covering tokens, CORS, per-admin scoping, the card and invitee purge with tombstones, and rate limits.
 - `wrangler dev --local` smoke test: valid → 202, wrong → 401, missing → 401, other origin → 403, preflight → 204, repeated failures → 429.
 
 ## What's needed to go live
@@ -45,13 +45,13 @@ Server-side enforcement at the invite endpoint for the Hub's admin-only **Guest*
    - `ADMIN_SHA256_GARY`
    - `ADMIN_SHA256_SAMUEL`
 
-   The three hashes are already public, in `um/engine/hub-nav.js` (`ADM` list) and `um/door/admin/cle/index.html`. The keys themselves stay on the box, in `plumb-dump-data/v2/config/hub_guest_keys.local.json`, which is never committed.
+   Since v20.88 the keys are base64url (256-bit), one per admin, and Éric is the master. The three hashes are public, in one place: `um/door/admin/fingerprints.js`. The keys stay on the box, outside the repo.
 
 ## Deploy steps
 
 ```sh
 cd um/door/tools/invite-worker
-npm test                                   # 37 checks, must all pass
+npm test                                   # 38 checks, must all pass
 wrangler kv namespace create INVITES       # required for the ledger and the card
 #   paste the printed id into wrangler.toml ([[kv_namespaces]]) and uncomment it
 wrangler secret put ADMIN_SHA256_ERIC      # paste the hash when prompted
