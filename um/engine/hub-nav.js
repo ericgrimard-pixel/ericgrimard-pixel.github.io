@@ -461,3 +461,206 @@
   const hd=document.querySelector('header');
   if(hd) new MutationObserver(()=>{ const n=document.getElementById('hub-nav'); if(n&&n.parentNode===hd) move(); }).observe(hd,{childList:true});
 })();
+
+/* v20.91 — Éric, 22 nov 2026 12:45–12:49 (Toronto, voix) : panneau de droite UNIFIÉ.
+   1. En haut : toutes les cases (Couches + Kobayashi Maru, déplacée de la barre du haut).
+   2. Juste dessous : « Classe 2 · objets » — un bouton par objet de Classe 2 visible dans le moteur ; un clic = sélection
+      (crochet public __umSelect du moteur), deux clics = plonger (switchSys(class2Floor), comme le moteur). Rien de réimplémenté.
+   3. « Pôles · zones · systèmes » : le sélecteur Classe 4 (#sys), le bouton HUB et la nav des étages (#hub-nav), déplacés
+      de la barre du haut (mêmes nœuds DOM, mêmes gestionnaires), précédés du lien d'invitation.
+   Le pied collant devient compact et ne recouvre plus la rangée Classe 2. Santé · lacunes est replié sur une ligne.
+   Squelettes non fonctionnels : Santé (en attente de loader-v2, Claude) et Football (EN CONSTRUCTION).
+   Rien n'est supprimé : déplacements, replis, masquage d'un titre en double. Aucune requête réseau ajoutée sauf la
+   lecture des fichiers publics du treillis pour le squelette Santé. */
+(function(){
+  const $=id=>document.getElementById(id);
+  const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const INVITE='/um/door/um-invite-demo-v2.html', CARD='/um/door/card/', FORM='/um/door/form-draft/';
+  const css=document.createElement('style'); css.id='um-v2091-css';
+  css.textContent=''
+    /* bloc des cases, compact */
+    +'#um-rg-couches>section.panel{padding:6px 8px}'
+    +'#um-rg-couches>section.panel>h2{display:none}' /* titre « Couches » en double avec le résumé */
+    +'#um-rg-couches .layers{grid-template-columns:1fr 1fr;gap:1px 8px;font-size:11px;line-height:1.25}'
+    +'#um-rg-couches .layers label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}'
+    +'#um-rg-couches .layers input{margin:1px 4px 1px 0;vertical-align:-2px}'
+    +'.um-u-row{padding:5px 8px 6px;border-top:1px solid rgba(200,205,212,.18);display:flex;flex-wrap:wrap;gap:4px;align-items:center}'
+    +'.um-u-row>.um-u-h{flex:1 1 100%;font:600 10px/1.2 system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#8b98ad}'
+    +'.um-u-row button,.um-u-row a.um-u-a{font:500 11px/1.25 system-ui,sans-serif;padding:3px 7px}'
+    +'#um-u-chk label{font-size:11px}'
+    +'#um-u-c2 .um-u-empty{font:11px/1.35 system-ui,sans-serif;color:#9aa3ad}'
+    +'#um-u-c2 button[aria-pressed=true]{border-color:#5fd690;color:#c9f5da}'
+    +'#um-u-sys .take{font-size:11px}#um-u-sys select{max-width:170px;font-size:11px}'
+    +'#um-u-sys #hub-nav{flex:1 1 100%;margin:2px 0 0;padding:0;border:0;gap:4px}'
+    +'#um-u-sys #hub-nav::before{content:none!important}'
+    +'#um-u-sys #hub-nav button,#um-u-sys #hub-nav a{font:500 11px/1.25 system-ui,sans-serif;padding:3px 7px}'
+    +'a.um-u-a{display:inline-block;border:1px solid #7fd1ff;border-radius:4px;color:#bfe8ff;text-decoration:none;background:#0d1a26}'
+    +'#um-invite-first{border-color:#e8c872;color:#ffe9a8;background:#1a160b;font-weight:700!important}'
+    /* pied compact : une ligne de groupes repliés + une ligne de boutons */
+    +'#um-rg-foot{flex-direction:row!important;flex-wrap:wrap;gap:4px!important;padding:4px 0 2px!important}'
+    +'#um-rg-foot>details{flex:1 1 45%;min-width:0}'
+    +'#um-rg-foot>details>summary{padding:4px 7px!important;font-size:10px!important}'
+    +'#um-rg-foot>details[open]{flex-basis:100%}'
+    +'#um-rg-btns{flex:1 1 100%;gap:3px!important}#um-rg-btns button{font-size:10px!important;padding:2px 6px!important}'
+    /* lien d'invitation en tête de la colonne de gauche */
+    +'#um-invite-left{display:block;margin:0 0 6px;padding:5px 2px;border:1px solid #e8c872;border-radius:5px;background:#1a160b;color:#ffe9a8;text-decoration:none;font:700 10px/1.2 system-ui,sans-serif;text-align:center}'
+    /* squelettes */
+    +'.um-skel{position:absolute;left:10px;top:10px;z-index:7;width:min(600px,calc(100% - 20px));max-height:calc(100% - 130px);overflow:auto;background:rgba(9,13,18,.96);border:2px dashed #e8c872;border-radius:8px;color:#e6e9ee;font:12px/1.45 system-ui,sans-serif;padding:10px 12px;box-shadow:0 12px 40px rgba(0,0,0,.6)}'
+    +'.um-skel h3{margin:0 0 4px;font:600 14px/1.3 system-ui,sans-serif;color:#ffe9a8}'
+    +'.um-skel .sub{color:#9aa3ad;font-size:11px;margin-bottom:6px}'
+    +'.um-skel table{border-collapse:collapse;width:100%;margin:4px 0 8px}.um-skel td,.um-skel th{border-bottom:1px solid #26303b;padding:3px 4px;text-align:left;vertical-align:top;font-size:11px}'
+    +'.um-skel th{color:#8b98ad;font-weight:600}'
+    +'.um-skel .lvl{font:600 11px ui-monospace,monospace;color:#bfe8ff;margin-top:8px}'
+    +'.um-skel .x{position:sticky;top:0;float:right;font:700 13px system-ui;padding:0 7px}'
+    +'.um-skel .inc{font:600 10px ui-monospace,monospace;color:#e8c872}'
+    +'.um-skel .ex{display:inline-block;background:#33405a;color:#dbe6ff;font:700 9px/1.2 system-ui;padding:1px 4px;border-radius:3px}'
+    +'.um-ribbon{position:sticky;top:-10px;margin:-10px -12px 8px;background:repeating-linear-gradient(45deg,#e8c872 0 14px,#1a160b 14px 28px);color:#000;font:800 12px/1 system-ui,sans-serif;letter-spacing:.2em;text-align:center;padding:6px}'
+    +'.um-ribbon span{background:#e8c872;padding:2px 10px}'
+    +'@media (max-width:700px){#um-rg-foot{position:static!important}.um-skel{max-height:calc(100% - 20px)}}'
+    +'.um-skel-chip{position:absolute;left:10px;top:10px;z-index:7;font:600 11px system-ui;padding:4px 9px;border:1px dashed #e8c872;background:#1a160b;color:#ffe9a8;border-radius:5px;cursor:pointer}';
+  document.head.appendChild(css);
+
+  /* ---------- 1–3 : panneau unifié ---------- */
+  function row(id,title,parent,after){
+    let r=$(id);
+    if(!r){ r=document.createElement('div'); r.id=id; r.className='um-u-row'; r.innerHTML='<span class="um-u-h">'+esc(title)+'</span>'; }
+    if(after){ if(after.nextSibling!==r) after.parentNode.insertBefore(r,after.nextSibling); }
+    else if(r.parentNode!==parent) parent.appendChild(r);
+    return r;
+  }
+  let tries=0;
+  function unify(){
+    const dC=$('um-rg-couches'), nav=$('hub-nav'), lay=$('layers');
+    if(!dC||!nav||!lay){ if(++tries<60) setTimeout(unify,250); return; }
+    const sCou=lay.closest('section');
+    const rChk=row('um-u-chk','Autres cases',dC,sCou);
+    const km=$('km'); const kmL=km&&km.closest('label');
+    if(kmL&&kmL.parentNode!==rChk) rChk.appendChild(kmL);                 /* barre du haut → cases */
+    const rC2=row('um-u-c2','Classe 2 · objets — un clic : sélection · deux clics : plonger',dC,rChk);
+    const rSys=row('um-u-sys','Pôles · zones · systèmes',dC,rC2);
+    if(!$('um-invite-first')){ const a=document.createElement('a'); a.id='um-invite-first'; a.className='um-u-a'; a.href=INVITE; a.target='_blank'; a.rel='noopener'; a.textContent='✉ Invitation ↗'; a.title='Parcours de l\u2019invité v2 (démo) — aussi : carte /um/door/card/'; rSys.insertBefore(a,rSys.children[1]||null); }
+    const sys=$('sys'); const sysL=sys&&sys.closest('label');
+    if(sysL&&sysL.parentNode!==rSys) rSys.appendChild(sysL);              /* barre du haut → panneau */
+    const hb=$('hubHome'); if(hb&&hb.parentNode!==rSys) rSys.appendChild(hb);
+    if(nav.parentNode!==rSys) rSys.appendChild(nav);                      /* v20.90 : sous les cases → rangée pôles */
+    /* Santé · lacunes replié sur une ligne (reste dans le panneau) */
+    const dS=$('um-rg-sante'); if(dS&&!dS.dataset.u91){ dS.open=false; dS.dataset.u91='1'; }
+    /* liens du groupe Porte · démo : invitation en tête, brouillon du formulaire */
+    const door=$('um-rg-door'); const body=door&&door.querySelector('.um-rg-body');
+    if(body&&!$('um-door-form')){
+      body.insertAdjacentHTML('afterbegin','<a id="um-door-invite" href="'+INVITE+'" target="_blank" rel="noopener">✉ Invitation — parcours de l\u2019invité v2 \u2197</a><a href="'+CARD+'" target="_blank" rel="noopener">Carte d\u2019invitation \u2197</a>');
+      body.insertAdjacentHTML('beforeend','<a id="um-door-form" href="'+FORM+'" target="_blank" rel="noopener">Formulaire d\u2019invitation — BROUILLON, inactif \u2197</a>');
+    } else if(!body&&tries<60){ tries++; setTimeout(unify,300); }
+    /* colonne de gauche : invitation en tête */
+    const leftP=document.querySelector('#left>.panel'); if(leftP&&!$('um-invite-left')){ const a=document.createElement('a'); a.id='um-invite-left'; a.href=INVITE; a.target='_blank'; a.rel='noopener'; a.textContent='✉ Invitation'; a.title='Parcours de l\u2019invité v2 (démo)'; leftP.insertBefore(a,leftP.firstChild); }
+    c2();
+  }
+  /* Classe 2 : boutons depuis les objets visibles du moteur */
+  let sig='';
+  function c2(){
+    const r=$('um-u-c2'); if(!r||typeof window.__umProbe!=='function') return;
+    let p; try{ p=__umProbe(); }catch(e){ return; }
+    const list=(p.visible||[]).filter(v=>v.kind===2);
+    const s=p.sys+'|'+list.map(v=>v.idx).join(',');
+    const fi=p.sel&&p.sel.kind===2?p.sel.idx:(p.focus&&p.focus.kind===2?p.focus.idx:-1);
+    if(s===sig){ r.querySelectorAll('[data-c2]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.c2===fi?'true':'false')); return; } sig=s;
+    const h=r.firstChild; r.innerHTML=''; r.appendChild(h);
+    if(!list.length){ r.insertAdjacentHTML('beforeend','<span class="um-u-empty">Aucun objet de Classe 2 visible à ce niveau ('+list.length+') — les pôles et les zones sont juste dessous. <span class="inc">[INCOMPLET]</span></span>'); return; }
+    list.forEach(v=>{ const b=document.createElement('button'); b.type='button'; b.dataset.c2=v.idx; b.dataset.floor=v.floor||''; b.textContent=v.name+(v.floor?' ↧':'');
+      b.setAttribute('aria-pressed',v.idx===(p.sel&&p.sel.kind===2?p.sel.idx:-1)?'true':'false'); b.title='Un clic : sélection · deux clics : plonger'+(v.floor?' (étage '+v.floor+')':' (pas d\u2019étage en dessous)'); b.addEventListener('click',act); r.appendChild(b); });
+  }
+  /* Un clic : sélection de l'objet par le crochet public du moteur (window.__umSelect = select() : carte, fiche, surbrillance).
+     Deux clics : plonger, même appel que le moteur pour une Classe 2 (ascendOrEnter → switchSys(class2Floor(idx))).
+     Le geste n'est pas rejoué sur le canevas : au centre d'une Classe 2, le moteur donne la priorité à la Classe 1 qu'elle
+     contient (pickAt, v20.2), ce qui engagerait un autre objet. Le vol de caméra (enterFocus) n'est pas exposé : [INCOMPLET]. */
+  function act(e){
+    const b=e.currentTarget; const idx=+b.dataset.c2, floor=b.dataset.floor;
+    if(e.type==='dblclick'||e.detail>=2){ if(floor) switchSys(floor); return; }
+    if(typeof window.__umSelect==='function') window.__umSelect({kind:2,idx:idx});
+    setTimeout(c2,300);
+  }
+  unify();
+  setInterval(()=>{ c2(); skel(); },1200);
+  const hn=$('hub-nav'); if(hn) new MutationObserver(()=>{ setTimeout(()=>{ sig=''; c2(); skel(); },700); }).observe(hn,{childList:true});
+
+  /* ---------- 4 : squelette Santé (remplaçable par loader-v2 de Claude) ---------- */
+  const SMETA={"v1g": {"format": "sante-pack-index/1g", "source_file": "u5mr.csv", "rows": 67210, "shards": 269, "header": ["REF_AREA", "INDICATOR", "SEX", "WEALTH_QUINTILE", "DATA_SOURCE", "COUNTRY_NOTES", "UNIT_MEASURE", "TIME_PERIOD", "OBS_VALUE", "REF_PERIOD", "LOWER_BOUND", "UPPER_BOUND", "OBS_STATUS"], "dict_columns": {"INDICATOR": 1, "SEX": 3, "WEALTH_QUINTILE": 6, "DATA_SOURCE": 1, "COUNTRY_NOTES": 9, "UNIT_MEASURE": 1, "TIME_PERIOD": 94, "REF_PERIOD": 1, "OBS_STATUS": 2}, "indicator": ["CME_MRY0T4"], "unit": ["D_PER_1000_B"], "sex": ["_T", "F", "M"], "quintile": ["Q1", "Q2", "Q3", "Q4", "Q5", "_T"], "time": ["1931", "2024"], "data_source": ["UN_IGME"], "zones": {"America": 37, "Middle East": 20, "East": 29, "South Pacific": 14, "Africa": 48, "_NON_RATTACHE": 73, "Europe": 48}, "pack_file": "sante-paquets-v1g_u5mr.zip (ÉCHANGE 1gUthN6-…)"}, "v13": {"levels": ["world", "zone", "country", "region (NUTS2 / US state / CA province / AU SA4 & state / NZ regional council / BR UF / JP prefecture / ZA province / DHS survey region / OPHI region)", "district / municipality / county (IN district – NITI; MX municipio – INEGI code; US county – FIPS)", "city (US Census place – PLACES; AU LGA 2021; GB local authority; Urban Audit city; US MSA; CA CMA)", "ward (GB electoral ward – ONS code) — NEW v1.3, sub-city"], "cell_key": "INDICATOR|SEX|AGE|QUINTILE", "value_record": ["value", "unit", "year", "flag", "source", "table", "url"], "gap": {"status": "OPEN", "tag": "[INCOMPLET]"}}};
+  const LAT='/plumb-dump-data/lattice/';
+  let santeEl=null, santeClosed=false, fbEl=null, fbClosed=false;
+  function badge(p){ return p<25?'<span class="um-gap-badge">LACUNE / GAP</span>':''; }
+  function santeHTML(cov,gaps){
+    const byF={}; (cov||[]).forEach(r=>{ (byF[r.field]=byF[r.field]||{label:r.label,z:{}}).z[r.zone]=r.pct; });
+    const zones=['Africa','America','East','Europe','Middle East','South Pacific'];
+    const ftab=Object.keys(byF).map(f=>'<tr><td>'+esc(byF[f].label)+'</td>'+zones.map(z=>{ const p=byF[f].z[z]; return '<td>'+(p==null?'<span class="inc">[INCOMPLET]</span>':p.toFixed(1)+' %'+badge(p))+'</td>'; }).join('')+'</tr>').join('');
+    const g=(gaps||[]).map(x=>'<li><span class="um-gap-badge">LACUNE / GAP</span>'+esc(x.section)+' : '+Number(x.coverage_pct_all).toFixed(1)+' % <span class="inc">'+esc(x.tag||'')+'</span></li>').join('');
+    const v=SMETA.v1g, t=SMETA.v13;
+    return '<button type="button" class="x" data-x="sante" title="Replier">×</button>'
+      +'<div class="um-ribbon"><span>SQUELETTE, EN ATTENTE DE LOADER-V2 (CLAUDE)</span></div>'
+      +'<h3>Santé · squelette de ce qui est représentable</h3>'
+      +'<div class="sub">Structure et forme des données seulement, tirées des sources déjà en main : treillis v1.4 (<a href="'+LAT+'" target="_blank" rel="noopener">'+LAT+'</a>, gaps_v1.4.json, coverage_by_field_v1.4.csv) et schémas des paquets de Claude (values_v1.3 = v1 ; '+esc(v.pack_file)+' = v1g ; chargeur v2). Aucune valeur affichée : les cases vides sont <span class="inc">[INCOMPLET]</span>. Non fonctionnel.</div>'
+      +'<div class="lvl">ÉTAGES (cell-schema v1.3)</div><ol>'+t.levels.map(l=>'<li>'+esc(l)+' <span class="inc">[INCOMPLET]</span></li>').join('')+'</ol>'
+      +'<div class="lvl">CELLULE · clé '+esc(t.cell_key)+' · enregistrement : '+t.value_record.map(esc).join(', ')+' · lacune : '+esc(t.gap.status)+' '+esc(t.gap.tag)+'</div>'
+      +'<div class="lvl">CHAMPS × ZONES · couverture (seuil 25 %)</div><table><tr><th>Champ</th>'+zones.map(z=>'<th>'+esc(z)+'</th>').join('')+'</tr>'+(ftab||'<tr><td colspan="7"><span class="inc">coverage_by_field_v1.4.csv non lu [INCOMPLET]</span></td></tr>')+'</table>'
+      +'<div class="lvl">LACUNES (gaps_v1.4.json)</div><ul>'+(g||'<li><span class="inc">[INCOMPLET]</span></li>')+'</ul>'
+      +'<div class="lvl">PAQUET v1g · '+esc(v.format)+' · source '+esc(v.source_file)+' · '+v.rows.toLocaleString('fr-CA')+' lignes · '+v.shards+' paquets</div>'
+      +'<table><tr><th>Colonne</th><th>Forme</th><th>Valeur</th></tr>'+v.header.map(c=>'<tr><td>'+esc(c)+'</td><td>'+(v.dict_columns[c]!=null?'dictionnaire · '+v.dict_columns[c]+' modalité(s)':'valeur brute')+'</td><td><span class="inc">[INCOMPLET]</span></td></tr>').join('')+'</table>'
+      +'<div class="sub">Indicateur '+esc(v.indicator.join(', '))+' · unité '+esc(v.unit.join(', '))+' · sexe '+esc(v.sex.join(' / '))+' · quintiles '+esc(v.quintile.join(' / '))+' · période '+esc(v.time[0])+'–'+esc(v.time[1])+' · source '+esc(v.data_source.join(', '))+' · paquets par zone : '+Object.keys(v.zones).map(z=>esc(z)+' '+v.zones[z]).join(', ')+'.</div>'
+      +'<div class="sub">Remplaçable : window.UM_SANTE_SKELETON.hide() ; ne s\u2019affiche pas si window.UM_SANTE_LOADER existe.</div>';
+  }
+  let santeData=null;
+  function loadSante(){
+    if(santeData) return Promise.resolve(santeData);
+    return Promise.all([fetch(LAT+'v1.4/coverage_by_field_v1.4.csv').then(r=>r.ok?r.text():'').catch(()=>''), fetch(LAT+'v1.4/gaps_v1.4.json').then(r=>r.ok?r.json():null).catch(()=>null)])
+      .then(([csv,gj])=>{ const rows=[]; csv.split('\n').slice(1).forEach(l=>{ const m=l.match(/^([^,]+),"([^"]*)",([^,]+),\d+,\d+,([\d.]+),/); if(m) rows.push({field:m[1],label:m[2],zone:m[3],pct:+m[4]}); });
+        santeData={cov:rows,gaps:gj&&gj.gaps}; return santeData; });
+  }
+  function centerName(){ const c=$('hub-center'); return c?c.textContent.trim():''; }
+  function chip(id,label,onclick){ let c=$(id); const st=$('stage'); if(!st) return null; if(!c){ c=document.createElement('button'); c.type='button'; c.id=id; c.className='um-skel-chip'; c.textContent=label; c.onclick=onclick; st.appendChild(c); } return c; }
+  window.UM_SANTE_SKELETON={show:()=>{santeClosed=false;skel();},hide:()=>{santeClosed=true;skel();},get el(){return santeEl;}};
+  window.UM_FOOTBALL_SKELETON={show:()=>{fbClosed=false;skel();},hide:()=>{fbClosed=true;skel();},get el(){return fbEl;}};
+  function skel(){
+    const st=$('stage'); if(!st) return;
+    const onSante=centerName()==='Santé'&&!window.UM_SANTE_LOADER;
+    if(onSante&&!santeClosed){
+      if(!santeEl){ santeEl=document.createElement('div'); santeEl.id='um-sante-skel'; santeEl.className='um-skel'; santeEl.innerHTML=santeHTML([],[]); st.appendChild(santeEl);
+        loadSante().then(d=>{ if(santeEl){ santeEl.innerHTML=santeHTML(d.cov,d.gaps); wireX(santeEl); } }); }
+      wireX(santeEl); santeEl.hidden=false;
+    } else if(santeEl) santeEl.hidden=true;
+    const sc=onSante&&santeClosed?chip('um-sante-chip','Santé · squelette ▸',()=>{santeClosed=false;skel();}):$('um-sante-chip'); if(sc) sc.hidden=!(onSante&&santeClosed);
+    const onFb=typeof CURSYS==='string'&&/^(football|fb-)/.test(CURSYS)&&centerName()!=='Santé';
+    if(onFb&&!fbClosed){ if(!fbEl){ fbEl=document.createElement('div'); fbEl.id='um-football-skel'; fbEl.className='um-skel'; fbEl.innerHTML=fbHTML(); st.appendChild(fbEl); } wireX(fbEl); fbEl.hidden=false; }
+    else if(fbEl) fbEl.hidden=true;
+    const fc=onFb&&fbClosed?chip('um-football-chip','Football · squelette ▸',()=>{fbClosed=false;skel();}):$('um-football-chip'); if(fc) fc.hidden=!(onFb&&fbClosed);
+  }
+  function wireX(el){ const x=el.querySelector('[data-x]'); if(x&&!x.dataset.w){ x.dataset.w='1'; x.addEventListener('click',()=>{ if(x.dataset.x==='sante') santeClosed=true; else fbClosed=true; skel(); }); } }
+
+  /* ---------- 5 : squelette Football (EN CONSTRUCTION) ---------- */
+  function fbHTML(){
+    const fb=(typeof LIB!=='undefined')&&LIB.find(x=>x.id==='football'); const d=fb&&fb.data;
+    const n=d&&d.t?d.t.length:0, cols=d&&d.cols||[];
+    const confs={}, leagues={}; (d&&d.t||[]).forEach(t=>{ if(t.g&&t.g[1]) confs[t.g[1]]=1; if(t.a) leagues[String(t.a).split(' → ')[0]]=1; });
+    const has=k=>cols.indexOf(k)>=0;
+    const L=[
+      ['Confédération','nom, sigle',Object.keys(confs).length?100:0,Object.keys(confs).length+' dans les données du Hub'],
+      ['Ligue / compétition','nom, pays, niveau, saison',Object.keys(leagues).length?100:0,Object.keys(leagues).length+' ligues (saison T₀) dans les données du Hub'],
+      ['Club / sélection','nom, sigle, pays, confédération',n?100:0,n+' clubs (données du Hub)'],
+      ['Sélection nationale','nom, confédération, classement',0,''],
+      ['Effectif / joueurs','nom, poste, numéro, nationalité, âge',0,''],
+      ['Matchs / calendrier','date, domicile, extérieur, stade, compétition',0,''],
+      ['Résultats','score, buteurs, cartons',0,''],
+      ['Classements','rang, points, joués, G/N/P, buts pour/contre',['pos','pts','pld','wp','dp','lp','gfm','gam'].filter(has).length/8*100,'colonnes présentes : '+['pos','pts','pld','wp','dp','lp','gfm','gam'].filter(has).join(', ')],
+      ['Stats équipe','points par match, différence de buts',['ppg','gdm'].filter(has).length/2*100,'colonnes présentes : '+['ppg','gdm'].filter(has).join(', ')],
+      ['Stats joueur','buts, passes, minutes, cartons',0,''],
+      ['Transferts','joueur, de, vers, date, montant',0,''],
+      ['Stades','nom, ville, capacité',0,'']];
+    const rows=L.map(x=>'<tr><td>'+esc(x[0])+'</td><td>'+esc(x[1])+'</td><td>'+Math.round(x[2])+' %'+badge(x[2])+'</td><td>'+(x[2]>0?esc(x[3]):'<span class="ex">EXEMPLE</span> <span class="inc">[INCOMPLET]</span>')+'</td></tr>').join('');
+    const ex='<table><tr><th>Joueur</th><th>Poste</th><th>N°</th><th>Nationalité</th><th>Âge</th></tr>'+[1,2,3].map(i=>'<tr><td><span class="ex">EXEMPLE</span> Joueur '+i+'</td><td><span class="inc">[INCOMPLET]</span></td><td><span class="inc">[INCOMPLET]</span></td><td><span class="inc">[INCOMPLET]</span></td><td><span class="inc">[INCOMPLET]</span></td></tr>').join('')+'</table>';
+    return '<button type="button" class="x" data-x="fb" title="Replier">×</button>'
+      +'<div class="um-ribbon"><span>EN CONSTRUCTION</span></div>'
+      +'<h3>Football · squelette de tout ce que le système contiendra</h3>'
+      +'<div class="sub">Confédération → ligue / compétition → club / sélection → effectif / joueurs, puis matchs, résultats, classements, statistiques, transferts, stades. Non fonctionnel, à raffiner. Couverture calculée sur les données du Hub déjà servies (classements finaux, '+n+' clubs, colonnes : '+esc(cols.join(', '))+'). Aucun nom ni chiffre inventé : tout exemple est marqué <span class="ex">EXEMPLE</span>, tout manque <span class="inc">[INCOMPLET]</span>.</div>'
+      +'<table><tr><th>Étage / bloc</th><th>Champs</th><th>Couverture</th><th>État</th></tr>'+rows+'</table>'
+      +'<div class="lvl">EFFECTIF · forme d\u2019une ligne</div>'+ex
+      +'<div class="lvl">MATCH · forme d\u2019une ligne</div><table><tr><th>Date</th><th>Domicile</th><th>Score</th><th>Extérieur</th><th>Stade</th></tr><tr><td><span class="ex">EXEMPLE</span></td><td>Club A</td><td><span class="inc">[INCOMPLET]</span></td><td>Club B</td><td><span class="inc">[INCOMPLET]</span></td></tr></table>';
+  }
+})();

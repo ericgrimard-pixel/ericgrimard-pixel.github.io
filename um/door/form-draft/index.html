@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="um-build" content="v20.91">
+<title>Formulaire d'invitation — BROUILLON, inactif · Universal Metaphor</title>
+<!-- v20.91 — Éric, 22 nov 2026 12:47 (Toronto) : squelette du formulaire d'invitation, toutes les options en boutons.
+     INACTIF : aucun script, aucun formulaire soumis, aucun mailto, aucun POST, aucune requête réseau.
+     Options tirées de /um/door/card/ (v20.87), de um-invite-demo-v2.html (Claude) et des règles du 22 nov (01:14–01:32). -->
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b0f14;color:#e6e9ee;font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+.rib{position:sticky;top:0;z-index:5;background:repeating-linear-gradient(45deg,#e8c872 0 16px,#1a160b 16px 32px);text-align:center;padding:8px}
+.rib span{background:#e8c872;color:#000;font:800 13px/1 system-ui;letter-spacing:.18em;padding:3px 12px}
+main{max-width:860px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:10px 0 4px}h2{font-size:15px;margin:0 0 8px;color:#ffe9a8}
+.sub{color:#9aa3ad;font-size:13px}
+section{border:1px solid #26303b;border-radius:10px;padding:12px 14px;margin:12px 0;background:#0f151c}
+.grid{display:flex;flex-wrap:wrap;gap:8px}
+button{font:600 14px/1.25 system-ui,sans-serif;padding:10px 14px;border-radius:8px;border:1px solid #3a4756;background:#151d27;color:#c9d2dc;cursor:not-allowed;opacity:.78}
+button small{display:block;font-weight:400;font-size:11px;color:#8b98ad}
+.inc{font:600 11px ui-monospace,monospace;color:#e8c872}
+.gap{display:inline-block;background:#e0533f;color:#fff;font:700 10px/1.2 system-ui;padding:1px 5px;border-radius:3px}
+.lock{border:2px solid #e0533f;background:#2a0f0d;color:#ffd9d2;border-radius:8px;padding:10px 12px;font-weight:600}
+.blocked{border:1px dashed #e8c872;color:#ffe9a8;border-radius:8px;padding:8px 12px}
+label.f{display:block;margin:6px 0}label.f input,label.f textarea{width:100%;font:14px system-ui;padding:8px;border-radius:6px;border:1px solid #3a4756;background:#0b1117;color:#9aa3ad}
+footer{color:#7a8592;font-size:12px;margin:18px 0 30px}
+a{color:#7fd1ff}
+</style>
+</head>
+<body>
+<div class="rib"><span>BROUILLON, INACTIF · DRAFT, INACTIVE</span></div>
+<main>
+<h1>Formulaire d'invitation · squelette</h1>
+<div class="sub">Toutes les options possibles, en boutons, pour regarder et raffiner. Rien ne fonctionne ici : boutons désactivés, aucun envoi, aucune requête réseau. Les cases vides sont <span class="inc">[INCOMPLET]</span>.</div>
+
+<section><h2>1. Émetteur (qui invite) · Issuer</h2>
+<div class="grid"><button disabled>Éric Grimard<small>répond à Éric</small></button><button disabled>Gary Kivenko<small>répond à Gary</small></button><button disabled>Samuel Le Flaguais<small>répond à Samuel</small></button></div>
+<p class="sub">Expéditeur visible : data@universalmetaphor.ca · les réponses vont à l'émetteur choisi.</p></section>
+
+<section><h2>2. Invité · Invitee</h2>
+<label class="f">Nom ou libellé <input disabled placeholder="[INCOMPLET]"></label>
+<label class="f">Courriel <input disabled placeholder="[INCOMPLET]"></label>
+<div class="grid"><button disabled>Français</button><button disabled>English</button></div></section>
+
+<section><h2>3. Mode d'interaction proposé · How would you like to interact?</h2>
+<div class="grid"><button disabled>✉ Courriel<small>Email</small></button><button disabled>🤖 Mon assistant IA<small>My AI assistant</small></button><button disabled>🎥 Appel vidéo<small>Video call</small></button><button disabled>📞 Téléphone / WhatsApp<small>Phone / WhatsApp</small></button><button disabled>⏳ Message plus tard<small>Message later</small></button><button disabled>Laisser l'invité choisir<small>Let the invitee choose</small></button></div></section>
+
+<section><h2>4. Présentation à distance · Remote meeting</h2>
+<div class="grid"><button disabled>Zoom<small>lien de réunion à venir [INCOMPLET]</small></button><button disabled>Google Meet<small>lien de réunion à venir [INCOMPLET]</small></button><button disabled>Microsoft Teams<small>lien de réunion à venir [INCOMPLET]</small></button><button disabled>Lien simple<small>join-by-link [INCOMPLET]</small></button><button disabled>📅 Date et heure<small>[INCOMPLET]</small></button><button disabled>Ajouter au calendrier (.ics)<small>si une date est donnée</small></button></div></section>
+
+<section><h2>5. Remise des fichiers · File delivery</h2>
+<div class="grid"><button disabled>⇪ Dépôt sécurisé<small>Secure upload [INCOMPLET]</small></button><button disabled>📎 Pièce jointe au courriel<small>Email attachment</small></button><button disabled>📁 Dossier partagé<small>Shared folder [INCOMPLET]</small></button><button disabled>Aucun fichier<small>No files</small></button></div></section>
+
+<section><h2>6. Champs conservés au registre (admin) · Kept fields</h2>
+<div class="grid"><button disabled>Nom / libellé</button><button disabled>Date d'invitation</button><button disabled>Statut</button><button disabled>Mode d'interaction</button><button disabled>Liens de réunion</button><button disabled>Remise des fichiers</button><button disabled>Données de la carte</button><button disabled>Notes</button></div>
+<p class="sub">Côté administrateur seulement (Mes invités). Conserver / frais : jamais visibles de l'invité.</p></section>
+
+<section><h2>7. Validation · Validation</h2>
+<div class="grid"><button disabled>Aperçu de la carte<small>/um/door/card/</small></button><button disabled>Valider le jeton (point d'entrée)<small>endpoint non déployé [INCOMPLET]</small></button><button disabled>Préparer l'invitation</button><button disabled>Envoyer<small>bloqué</small></button></div>
+<p class="blocked">Envoi bloqué — en attente du feu vert d'Éric sur les modèles.</p></section>
+
+<section><h2>8. Fin de session · End of session</h2>
+<p class="lock">Règle immuable : si l'invité met fin, purge immédiate — aucune conservation, aucun frais.</p>
+<div class="grid"><button disabled>Mettre fin / Supprimer mes données<small>bouton côté invité, sur la carte</small></button></div></section>
+
+<section><h2>9. Confidentialité · Privacy</h2>
+<p>Vos informations sont conservées par la personne qui vous invite, selon notre politique de confidentialité <span class="inc">[lien à venir] [INCOMPLET]</span>.</p></section>
+
+<section><h2>Lacunes · Gaps</h2>
+<p><span class="gap">LACUNE / GAP</span> Liens de réunion, dépôt sécurisé, dossier partagé, point d'entrée (Worker non déployé), politique de confidentialité : <span class="inc">[INCOMPLET]</span>. Couverture des options actives : 0 % (brouillon).</p></section>
+
+<footer>Universal Metaphor · v20.91 · brouillon non fonctionnel · <a href="/um/">Hub</a> · <a href="/um/door/card/">carte d'invitation</a> · <a href="/um/door/um-invite-demo-v2.html">parcours de l'invité v2</a></footer>
+</main>
+</body>
+</html>
