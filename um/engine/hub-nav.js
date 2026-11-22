@@ -788,3 +788,14 @@
   setInterval(()=>{ if(!$('um-u-c2')) return; if(!$('um-u-mine')||$('um-u-c2').nextSibling!==$('um-u-mine')) render();
     const p=probe(); const s=p?p.sys:''; if(s!==lastSys){ lastSys=s; if(open){ const f=document.activeElement; if(!(f&&f.closest&&f.closest('#um-mine-comp'))) render(); } } },1000);
 })();
+
+/* v20.91.2 — Éric, 22 nov 2026 17:18 (Toronto, appel) : « il doit toujours y avoir quelque chose à afficher ».
+   Correctif d'affichage seulement : le « × » des squelettes (Football, Santé) était recouvert par le bandeau collant
+   EN CONSTRUCTION / SQUELETTE, donc impossible à cliquer ; le squelette restait sur le canevas et cachait la vue 3D
+   du football (tout le canevas sur mobile). Le « × » passe au-dessus du bandeau ; la puce « … · squelette ▸ » le rouvre. */
+(function(){
+  const css=document.createElement('style'); css.id='um-v20912-css';
+  css.textContent='.um-skel .um-ribbon{z-index:2}'
+    +'.um-skel .x{position:sticky;top:0;z-index:3;margin:-4px -6px 0 6px;background:#0b0f14;color:#ffe9a8;border:1px solid #e8c872;border-radius:4px;line-height:1.3;min-width:28px;min-height:26px;cursor:pointer}';
+  document.head.appendChild(css);
+})();
