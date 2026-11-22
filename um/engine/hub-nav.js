@@ -236,6 +236,7 @@
 })();
 
 /* v20.86 — Éric, 22 nov 2026 01:04–01:05 (Toronto) : menu de droite réordonné.
+   v20.87 — 01:11–01:14 : More et ses boutons forment un pied collant, toujours visible ; ligne Guest réservée aux administrateurs, tout en haut.
    Ses cases (Couches) en haut, puis l'utile (Santé · lacunes, Fiche), et le reste replié dans « ▸ Autres / More ».
    Sous More : un bouton par sous-groupe utile. Rien n'est supprimé : les sections sont déplacées telles quelles
    (le moteur les remplit par id), et le déplacement est réappliqué si le menu est redessiné. */
@@ -256,7 +257,14 @@
     +'#um-rg-sante #hub-health-link{align-self:flex-start}'
     +'#um-rg-btns{display:flex;flex-wrap:wrap;gap:5px}'
     +'#um-rg-btns button{font:600 11px/1.3 system-ui,sans-serif;padding:4px 8px}'
-    +'#um-rg-btns button.um-first{border-color:#e8c872;color:#ffe9a8}';
+    +'#um-rg-btns button.um-first{border-color:#e8c872;color:#ffe9a8}'
+    +'#um-rg-foot{position:sticky;bottom:0;z-index:6;margin-top:auto;display:flex;flex-direction:column;gap:6px;padding:6px 0 2px;background:var(--bg,#070a0e);box-shadow:0 -10px 14px -6px rgba(0,0,0,.85)}'
+    +'#um-rg-more[open]{max-height:32vh;overflow:auto}'
+    +'#um-rg-guest{border-color:#7fd1ff}#um-rg-guest>summary{color:#bfe8ff}'
+    +'#um-guest-form{display:flex;flex-direction:column;gap:6px;font:12px/1.4 system-ui,sans-serif;color:#d9e2ec}'
+    +'#um-guest-form input,#um-guest-form select{font:12px system-ui,sans-serif;padding:3px 5px}'
+    +'#um-guest-draft{white-space:pre-wrap;font:11px/1.45 ui-monospace,monospace;background:#0b1118;border:1px solid #2a3340;padding:6px;margin:0}'
+    +'.um-guest-blocked{background:#3a0e0b;border:2px solid #e0533f;color:#ffd9d2;font:700 12px/1.35 system-ui,sans-serif;padding:5px 7px;border-radius:4px}';
   document.head.appendChild(css);
   const LAT='/plumb-dump-data/lattice/';
   function sec(id){ const e=document.getElementById(id); return e?e.closest('section'):null; }
@@ -296,8 +304,10 @@
       /* 3. Fiche (lecture vivante) */
       const dF=wrap('um-rg-fiche','Fiche · lecture',true,R);
       if(sFiche&&sFiche.parentNode!==dF) dF.appendChild(sFiche);
-      /* 4. ▸ Autres / More (replié) : Légende, Source */
-      const dM=wrap('um-rg-more','Autres / More',false,R);
+      /* 4. pied collant : ▸ Autres / More (replié), puis les boutons des sous-groupes, toujours visibles */
+      let foot=document.getElementById('um-rg-foot');
+      if(!foot){ foot=document.createElement('div'); foot.id='um-rg-foot'; }
+      const dM=wrap('um-rg-more','Autres / More',false,foot);
       const dL=wrap('um-rg-legende','Légende',false,dM);
       if(sLeg&&sLeg.parentNode!==dL) dL.appendChild(sLeg);
       const dX=wrap('um-rg-source','Source · bornes',false,dM);
@@ -305,7 +315,7 @@
       /* 5. boutons des sous-groupes, sous More */
       let bt=document.getElementById('um-rg-btns');
       if(!bt){ bt=document.createElement('div'); bt.id='um-rg-btns';
-        const B=[['um-rg-couches','☑ Couches','um-first'],['um-rg-sante','Santé · lacunes',''],['um-gaps','Lacunes · index',''],['um-rg-fiche','Fiche · lecture','']];
+        const B=[['um-rg-couches','☑ Couches','um-first']].concat(document.getElementById('um-rg-guest')?[['um-rg-guest','Guest','']]:[]).concat([['um-rg-sante','Santé · lacunes',''],['um-gaps','Lacunes · index',''],['um-rg-fiche','Fiche · lecture','']]);
         bt.innerHTML=B.map(b=>'<button type="button" class="'+b[2]+'" data-open="'+b[0]+'">'+b[1]+'</button>').join('');
         bt.addEventListener('click',e=>{
           const b=e.target.closest('[data-open]'); if(!b) return;
@@ -314,13 +324,86 @@
           t.scrollIntoView({block:'nearest'});
         });
       }
-      /* ordre final */
-      [rclose,dC,dS,dF,dM,bt].forEach(n=>{ if(n) R.appendChild(n); });
+      if(bt.parentNode!==foot||bt.previousElementSibling!==dM) foot.appendChild(bt);
+      /* ordre final : Guest (administrateurs seulement) tout en haut, puis l'ordre v20.86 */
+      const want=[rclose,document.getElementById('um-rg-guest'),dC,dS,dF,foot].filter(Boolean);
+      const have=[...R.children];
+      if(want.some((n,k)=>have[k]!==n)) want.forEach(n=>R.appendChild(n)); /* ne réordonne que si l'ordre a changé (pas de boucle) */
     } finally { busy=false; }
   }
   apply();
+  window.UM_RIGHT_APPLY=apply;
   new MutationObserver(()=>{ if(!busy) apply(); }).observe(R,{childList:true});
   const lay=document.getElementById('layers');
   const upd=()=>{ const d=document.getElementById('um-rg-couches'); if(d&&d.firstChild) d.firstChild.textContent=couchesTitle(); };
   if(lay){ lay.addEventListener('change',upd); new MutationObserver(upd).observe(lay,{childList:true}); }
+})();
+
+/* v20.87 — Éric, 22 nov 2026 01:14 (Toronto) : ligne « Guest » tout en haut du menu de droite, administrateurs seulement
+   (Éric, Gary, Samuel). La clé est déposée dans ce navigateur par le lien /um/door/admin/cle/#k=… ; ici on ne garde que
+   les empreintes SHA-256, jamais une clé. Sans clé valide, la ligne n'existe pas. Sur un site statique, cela cache la ligne
+   mais ne la protège pas vraiment. ENVOI BLOQUÉ : rien n'est envoyé d'ici, aucun courriel, aucune API. */
+(function(){
+  const ADM=[{"id": "eric-grimard", "name": "Éric Grimard", "sha256": "21669f81997d77778ff0a49bd074280f3014886b2b82d208b7658d73eca39dca"}, {"id": "gary-kivenko", "name": "Gary Kivenko", "sha256": "70e470961f91196ebef1ca2f12c6c513f0da49d411e61648e1fe12525f17fb77"}, {"id": "samuel-le-flaguais", "name": "Samuel Le Flaguais", "sha256": "2d5b286b362b467d5aa4601639ca72bd316fe73d39e5ffa42381878292ba2e44"}];
+  const LS='um.hubGuestKey';
+  /* Point d'entrée des invitations (Cloudflare Worker, um/door/tools/invite-worker/). Vide tant qu'il n'est pas déployé. */
+  const UM_INVITE_ENDPOINT='';
+  const R=document.getElementById('right'); if(!R) return;
+  let tok=null; try{ tok=localStorage.getItem(LS); }catch(e){}
+  if(!tok||!window.crypto||!crypto.subtle) return;
+  crypto.subtle.digest('SHA-256',new TextEncoder().encode(tok)).then(buf=>{
+    const hex=[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+    const who=ADM.find(a=>a.sha256===hex); if(!who) return;
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const d=document.createElement('details'); d.id='um-rg-guest'; d.className='um-rg';
+    d.innerHTML='<summary>Guest · inviter · '+esc(who.name)+'</summary>'
+      +'<div class="um-rg-body"><form id="um-guest-form" autocomplete="off">'
+      +'<div>Émetteur : <b>'+esc(who.name)+'</b> · expéditeur visible : <b>data@universalmetaphor.ca</b> · réponses : vers '+esc(who.name)+'.</div>'
+      +'<label>Qui inviter (nom et courriel)<br><input id="um-guest-who" type="text" placeholder="Prénom Nom <courriel>" style="width:100%"></label>'
+      +'<label>Langue <select id="um-guest-lang"><option>Français puis anglais</option><option>English then French</option></select></label>'
+      +'<details><summary>Réunion (facultatif) : liens fournis par vous</summary>'
+      +'<label>Zoom <input id="um-g-zoom" type="url" placeholder="https://…zoom.us/…" style="width:100%"></label>'
+      +'<label>Google Meet <input id="um-g-meet" type="url" placeholder="https://meet.google.com/…" style="width:100%"></label>'
+      +'<label>Teams <input id="um-g-teams" type="url" placeholder="https://teams.microsoft.com/…" style="width:100%"></label>'
+      +'<label>Lien direct <input id="um-g-link" type="url" placeholder="https://…" style="width:100%"></label>'
+      +'<label>Date et heure <input id="um-g-when" type="datetime-local"></label></details>'
+      +'<button type="submit">Préparer l\'invitation</button>'
+      +'<div class="um-guest-blocked" role="status">Envoi bloqué — en attente du feu vert d\'Éric sur les modèles</div>'
+      +'<div id="um-guest-ep" class="um-gap-tag">'+(UM_INVITE_ENDPOINT?'Contrôle serveur : point d\'entrée configuré':'Contrôle serveur : endpoint non déployé [INCOMPLET]')+'</div>'
+      +'<pre id="um-guest-draft" hidden></pre>'
+      +'<div style="display:flex;gap:10px;flex-wrap:wrap"><a id="um-guest-card" href="/um/door/card/" target="_blank" rel="noopener">Aperçu de la carte d\'invitation ↗</a>'
+      +'<a href="/um/door/admin/invites/" target="_blank" rel="noopener">Mes invités ↗</a>'
+      +'<a href="/um/door/15c/" target="_blank" rel="noopener">Maquette 15c ↗</a></div>'
+      +'</form></div>';
+    const mt=()=>{ const o={}; ['zoom','meet','teams','link'].forEach(k=>{ const v=(d.querySelector('#um-g-'+k).value||'').trim(); if(v) o[k]=v; }); return o; };
+    const cardHref=()=>{ const w=d.querySelector('#um-g-when').value; const p={issuer:who.name,meetings:mt(),when:w?new Date(w).toISOString():null,lang:/^English/.test(d.querySelector('#um-guest-lang').value)?'en':'fr'};
+      return '/um/door/card/#preview='+btoa(unescape(encodeURIComponent(JSON.stringify(p)))); };
+    d.addEventListener('input',()=>{ d.querySelector('#um-guest-card').href=cardHref(); });
+    d.querySelector('#um-guest-card').addEventListener('click',()=>{ d.querySelector('#um-guest-card').href=cardHref(); });
+    d.querySelector('form').addEventListener('submit',e=>{
+      e.preventDefault();
+      const to=d.querySelector('#um-guest-who').value.trim();
+      const pre=d.querySelector('#um-guest-draft');
+      pre.hidden=false;
+      pre.textContent=to?('INVITATION PRÉPARÉE — NON ENVOYÉE\n'
+        +'De (visible) : Universal Metaphor <data@universalmetaphor.ca>\n'
+        +'Émetteur : '+who.name+'\n'
+        +'Répondre à : '+who.name+' (adresse de l\'émetteur, ajoutée à l\'envoi)\n'
+        +'À : '+to+'\n'
+        +'Objet : Invitation — votre environnement privé Universal Metaphor\n'
+        +'Langue : '+d.querySelector('#um-guest-lang').value+'\n'
+        +'Corps : gabarit rév. 2 (version courte + lien vers le texte complet)\n\n'
+        +'Envoi bloqué — en attente du feu vert d\'Éric sur les modèles.'):'Indiquez qui inviter.';
+      const ep=d.querySelector('#um-guest-ep');
+      if(!to) return;
+      if(!UM_INVITE_ENDPOINT){ ep.textContent='Contrôle serveur : endpoint non déployé [INCOMPLET] — invitation préparée dans la page seulement, rien n\'est transmis.'; return; }
+      ep.textContent='Contrôle serveur : vérification…';
+      fetch(UM_INVITE_ENDPOINT,{method:'POST',mode:'cors',credentials:'omit',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok},body:JSON.stringify({to:to,lang:/^English/.test(d.querySelector('#um-guest-lang').value)?'en':'fr',meetings:mt(),when:(d.querySelector('#um-g-when').value?new Date(d.querySelector('#um-g-when').value).toISOString():null)})})
+        .then(r=>r.json().then(j=>({r:r,j:j})))
+        .then(x=>{ ep.textContent=x.r.status===202?('Contrôle serveur : '+x.j.status+' · émetteur '+x.j.issuer+' · réf. '+x.j.id+(x.j.card_token?' · carte : /um/door/card/#t='+x.j.card_token:'')):('Contrôle serveur : refusé ('+x.r.status+' · '+(x.j.error||'')+')'); })
+        .catch(()=>{ ep.textContent='Contrôle serveur : injoignable [INCOMPLET]'; });
+    });
+    R.insertBefore(d,R.firstChild);
+    if(window.UM_RIGHT_APPLY){ const b=document.getElementById('um-rg-btns'); if(b) b.remove(); UM_RIGHT_APPLY(); }
+  }).catch(()=>{});
 })();
