@@ -1,0 +1,658 @@
+{
+ "version": "v1.4",
+ "date": "2026-11-22",
+ "threshold_pct": 25,
+ "rule": "Section sous 25 % de couverture ou avec très peu d’entrées : badge LACUNE / GAP, contour distinct, [À CONFIRMER]. Aucune donnée inventée.",
+ "gaps": [
+  {
+   "id": "gap-quintile",
+   "section": "Quintiles de revenu (Q1–Q5)",
+   "coverage_pct_all": 1.9,
+   "by_zone": {
+    "Africa": 2.3,
+    "America": 1.5,
+    "East": 1.9,
+    "Europe": 2.1,
+    "Middle East": 1.8,
+    "South Pacific": 1.5
+   },
+   "basis": "cellules FILLED / cellules cibles, grille v1 (coverage.csv, 72 168 lignes)",
+   "tag": "[À CONFIRMER]"
+  },
+  {
+   "id": "gap-city",
+   "section": "Villes (indicateurs santé + population)",
+   "coverage_pct_all": 12.4,
+   "by_zone": {
+    "Africa": 12.4,
+    "America": 12.4,
+    "East": 12.5,
+    "Europe": 12.4,
+    "Middle East": 12.5,
+    "South Pacific": 11.0
+   },
+   "basis": "cellules FILLED / cellules cibles, grille v1 (coverage.csv, 72 168 lignes)",
+   "tag": "[À CONFIRMER]"
+  },
+  {
+   "id": "gap-city_health",
+   "section": "Villes : indicateurs santé seulement (hors POP)",
+   "coverage_pct_all": 0.0,
+   "by_zone": {
+    "Africa": 0.0,
+    "America": 0.0,
+    "East": 0.0,
+    "Europe": 0.0,
+    "Middle East": 0.0,
+    "South Pacific": 0.0
+   },
+   "basis": "cellules FILLED / cellules cibles, grille v1 (coverage.csv, 72 168 lignes)",
+   "tag": "[À CONFIRMER]"
+  },
+  {
+   "id": "gap-ethnic",
+   "section": "Groupes ethniques",
+   "coverage_pct_all": 0.0,
+   "by_zone": {
+    "Africa": 0.0,
+    "America": 0.0,
+    "East": 0.0,
+    "Europe": 0.0,
+    "Middle East": 0.0,
+    "South Pacific": 0.0
+   },
+   "basis": "cellules FILLED / cellules cibles, grille v1 (coverage.csv, 72 168 lignes)",
+   "tag": "[À CONFIRMER]"
+  },
+  {
+   "id": "gap-subnat-europe",
+   "section": "Infranational ajouté en v1.3 : Europe",
+   "coverage_pct_all": 25.0,
+   "basis": "part de la population de la zone dans des pays ayant reçu des données infranationales en v1.3 (lowest_level_v1.3.csv) ; seuil PROVISIONAL 50 %",
+   "tag": "[À CONFIRMER]",
+   "status": "PROVISIONAL (<50% population coverage)"
+  },
+  {
+   "id": "gap-subnat-middle-east",
+   "section": "Infranational ajouté en v1.3 : Middle East",
+   "coverage_pct_all": 42.1,
+   "basis": "part de la population de la zone dans des pays ayant reçu des données infranationales en v1.3 (lowest_level_v1.3.csv) ; seuil PROVISIONAL 50 %",
+   "tag": "[À CONFIRMER]",
+   "status": "PROVISIONAL (<50% population coverage)"
+  }
+ ],
+ "coverage_by_field": [
+  {
+   "field": "country_total",
+   "label": "Total pays (sexe T, âge ALL, quintile ALL)",
+   "zone": "Africa",
+   "cells": 624,
+   "filled": 613,
+   "coverage_pct": 98.2,
+   "flag": false
+  },
+  {
+   "field": "country_total",
+   "label": "Total pays (sexe T, âge ALL, quintile ALL)",
+   "zone": "America",
+   "cells": 598,
+   "filled": 476,
+   "coverage_pct": 79.6,
+   "flag": false
+  },
+  {
+   "field": "country_total",
+   "label": "Total pays (sexe T, âge ALL, quintile ALL)",
+   "zone": "East",
+   "cells": 403,
+   "filled": 376,
+   "coverage_pct": 93.3,
+   "flag": false
+  },
+  {
+   "field": "country_total",
+   "label": "Total pays (sexe T, âge ALL, quintile ALL)",
+   "zone": "Europe",
+   "cells": 689,
+   "filled": 607,
+   "coverage_pct": 88.1,
+   "flag": false
+  },
+  {
+   "field": "country_total",
+   "label": "Total pays (sexe T, âge ALL, quintile ALL)",
+   "zone": "Middle East",
+   "cells": 260,
+   "filled": 247,
+   "coverage_pct": 95.0,
+   "flag": false
+  },
+  {
+   "field": "country_total",
+   "label": "Total pays (sexe T, âge ALL, quintile ALL)",
+   "zone": "South Pacific",
+   "cells": 247,
+   "filled": 174,
+   "coverage_pct": 70.4,
+   "flag": false
+  },
+  {
+   "field": "country_total",
+   "label": "Total pays (sexe T, âge ALL, quintile ALL)",
+   "zone": "ALL",
+   "cells": 2821,
+   "filled": 2493,
+   "coverage_pct": 88.4,
+   "flag": false
+  },
+  {
+   "field": "sex_split",
+   "label": "Ventilation par sexe (M/F)",
+   "zone": "Africa",
+   "cells": 1728,
+   "filled": 1306,
+   "coverage_pct": 75.6,
+   "flag": false
+  },
+  {
+   "field": "sex_split",
+   "label": "Ventilation par sexe (M/F)",
+   "zone": "America",
+   "cells": 1656,
+   "filled": 1086,
+   "coverage_pct": 65.6,
+   "flag": false
+  },
+  {
+   "field": "sex_split",
+   "label": "Ventilation par sexe (M/F)",
+   "zone": "East",
+   "cells": 1116,
+   "filled": 832,
+   "coverage_pct": 74.6,
+   "flag": false
+  },
+  {
+   "field": "sex_split",
+   "label": "Ventilation par sexe (M/F)",
+   "zone": "Europe",
+   "cells": 1908,
+   "filled": 1350,
+   "coverage_pct": 70.8,
+   "flag": false
+  },
+  {
+   "field": "sex_split",
+   "label": "Ventilation par sexe (M/F)",
+   "zone": "Middle East",
+   "cells": 720,
+   "filled": 536,
+   "coverage_pct": 74.4,
+   "flag": false
+  },
+  {
+   "field": "sex_split",
+   "label": "Ventilation par sexe (M/F)",
+   "zone": "South Pacific",
+   "cells": 684,
+   "filled": 416,
+   "coverage_pct": 60.8,
+   "flag": false
+  },
+  {
+   "field": "sex_split",
+   "label": "Ventilation par sexe (M/F)",
+   "zone": "ALL",
+   "cells": 7812,
+   "filled": 5526,
+   "coverage_pct": 70.7,
+   "flag": false
+  },
+  {
+   "field": "age_bands",
+   "label": "Tranches d’âge (0-14, 15-64, 65+)",
+   "zone": "Africa",
+   "cells": 864,
+   "filled": 432,
+   "coverage_pct": 50.0,
+   "flag": false
+  },
+  {
+   "field": "age_bands",
+   "label": "Tranches d’âge (0-14, 15-64, 65+)",
+   "zone": "America",
+   "cells": 828,
+   "filled": 414,
+   "coverage_pct": 50.0,
+   "flag": false
+  },
+  {
+   "field": "age_bands",
+   "label": "Tranches d’âge (0-14, 15-64, 65+)",
+   "zone": "East",
+   "cells": 558,
+   "filled": 279,
+   "coverage_pct": 50.0,
+   "flag": false
+  },
+  {
+   "field": "age_bands",
+   "label": "Tranches d’âge (0-14, 15-64, 65+)",
+   "zone": "Europe",
+   "cells": 954,
+   "filled": 477,
+   "coverage_pct": 50.0,
+   "flag": false
+  },
+  {
+   "field": "age_bands",
+   "label": "Tranches d’âge (0-14, 15-64, 65+)",
+   "zone": "Middle East",
+   "cells": 360,
+   "filled": 180,
+   "coverage_pct": 50.0,
+   "flag": false
+  },
+  {
+   "field": "age_bands",
+   "label": "Tranches d’âge (0-14, 15-64, 65+)",
+   "zone": "South Pacific",
+   "cells": 342,
+   "filled": 171,
+   "coverage_pct": 50.0,
+   "flag": false
+  },
+  {
+   "field": "age_bands",
+   "label": "Tranches d’âge (0-14, 15-64, 65+)",
+   "zone": "ALL",
+   "cells": 3906,
+   "filled": 1953,
+   "coverage_pct": 50.0,
+   "flag": false
+  },
+  {
+   "field": "quintile",
+   "label": "Quintiles de revenu (Q1–Q5)",
+   "zone": "Africa",
+   "cells": 9840,
+   "filled": 230,
+   "coverage_pct": 2.3,
+   "flag": true
+  },
+  {
+   "field": "quintile",
+   "label": "Quintiles de revenu (Q1–Q5)",
+   "zone": "America",
+   "cells": 9430,
+   "filled": 145,
+   "coverage_pct": 1.5,
+   "flag": true
+  },
+  {
+   "field": "quintile",
+   "label": "Quintiles de revenu (Q1–Q5)",
+   "zone": "East",
+   "cells": 6355,
+   "filled": 120,
+   "coverage_pct": 1.9,
+   "flag": true
+  },
+  {
+   "field": "quintile",
+   "label": "Quintiles de revenu (Q1–Q5)",
+   "zone": "Europe",
+   "cells": 10865,
+   "filled": 225,
+   "coverage_pct": 2.1,
+   "flag": true
+  },
+  {
+   "field": "quintile",
+   "label": "Quintiles de revenu (Q1–Q5)",
+   "zone": "Middle East",
+   "cells": 4100,
+   "filled": 75,
+   "coverage_pct": 1.8,
+   "flag": true
+  },
+  {
+   "field": "quintile",
+   "label": "Quintiles de revenu (Q1–Q5)",
+   "zone": "South Pacific",
+   "cells": 3895,
+   "filled": 60,
+   "coverage_pct": 1.5,
+   "flag": true
+  },
+  {
+   "field": "quintile",
+   "label": "Quintiles de revenu (Q1–Q5)",
+   "zone": "ALL",
+   "cells": 44485,
+   "filled": 855,
+   "coverage_pct": 1.9,
+   "flag": true
+  },
+  {
+   "field": "city",
+   "label": "Villes (indicateurs santé + population)",
+   "zone": "Africa",
+   "cells": 1472,
+   "filled": 183,
+   "coverage_pct": 12.4,
+   "flag": true
+  },
+  {
+   "field": "city",
+   "label": "Villes (indicateurs santé + population)",
+   "zone": "America",
+   "cells": 2989,
+   "filled": 371,
+   "coverage_pct": 12.4,
+   "flag": true
+  },
+  {
+   "field": "city",
+   "label": "Villes (indicateurs santé + population)",
+   "zone": "East",
+   "cells": 6812,
+   "filled": 851,
+   "coverage_pct": 12.5,
+   "flag": true
+  },
+  {
+   "field": "city",
+   "label": "Villes (indicateurs santé + population)",
+   "zone": "Europe",
+   "cells": 2351,
+   "filled": 292,
+   "coverage_pct": 12.4,
+   "flag": true
+  },
+  {
+   "field": "city",
+   "label": "Villes (indicateurs santé + population)",
+   "zone": "Middle East",
+   "cells": 1120,
+   "filled": 140,
+   "coverage_pct": 12.5,
+   "flag": true
+  },
+  {
+   "field": "city",
+   "label": "Villes (indicateurs santé + population)",
+   "zone": "South Pacific",
+   "cells": 136,
+   "filled": 15,
+   "coverage_pct": 11.0,
+   "flag": true
+  },
+  {
+   "field": "city",
+   "label": "Villes (indicateurs santé + population)",
+   "zone": "ALL",
+   "cells": 14880,
+   "filled": 1852,
+   "coverage_pct": 12.4,
+   "flag": true
+  },
+  {
+   "field": "city_health",
+   "label": "Villes : indicateurs santé seulement (hors POP)",
+   "zone": "Africa",
+   "cells": 1281,
+   "filled": 0,
+   "coverage_pct": 0.0,
+   "flag": true
+  },
+  {
+   "field": "city_health",
+   "label": "Villes : indicateurs santé seulement (hors POP)",
+   "zone": "America",
+   "cells": 2597,
+   "filled": 0,
+   "coverage_pct": 0.0,
+   "flag": true
+  },
+  {
+   "field": "city_health",
+   "label": "Villes : indicateurs santé seulement (hors POP)",
+   "zone": "East",
+   "cells": 5957,
+   "filled": 0,
+   "coverage_pct": 0.0,
+   "flag": true
+  },
+  {
+   "field": "city_health",
+   "label": "Villes : indicateurs santé seulement (hors POP)",
+   "zone": "Europe",
+   "cells": 2044,
+   "filled": 0,
+   "coverage_pct": 0.0,
+   "flag": true
+  },
+  {
+   "field": "city_health",
+   "label": "Villes : indicateurs santé seulement (hors POP)",
+   "zone": "Middle East",
+   "cells": 980,
+   "filled": 0,
+   "coverage_pct": 0.0,
+   "flag": true
+  },
+  {
+   "field": "city_health",
+   "label": "Villes : indicateurs santé seulement (hors POP)",
+   "zone": "South Pacific",
+   "cells": 105,
+   "filled": 0,
+   "coverage_pct": 0.0,
+   "flag": true
+  },
+  {
+   "field": "city_health",
+   "label": "Villes : indicateurs santé seulement (hors POP)",
+   "zone": "ALL",
+   "cells": 12964,
+   "filled": 0,
+   "coverage_pct": 0.0,
+   "flag": true
+  },
+  {
+   "field": "ethnic",
+   "label": "Groupes ethniques",
+   "zone": "Africa",
+   "cells": 192,
+   "filled": 0,
+   "coverage_pct": 0.0,
+   "flag": true
+  },
+  {
+   "field": "ethnic",
+   "label": "Groupes ethniques",
+   "zone": "America",
+   "cells": 184,
+   "filled": 0,
+   "coverage_pct": 0.0,
+   "flag": true
+  },
+  {
+   "field": "ethnic",
+   "label": "Groupes ethniques",
+   "zone": "East",
+   "cells": 124,
+   "filled": 0,
+   "coverage_pct": 0.0,
+   "flag": true
+  },
+  {
+   "field": "ethnic",
+   "label": "Groupes ethniques",
+   "zone": "Europe",
+   "cells": 212,
+   "filled": 0,
+   "coverage_pct": 0.0,
+   "flag": true
+  },
+  {
+   "field": "ethnic",
+   "label": "Groupes ethniques",
+   "zone": "Middle East",
+   "cells": 80,
+   "filled": 0,
+   "coverage_pct": 0.0,
+   "flag": true
+  },
+  {
+   "field": "ethnic",
+   "label": "Groupes ethniques",
+   "zone": "South Pacific",
+   "cells": 76,
+   "filled": 0,
+   "coverage_pct": 0.0,
+   "flag": true
+  },
+  {
+   "field": "ethnic",
+   "label": "Groupes ethniques",
+   "zone": "ALL",
+   "cells": 868,
+   "filled": 0,
+   "coverage_pct": 0.0,
+   "flag": true
+  }
+ ],
+ "open_items": [
+  {
+   "version": "v1.2",
+   "item": "CA physicians",
+   "scope": "13 provinces/territories",
+   "missing": "sex & age split",
+   "reason": "CIHI data-tables xlsx page returns 403 from box"
+  },
+  {
+   "version": "v1.2",
+   "item": "US metro physicians total",
+   "scope": "393 MSAs",
+   "missing": "all-physician total",
+   "reason": "OEWS has no broad physician code; detailed codes suppressed in many MSAs — no summation done"
+  },
+  {
+   "version": "v1.2",
+   "item": "CCBE lawyers per European country",
+   "scope": "46 CCBE countries",
+   "missing": "lawyer counts",
+   "reason": "CCBE statistics PDF not retrievable (ccbe.eu Statistics URLs 404 from box; only third-party 2018 copies found)"
+  },
+  {
+   "version": "v1.2",
+   "item": "GDL subnational life expectancy",
+   "scope": "~1,800 regions / 160+ countries",
+   "missing": "LE0 by region",
+   "reason": "Global Data Lab requires free user registration (owner account) for full download; public table capped ~88 rows; NOT attempted"
+  },
+  {
+   "version": "v1.2",
+   "item": "Korea VSL",
+   "scope": "KOR",
+   "missing": "official WTP VSL",
+   "reason": "none found; only KRIHS accident-cost unit (secondary)"
+  },
+  {
+   "version": "v1.2",
+   "item": "EU VSL primary",
+   "scope": "EU",
+   "missing": "ECHA primary document",
+   "reason": "ECHA PDF download invalid"
+  },
+  {
+   "version": "v1.2",
+   "item": "Urban Audit city poverty",
+   "scope": "non-EU/EFTA cities",
+   "missing": "poverty by city",
+   "reason": "Urban Audit EU-SILC city items exist only for a subset of EU cities"
+  },
+  {
+   "version": "v1.3",
+   "item": "Australia health workforce by region",
+   "scope": "AUS SA4/state",
+   "missing": "AIHW/HWD workforce counts",
+   "reason": "Dept of Health HWD is a dashboard (no static public file located); not attempted"
+  },
+  {
+   "version": "v1.3",
+   "item": "NZ territorial authorities LE",
+   "scope": "67 TAs",
+   "missing": "TA life tables",
+   "reason": "TA tables published in Stats NZ Excel not located as static file from box"
+  },
+  {
+   "version": "v1.3",
+   "item": "Brazil municipalities LE/poverty, physicians (CFM)",
+   "scope": "5,570 municípios / 27 UF",
+   "missing": "LE, poverty, physicians",
+   "reason": "No municipal series in SIDRA API located without Census-microdata derivation; CFM Demografia Médica is a PDF (not parsed this pass); DATASUS TabNet is interactive"
+  },
+  {
+   "version": "v1.3",
+   "item": "Japan e-Stat / municipal",
+   "scope": "JPN municipalities",
+   "missing": "LE by municipality (市区町村別生命表)",
+   "reason": "e-Stat API needs appId (not used); MHLW municipal tables not fetched this pass"
+  },
+  {
+   "version": "v1.3",
+   "item": "CCBE current lawyer statistics",
+   "scope": "CCBE countries",
+   "missing": "post-2015 counts; multi-body countries (BEL, GBR, DEU, POL, NOR, IRL) not summed",
+   "reason": "ccbe.eu statistics URLs 404 (site restructured); only 2015 third-party copy retrievable"
+  },
+  {
+   "version": "v1.3",
+   "item": "China provinces",
+   "scope": "CHN 31 provinces",
+   "missing": "LE, poverty, workforce",
+   "reason": "NBS data portal (data.stats.gov.cn) not attempted/scriptable without session; no static file located"
+  },
+  {
+   "version": "v1.3",
+   "item": "Korea regions",
+   "scope": "KOR 17 sido",
+   "missing": "regional life tables",
+   "reason": "KOSIS OpenAPI requires key"
+  },
+  {
+   "version": "v1.3",
+   "item": "Indonesia provinces/regencies",
+   "scope": "IDN 38 provinces / 514 kab-kota",
+   "missing": "AHH (LE), poverty P0",
+   "reason": "BPS WebAPI requires key; static tables not fetched"
+  },
+  {
+   "version": "v1.3",
+   "item": "US ACS city poverty",
+   "scope": "US places",
+   "missing": "S1701 poverty by place",
+   "reason": "Census API redirects without key (302); bulk ACS summary file not processed this pass"
+  },
+  {
+   "version": "v1.3",
+   "item": "WHO / World Bank city data",
+   "scope": "global cities",
+   "missing": "city health indicators",
+   "reason": "no consolidated public city dataset with sourced values located"
+  },
+  {
+   "version": "v1.3",
+   "item": "GDL subnational LE",
+   "scope": "~1,800 regions",
+   "missing": "LE by region",
+   "reason": "registration required"
+  }
+ ],
+ "notes": [
+  "Les villes et l’infranational ajoutés en v1.2–v1.3 (US PLACES, comtés SAIPE, wards GB, LGA AU, districts IN, municipios MX) sont hors de la grille v1. Leur couverture est décrite dans lowest_level_v1.3.csv."
+ ]
+}

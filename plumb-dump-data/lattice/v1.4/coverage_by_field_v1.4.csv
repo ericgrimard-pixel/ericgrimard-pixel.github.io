@@ -1,0 +1,50 @@
+field,label,zone,cells,filled,coverage_pct,flag
+country_total,"Total pays (sexe T, âge ALL, quintile ALL)",Africa,624,613,98.2,False
+country_total,"Total pays (sexe T, âge ALL, quintile ALL)",America,598,476,79.6,False
+country_total,"Total pays (sexe T, âge ALL, quintile ALL)",East,403,376,93.3,False
+country_total,"Total pays (sexe T, âge ALL, quintile ALL)",Europe,689,607,88.1,False
+country_total,"Total pays (sexe T, âge ALL, quintile ALL)",Middle East,260,247,95.0,False
+country_total,"Total pays (sexe T, âge ALL, quintile ALL)",South Pacific,247,174,70.4,False
+country_total,"Total pays (sexe T, âge ALL, quintile ALL)",ALL,2821,2493,88.4,False
+sex_split,Ventilation par sexe (M/F),Africa,1728,1306,75.6,False
+sex_split,Ventilation par sexe (M/F),America,1656,1086,65.6,False
+sex_split,Ventilation par sexe (M/F),East,1116,832,74.6,False
+sex_split,Ventilation par sexe (M/F),Europe,1908,1350,70.8,False
+sex_split,Ventilation par sexe (M/F),Middle East,720,536,74.4,False
+sex_split,Ventilation par sexe (M/F),South Pacific,684,416,60.8,False
+sex_split,Ventilation par sexe (M/F),ALL,7812,5526,70.7,False
+age_bands,"Tranches d’âge (0-14, 15-64, 65+)",Africa,864,432,50.0,False
+age_bands,"Tranches d’âge (0-14, 15-64, 65+)",America,828,414,50.0,False
+age_bands,"Tranches d’âge (0-14, 15-64, 65+)",East,558,279,50.0,False
+age_bands,"Tranches d’âge (0-14, 15-64, 65+)",Europe,954,477,50.0,False
+age_bands,"Tranches d’âge (0-14, 15-64, 65+)",Middle East,360,180,50.0,False
+age_bands,"Tranches d’âge (0-14, 15-64, 65+)",South Pacific,342,171,50.0,False
+age_bands,"Tranches d’âge (0-14, 15-64, 65+)",ALL,3906,1953,50.0,False
+quintile,Quintiles de revenu (Q1–Q5),Africa,9840,230,2.3,True
+quintile,Quintiles de revenu (Q1–Q5),America,9430,145,1.5,True
+quintile,Quintiles de revenu (Q1–Q5),East,6355,120,1.9,True
+quintile,Quintiles de revenu (Q1–Q5),Europe,10865,225,2.1,True
+quintile,Quintiles de revenu (Q1–Q5),Middle East,4100,75,1.8,True
+quintile,Quintiles de revenu (Q1–Q5),South Pacific,3895,60,1.5,True
+quintile,Quintiles de revenu (Q1–Q5),ALL,44485,855,1.9,True
+city,Villes (indicateurs santé + population),Africa,1472,183,12.4,True
+city,Villes (indicateurs santé + population),America,2989,371,12.4,True
+city,Villes (indicateurs santé + population),East,6812,851,12.5,True
+city,Villes (indicateurs santé + population),Europe,2351,292,12.4,True
+city,Villes (indicateurs santé + population),Middle East,1120,140,12.5,True
+city,Villes (indicateurs santé + population),South Pacific,136,15,11.0,True
+city,Villes (indicateurs santé + population),ALL,14880,1852,12.4,True
+city_health,Villes : indicateurs santé seulement (hors POP),Africa,1281,0,0.0,True
+city_health,Villes : indicateurs santé seulement (hors POP),America,2597,0,0.0,True
+city_health,Villes : indicateurs santé seulement (hors POP),East,5957,0,0.0,True
+city_health,Villes : indicateurs santé seulement (hors POP),Europe,2044,0,0.0,True
+city_health,Villes : indicateurs santé seulement (hors POP),Middle East,980,0,0.0,True
+city_health,Villes : indicateurs santé seulement (hors POP),South Pacific,105,0,0.0,True
+city_health,Villes : indicateurs santé seulement (hors POP),ALL,12964,0,0.0,True
+ethnic,Groupes ethniques,Africa,192,0,0.0,True
+ethnic,Groupes ethniques,America,184,0,0.0,True
+ethnic,Groupes ethniques,East,124,0,0.0,True
+ethnic,Groupes ethniques,Europe,212,0,0.0,True
+ethnic,Groupes ethniques,Middle East,80,0,0.0,True
+ethnic,Groupes ethniques,South Pacific,76,0,0.0,True
+ethnic,Groupes ethniques,ALL,868,0,0.0,True
