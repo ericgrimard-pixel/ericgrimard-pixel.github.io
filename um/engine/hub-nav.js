@@ -340,20 +340,20 @@
 })();
 
 /* v20.87 — Éric, 22 nov 2026 01:14 (Toronto) : ligne « Guest » tout en haut du menu de droite, administrateurs seulement
-   (Éric, Gary, Samuel). La clé est déposée dans ce navigateur par le lien /um/door/admin/cle/#k=… ; ici on ne garde que
+   (Éric, Gary, Samuel). La clé est déposée dans ce navigateur par le lien /um/door/#k=… (v20.88) ; ici on ne garde que
    les empreintes SHA-256, jamais une clé. Sans clé valide, la ligne n'existe pas. Sur un site statique, cela cache la ligne
    mais ne la protège pas vraiment. ENVOI BLOQUÉ : rien n'est envoyé d'ici, aucun courriel, aucune API. */
 (function(){
-  const ADM=[{"id": "eric-grimard", "name": "Éric Grimard", "sha256": "21669f81997d77778ff0a49bd074280f3014886b2b82d208b7658d73eca39dca"}, {"id": "gary-kivenko", "name": "Gary Kivenko", "sha256": "70e470961f91196ebef1ca2f12c6c513f0da49d411e61648e1fe12525f17fb77"}, {"id": "samuel-le-flaguais", "name": "Samuel Le Flaguais", "sha256": "2d5b286b362b467d5aa4601639ca72bd316fe73d39e5ffa42381878292ba2e44"}];
-  const LS='um.hubGuestKey';
+  /* v20.88 : empreintes partagées dans /um/door/admin/fingerprints.js (une seule source ; rotation = remplacer une empreinte).
+     Déverrouillage en un clic par /um/door/#k=<clé> ; la même clé déverrouille ici. ?guest=1 ouvre la ligne Guest. */
   /* Point d'entrée des invitations (Cloudflare Worker, um/door/tools/invite-worker/). Vide tant qu'il n'est pas déployé. */
   const UM_INVITE_ENDPOINT='';
   const R=document.getElementById('right'); if(!R) return;
-  let tok=null; try{ tok=localStorage.getItem(LS); }catch(e){}
+  let tok=null; try{ tok=localStorage.getItem('um.hubGuestKey'); }catch(e){}
   if(!tok||!window.crypto||!crypto.subtle) return;
-  crypto.subtle.digest('SHA-256',new TextEncoder().encode(tok)).then(buf=>{
-    const hex=[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
-    const who=ADM.find(a=>a.sha256===hex); if(!who) return;
+  const fpReady=window.UM_ADMIN?Promise.resolve():new Promise((res,rej)=>{ const s=document.createElement('script'); s.src='/um/door/admin/fingerprints.js?v=20.88'; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
+  fpReady.then(()=>UM_ADMIN.check(tok)).then(who=>{
+    if(!who) return;
     const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const d=document.createElement('details'); d.id='um-rg-guest'; d.className='um-rg';
     d.innerHTML='<summary>Guest · inviter · '+esc(who.name)+'</summary>'
@@ -405,5 +405,6 @@
     });
     R.insertBefore(d,R.firstChild);
     if(window.UM_RIGHT_APPLY){ const b=document.getElementById('um-rg-btns'); if(b) b.remove(); UM_RIGHT_APPLY(); }
+    if(/[?&]guest=1\b/.test(location.search)){ d.open=true; try{ d.scrollIntoView({block:'start'}); }catch(e){} }
   }).catch(()=>{});
 })();
