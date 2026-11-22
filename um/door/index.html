@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Porte — Universal Metaphor</title>
+<meta name="description" content="Surface d’observation isolée de la porte plumb-dump-data : flux, schéma de cellules, six zones du treillis, bacs à sable rendus dans la visionneuse Manifestation gelée.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' fill='%230b1016'/><circle cx='32' cy='32' r='18' fill='none' stroke='%23c4a574' stroke-width='3'/></svg>">
+<style>
+  :root {
+    --bg: #0b1016;
+    --bg-2: #121821;
+    --ink: #e8e0d4;
+    --muted: #9a9286;
+    --line: #2a3340;
+    --gold: #c4a574;
+    --gold-dim: #8a734c;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Times New Roman", serif;
+    font-size: 18px;
+    line-height: 1.55;
+  }
+  code, .sha, .mono, kbd {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.82em;
+  }
+  a { color: var(--gold); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:hover { color: #e4d0aa; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 28px 96px; }
+  header.hero {
+    padding: 56px 0 36px;
+    border-bottom: 1px solid var(--line);
+  }
+  .eyebrow {
+    font-family: ui-sans-serif, system-ui, "Helvetica Neue", sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-weight: 500;
+    font-size: clamp(2.1rem, 5vw, 3.4rem);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin: 0 0 18px;
+  }
+  .lede { max-width: 42em; color: #d8d0c4; margin: 0; }
+  .notice {
+    margin-top: 28px;
+    padding: 14px 16px;
+    border-left: 3px solid var(--gold);
+    background: var(--bg-2);
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+  h2 {
+    font-weight: 500;
+    font-size: 1.7rem;
+    letter-spacing: -0.02em;
+    margin: 64px 0 18px;
+    padding-top: 8px;
+  }
+  h3 { font-weight: 500; margin: 0 0 8px; }
+  p { margin: 0 0 1em; }
+  .nav {
+    display: flex; flex-wrap: wrap; gap: 8px 22px;
+    font-family: ui-sans-serif, system-ui, "Helvetica Neue", sans-serif;
+    font-size: 13px;
+    margin-top: 28px;
+  }
+  /* flow */
+  .flow {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin: 8px 0 12px;
+  }
+  @media (max-width: 800px) {
+    .flow { grid-template-columns: 1fr; }
+  }
+  .step {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    padding: 16px 16px 18px;
+    min-height: 100%;
+  }
+  .step .n {
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .step h3 { font-size: 1.05rem; margin-top: 8px; }
+  .step p { color: var(--muted); font-size: 0.92rem; margin: 0; }
+  .flow-svg { width: 100%; height: auto; margin: 8px 0 20px; display: block; }
+  /* schema */
+  .schema-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 28px;
+  }
+  @media (max-width: 800px) { .schema-grid { grid-template-columns: 1fr; } }
+  .schema-grid dl { margin: 0; }
+  .schema-grid dt { color: var(--gold); font-size: 0.92rem; margin-top: 10px; }
+  .schema-grid dd { margin: 2px 0 0; color: #d0c8bc; font-size: 0.95rem; }
+  .links { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 14px; }
+  .links a { margin-right: 1.2em; }
+  /* map */
+  .map-frame {
+    background: #0b1016;
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .map-frame object, .map-frame img, .map-frame svg { width: 100%; height: auto; display: block; }
+  .legend {
+    list-style: none; padding: 14px 0 0; margin: 0;
+    display: flex; flex-wrap: wrap; gap: 8px 18px;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: 13px; color: var(--muted);
+  }
+  .legend i, .off-zone h4 i {
+    display: inline-block; width: 11px; height: 11px; border-radius: 1px;
+    margin-right: 6px; vertical-align: -1px;
+  }
+  .note { color: var(--muted); font-size: 0.92rem; }
+  .off {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 20px;
+  }
+  @media (max-width: 800px) { .off { grid-template-columns: 1fr; } }
+  .off-zone { background: var(--bg-2); border: 1px solid var(--line); padding: 12px 14px; }
+  .off-zone h4 {
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+    margin: 0 0 8px; font-weight: 600;
+  }
+  .off-zone h4 span { color: var(--muted); font-weight: 400; }
+  .off-zone ul { list-style: none; margin: 0; padding: 0; font-size: 0.84rem; color: #c8c0b4; }
+  .off-zone li { margin: 0 0 3px; }
+  /* cards */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+  a.card {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    padding: 18px 18px 16px;
+    min-height: 100%;
+    transition: border-color .15s, background .15s;
+  }
+  a.card:hover { border-color: var(--gold-dim); background: #161d27; }
+  .card-kicker {
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 6px;
+  }
+  a.card p { color: var(--muted); font-size: 0.92rem; margin: 0 0 12px; }
+  .sha { color: #7d766c; }
+  footer {
+    margin-top: 72px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <p class="eyebrow">Universal Metaphor · porte · door v2.00</p>
+    <h1>Surface d’observation</h1>
+    <p class="lede">Une porte, à côté du Hub, qui reçoit un dépôt, le contrôle, le fragmente en cellules, et l’ouvre dans un bac à sable par invité — lu par le moteur Manifestation gelé (rév. 23.16). Cette page décrit la structure de bout en bout. Elle n’est liée depuis aucune page existante du Hub.</p>
+    <p class="notice">Chemin nouveau et isolé. Aucun fichier existant du dépôt <span class="mono">ericgrimard-pixel.github.io</span> n’a été modifié pour y pointer. Le protocole Manifestation n’est pas réajusté. Le moteur publié ici est une copie en lecture seule ; <code>zoneOf</code> et les seuils 20 / 40 / 60 / 80 restent identiques, octet pour octet.</p>
+    <nav class="nav">
+      <a href="#flux">Flux</a>
+      <a href="#schema">Schéma de cellules</a>
+      <a href="#carte">Carte des six zones</a>
+      <a href="#bacs">Bacs à sable</a>
+      <a href="/plumb-dump-data/README.md">README</a>
+      <a href="/plumb-dump-data/schema/cell-schema-v1.md">cell-schema-v1.md</a>
+      <a href="/plumb-dump-data/lattice/coverage_summary.md">Couverture du treillis</a>
+      <a href="/plumb-dump-data/lattice/">Treillis v1.1–v1.3</a>
+    </nav>
+  </header>
+
+  <section id="flux">
+    <h2>Flux de la porte</h2>
+    <p>La porte v2 inverse le flux : un invité dépose un fichier à un point d’entrée qui lui est destiné. Rien n’est inventé. Une colonne ou une ligne non cartographiable reste OPEN / unmapped.</p>
+    <svg class="flow-svg" viewBox="0 0 1100 120" role="img" aria-label="Flux : dépôt, contrôles, fragmentation en cellules, bac à sable, visionneuse Manifestation">
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#8a734c"/></marker>
+      </defs>
+      <line x1="196" y1="52" x2="232" y2="52" stroke="#8a734c" stroke-width="1.5" marker-end="url(#arr)"/>
+      <line x1="412" y1="52" x2="448" y2="52" stroke="#8a734c" stroke-width="1.5" marker-end="url(#arr)"/>
+      <line x1="628" y1="52" x2="664" y2="52" stroke="#8a734c" stroke-width="1.5" marker-end="url(#arr)"/>
+      <line x1="844" y1="52" x2="880" y2="52" stroke="#8a734c" stroke-width="1.5" marker-end="url(#arr)"/>
+      <rect x="8" y="16" width="188" height="88" fill="#121821" stroke="#2a3340"/>
+      <rect x="240" y="16" width="172" height="88" fill="#121821" stroke="#2a3340"/>
+      <rect x="456" y="16" width="172" height="88" fill="#121821" stroke="#2a3340"/>
+      <rect x="672" y="16" width="172" height="88" fill="#121821" stroke="#2a3340"/>
+      <rect x="888" y="16" width="204" height="88" fill="#121821" stroke="#2a3340"/>
+      <text x="102" y="48" text-anchor="middle" fill="#c4a574" font-size="11" font-family="ui-sans-serif, system-ui, sans-serif" letter-spacing="1.6">01</text>
+      <text x="326" y="48" text-anchor="middle" fill="#c4a574" font-size="11" font-family="ui-sans-serif, system-ui, sans-serif" letter-spacing="1.6">02</text>
+      <text x="542" y="48" text-anchor="middle" fill="#c4a574" font-size="11" font-family="ui-sans-serif, system-ui, sans-serif" letter-spacing="1.6">03</text>
+      <text x="758" y="48" text-anchor="middle" fill="#c4a574" font-size="11" font-family="ui-sans-serif, system-ui, sans-serif" letter-spacing="1.6">04</text>
+      <text x="990" y="48" text-anchor="middle" fill="#c4a574" font-size="11" font-family="ui-sans-serif, system-ui, sans-serif" letter-spacing="1.6">05</text>
+      <text x="102" y="72" text-anchor="middle" fill="#e8e0d4" font-size="15" font-family="Palatino Linotype, Palatino, serif">Dépôt</text>
+      <text x="326" y="72" text-anchor="middle" fill="#e8e0d4" font-size="15" font-family="Palatino Linotype, Palatino, serif">Contrôles</text>
+      <text x="542" y="72" text-anchor="middle" fill="#e8e0d4" font-size="15" font-family="Palatino Linotype, Palatino, serif">Cellules</text>
+      <text x="758" y="72" text-anchor="middle" fill="#e8e0d4" font-size="15" font-family="Palatino Linotype, Palatino, serif">Bac à sable</text>
+      <text x="990" y="72" text-anchor="middle" fill="#e8e0d4" font-size="15" font-family="Palatino Linotype, Palatino, serif">Visionneuse</text>
+    </svg>
+    <div class="flow">
+      <div class="step"><div class="n">01 · Dépôt</div><h3>Un fichier arrive</h3><p>CSV ou xlsx, déposé à un point d’entrée réservé à un invité. Aucune invitation n’est envoyée depuis cette surface.</p></div>
+      <div class="step"><div class="n">02 · Contrôles</div><h3>Acceptation stricte</h3><p>Le dépôt n’est lu que s’il appartient à un invité encore actif et que l’expéditeur est celui qui a été invité. Plafonds de taille, octets magiques, pas d’exécution de macros ni de formules.</p></div>
+      <div class="step"><div class="n">03 · Cellules</div><h3>Fragmentation</h3><p>Les dépôts Santé sont fragmentés selon le cell-schema v1, partagé avec le treillis. Les quintiles restent Q1–Q5, jamais projetés sur Ω φ⁻ Σ φ⁺ α.</p></div>
+      <div class="step"><div class="n">04 · Bac à sable</div><h3>Un dossier par dépôt</h3><p>Chaque dépôt accepté devient un répertoire <span class="mono">systems/&lt;préfixe-sha&gt;/</span> contenant la lib, le fichier source, et, le cas échéant, les cellules.</p></div>
+      <div class="step"><div class="n">05 · Visionneuse</div><h3>Moteur gelé</h3><p>La visionneuse enveloppe <span class="mono">manifestation-engine.html</span> sans le modifier. Un chrome v2 (ligne d’en-tête compacte, sélecteur de Classe 2, boutons de scène) s’ajoute autour.</p></div>
+    </div>
+  </section>
+
+  <section id="schema">
+    <h2>Cell-schema v1</h2>
+    <p>Contrat unique entre la porte v2 et le treillis Santé. Rien n’est dérivé. Un pays inconnu ou un indicateur hors liste reste unmapped.</p>
+    <div class="schema-grid">
+      <div>
+        <h3>Clé de cellule</h3>
+        <dl>
+          <dt>zone</dt><dd>Une des six zones géographiques du treillis, via country-zone.csv seulement.</dd>
+          <dt>country_iso3</dt><dd>Code ISO 3166-1 alpha-3.</dd>
+          <dt>city</dt><dd>Code, définition et libellé source, conservés tels quels.</dd>
+          <dt>ethnic group</dt><dd>Libellé source, jamais fusionné ni harmonisé.</dd>
+          <dt>sex</dt><dd>T / M / F.</dd>
+          <dt>age_band_source</dt><dd>Tranche d’âge telle qu’écrite à la source.</dd>
+          <dt>income_quintile</dt><dd>ALL ou Q1–Q5. Pas de correspondance avec Ω…α.</dd>
+        </dl>
+      </div>
+      <div>
+        <h3>Par valeur</h3>
+        <dl>
+          <dt>mesure</dt><dd>value, unit, indicator_code, indicator_label.</dd>
+          <dt>provenance</dt><dd>source_org, source_table, period_year, url, read_date, file_sha256.</dd>
+          <dt>value_age</dt><dd>Nombre entier d’années civiles entre period_year et read_date, quand les deux sont connus.</dd>
+          <dt>provisional</dt><dd>Vrai seulement si weight_coverage est présent et inférieur à 50&nbsp;%.</dd>
+          <dt>statut</dt><dd>FILLED ou OPEN, plus quality_note, unmapped_fields, row_disposition.</dd>
+        </dl>
+      </div>
+    </div>
+    <p class="links" style="margin-top:20px">
+      <a href="/plumb-dump-data/schema/cell-schema-v1.json">cell-schema-v1.json</a>
+      <a href="/plumb-dump-data/schema/cell-schema-v1.md">cell-schema-v1.md</a>
+      <a href="/plumb-dump-data/schema/country-zone.csv">country-zone.csv</a>
+      <a href="/plumb-dump-data/schema/indicators.json">indicators.json</a>
+      <a href="/plumb-dump-data/lattice/zone_headlines.csv">zone_headlines.csv</a>
+      <a href="/plumb-dump-data/lattice/coverage_summary.md">coverage_summary.md</a>
+      <a href="/plumb-dump-data/lattice/">Treillis v1.1–v1.3 (lattice/)</a>
+    </p>
+    <p class="note">16 indicateurs (POP, LE0, LE60, HALE0, HALE60, U5MR, AMR, NCD3070, OBESITY18, TOBACCO, GNIPC_PPP, EARN_PPP, INCSHARE, GINI, UHC, CHE_PC_PPP). Le fichier <span class="mono">lattice.json</span> (~19,7&nbsp;Mo) n’est pas publié sur cette surface.</p>
+  </section>
+
+  <section id="carte">
+    <h2>Six zones du treillis</h2>
+    <p>Ces zones sont géographiques : Africa, Europe, East, Middle East, South Pacific, America. Elles ne sont pas les zones de protocole Ω φ⁻ Σ φ⁺ α. L’assignation, y compris les dérogations (MLT → Europe, AFG / PAK → East, GRL → America), vient uniquement de <a href="/plumb-dump-data/schema/country-zone.csv">country-zone.csv</a> (217 pays).</p>
+    <div class="map-frame">
+      <img src="/plumb-dump-data/assets/zones.svg" width="1100" height="520" alt="Carte des six zones géographiques du treillis Santé, projection de Miller, fonds Natural Earth 110m.">
+    </div>
+    <ul class="legend"><li><i style="background:#c9846a"></i> Amérique <small>(America)</small></li><li><i style="background:#7ea7d9"></i> Europe <small>(Europe)</small></li><li><i style="background:#d4a44a"></i> Afrique <small>(Africa)</small></li><li><i style="background:#c7b36a"></i> Moyen-Orient <small>(Middle East)</small></li><li><i style="background:#6fbfa5"></i> Est <small>(East)</small></li><li><i style="background:#5aa8b5"></i> Pacifique Sud <small>(South Pacific)</small></li></ul>
+    <p class="note">La carte utilise le fond public world-atlas 110m (177 polygones). Les pays ou territoires du treillis trop petits pour cette résolution sont listés ci-dessous — ils restent dans country-zone.csv.</p>
+    <div class="off"><div class="off-zone"><h4><i style="background:#c9846a"></i> Amérique <span>21</span></h4><ul><li><code>ABW</code> Aruba</li> <li><code>ARG</code> Argentina</li> <li><code>ATG</code> Antigua and Barbuda</li> <li><code>BHS</code> Bahamas, The</li> <li><code>BLZ</code> Belize</li> <li><code>BMU</code> Bermuda</li> <li><code>BOL</code> Bolivia</li> <li><code>BRA</code> Brazil</li> <li><code>BRB</code> Barbados</li> <li><code>CUW</code> Curacao</li> <li><code>CYM</code> Cayman Islands</li> <li><code>DMA</code> Dominica</li> <li><code>GRD</code> Grenada</li> <li><code>KNA</code> St. Kitts and Nevis</li> <li><code>LCA</code> St. Lucia</li> <li><code>MAF</code> St. Martin (French part)</li> <li><code>SXM</code> Sint Maarten (Dutch part)</li> <li><code>TCA</code> Turks and Caicos Islands</li> <li><code>VCT</code> St. Vincent and the Grenadines</li> <li><code>VGB</code> British Virgin Islands</li> <li><code>VIR</code> Virgin Islands (U.S.)</li></ul></div><div class="off-zone"><h4><i style="background:#7ea7d9"></i> Europe <span>16</span></h4><ul><li><code>ALB</code> Albania</li> <li><code>AND</code> Andorra</li> <li><code>ARM</code> Armenia</li> <li><code>AUT</code> Austria</li> <li><code>AZE</code> Azerbaijan</li> <li><code>BEL</code> Belgium</li> <li><code>BIH</code> Bosnia and Herzegovina</li> <li><code>CHI</code> Channel Islands</li> <li><code>FRO</code> Faroe Islands</li> <li><code>GIB</code> Gibraltar</li> <li><code>IMN</code> Isle of Man</li> <li><code>LIE</code> Liechtenstein</li> <li><code>MCO</code> Monaco</li> <li><code>MLT</code> Malta</li> <li><code>SMR</code> San Marino</li> <li><code>XKX</code> Kosovo</li></ul></div><div class="off-zone"><h4><i style="background:#d4a44a"></i> Afrique <span>7</span></h4><ul><li><code>AGO</code> Angola</li> <li><code>BWA</code> Botswana</li> <li><code>COM</code> Comoros</li> <li><code>CPV</code> Cabo Verde</li> <li><code>MUS</code> Mauritius</li> <li><code>STP</code> Sao Tome and Principe</li> <li><code>SYC</code> Seychelles</li></ul></div><div class="off-zone"><h4><i style="background:#c7b36a"></i> Moyen-Orient <span>2</span></h4><ul><li><code>BHR</code> Bahrain</li> <li><code>DZA</code> Algeria</li></ul></div><div class="off-zone"><h4><i style="background:#6fbfa5"></i> Est <span>8</span></h4><ul><li><code>AFG</code> Afghanistan</li> <li><code>BGD</code> Bangladesh</li> <li><code>BRN</code> Brunei Darussalam</li> <li><code>BTN</code> Bhutan</li> <li><code>HKG</code> Hong Kong SAR, China</li> <li><code>MAC</code> Macao SAR, China</li> <li><code>MDV</code> Maldives</li> <li><code>SGP</code> Singapore</li></ul></div><div class="off-zone"><h4><i style="background:#5aa8b5"></i> Pacifique Sud <span>14</span></h4><ul><li><code>ASM</code> American Samoa</li> <li><code>AUS</code> Australia</li> <li><code>FSM</code> Micronesia, Fed. Sts.</li> <li><code>GUM</code> Guam</li> <li><code>KIR</code> Kiribati</li> <li><code>MHL</code> Marshall Islands</li> <li><code>MNP</code> Northern Mariana Islands</li> <li><code>NRU</code> Naoero</li> <li><code>PLW</code> Palau</li> <li><code>PYF</code> French Polynesia</li> <li><code>SLB</code> Solomon Islands</li> <li><code>TON</code> Tonga</li> <li><code>TUV</code> Tuvalu</li> <li><code>WSM</code> Samoa</li></ul></div></div>
+  </section>
+
+  <section id="bacs">
+    <h2>Bacs à sable</h2>
+    <p>Tous sont rendus dans la visionneuse v2 (chrome autour du moteur gelé). Le bouton HUB de l’en-tête est neutralisé : un bac à sable n’ouvre pas le Hub vivant. Les quintiles Q1–Q5, le cas échéant, ne sont pas projetés sur Ω…α.</p>
+    <div class="grid">
+    <a class="card" href="systems/e07d07936ce5-sante-synthetic-le0-csv/">
+      <div class="card-kicker">v2 · Santé · cols</div>
+      <h3>Santé SYNTHETIC — LE0 (CSV)</h3>
+      <p>6 cellules FILLED, 2 OPEN / unmapped (Atlantis ; indicateur hors liste). Valeurs explicitement SYNTHETIC.</p>
+      <code class="sha" title="e07d07936ce5f4544248b1d4b1f54961165037204fe6ec5acfc7495422b66e76">e07d07936ce5…</code>
+    </a>
+    <a class="card" href="systems/b88b16afff76-sante-synthetic-le0-xlsx/">
+      <div class="card-kicker">v2 · Santé · cols</div>
+      <h3>Santé SYNTHETIC — LE0 (xlsx)</h3>
+      <p>Même dépôt SYNTHETIC, classeur xlsx. Même cartographie.</p>
+      <code class="sha" title="b88b16afff7647260f33b15803e435ab5522456670d325e971ca617f3509b3c3">b88b16afff76…</code>
+    </a>
+    <a class="card" href="systems/0cf92c4aa33c-sante-treillis-extrait/">
+      <div class="card-kicker">v2 · Santé · cols</div>
+      <h3>Extrait réel du treillis — LE0 / POP / HALE0</h3>
+      <p>30 cellules FILLED : CAN, USA, FRA, EGY, JPN, AUS. Pays → zone uniquement d’après country-zone.csv.</p>
+      <code class="sha" title="0cf92c4aa33cc0c930b414e8a3d436cf07f33a562bd6133208ba3e80ce4016fa">0cf92c4aa33c…</code>
+    </a>
+    <a class="card" href="systems/a912f92cb325-finance-synthetique/">
+      <div class="card-kicker">v2 · Finance · finance</div>
+      <h3>Finance synthétique</h3>
+      <p>6 titres. Classe 2 du moteur gelé : 5 secteurs, 6 industries, 4 pays. Sélecteur de Classe 2 peuplé.</p>
+      <code class="sha" title="a912f92cb325f3757102d188cb8ffdce8d4a784144cb1ec0b3abf1e8a015bc3b">a912f92cb325…</code>
+    </a>
+    <a class="card" href="systems/539ba3182f2b-hockey-synthetique/">
+      <div class="card-kicker">v1 dans la visionneuse v2 · cols</div>
+      <h3>Hockey synthétique</h3>
+      <p>Cartographié en kind=cols : le CSV n’a pas les tables club / conférence / division / points du contrat hockey. [INCOMPLET] sur les cartes de Classe 2 hockey.</p>
+      <code class="sha" title="539ba3182f2be7902dd9fb1462b9bfcfc7a8f47e8f8c632eb11fd5e442eaa403">539ba3182f2b…</code>
+    </a>
+    <a class="card" href="systems/ce036324d814-cas-limites/">
+      <div class="card-kicker">v1 dans la visionneuse v2 · cols</div>
+      <h3>Cas-limites</h3>
+      <p>Ligne vide, en-tête répété, colonnes texte non promues en Classe 2.</p>
+      <code class="sha" title="ce036324d814f0d52ac66cd1f1c72eedec29a1792a29fc35d01c700bab63a3d8">ce036324d814…</code>
+    </a>
+    <a class="card" href="systems/9c0adea2fd42-nhl-long/">
+      <div class="card-kicker">v1 dans la visionneuse v2 · cols</div>
+      <h3>NHL long 2024-25 / 2025-26</h3>
+      <p>1187 objets. kind=cols : le fichier n’a pas les tables structurées du contrat hockey.</p>
+      <code class="sha" title="9c0adea2fd4259bc591ad6f51af3379bc1f350bb237aa9bed62d4b8a6da94d09">9c0adea2fd42…</code>
+    </a>
+    <a class="card" href="systems/907b94d35964-deux-onglets-xlsx/">
+      <div class="card-kicker">v1 dans la visionneuse v2 · finance + cols</div>
+      <h3>Deux onglets (xlsx)</h3>
+      <p>Feuilles FinanceSynth (finance) et Mesures (cols). La fiche permet de passer de l’un à l’autre.</p>
+      <code class="sha" title="907b94d35964c6d4c3112afafe96598d06c57f6517be6432cc0d6b85edf77355">907b94d35964…</code>
+    </a></div>
+  </section>
+
+  <footer>
+    <p>door v2.00 · moteur gelé Manifestation rév. 23.16 · snapshot aligné sur le Hub v20.85. Sommes SHA-256 : <a href="/plumb-dump-data/SHA256SUMS-PUBLIC">SHA256SUMS-PUBLIC</a> et <a href="/plumb-dump-data/snapshot/SHA256SUMS">snapshot/SHA256SUMS</a>. Cette surface n’expose ni registre d’invités, ni jetons, ni reçus, ni grand livre, ni adresses d’expéditeur.</p>
+  </footer>
+</div>
+</body>
+</html>
