@@ -3,8 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Porte — Universal Metaphor</title>
-<meta name="description" content="Surface d’observation isolée de la porte plumb-dump-data : flux, schéma de cellules, six zones du treillis, bacs à sable rendus dans la visionneuse Manifestation gelée.">
+<title>La Porte — Universal Metaphor</title>
+<meta name="description" content="La Porte d’Universal Metaphor : deux environnements — le côté administration (démonstration) et le côté client. Vitrine publique, avec un environnement DÉMO (Inviter, Reçus, Accepter).">
+<link rel="canonical" href="https://ericgrimard-pixel.github.io/um/door/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="La Porte — Universal Metaphor">
+<meta property="og:description" content="La Porte d’Universal Metaphor : deux environnements — le côté administration (démonstration) et le côté client. Vitrine publique, avec un environnement DÉMO (Inviter, Reçus, Accepter).">
+<meta property="og:url" content="https://ericgrimard-pixel.github.io/um/door/">
+<meta property="og:image" content="https://ericgrimard-pixel.github.io/um/door/og-preview.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="fr_CA">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="La Porte — Universal Metaphor">
+<meta name="twitter:description" content="La Porte d’Universal Metaphor : deux environnements — le côté administration (démonstration) et le côté client. Vitrine publique, avec un environnement DÉMO (Inviter, Reçus, Accepter).">
+<meta name="twitter:image" content="https://ericgrimard-pixel.github.io/um/door/og-preview.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' fill='%230b1016'/><circle cx='32' cy='32' r='18' fill='none' stroke='%23c4a574' stroke-width='3'/></svg>">
 <style>
   :root {
@@ -177,16 +191,74 @@
     color: var(--muted);
     font-size: 0.88rem;
   }
+
+  /* vitrine 15c */
+  .split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin: 8px 0 28px;
+  }
+  @media (max-width: 800px) { .split { grid-template-columns: 1fr; } }
+  .env {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    padding: 22px 22px 20px;
+  }
+  .env .kicker {
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--gold); margin: 0 0 10px;
+  }
+  .env h3 { font-size: 1.45rem; margin: 0 0 10px; }
+  .env p { color: var(--muted); font-size: 0.95rem; margin: 0; }
+  .demo {
+    border: 1px solid var(--gold-dim);
+    background: #10161e;
+    padding: 22px 22px 18px;
+    margin: 8px 0 12px;
+  }
+  .demo-label {
+    display: inline-block;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    padding: 4px 8px; margin-bottom: 14px;
+  }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 18px; }
+  .toolbar button {
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+    background: transparent; color: var(--gold);
+    border: 1px solid var(--gold); padding: 8px 16px; cursor: pointer;
+  }
+  .toolbar button[aria-pressed="true"] { background: var(--gold); color: var(--bg); }
+  .panel { color: var(--muted); font-size: 0.95rem; }
+  .panel[hidden] { display: none; }
+  .panel h3 { color: var(--ink); font-size: 1.15rem; margin: 0 0 8px; }
+  .receipt {
+    border: 1px solid var(--line); padding: 12px 14px; margin: 8px 0 0; background: var(--bg-2);
+  }
+  .receipt strong { color: var(--gold); font-weight: 500; }
+  .cta {
+    display: inline-block; margin-top: 12px;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+    border: 1px solid var(--gold); color: var(--gold); padding: 8px 16px; text-decoration: none;
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="hero">
-    <p class="eyebrow">Universal Metaphor · porte · door v2.00</p>
-    <h1>Surface d’observation</h1>
-    <p class="lede">Une porte, à côté du Hub, qui reçoit un dépôt, le contrôle, le fragmente en cellules, et l’ouvre dans un bac à sable par invité — lu par le moteur Manifestation gelé (rév. 23.16). Cette page décrit la structure de bout en bout. Elle n’est liée depuis aucune page existante du Hub.</p>
-    <p class="notice">Chemin nouveau et isolé. Aucun fichier existant du dépôt <span class="mono">ericgrimard-pixel.github.io</span> n’a été modifié pour y pointer. Le protocole Manifestation n’est pas réajusté. Le moteur publié ici est une copie en lecture seule ; <code>zoneOf</code> et les seuils 20 / 40 / 60 / 80 restent identiques, octet pour octet.</p>
+    <p class="eyebrow">Universal Metaphor · vitrine 15c · door v2.00</p>
+    <h1>La Porte</h1>
+    <p class="lede">Un lien public, partageable, qui présente les deux environnements de la porte : le côté administration (démonstration) et le côté client. Cette vitrine ne contient aucun jeton, aucune URL secrète d’administration, aucune adresse de courriel.</p>
+    <p class="notice">Chemin nouveau et isolé, à côté du Hub. Le protocole Manifestation (rév. 23.16) n’est pas réajusté : <code>zoneOf</code> et les seuils 20 / 40 / 60 / 80 restent identiques, octet pour octet. Le bureau d’invitation réel n’est pas sur cette page.</p>
     <nav class="nav">
+      <a href="#environnements">Deux environnements</a>
+      <a href="#demo">Environnement DÉMO</a>
       <a href="#flux">Flux</a>
       <a href="#schema">Schéma de cellules</a>
       <a href="#carte">Carte des six zones</a>
@@ -197,6 +269,51 @@
       <a href="/plumb-dump-data/lattice/">Treillis v1.1–v1.3</a>
     </nav>
   </header>
+
+
+  <section id="environnements">
+    <h2>Deux environnements</h2>
+    <div class="split">
+      <article class="env">
+        <p class="kicker">Côté administration · démonstration</p>
+        <h3>Le bureau d’invitation</h3>
+        <p>Les super-administrateurs préparent un bac à sable par client et ouvrent le gabarit dans leur propre messagerie. Rien n’est envoyé automatiquement. L’accès réel à ce bureau se fait hors de cette vitrine, par une URL secrète qui n’apparaît jamais ici.</p>
+      </article>
+      <article class="env">
+        <p class="kicker">Côté client · environnement privé</p>
+        <h3>Le bac à sable de l’invité</h3>
+        <p>Chaque client explore un environnement qui lui est propre, séparé du Hub public et de l’administration. Les limites à 20&nbsp;% et l’attribution des classes s’appliquent de la même façon à tous les dépôts, quel que soit le format ou le canal (fichier ou lien).</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="demo">
+    <h2>Environnement DÉMO</h2>
+    <p>Ci-dessous, une démonstration clairement étiquetée des trois actes de la porte. Les boutons ne transmettent aucun secret et n’ouvrent aucune messagerie réelle. Pour voir un bac à sable vivant, utilisez «&nbsp;Accepter&nbsp;», qui mène à l’environnement de démonstration Finance.</p>
+    <div class="demo" role="region" aria-label="Démonstration — environnement client">
+      <span class="demo-label">Démonstration — environnement client</span>
+      <div class="toolbar" role="tablist" aria-label="Actes de la porte">
+        <button type="button" id="tab-inviter" role="tab" aria-selected="true" aria-pressed="true" aria-controls="panel-inviter">Inviter</button>
+        <button type="button" id="tab-recus" role="tab" aria-selected="false" aria-pressed="false" aria-controls="panel-recus">Reçus</button>
+        <button type="button" id="tab-accepter" role="tab" aria-selected="false" aria-pressed="false" aria-controls="panel-accepter">Accepter</button>
+      </div>
+      <div class="panel" id="panel-inviter" role="tabpanel">
+        <h3>Inviter</h3>
+        <p>Prépare un lien de bac à sable propre au client et un brouillon du gabarit, ouvert dans la messagerie de l’administrateur. La porte n’envoie pas le courriel. L’URL secrète d’administration n’entre jamais dans le message transféré.</p>
+      </div>
+      <div class="panel" id="panel-recus" role="tabpanel" hidden>
+        <h3>Reçus</h3>
+        <p>Chaque dépôt accepté ou refusé laisse un reçu local. Rien n’est envoyé par courriel. Exemples figés, sans identité :</p>
+        <div class="receipt"><strong>Accepté</strong> · dépôt-demo-01 · pièce jointe · limites 20&nbsp;% appliquées</div>
+        <div class="receipt"><strong>Refusé</strong> · dépôt-demo-02 · jeton manquant · reçu local seulement</div>
+      </div>
+      <div class="panel" id="panel-accepter" role="tabpanel" hidden>
+        <h3>Accepter</h3>
+        <p>Après un dépôt accepté, le client ouvre son environnement privé. Voici l’environnement de démonstration Finance, déjà publié sous cette porte :</p>
+        <a class="cta" href="systems/a912f92cb325-finance-synthetique/">Ouvrir le bac à sable DÉMO</a>
+      </div>
+    </div>
+  </section>
 
   <section id="flux">
     <h2>Flux de la porte</h2>
@@ -342,5 +459,25 @@
     <p>door v2.00 · moteur gelé Manifestation rév. 23.16 · snapshot aligné sur le Hub v20.85. Sommes SHA-256 : <a href="/plumb-dump-data/SHA256SUMS-PUBLIC">SHA256SUMS-PUBLIC</a> et <a href="/plumb-dump-data/snapshot/SHA256SUMS">snapshot/SHA256SUMS</a>. Cette surface n’expose ni registre d’invités, ni jetons, ni reçus, ni grand livre, ni adresses d’expéditeur.</p>
   </footer>
 </div>
+
+<script>
+(function () {
+  var tabs = document.querySelectorAll("#demo .toolbar button");
+  tabs.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      tabs.forEach(function (b) {
+        b.setAttribute("aria-selected", "false");
+        b.setAttribute("aria-pressed", "false");
+        var p = document.getElementById(b.getAttribute("aria-controls"));
+        if (p) p.hidden = true;
+      });
+      btn.setAttribute("aria-selected", "true");
+      btn.setAttribute("aria-pressed", "true");
+      var panel = document.getElementById(btn.getAttribute("aria-controls"));
+      if (panel) panel.hidden = false;
+    });
+  });
+})();
+</script>
 </body>
 </html>
