@@ -223,7 +223,7 @@
     });
     const c=document.getElementById('hub-center');
     const showHealth=nav.querySelector('[data-down="health"]')||(c&&c.textContent.trim()==='Santé');
-    if(showHealth&&!document.getElementById('hub-health-link')){
+    if(false&&showHealth&&!document.getElementById('hub-health-link')){ /* v20.86: le lien Santé vit maintenant dans le menu de droite (groupe Santé · lacunes) */
       const a=document.createElement('a');
       a.id='hub-health-link'; a.href=LAT;
       a.innerHTML='SANTÉ / Health lattice ↗ <span class="um-gap-badge">LACUNE / GAP</span>';
@@ -233,4 +233,94 @@
   const nav=document.getElementById('hub-nav');
   if(nav){ new MutationObserver(()=>decorate()).observe(nav,{childList:true}); }
   decorate();
+})();
+
+/* v20.86 — Éric, 22 nov 2026 01:04–01:05 (Toronto) : menu de droite réordonné.
+   Ses cases (Couches) en haut, puis l'utile (Santé · lacunes, Fiche), et le reste replié dans « ▸ Autres / More ».
+   Sous More : un bouton par sous-groupe utile. Rien n'est supprimé : les sections sont déplacées telles quelles
+   (le moteur les remplit par id), et le déplacement est réappliqué si le menu est redessiné. */
+(function(){
+  const R=document.getElementById('right'); if(!R) return;
+  const css=document.createElement('style');
+  css.textContent='.um-rg{border:1px solid var(--line,#2a3340);border-radius:5px;background:var(--panel,#0d1218);min-width:0}'
+    +'.um-rg>summary{cursor:pointer;list-style:none;font:600 11px/1.3 var(--f-mono,ui-monospace,monospace);letter-spacing:.06em;text-transform:uppercase;color:#e8c872;padding:6px 9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+    +'.um-rg>summary::-webkit-details-marker{display:none}'
+    +'.um-rg>summary::before{content:"▸ ";color:#8b98ad}.um-rg[open]>summary::before{content:"▾ "}'
+    +'.um-rg>section.panel{border:0;border-top:1px solid var(--line,#2a3340);border-radius:0 0 5px 5px}'
+    +'#um-rg-couches{border-color:#e8c872}#um-rg-couches>summary{color:#ffe9a8;font-size:12px}'
+    +'#um-rg-fiche>section.panel{max-height:46vh;overflow:auto}'
+    +'#um-rg-more>summary{color:#8b98ad}#um-rg-more .um-rg{margin:6px}'
+    +'.um-rg-body{padding:6px 9px;display:flex;flex-direction:column;gap:6px}'
+    +'#um-rg-sante #um-gaps{max-height:40vh;margin:0}#um-gaps:not([open]){overflow:hidden}'
+    +'#um-gaps>summary{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+    +'#um-rg-sante #hub-health-link{align-self:flex-start}'
+    +'#um-rg-btns{display:flex;flex-wrap:wrap;gap:5px}'
+    +'#um-rg-btns button{font:600 11px/1.3 system-ui,sans-serif;padding:4px 8px}'
+    +'#um-rg-btns button.um-first{border-color:#e8c872;color:#ffe9a8}';
+  document.head.appendChild(css);
+  const LAT='/plumb-dump-data/lattice/';
+  function sec(id){ const e=document.getElementById(id); return e?e.closest('section'):null; }
+  function wrap(id,title,open,parent){
+    let d=document.getElementById(id);
+    if(!d){ d=document.createElement('details'); d.id=id; d.className='um-rg'; if(open) d.open=true;
+      const s=document.createElement('summary'); s.textContent=title; d.appendChild(s); }
+    if(d.parentNode!==parent) parent.appendChild(d);
+    return d;
+  }
+  function couchesTitle(){
+    const all=document.querySelectorAll('#layers input[type=checkbox]');
+    const on=[...all].filter(i=>i.checked).length;
+    return '☑ Couches · '+on+'/'+all.length+' cochées';
+  }
+  let busy=false;
+  function apply(){
+    if(busy) return; busy=true;
+    try{
+      const rclose=R.querySelector('.rclose');
+      const sCou=sec('layers'), sFiche=document.getElementById('fiche'), sLeg=sec('legend'), sSrc=sec('srcText');
+      /* 1. ses cases */
+      const dC=wrap('um-rg-couches',couchesTitle(),true,R);
+      if(sCou&&sCou.parentNode!==dC) dC.appendChild(sCou);
+      dC.firstChild.textContent=couchesTitle();
+      /* 2. Santé · lacunes : lien du treillis + index des lacunes (replié sur une ligne) */
+      const dS=wrap('um-rg-sante','Santé · lacunes',true,R);
+      let body=dS.querySelector('.um-rg-body');
+      if(!body){ body=document.createElement('div'); body.className='um-rg-body'; dS.appendChild(body); }
+      let a=document.getElementById('hub-health-link');
+      if(!a){ a=document.createElement('a'); a.id='hub-health-link'; a.href=LAT; a.innerHTML='SANTÉ / Health lattice ↗ <span class="um-gap-badge">LACUNE / GAP</span>'; }
+      if(a.parentNode!==body) body.insertBefore(a,body.firstChild);
+      const g=document.getElementById('um-gaps');
+      if(g&&g.parentNode!==body){ g.open=false; body.appendChild(g);
+        const sm=g.querySelector('summary');
+        if(sm&&!sm.querySelector('.um-gap-badge')) sm.insertAdjacentHTML('afterbegin','<span class="um-gap-badge">LACUNE / GAP</span>'); }
+      /* 3. Fiche (lecture vivante) */
+      const dF=wrap('um-rg-fiche','Fiche · lecture',true,R);
+      if(sFiche&&sFiche.parentNode!==dF) dF.appendChild(sFiche);
+      /* 4. ▸ Autres / More (replié) : Légende, Source */
+      const dM=wrap('um-rg-more','Autres / More',false,R);
+      const dL=wrap('um-rg-legende','Légende',false,dM);
+      if(sLeg&&sLeg.parentNode!==dL) dL.appendChild(sLeg);
+      const dX=wrap('um-rg-source','Source · bornes',false,dM);
+      if(sSrc&&sSrc.parentNode!==dX) dX.appendChild(sSrc);
+      /* 5. boutons des sous-groupes, sous More */
+      let bt=document.getElementById('um-rg-btns');
+      if(!bt){ bt=document.createElement('div'); bt.id='um-rg-btns';
+        const B=[['um-rg-couches','☑ Couches','um-first'],['um-rg-sante','Santé · lacunes',''],['um-gaps','Lacunes · index',''],['um-rg-fiche','Fiche · lecture','']];
+        bt.innerHTML=B.map(b=>'<button type="button" class="'+b[2]+'" data-open="'+b[0]+'">'+b[1]+'</button>').join('');
+        bt.addEventListener('click',e=>{
+          const b=e.target.closest('[data-open]'); if(!b) return;
+          const t=document.getElementById(b.getAttribute('data-open')); if(!t) return;
+          for(let p=t;p&&p!==R;p=p.parentElement) if(p.tagName==='DETAILS') p.open=true;
+          t.scrollIntoView({block:'nearest'});
+        });
+      }
+      /* ordre final */
+      [rclose,dC,dS,dF,dM,bt].forEach(n=>{ if(n) R.appendChild(n); });
+    } finally { busy=false; }
+  }
+  apply();
+  new MutationObserver(()=>{ if(!busy) apply(); }).observe(R,{childList:true});
+  const lay=document.getElementById('layers');
+  const upd=()=>{ const d=document.getElementById('um-rg-couches'); if(d&&d.firstChild) d.firstChild.textContent=couchesTitle(); };
+  if(lay){ lay.addEventListener('change',upd); new MutationObserver(upd).observe(lay,{childList:true}); }
 })();
