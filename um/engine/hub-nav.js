@@ -436,3 +436,28 @@
   }
   put();
 })();
+
+/* v20.90 — Éric, 22 nov 2026 10:57 (Toronto, voix) : les boutons d'objets Classe 2 (nav#hub-nav, autrefois dans la barre du haut)
+   passent dans le menu de droite, juste sous les cases « ☑ Couches · N/20 cochées », pour dégager la barre du haut au profit du
+   champ de visualisation. Déplacement seulement : le même élément nav#hub-nav est déplacé (render() continue d'y écrire, mêmes
+   gestionnaires de clic, rien n'est réimplémenté ni supprimé). Inséré à l'intérieur du groupe Couches (pas comme enfant direct
+   de #right) pour ne pas déclencher le réordonnancement v20.86–v20.88. */
+(function(){
+  let tries=0;
+  function move(){
+    const nav=document.getElementById('hub-nav');
+    const dC=document.getElementById('um-rg-couches');
+    if(!nav||!dC){ if(++tries<40) setTimeout(move,250); return; }
+    if(!document.getElementById('um-c2-css')){
+      const css=document.createElement('style'); css.id='um-c2-css';
+      css.textContent='#um-rg-couches #hub-nav{flex:none;max-height:none;overflow:visible;margin-top:8px;padding-top:6px;border-top:1px solid rgba(200,205,212,.18)}'
+        +'#um-rg-couches #hub-nav::before{content:"Classe 2 · objets";flex:1 1 100%;font:600 10px/1.2 system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#8b98ad}';
+      document.head.appendChild(css);
+    }
+    if(nav.parentNode!==dC||nav!==dC.lastElementChild) dC.appendChild(nav);
+  }
+  move();
+  /* si un ancien script remet la nav dans l'en-tête, on la ramène sous les cases */
+  const hd=document.querySelector('header');
+  if(hd) new MutationObserver(()=>{ const n=document.getElementById('hub-nav'); if(n&&n.parentNode===hd) move(); }).observe(hd,{childList:true});
+})();
