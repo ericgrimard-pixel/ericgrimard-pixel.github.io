@@ -1,0 +1,740 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="dark">
+<title>Universal Metaphor · Your invitation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+/* Universal Metaphor — invitee journey, Monday demonstration build.
+   Everything runs in this page. Nothing is sent, uploaded or stored. */
+:root{
+  --night:#0b1020; --panel:#121a2c; --panel2:#18223a;
+  --silver:#c8cdd4; --hair:rgba(200,205,212,.22); --hair2:rgba(200,205,212,.4);
+  --text:#eef1f5; --mist:#8e97a6; --dawn:#e8d9b0; --ok:#a9d4b5; --warn:#e4b9a8;
+  --display:"Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --ui:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;height:100%}
+body{background:var(--night);color:var(--text);font:15px/1.55 var(--ui);overflow:hidden}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:1px solid var(--dawn);outline-offset:3px}
+a{color:var(--dawn)}
+
+/* ---------- frame ---------- */
+#sky{position:fixed;inset:0;width:100vw;height:100vh;display:block}
+.app{position:relative;display:grid;grid-template-columns:220px 1fr 460px;height:100vh;pointer-events:none}
+.app>*{pointer-events:auto}
+.brand{position:fixed;top:22px;left:28px;font:500 20px/1 var(--display);letter-spacing:.02em;pointer-events:none}
+.demo-flag{position:fixed;top:20px;right:24px;font-size:12px;color:var(--mist);border:1px solid var(--hair);border-radius:20px;padding:4px 12px;background:rgba(11,16,32,.6)}
+.demo-flag b{color:var(--text);font-weight:500}
+
+/* step rail — a real sequence, so it is numbered */
+.rail{align-self:center;margin-left:28px;display:flex;flex-direction:column;gap:2px;list-style:none;padding:0}
+.rail li button{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:center;background:none;border:0;padding:7px 0;cursor:pointer;color:var(--mist);text-align:left;font-size:13px}
+.rail li button span.n{width:22px;height:22px;border:1px solid var(--hair);border-radius:50%;display:grid;place-items:center;font-size:11px}
+.rail li.done button{color:var(--silver)}
+.rail li.done span.n{border-color:var(--silver)}
+.rail li.now button{color:var(--text)}
+.rail li.now span.n{border-color:var(--dawn);color:var(--dawn)}
+.rail li.off button{opacity:.35;text-decoration:line-through;text-decoration-color:var(--hair2)}
+
+/* content panel */
+.panel{grid-column:3;align-self:center;margin:24px 28px 24px 0;max-height:calc(100vh - 96px);overflow:auto;
+  background:rgba(18,26,44,.86);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border:1px solid var(--hair);border-radius:14px;padding:28px 28px 24px}
+.step{display:none}
+.step.on{display:block;animation:in .45s ease both}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+h1,h2{font-family:var(--display);font-weight:300;line-height:1.08;margin:0 0 14px}
+h1{font-size:44px}
+h2{font-size:34px}
+p{margin:0 0 14px;max-width:62ch}
+.quiet{color:var(--mist);font-size:13.5px}
+.truth{display:inline-block;font-size:12px;border:1px solid var(--hair);border-radius:20px;padding:2px 10px;margin-bottom:16px;color:var(--mist)}
+.truth.real{color:var(--ok);border-color:rgba(169,212,181,.45)}
+
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--silver);background:none;border-radius:999px;padding:10px 20px;cursor:pointer;font-weight:500;transition:background .2s,color .2s}
+.btn:hover{background:rgba(200,205,212,.08)}
+.btn.main{background:var(--text);color:var(--night);border-color:var(--text)}
+.btn.main:hover{background:var(--dawn);border-color:var(--dawn)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn.sm{padding:6px 14px;font-size:13px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:18px}
+.faint{opacity:.55}
+.linkish{background:none;border:0;padding:0;color:var(--text);text-decoration:underline;text-decoration-color:var(--hair2);text-underline-offset:4px;cursor:pointer}
+
+/* the email */
+.mail{border:1px solid var(--hair);border-radius:10px;overflow:hidden;background:#0f1628}
+.mail header{padding:12px 16px;border-bottom:1px solid var(--hair);font-size:13px;color:var(--mist);display:grid;grid-template-columns:62px 1fr;row-gap:2px}
+.mail header b{color:var(--text);font-weight:500}
+.mail .body{padding:22px 18px 20px}
+.mail .body p{font-size:15px}
+.mail .sig{font-family:var(--display);font-size:19px;margin-top:18px}
+
+/* allow toggles */
+.allow{display:flex;flex-direction:column;border-top:1px solid var(--hair);margin-top:6px}
+.allow label{display:grid;grid-template-columns:1fr 46px;gap:12px;align-items:center;padding:14px 0;border-bottom:1px solid var(--hair);cursor:pointer}
+.allow .t{font-weight:500}
+.allow .d{color:var(--mist);font-size:13px}
+.sw{appearance:none;width:42px;height:24px;border-radius:12px;border:1px solid var(--hair2);position:relative;cursor:pointer;margin:0;transition:background .2s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--mist);transition:transform .2s,background .2s}
+.sw:checked{background:rgba(232,217,176,.16);border-color:var(--dawn)}
+.sw:checked::after{transform:translateX(18px);background:var(--dawn)}
+
+/* deposit */
+.drop{display:block;border:1px dashed var(--hair2);border-radius:12px;padding:22px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s}
+.drop.over{border-color:var(--dawn);background:rgba(232,217,176,.05)}
+.drop input{display:none}
+.field{display:flex;gap:8px;margin-top:12px}
+.field input{flex:1;min-width:0;background:var(--night);border:1px solid var(--hair);border-radius:8px;padding:9px 12px}
+.receipt{margin-top:14px;border-left:1px solid var(--silver);padding:2px 0 2px 14px;font-size:13.5px}
+.receipt div{margin:2px 0}
+.hash{font:12px var(--mono);color:var(--mist);word-break:break-all}
+.ok{color:var(--ok)} .warn{color:var(--warn)}
+
+/* AI */
+.choices{display:flex;gap:8px;flex-wrap:wrap}
+.choices button{border:1px solid var(--hair2);background:none;border-radius:999px;padding:7px 16px;cursor:pointer}
+.choices button[aria-pressed=true]{border-color:var(--dawn);color:var(--dawn)}
+.draft{margin-top:14px;border:1px solid var(--hair);border-radius:10px;padding:12px 14px;font-size:13.5px;background:#0f1628}
+.draft div{display:grid;grid-template-columns:62px 1fr}
+.draft span{color:var(--mist)}
+.thread{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.pkt{border:1px solid var(--hair);border-radius:10px;padding:10px 12px;font-size:13px;animation:in .35s ease both}
+.pkt.them{margin-right:28px}
+.pkt.us{margin-left:28px;border-color:rgba(232,217,176,.35)}
+.pkt .who{color:var(--mist);font-size:12px;margin-bottom:4px;display:flex;justify-content:space-between;gap:10px}
+.pkt pre{margin:0;font:12px/1.5 var(--mono);white-space:pre-wrap;word-break:break-all;color:var(--silver)}
+
+/* voice */
+.lanes{display:grid;gap:12px;margin-top:6px}
+.lane{border:1px solid var(--hair);border-radius:10px;padding:12px 14px}
+.lane .who{font-size:13px;color:var(--mist);margin-bottom:8px}
+.wave{display:flex;gap:3px;align-items:center;height:28px}
+.wave i{display:block;width:3px;border-radius:2px;background:var(--silver);height:4px;transition:height .12s}
+.said{font-family:var(--display);font-size:20px;line-height:1.3;margin-top:8px;min-height:26px}
+
+/* session */
+.scrub{display:flex;align-items:center;gap:12px;margin:8px 0 4px}
+.scrub input[type=range]{flex:1;accent-color:var(--dawn)}
+.scrub .lab{font-size:13px;color:var(--mist);min-width:86px}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:13.5px;margin:14px 0}
+.facts dt{color:var(--mist)} .facts dd{margin:0}
+.snap{display:flex;align-items:center;gap:12px;font-size:13.5px;color:var(--mist);margin:4px 0 6px}
+.snap select{background:var(--night);border:1px solid var(--hair2);border-radius:8px;padding:6px 10px;color:var(--text)}
+.profiles{display:grid;gap:8px;margin-top:8px}
+.profiles button{text-align:left;background:none;border:1px solid var(--hair);border-radius:10px;padding:12px 14px;cursor:pointer}
+.profiles button[aria-pressed=true]{border-color:var(--dawn)}
+.profiles b{font-weight:500;display:block}
+.profiles span{color:var(--mist);font-size:13px}
+
+/* close dialog + buffet */
+dialog{background:var(--panel);color:var(--text);border:1px solid var(--hair2);border-radius:14px;padding:28px;max-width:440px;width:calc(100% - 32px)}
+dialog::backdrop{background:rgba(5,8,16,.72);backdrop-filter:blur(3px)}
+.shelf{margin:16px 0 6px}
+.shelf h3{font:500 15px var(--ui);margin:0 0 4px}
+.shelf .quiet{margin:0 0 8px}
+.item{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center;padding:12px 0;border-top:1px solid var(--hair)}
+.item .d{grid-column:1;color:var(--mist);font-size:13px}
+.item .act{grid-row:1/3;grid-column:2}
+.ondemand{font-size:12px;color:var(--mist);border:1px solid var(--hair);border-radius:20px;padding:3px 10px;white-space:nowrap}
+
+/* presenter notes */
+#notes{position:fixed;left:28px;bottom:22px;max-width:380px;font-size:12.5px;color:var(--mist);background:rgba(11,16,32,.85);border:1px solid var(--hair);border-radius:10px;padding:10px 14px;display:none}
+#notes.on{display:block}
+.kbd{position:fixed;left:28px;bottom:22px;font-size:12px;color:var(--mist);opacity:.6;pointer-events:none}
+
+/* small screens */
+@media (max-width:1080px){
+  .app{grid-template-columns:1fr 440px}
+  .rail{display:none}
+  .panel{grid-column:2}
+}
+@media (max-width:760px){
+  body{overflow:auto}
+  #sky{height:42vh}
+  .app{display:block;height:auto;padding-top:42vh}
+  .panel{margin:0 16px 24px;max-height:none}
+  .brand{left:16px;top:16px}
+  .demo-flag{right:16px;top:14px}
+  .kbd{display:none}
+  .demo-flag{top:auto;bottom:calc(58vh + 10px);right:16px}
+  h1{font-size:36px} h2{font-size:30px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<canvas id="sky" aria-hidden="true"></canvas>
+<div class="brand">Universal Metaphor</div>
+<div class="demo-flag"><b>Demonstration.</b> Nothing leaves this page.</div>
+
+<div class="app">
+  <ol class="rail" id="rail"></ol>
+  <div></div>
+  <main class="panel" id="panel">
+
+    <!-- 1 · the email -->
+    <section class="step" data-step="invite" data-title="Your invitation">
+      <span class="truth">Demo: the email as it would arrive</span>
+      <div class="mail">
+        <header>
+          <span>From</span><b>Universal Metaphor</b>
+          <span>Subject</span><b>Your private Universal Metaphor session</b>
+        </header>
+        <div class="body">
+          <p>Hello Alex,</p>
+          <p>Universal Metaphor invites you to see your own data take shape, in a private session created for you alone.</p>
+          <p>Start when you are ready. You choose what you allow, one switch at a time.</p>
+          <div class="row" style="margin-top:6px"><button class="btn main" data-go="allow">Start</button></div>
+          <p class="quiet" style="margin-top:18px">We will never ask for a password or login.</p>
+          <div class="sig">Universal Metaphor</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 · what you allow -->
+    <section class="step" data-step="allow" data-title="What you allow">
+      <span class="truth real">Real: your choices, in this page</span>
+      <h2>What you allow</h2>
+      <p class="quiet">Nothing is on until you turn it on. Each switch opens only its own step.</p>
+      <div class="allow">
+        <label><span><span class="t">Drop files</span><br><span class="d">Excel, CSV or OpenDocument, with a date column</span></span><input type="checkbox" class="sw" data-allow="files"></label>
+        <label><span><span class="t">Share a link</span><br><span class="d">Google Drive, OneDrive or SharePoint, Dropbox, Box, WeTransfer</span></span><input type="checkbox" class="sw" data-allow="link"></label>
+        <label><span><span class="t">Let my AI talk with Universal Metaphor</span><br><span class="d">Through this email thread, in data packets, never instructions</span></span><input type="checkbox" class="sw" data-allow="ai"></label>
+        <label><span><span class="t">Switch to voice</span><br><span class="d">You talk to your AI; the two AIs trade data in the thread</span></span><input type="checkbox" class="sw" data-allow="voice"></label>
+      </div>
+      <div class="row"><button class="btn main" id="allowNext" disabled>Continue</button><span class="quiet" id="allowHint">Turn on at least one switch.</span></div>
+    </section>
+
+    <!-- 3 · deposit -->
+    <section class="step" data-step="deposit" data-title="Your data">
+      <span class="truth real">Real: read and fingerprinted in your browser only</span>
+      <h2>Your data</h2>
+      <p class="quiet">One dated sheet shows your data at T₀. Two dates show the movement from T₀, the earliest, to T₁, the latest.</p>
+      <div id="dropWrap">
+        <label class="drop" id="drop">
+          <input type="file" id="file" accept=".csv,.tsv,.txt,.xlsx,.xlsm,.xls,.ods,.zip">
+          <div style="font-weight:500">Drop a file here, or choose one</div>
+          <div class="quiet" style="margin:4px 0 0">CSV is read right here. Excel and OpenDocument are recognized here and read in full by the door.</div>
+        </label>
+      </div>
+      <div id="linkWrap" class="field">
+        <input type="url" id="link" placeholder="https://drive.google.com/…" aria-label="Sharing link">
+        <button class="btn sm" id="linkAdd">Add link</button>
+      </div>
+      <div class="row"><button class="linkish" id="useDemo">Use the demonstration data instead</button></div>
+      <div class="receipt" id="depReceipt" hidden></div>
+      <div class="row"><button class="btn main" id="depNext" disabled>Continue</button></div>
+    </section>
+
+    <!-- 4 · connect AI -->
+    <section class="step" data-step="ai" data-title="Connect your AI">
+      <span class="truth">Demo: the thread is simulated; the fingerprints are real</span>
+      <h2>Connect your AI</h2>
+      <p class="quiet">Your AI joins through your own email. It answers in this invitation's thread, and only you can start it.</p>
+      <div class="choices" id="aiChoice">
+        <button aria-pressed="false" data-ai="Claude">Claude</button>
+        <button aria-pressed="false" data-ai="Grok">Grok</button>
+        <button aria-pressed="false" data-ai="Other AI">Another AI</button>
+      </div>
+      <div class="draft" id="draft" hidden>
+        <div><span>To</span>Universal Metaphor (this thread)</div>
+        <div><span>Subject</span><b id="draftSubj"></b></div>
+        <div><span>From</span>alex@example.com</div>
+      </div>
+      <div class="row"><button class="btn main" id="aiSend" disabled>Link through my email</button></div>
+      <div class="thread" id="thread"></div>
+    </section>
+
+    <!-- 5 · link established -->
+    <section class="step" data-step="linked" data-title="Link established">
+      <span class="truth">Demo: voice is simulated on screen</span>
+      <h2>Your AI is linked</h2>
+      <p class="quiet" id="linkedLine"></p>
+      <div class="lanes" id="lanes">
+        <div class="lane"><div class="who">You, with your AI</div><div class="wave" id="w1"></div><div class="said" id="s1"></div></div>
+        <div class="lane"><div class="who">Universal Metaphor, with its AI</div><div class="wave" id="w2"></div><div class="said" id="s2"></div></div>
+      </div>
+      <div class="row">
+        <button class="btn main" id="voiceGo">Switch to voice</button>
+        <label class="quiet" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="speak"> Read aloud</label>
+      </div>
+      <div class="row"><button class="btn" data-go="session">Open my session</button><button class="linkish" id="revoke">Revoke the link</button></div>
+    </section>
+
+    <!-- 6 · session -->
+    <section class="step" data-step="session" data-title="Your session">
+      <span class="truth real">Real: drawn from your data, in this page</span>
+      <h2 id="sessTitle">Your session</h2>
+      <div class="scrub">
+        <button class="btn sm" id="play">Play</button>
+        <input type="range" id="t" min="0" max="1000" value="0" aria-label="From T₀ to T₁">
+        <span class="lab" id="tLab">T₀</span>
+      </div>
+      <dl class="facts" id="facts"></dl>
+      <label class="snap">Keep permanent frames
+        <select id="snap">
+          <option value="off">Off</option><option value="latest">Follow the latest refresh</option>
+          <option value="hourly">Hourly</option><option value="daily">Daily</option><option value="weekly">Weekly</option>
+          <option value="monthly">Monthly</option><option value="quarterly">Quarterly</option>
+        </select></label>
+      <p class="quiet" id="snapLine">Available from the first second. By default the movement runs from your first sheet to your latest.</p>
+      <p class="quiet">The faint circles are where each object stood at T₀. The distance travelled is the size of the change; no object grows or shrinks. This is a preview: your full environment opens in the Manifestation engine.</p>
+      <div class="row">
+        <button class="btn" id="refresh">Send a newer sheet</button>
+        <button class="btn" id="closeBtn">Close session</button>
+      </div>
+    </section>
+
+    <!-- 7 · buffet -->
+    <section class="step" data-step="buffet" data-title="The Buffet">
+      <span class="truth">Demo: offerings are being set; nothing is sold here</span>
+      <h2>Keep it alive, your way</h2>
+      <p class="quiet">You decide where your data lives, how it is processed and which agents work with it. Free things first; everything else on request.</p>
+      <div class="shelf">
+        <h3>Try now, free</h3>
+        <div class="item"><span>Your session receipt</span><span class="d">Fingerprints and times only, no content. Saved to your computer.</span><button class="btn sm act" id="dlReceipt">Download</button></div>
+        <div class="item"><span>Pack large files</span><span class="d">Split a big sheet into fingerprinted pieces that rebuild byte for byte.</span><span class="ondemand act">Tool ready</span></div>
+        <div class="item"><span>Read large files in pieces</span><span class="d">Open only the piece you need, checked before use.</span><span class="ondemand act">Tool ready</span></div>
+        <div class="item"><span>This demonstration session</span><span class="d">Your private environment, erased when you close it.</span><span class="ondemand act">In use</span></div>
+      </div>
+      <div class="shelf">
+        <h3>Where it runs</h3>
+        <p class="quiet">Each place sets its own limits: how much can travel by email, how many rows a sheet can hold, where pieces are kept.</p>
+        <div class="profiles" id="profiles"></div>
+        <p class="quiet" id="profLine" style="margin-top:8px"></p>
+      </div>
+      <div class="shelf">
+        <h3>On request</h3>
+        <div class="item"><span>Storage</span><span class="d">Keep your data where you chose to run it, for as long as you decide.</span><span class="ondemand act">On request</span></div>
+        <div class="item"><span>Living snapshots</span><span class="d">Refresh as often as you like and keep permanent frames, hourly to quarterly.</span><span class="ondemand act">On request</span></div>
+        <div class="item"><span>AI agents (Myriabots)</span><span class="d">Agents that keep, process and watch your data with you, and talk with your own agents in the thread.</span><span class="ondemand act">On request</span></div>
+      </div>
+      <div class="row"><button class="btn main" id="talk">Talk to us</button><button class="btn" data-go="session" id="backSess">Back to my session</button></div>
+      <p class="quiet" id="talkNote" hidden style="margin-top:14px">A person from Universal Metaphor will follow up with you. In this demonstration, nothing is sent.</p>
+    </section>
+
+    <!-- 8 · closed -->
+    <section class="step" data-step="closed" data-title="Closed">
+      <span class="truth real">Real: this page holds nothing of yours now</span>
+      <h2>Your session is closed</h2>
+      <p>Your data has been erased from this page.</p>
+      <div class="receipt" id="eraseReceipt"></div>
+      <div class="row"><button class="btn" id="restart">Start the demonstration again</button></div>
+    </section>
+  </main>
+</div>
+
+<dialog id="closeDlg">
+  <h2 style="font-size:28px">Close your session?</h2>
+  <p>Closing the session erases your data.</p>
+  <div class="row"><button class="btn main" id="closeYes">Close and erase</button><button class="btn" id="closeNo">Stay</button></div>
+  <p class="faint" style="margin:18px 0 0"><button class="linkish" id="keepAlive">Want to keep it alive?</button></p>
+</dialog>
+
+<div class="kbd">← → to move · N for presenter notes</div>
+<div id="notes"></div>
+
+<script>
+(()=>{
+"use strict";
+/* ============ state ============ */
+const S={step:"invite",allow:{files:false,link:false,ai:false,voice:false},deposits:[],data:null,ai:null,linked:false,t:0,receipt:[]};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const ORDER=["invite","allow","deposit","ai","linked","session","buffet","closed"];
+const NOTES={
+ invite:"Sender shows as Universal Metaphor only. Replies route back to whoever issued the invitation (Gary, Samuel or Éric) through its token; the invitee never sees that address. Nothing is sent in this demo.",
+ allow:"All switches start off. Each one unlocks only its own step; the rail shows what is skipped.",
+ deposit:"Real: the size picks the route (read whole, packed, or link). Unknown formats are refused, never guessed. The file is read in the browser, fingerprinted with SHA-256, its format recognized by its bytes, and a CSV's date column found. Nothing is uploaded. Links are checked (HTTPS, approved hosts) but not fetched.",
+ ai:"Simulated thread. The packets are built from the deposited data and their SHA-256 are computed live. Format follows the v1g packets and loader v2. Email envelope still to be settled.",
+ linked:"A live voice line between two AIs does not exist over email. Each person talks to their own AI; the AIs trade packets in the thread. Shown as a simulation.",
+ session:"Permanent frames are offered from the first second (Off by default, rolling, hourly to quarterly). Preview of the environment drawn from the deposited data: Class 4 at the centre, Class 2 families, Class 1 objects moving T₀ → T₁ with their ghosts. The full environment opens in the Manifestation engine.",
+ buffet:"Buffet v1. Where it runs: client infrastructure, our park, or cloud; each sets its own limits (only cloud numbers are set: 25 MB mail, 50,000 rows × 200 columns). Offerings list still to be decided by Éric. No prices, no checkout. Talk to us goes to a human exchange.",
+ closed:"Real erasure inside this page: every in-memory copy is dropped. Server-side erasure is part of Grok's build."
+};
+
+/* ============ rail ============ */
+function steps(){return ORDER.filter(s=>s!=="closed" && s!=="buffet")}
+function isOff(s){
+  if(s==="ai"||s==="linked") return !S.allow.ai;
+  return false;
+}
+function renderRail(){
+  const titles=Object.fromEntries($$(".step").map(e=>[e.dataset.step,e.dataset.title]));
+  const now=ORDER.indexOf(S.step);
+  $("#rail").innerHTML=steps().map((s,i)=>{
+    const cls=isOff(s)?"off":(ORDER.indexOf(s)<now?"done":(s===S.step?"now":""));
+    return `<li class="${cls}"><button data-jump="${s}" ${isOff(s)?"disabled":""}><span class="n">${i+1}</span>${titles[s]}</button></li>`;
+  }).join("");
+}
+$("#rail").addEventListener("click",e=>{const b=e.target.closest("[data-jump]");if(b)go(b.dataset.jump)});
+
+function go(step){
+  if(step==="ai"&&!S.allow.ai) step="session";
+  if(step==="linked"&&!S.linked) step=S.allow.ai?"ai":"session";
+  if(step==="session"&&!S.data) step="deposit";
+  S.step=step;
+  $$(".step").forEach(e=>e.classList.toggle("on",e.dataset.step===step));
+  $("#panel").scrollTop=0;
+  renderRail(); notes();
+  Sky.mode(step);
+  if(step==="session") Sky.session(S.data);
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b)go(b.dataset.go)});
+document.addEventListener("keydown",e=>{
+  if(e.target.matches("input,textarea")||document.querySelector("dialog[open]")) return;
+  const i=ORDER.indexOf(S.step);
+  if(e.key==="ArrowRight"){for(let j=i+1;j<ORDER.length-1;j++){if(!isOff(ORDER[j])){go(ORDER[j]);break}}}
+  if(e.key==="ArrowLeft"){for(let j=i-1;j>=0;j--){if(!isOff(ORDER[j])){go(ORDER[j]);break}}}
+  if(e.key.toLowerCase()==="n"){$("#notes").classList.toggle("on");$(".kbd").style.display=$("#notes").classList.contains("on")?"none":""}
+});
+function notes(){$("#notes").textContent=NOTES[S.step]||""}
+
+/* ============ allow ============ */
+$$("[data-allow]").forEach(sw=>sw.addEventListener("change",()=>{
+  S.allow[sw.dataset.allow]=sw.checked;
+  const any=Object.values(S.allow).some(Boolean);
+  $("#allowNext").disabled=!any;
+  $("#allowHint").textContent=any?"":"Turn on at least one switch.";
+  if(sw.dataset.allow==="voice"&&sw.checked&&!S.allow.ai){$("[data-allow=ai]").checked=true;S.allow.ai=true}
+  if(sw.dataset.allow==="ai"&&!sw.checked&&S.allow.voice){$("[data-allow=voice]").checked=false;S.allow.voice=false}
+  renderRail();
+}));
+$("#allowNext").onclick=()=>{
+  $("#dropWrap").hidden=!S.allow.files; $("#linkWrap").hidden=!S.allow.link;
+  $("#linkWrap").style.display=S.allow.link?"":"none";
+  go("deposit");
+};
+
+/* ============ utilities ============ */
+async function sha256(buf){
+  const h=await crypto.subtle.digest("SHA-256",typeof buf==="string"?new TextEncoder().encode(buf):buf);
+  return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt=n=>n.toLocaleString("en-CA",{maximumFractionDigits:1});
+
+/* ============ demonstration data (synthetic) ============ */
+function demoCSV(withRefresh){
+  const r=rng(20260123), fam=["North","East","South","West"], rows=["date,store,region,revenue"];
+  const base={};
+  fam.forEach((f,fi)=>{for(let k=1;k<=7;k++){const id=f[0]+"-"+String(k).padStart(2,"0");base[id]=[f,40+r()*120]}});
+  const dates=["2025-01-31","2025-12-31"];
+  for(const [id,[f,v0]] of Object.entries(base)){
+    const v1=v0*(1+(r()-.42)*.7);
+    rows.push(`${dates[0]},${id},${f},${v0.toFixed(1)}`);
+    rows.push(`${dates[1]},${id},${f},${v1.toFixed(1)}`);
+    if(withRefresh) rows.push(`2026-01-31,${id},${f},${(v1*(1+(r()-.48)*.18)).toFixed(1)}`);
+  }
+  return rows.join("\n")+"\n";
+}
+
+/* ============ CSV reading (real) ============ */
+function splitLine(line,d){const out=[];let cur="",q=false;for(let i=0;i<line.length;i++){const c=line[i];if(q){if(c==='"'){if(line[i+1]==='"'){cur+='"';i++}else q=false}else cur+=c}else if(c==='"')q=true;else if(c===d){out.push(cur);cur=""}else cur+=c}out.push(cur);return out.map(s=>s.trim())}
+function readCSV(text){
+  const lines=text.replace(/^﻿/,"").split(/\r?\n/).filter(l=>l.trim()!=="");
+  if(lines.length<2) return {error:"The file has no data rows."};
+  const head=lines.slice(0,60);
+  let delim=null;
+  for(const d of [",",";","\t","|"]){const n=head.map(l=>splitLine(l,d).length);if(n[0]>1&&n.every(x=>x===n[0])){delim=d;break}}
+  if(!delim) return {error:"The column separator is ambiguous."};
+  const header=splitLine(lines[0],delim), body=lines.slice(1,50001).map(l=>splitLine(l,delim)), totalRows=lines.length-1;
+  const isDate=v=>/^\d{4}[-/]\d{2}[-/]\d{2}([ T].*)?$/.test(v);
+  const num=v=>{if(v==="")return NaN;let s=v.replace(/[\s  ]/g,"");if(delim!==","&&/^-?\d+(\.\d{3})*,\d+$/.test(s))s=s.replace(/\./g,"").replace(",",".");return /^-?\d+(\.\d+)?$/.test(s)?+s:NaN};
+  const share=(ci,fn)=>{let k=0,n=0;for(const r of body){const v=r[ci]??"";if(v==="")continue;n++;if(fn(v))k++}return n?k/n:0};
+  const cols=header.map((_,i)=>i);
+  const dateCol=cols.find(i=>share(i,isDate)>=.8);
+  if(dateCol===undefined) return {error:"No date column was found (dates read here as YYYY-MM-DD)."};
+  const numCol=cols.find(i=>i!==dateCol&&share(i,v=>!isNaN(num(v)))>=.8);
+  if(numCol===undefined) return {error:"No numeric column was found."};
+  const textCols=cols.filter(i=>i!==dateCol&&i!==numCol&&share(i,v=>!isNaN(num(v)))<.5);
+  if(!textCols.length) return {error:"No name column was found."};
+  const entCol=textCols[0];
+  const famCol=textCols.slice(1).find(i=>new Set(body.map(r=>r[i])).size<=12);
+  const byDate={};
+  for(const r of body){const d=(r[dateCol]||"").slice(0,10).replace(/\//g,"-"),e=r[entCol],v=num(r[numCol]??"");if(!d||!e||isNaN(v))continue;(byDate[d]??={});const o=(byDate[d][e]??={v:0,f:famCol!==undefined?r[famCol]:"All"});o.v+=v}
+  const dates=Object.keys(byDate).sort();
+  return {header,delim,totalRows,rows:body.length,dateName:header[dateCol],numName:header[numCol],entName:header[entCol],famName:famCol!==undefined?header[famCol]:null,dates,byDate};
+}
+function buildData(parsed,label){
+  const d0=parsed.dates[0], d1=parsed.dates[parsed.dates.length-1];
+  const A=parsed.byDate[d0], B=parsed.byDate[d1];
+  let names=Object.keys(B).filter(n=>n in A);
+  const onlyOne=new Set([...Object.keys(A),...Object.keys(B)]).size-names.length;
+  names.sort((a,b)=>B[b].v-B[a].v);
+  const capped=names.length>60; names=names.slice(0,60);
+  const objs=names.map(n=>({name:n,fam:A[n].f||"All",v0:A[n].v,v1:B[n].v}));
+  const fams=[...new Set(objs.map(o=>o.fam))];
+  return {label,dateName:parsed.dateName,objs,fams,d0,d1,two:d0!==d1,onlyOne,capped,num:parsed.numName,ent:parsed.entName,famName:parsed.famName,rows:parsed.rows,dates:parsed.dates};
+}
+
+/* ============ deposit ============ */
+const drop=$("#drop"), fileIn=$("#file");
+["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over")}));
+["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("over")}));
+drop.addEventListener("drop",e=>{const f=e.dataTransfer.files[0];if(f)takeFile(f)});
+fileIn.addEventListener("change",()=>{if(fileIn.files[0])takeFile(fileIn.files[0])});
+
+function kindOf(b){
+  const h=[...b.slice(0,4)].map(x=>x.toString(16).padStart(2,"0")).join(" ");
+  if(h==="25 50 44 46")return"REFUSE:a PDF document";
+  if(h==="89 50 4e 47"||h.startsWith("ff d8 ff"))return"REFUSE:an image";
+  if(b.slice(0,512).some(c=>c===0)&&h!=="50 4b 03 04"&&h!=="d0 cf 11 e0"&&!h.startsWith("1f 8b"))return"REFUSE:an unknown binary format";
+  if(h==="50 4b 03 04"){const s=new TextDecoder("latin1").decode(b.slice(0,4000));if(s.includes("opendocument.spreadsheet"))return"OpenDocument spreadsheet";if(s.includes("[Content_Types]")||s.includes("xl/"))return"Excel workbook";return"Zip archive"}
+  if(h==="d0 cf 11 e0")return"Excel 97–2003 workbook";
+  if(h.startsWith("1f 8b"))return"Gzip archive";
+  return"Text";
+}
+async function takeFile(f){
+  if(f.size>60*1024*1024){showReceipt([`<div class="warn">${esc(f.name)} is larger than this page reads (60 MB). The door reads it in pieces.</div>`]);return}
+  const buf=new Uint8Array(await f.arrayBuffer()), h=await sha256(buf), kind=kindOf(buf);
+  if(kind.startsWith("REFUSE:")){S.receipt.push({what:"refused",name:f.name,sha256:h,at:new Date().toISOString()});
+    showReceipt([`<div><b>${esc(f.name)}</b> · ${fmt(f.size/1024)} KB</div>`,`<div class="hash">SHA-256 ${h}</div>`,`<div class="warn">Refused: this is ${kind.slice(7)}, not a data sheet. Nothing was guessed. Send it as Excel (.xlsx), CSV or OpenDocument (.ods).</div>`]);return}
+  const lines=[`<div><b>${esc(f.name)}</b> · ${fmt(f.size/1024)} KB · ${kind}</div>`,`<div class="hash">SHA-256 ${h}</div>`];
+  S.receipt.push({what:"file",name:f.name,bytes:f.size,sha256:h,at:new Date().toISOString()});
+  if(kind!=="Text"){lines.push(`<div class="quiet">Recognized. The door reads ${kind.toLowerCase()}s in full; for this demonstration the preview uses the demonstration data.</div>`);showReceipt(lines);await useData(demoCSV(false),"demonstration data",true);return}
+  let text;try{text=new TextDecoder("utf-8",{fatal:true}).decode(buf)}catch{text=new TextDecoder("windows-1252").decode(buf);lines.push(`<div class="quiet">Read as Windows-1252 (not UTF-8).</div>`)}
+  const p=readCSV(text);
+  if(p.error){lines.push(`<div class="warn">${esc(p.error)}</div>`);showReceipt(lines);return}
+  S.data=buildData(p,f.name);S.csv=text;
+  lines.push(...dataLines(S.data),routeLine(f.size,p.totalRows,p.header.length));showReceipt(lines);$("#depNext").disabled=false;
+  if(S.step==="session"){Sky.session(S.data);fillSession();if(S.data.two)$("#play").click()}
+}
+function dataLines(d){
+  const L=[`<div class="ok">${fmt(d.rows)} rows · date column “${esc(d.dateName)}” · ${d.dates.length} date${d.dates.length>1?"s":""}</div>`,
+    d.two?`<div>T₀ ${d.d0} → T₁ ${d.d1}${d.dates.length>2?` · ${d.dates.length-2} snapshot${d.dates.length>3?"s":""} in between, kept`:""}</div>`:`<div>T₀ ${d.d0} · one date, so your environment shows T₀</div>`,
+    `<div>${d.objs.length} objects (${esc(d.ent)}) in ${d.fams.length} famil${d.fams.length>1?"ies":"y"}${d.famName?` (${esc(d.famName)})`:""}, measured by ${esc(d.num)}</div>`];
+  if(d.onlyOne) L.push(`<div class="quiet">${d.onlyOne} appear at one date only and are listed, not drawn.</div>`);
+  if(d.capped) L.push(`<div class="quiet">The 60 largest are drawn here; all are kept.</div>`);
+  return L;
+}
+/* the router: size picks the route; limits come from the infrastructure profile chosen in the Buffet */
+const PROFILES={
+  cloud:{name:"In the cloud",note:"Used for this demonstration.",mail:25*1024*1024,rows:50000,cols:200},
+  park:{name:"In Universal Metaphor's own park",note:"Limits set with you when you choose it."},
+  vessel:{name:"Inside your own infrastructure",note:"A closed vessel. Limits set by what your machines hold."}
+};
+S.profile="cloud";
+function routeLine(bytes,rows,cols){
+  const P=PROFILES[S.profile];
+  let r;
+  if(bytes>P.mail) r="Large: collected from a sharing link, packed into fingerprinted pieces, read piece by piece";
+  else if(rows>P.rows||cols>P.cols) r="Medium: packed into fingerprinted pieces, read piece by piece";
+  else r="Small: read whole";
+  S.route=r;
+  return `<div>Route chosen by size · ${r}</div><div class="quiet">${P.name} limits: ${fmt(P.mail/1048576)} MB by email, ${fmt(P.rows)} rows × ${P.cols} columns per sheet.</div>`;
+}
+function showReceipt(lines){const r=$("#depReceipt");r.hidden=false;r.innerHTML=lines.join("")}
+async function useData(csv,label,keepReceipt){
+  const p=readCSV(csv);S.data=buildData(p,label);S.csv=csv;
+  const h=await sha256(csv);
+  if(!keepReceipt){S.receipt.push({what:"file",name:"demonstration.csv",bytes:csv.length,sha256:h,at:new Date().toISOString()});
+    showReceipt([`<div><b>demonstration.csv</b> · synthetic retail data · ${fmt(csv.length/1024)} KB</div>`,`<div class="hash">SHA-256 ${h}</div>`,...dataLines(S.data),routeLine(csv.length,p.totalRows,p.header.length)])}
+  $("#depNext").disabled=false;
+}
+$("#useDemo").onclick=()=>useData(demoCSV(false),"demonstration data");
+const HOSTS=/(^|\.)((drive|docs)\.google\.com|onedrive\.live\.com|sharepoint\.com|dropbox\.com|dl\.dropboxusercontent\.com|app\.box\.com|wetransfer\.com|we\.tl)$/i;
+$("#linkAdd").onclick=()=>{
+  let u;try{u=new URL($("#link").value.trim())}catch{showReceipt([`<div class="warn">That is not a complete link. Paste the full sharing link, starting with https://</div>`]);return}
+  if(u.protocol!=="https:"){showReceipt([`<div class="warn">Only https links are accepted.</div>`]);return}
+  if(!HOSTS.test(u.hostname)){showReceipt([`<div class="warn">${esc(u.hostname)} is not on the list of sharing services. A person will review it before anything is collected.</div>`]);return}
+  S.receipt.push({what:"link",host:u.hostname,at:new Date().toISOString()});
+  S.route="Large: collected from a sharing link, packed into fingerprinted pieces, read piece by piece";
+  showReceipt([`<div class="ok">Link accepted: ${esc(u.hostname)}</div>`,`<div>Route · ${S.route}</div>`,`<div class="quiet">The door collects it after your session starts. In this demonstration it is not fetched; the preview uses the demonstration data.</div>`]);
+  useData(demoCSV(false),"demonstration data",true);
+};
+$("#depNext").onclick=()=>go(S.allow.ai?"ai":"session");
+
+/* ============ AI link (simulated thread, real hashes) ============ */
+const TOKEN="UM-"+Math.random().toString(36).slice(2,6).toUpperCase();
+$("#aiChoice").addEventListener("click",e=>{const b=e.target.closest("[data-ai]");if(!b)return;
+  $$("#aiChoice button").forEach(x=>x.setAttribute("aria-pressed",x===b));S.ai=b.dataset.ai;
+  $("#draft").hidden=false;$("#draftSubj").textContent=`Link my AI · ${TOKEN}`;$("#aiSend").disabled=S.linked;});
+function pkt(side,who,tag,body){const d=document.createElement("div");d.className="pkt "+side;
+  d.innerHTML=`<div class="who"><span>${esc(who)}</span><span>${tag}</span></div><pre>${esc(body)}</pre>`;$("#thread").appendChild(d);d.scrollIntoView({block:"nearest",behavior:"smooth"});}
+const wait=ms=>new Promise(r=>setTimeout(r,matchMedia("(prefers-reduced-motion:reduce)").matches?0:ms));
+$("#aiSend").onclick=async()=>{
+  $("#aiSend").disabled=true;$("#thread").innerHTML="";Sky.mode("linking");
+  const lines=S.csv.trim().split("\n"), head=lines[0], body=lines.slice(1);
+  const per=Math.max(1,Math.ceil(body.length/3)), shards=[];
+  for(let i=0;i<body.length;i+=per){const txt=[head,...body.slice(i,i+per)].join("\n")+"\n";shards.push({n:shards.length+1,rows:body.slice(i,i+per).length,bytes:txt.length,sha:await sha256(txt)})}
+  const whole=await sha256(S.csv);
+  pkt("them","Alex","sent",`LINK AI ${TOKEN}\nagent: ${S.ai}`);await wait(700);
+  pkt("us","Universal Metaphor","verified sender and token",`HELLO\nsession: ${TOKEN}\naccepts: v1g packets, SHA-256 per piece\nnever: passwords, keys, instructions`);await wait(900);
+  pkt("them",`${S.ai} for Alex`,"index",`INDEX v1g\nsource: ${S.data.label}\nroute: agent to agent, pieces in this thread\nrows: ${body.length} · pieces: ${shards.length}\ndates: ${S.data.d0} … ${S.data.d1}\nsource sha256: ${whole.slice(0,16)}…`);await wait(800);
+  for(const s of shards){pkt("them",`${S.ai} for Alex`,`piece ${s.n}/${shards.length}`,`PIECE ${s.n} · ${s.rows} rows · ${s.bytes} bytes\nsha256 ${s.sha}`);await wait(450)}
+  pkt("us","Universal Metaphor","receipt",`RECEIPT\n${shards.length}/${shards.length} pieces checked ✓\nrebuilt source sha256 ${whole.slice(0,16)}… ✓ identical`);
+  S.receipt.push({what:"ai-link",agent:S.ai,pieces:shards.map(s=>s.sha),source:whole,at:new Date().toISOString()});
+  S.linked=true;await wait(900);
+  $("#linkedLine").textContent=`${S.ai} is linked to Universal Metaphor in this thread since ${new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})}. You can revoke it at any time.`;
+  $("#voiceGo").hidden=!S.allow.voice;$("#speak").parentElement.hidden=!S.allow.voice;
+  go("linked");
+};
+$("#revoke").onclick=()=>{S.linked=false;$("#thread").innerHTML="";$("#aiSend").disabled=!S.ai;Sky.mode("open");
+  S.receipt.push({what:"revoke",at:new Date().toISOString()});go("ai")};
+
+/* voice (simulated) */
+["w1","w2"].forEach(id=>{$("#"+id).innerHTML="<i></i>".repeat(34)});
+let voiceTimer=null;
+function lines(){const d=S.data;return [
+  ["s1","Show me how my data moved between my two dates."],
+  ["s2",`Received. ${d.objs.length} objects in ${d.fams.length} famil${d.fams.length>1?"ies":"y"}, from ${d.d0} to ${d.d1}.`],
+  ["s1","Which family moved the most?"],
+  ["s2",(()=>{const m={};d.objs.forEach(o=>{m[o.fam]=(m[o.fam]||0)+Math.abs(o.v1-o.v0)});const top=Object.entries(m).sort((a,b)=>b[1]-a[1])[0];return `${top[0]}. Its objects travelled the farthest. Opening your session now.`})()]
+]}
+$("#voiceGo").onclick=async()=>{
+  $("#voiceGo").disabled=true;
+  const say=$("#speak").checked&&"speechSynthesis" in window;
+  for(const [id,txt] of lines()){
+    $("#s1").textContent=id==="s1"?txt:$("#s1").textContent;$("#s2").textContent=id==="s2"?txt:$("#s2").textContent;
+    const w=$("#"+(id==="s1"?"w1":"w2")).children;
+    clearInterval(voiceTimer);voiceTimer=setInterval(()=>{for(const i of w)i.style.height=(4+Math.random()*22)+"px"},110);
+    if(say){await new Promise(r=>{try{const u=new SpeechSynthesisUtterance(txt);u.lang="en-US";u.rate=1.02;u.onend=r;u.onerror=r;speechSynthesis.speak(u)}catch{r()}})}
+    else await wait(1700);
+    clearInterval(voiceTimer);for(const i of w)i.style.height="4px";
+    await wait(300);
+  }
+  $("#voiceGo").disabled=false;
+  await wait(500);go("session");
+};
+
+/* ============ session ============ */
+let playing=null;
+function setT(v){if(!S.data)return;S.t=v;$("#t").value=Math.round(v*1000);$("#tLab").textContent=v<=0?"T₀ "+S.data.d0:v>=1?"T₁ "+S.data.d1:"T₀ → T₁";Sky.t(v)}
+$("#t").addEventListener("input",e=>{cancelAnimationFrame(playing);setT(e.target.value/1000)});
+$("#play").onclick=()=>{
+  if(!S.data.two)return;cancelAnimationFrame(playing);const start=performance.now(),from=S.t>=1?0:S.t;
+  const tick=now=>{const k=Math.min(1,from+(now-start)/3200);setT(k);if(k<1)playing=requestAnimationFrame(tick)};playing=requestAnimationFrame(tick);
+};
+function fillSession(){
+  const d=S.data;
+  $("#sessTitle").textContent=d.label==="demonstration data"?"Your session":"Your session · "+d.label;
+  const moved=d.objs.reduce((a,o)=>a+(o.v1-o.v0),0), up=d.objs.filter(o=>o.v1>o.v0).length;
+  $("#facts").innerHTML=`<dt>Class 4</dt><dd>${esc(d.label)}</dd><dt>Class 2</dt><dd>${d.fams.length} famil${d.fams.length>1?"ies":"y"}${d.famName?` by ${esc(d.famName)}`:""}</dd>
+  <dt>Class 1</dt><dd>${d.objs.length} objects (${esc(d.ent)})</dd><dt>Takes</dt><dd>${d.two?`T₀ ${d.d0} · T₁ ${d.d1}`:`T₀ ${d.d0} only`}</dd>${S.route?`<dt>Route</dt><dd>${esc(S.route.split(":")[0])}</dd>`:""}
+  ${d.two?`<dt>Movement</dt><dd>${up} up, ${d.objs.length-up} down · net ${moved>=0?"+":""}${fmt(moved)} ${esc(d.num)}</dd>`:""}`;
+  $("#play").disabled=!d.two;$("#t").disabled=!d.two;snapText();
+  setT(0);
+}
+const _go=go;
+go=function(step){_go(step);if(S.step==="session"){fillSession();if(S.data.two)setTimeout(()=>$("#play").click(),500)}};
+S.frames=[];
+function snapText(){const v=$("#snap").value;if(!S.data)return;
+  if(v==="off"){$("#snapLine").textContent="Available from the first second. By default the movement runs from your first sheet to your latest.";return}
+  const kept=[S.data.d0,...S.frames,S.data.d1].filter((d,i,a)=>a.indexOf(d)===i);
+  $("#snapLine").textContent=(v==="latest"?"Frames follow each refresh. ":`One permanent frame kept ${v==="daily"?"each day":v==="hourly"?"each hour":"each "+v.replace("ly","")}. `)+`Kept now: ${kept.join(" · ")}.`;}
+$("#snap").addEventListener("change",()=>{S.receipt.push({what:"frames",cadence:$("#snap").value,at:new Date().toISOString()});snapText()});
+$("#refresh").onclick=async()=>{
+  if(S.data.label!=="demonstration data"){fileIn.click();return}
+  const csv=demoCSV(true);const p=readCSV(csv);S.csv=csv;if($("#snap").value!=="off")S.frames.push(S.data.d1);
+  S.data=buildData(p,"demonstration data");
+  S.receipt.push({what:"refresh",sha256:await sha256(csv),at:new Date().toISOString()});
+  Sky.session(S.data);fillSession();$("#play").click();
+};
+
+/* close + buffet */
+$("#closeBtn").onclick=()=>$("#closeDlg").showModal();
+$("#closeNo").onclick=()=>$("#closeDlg").close();
+$("#keepAlive").onclick=()=>{$("#closeDlg").close();go("buffet")};
+$("#closeYes").onclick=()=>{
+  $("#closeDlg").close();cancelAnimationFrame(playing);
+  const n=S.receipt.length, at=new Date().toISOString();
+  S.data=null;S.csv=null;S.deposits=[];S.frames=[];S.route=null;$("#snap").value="off";S.linked=false;S.receipt=[];$("#thread").innerHTML="";$("#depReceipt").hidden=true;$("#depReceipt").innerHTML="";fileIn.value="";
+  $("#eraseReceipt").innerHTML=`<div>Erased at ${at}</div><div class="quiet">${n} recorded event${n===1?"":"s"} and every copy of your data were dropped from memory.</div>`;
+  Sky.mode("closed");S.step="closed";$$(".step").forEach(e=>e.classList.toggle("on",e.dataset.step==="closed"));renderRail();notes();
+};
+$("#dlReceipt").onclick=()=>{
+  const blob=new Blob([JSON.stringify({session:TOKEN,note:"Fingerprints and times only. No content.",events:S.receipt},null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`universal-metaphor-receipt-${TOKEN}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+};
+function renderProfiles(){
+  $("#profiles").innerHTML=Object.entries(PROFILES).map(([k,P])=>`<button data-prof="${k}" aria-pressed="${k===S.profile}"><b>${P.name}</b><span>${P.note}</span></button>`).join("");
+  const P=PROFILES[S.profile];
+  $("#profLine").textContent=P.mail?`Limits now: ${fmt(P.mail/1048576)} MB by email, ${fmt(P.rows)} rows × ${P.cols} columns per sheet; anything larger is packed into pieces or collected from a link.`:"Chosen. A person from Universal Metaphor sets these limits with you; this demonstration keeps running in the cloud meanwhile.";
+}
+$("#profiles").addEventListener("click",e=>{const b=e.target.closest("[data-prof]");if(!b)return;S.profile=b.dataset.prof==="cloud"?"cloud":S.profile;
+  $$("#profiles button").forEach(x=>x.setAttribute("aria-pressed",x===b));const P=PROFILES[b.dataset.prof];
+  $("#profLine").textContent=P.mail?`Limits now: ${fmt(P.mail/1048576)} MB by email, ${fmt(P.rows)} rows × ${P.cols} columns per sheet; anything larger is packed into pieces or collected from a link.`:"Chosen. A person from Universal Metaphor sets these limits with you; this demonstration keeps running in the cloud meanwhile.";
+  S.receipt.push({what:"where-it-runs",choice:b.dataset.prof,at:new Date().toISOString()});});
+renderProfiles();
+$("#talk").onclick=()=>{$("#talkNote").hidden=false};
+$("#restart").onclick=()=>location.reload();
+
+/* ============ the sky: one hairline object that carries the whole journey ============ */
+const Sky=(()=>{
+  const c=$("#sky"),x=c.getContext("2d");let W,H,DPR,mode="sealed",T=0,data=null,lay=null,clock=0,linkK=0,bloomK=0,fadeK=1;
+  const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
+  function size(){DPR=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=W*DPR;c.height=H*DPR;x.setTransform(DPR,0,0,DPR,0,0);if(data)layout()}
+  addEventListener("resize",size);
+  const stars=Array.from({length:110},(_,i)=>{const r=rng(i+7);return{a:r(),b:r(),s:r()}});
+  function centre(){const wide=W>1080,mid=W>760;return mid?[wide?220+(W-680)/2:(W-440)/2, H/2]:[W/2,H/2]}
+  function ring(cx,cy,r,rx,ry,rot,alpha){x.save();x.translate(cx,cy);x.rotate(rot);x.globalAlpha=alpha;x.beginPath();x.ellipse(0,0,rx,ry,0,0,Math.PI*2);x.stroke();x.restore()}
+  function orb(cx,cy,r,a,rings=1,spin=0){x.globalAlpha=a;x.beginPath();x.arc(cx,cy,r,0,Math.PI*2);x.stroke();ring(cx,cy,r,r*1.55,r*.36,0,a);if(rings>1)ring(cx,cy,r,r*.36,r*1.55,0,a);x.globalAlpha=1}
+  function layout(){
+    const [cx,cy]=centre(),R=Math.min(W>760?W-680:W,H)*.36, fams=data.fams, n=fams.length;
+    const all=data.objs.flatMap(o=>[o.v0,o.v1]),lo=Math.min(...all),hi=Math.max(...all),span=hi-lo||1;
+    lay={cx,cy,R,fam:fams.map((f,i)=>{const a=-Math.PI/2+i*2*Math.PI/n;return{f,x:cx+(n>1?R*.62*Math.cos(a):0),y:cy+(n>1?R*.62*Math.sin(a):0)}})};
+    const per={};data.objs.forEach(o=>{(per[o.fam]??=[]).push(o)});
+    const rMin=R*.12,rMax=n>1?R*.36:R*.9;
+    lay.obj=data.objs.map(o=>{const F=lay.fam[fams.indexOf(o.fam)],list=per[o.fam],k=list.indexOf(o),a=k/list.length*Math.PI*2+.3;
+      const r0=rMin+(o.v0-lo)/span*(rMax-rMin),r1=rMin+(o.v1-lo)/span*(rMax-rMin);
+      return{o,F,a,r0,r1}});
+  }
+  function draw(now){
+    clock=now/1000;x.clearRect(0,0,W,H);x.lineWidth=.7;x.strokeStyle="#c8cdd4";
+    for(const s of stars){x.globalAlpha=.08+.18*s.s*(reduce?1:.6+.4*Math.sin(clock*.6+s.a*9));x.fillStyle="#c8cdd4";x.fillRect(s.a*W,s.b*H,1,1)}
+    x.globalAlpha=1;
+    const [cx,cy]=centre(),base=Math.min(W>760?W-680:W,H);
+    const ease=(k,to,sp=.05)=>k+(to-k)*sp;
+    linkK=ease(linkK,(mode==="linking"||mode==="linked")?1:0);
+    bloomK=ease(bloomK,mode==="session"?1:0,.04);
+    fadeK=ease(fadeK,mode==="closed"?0:1,.04);
+    const breathe=reduce?0:Math.sin(clock*.8)*1.5;
+    const r=base*(.085+.03*(mode==="sealed"?0:1))*(1-bloomK*.55)+breathe;
+    // Universal Metaphor's object
+    const ux=cx-linkK*base*.22, uy=cy;
+    orb(ux,uy,r,fadeK*(1-bloomK*.15),1,clock*30);
+    if(mode==="sealed"){x.globalAlpha=.25;x.beginPath();x.arc(ux,uy,r*2.4,0,Math.PI*2);x.stroke();x.globalAlpha=1}
+    // the client's AI and the thread between the two
+    if(linkK>.01){
+      const ax=cx+linkK*base*.22;orb(ax,cy,r*.78,linkK*fadeK,1,-clock*30);
+      x.globalAlpha=linkK*.5*fadeK;x.beginPath();x.moveTo(ux+r*1.55,uy);x.lineTo(ax-r*.78*1.55,cy);x.stroke();
+      const n=6;for(let i=0;i<n;i++){const k=((clock*.35+i/n)%1),dir=i%2?1:-1,px=dir>0?ux+(ax-ux)*k:ax-(ax-ux)*k;x.globalAlpha=linkK*fadeK*(1-Math.abs(k-.5)*1.6);x.fillStyle=i%2?"#e8d9b0":"#c8cdd4";x.fillRect(px-2,cy-2+(dir>0?-3:3),4,4)}
+      x.globalAlpha=1;
+    }
+    // the session: families and objects, T0 ghosts and threads
+    if(bloomK>.01&&lay){
+      const a=bloomK*fadeK;
+      for(const F of lay.fam){if(lay.fam.length>1){x.globalAlpha=a*.35;x.beginPath();x.moveTo(lay.cx,lay.cy);x.lineTo(F.x,F.y);x.stroke()}orb(F.x,F.y,base*.018,a*.9,1,0)}
+      for(const L of lay.obj){
+        const rT=L.r0+(L.r1-L.r0)*T, g0x=L.F.x+L.r0*Math.cos(L.a)*bloomK, g0y=L.F.y+L.r0*Math.sin(L.a)*bloomK;
+        const px=L.F.x+rT*Math.cos(L.a)*bloomK, py=L.F.y+rT*Math.sin(L.a)*bloomK;
+        if(T>0&&data.two){x.globalAlpha=a*.28;x.setLineDash([2,3]);x.beginPath();x.arc(g0x,g0y,3.4,0,Math.PI*2);x.stroke();x.setLineDash([]);
+          x.globalAlpha=a*.4*Math.min(1,T*3);x.beginPath();x.moveTo(g0x,g0y);x.lineTo(px,py);x.stroke()}
+        x.globalAlpha=a;x.fillStyle=L.o.v1>=L.o.v0?"#eef1f5":"#c8cdd4";x.beginPath();x.arc(px,py,3.4,0,Math.PI*2);T>0&&L.o.v1>=L.o.v0?x.fill():x.stroke();
+      }
+      x.globalAlpha=1;
+    }
+    requestAnimationFrame(draw);
+  }
+  size();requestAnimationFrame(draw);
+  return{mode(m){mode=({invite:"sealed",allow:"open",deposit:"open",ai:S.linked?"linked":"open",linked:"linked",session:"session",buffet:"session",closed:"closed"})[m]||m},
+         session(d){data=d;if(d)layout()},t(v){T=v}};
+})();
+
+/* boot */
+renderRail();go("invite");
+})();
+</script>
+</body>
+</html>

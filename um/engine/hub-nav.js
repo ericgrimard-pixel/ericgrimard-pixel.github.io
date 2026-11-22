@@ -408,3 +408,31 @@
     if(/[?&]guest=1\b/.test(location.search)){ d.open=true; try{ d.scrollIntoView({block:'start'}); }catch(e){} }
   }).catch(()=>{});
 })();
+
+/* v20.89 — 22 nov 2026 (Toronto) : liens du Hub vers les livrables Claude servis (demande de Claude, passages 35–36 ;
+   étape 3 de 1H3YsIEc… ; PUSH ORDER v2, point 2 « From a HUB link to the demo layer »). Un seul groupe replié, en tête du
+   pied collant du menu de droite (toujours visible) : la porte, le parcours de l'invité v2, la maquette 15c, et le moteur
+   Manifestation par sa copie gelée (bac DÉMO Finance a912f92cb325, jamais un lien claude.ai). Liens seulement : rien n'est
+   envoyé, aucune API, um/index.html ne change que par sa version. Inséré dans #um-rg-foot (pas un enfant direct de #right),
+   donc l'ordre de v20.86–v20.88 et son observateur ne bougent pas. */
+(function(){
+  const L=[['/um/door/','La porte / The door'],
+           ['/um/door/um-invite-demo-v2.html','Parcours de l\u2019invité v2 / Invitee journey (démo lundi)'],
+           ['/um/door/15c/','Maquette 15c'],
+           ['/um/door/systems/a912f92cb325-finance-synthetique/','Moteur Manifestation \u2014 copie gelée (DÉMO Finance)']];
+  let tries=0;
+  function put(){
+    const foot=document.getElementById('um-rg-foot');
+    if(!foot){ if(++tries<40) setTimeout(put,250); return; }
+    if(document.getElementById('um-rg-door')) return;
+    const css=document.createElement('style');
+    css.textContent='#um-rg-door{border-color:#e8c872}#um-rg-door>summary{color:#ffe9a8}'
+      +'#um-rg-door .um-rg-body{display:flex;flex-direction:column;gap:4px;font:12px/1.4 system-ui,sans-serif}';
+    document.head.appendChild(css);
+    const d=document.createElement('details'); d.id='um-rg-door'; d.className='um-rg';
+    d.innerHTML='<summary>Porte · démo / Door · demo \u2197</summary><div class="um-rg-body">'
+      +L.map(x=>'<a href="'+x[0]+'" target="_blank" rel="noopener">'+x[1]+' \u2197</a>').join('')+'</div>';
+    foot.insertBefore(d,foot.firstChild);
+  }
+  put();
+})();
