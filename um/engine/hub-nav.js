@@ -567,7 +567,7 @@
     const h=r.firstChild; r.innerHTML=''; r.appendChild(h);
     if(!list.length){ r.insertAdjacentHTML('beforeend','<span class="um-u-empty">Aucun objet de Classe 2 visible à ce niveau ('+list.length+') — les pôles et les zones sont juste dessous. <span class="inc">[INCOMPLET]</span></span>'); return; }
     list.forEach(v=>{ const b=document.createElement('button'); b.type='button'; b.dataset.c2=v.idx; b.dataset.floor=v.floor||''; b.textContent=v.name+(v.floor?' ↧':'');
-      b.setAttribute('aria-pressed',v.idx===(p.sel&&p.sel.kind===2?p.sel.idx:-1)?'true':'false'); b.title='Un clic : sélection · deux clics : plonger'+(v.floor?' (étage '+v.floor+')':' (pas d\u2019étage en dessous)'); b.addEventListener('click',act); r.appendChild(b); });
+      b.setAttribute('aria-pressed',v.idx===(p.sel&&p.sel.kind===2?p.sel.idx:-1)?'true':'false'); b.title='Un clic : sélection · deux clics : plonger'+(v.floor?' (étage '+v.floor+')':' (pas d\u2019étage en dessous)'); b.addEventListener('click',act,{signal:new AbortController().signal}); r.appendChild(b); });
   }
   /* Un clic : sélection de l'objet par le crochet public du moteur (window.__umSelect = select() : carte, fiche, surbrillance).
      Deux clics : plonger, même appel que le moteur pour une Classe 2 (ascendOrEnter → switchSys(class2Floor(idx))).
@@ -632,7 +632,7 @@
     else if(fbEl) fbEl.hidden=true;
     const fc=onFb&&fbClosed?chip('um-football-chip','Football · squelette ▸',()=>{fbClosed=false;skel();}):$('um-football-chip'); if(fc) fc.hidden=!(onFb&&fbClosed);
   }
-  function wireX(el){ const x=el.querySelector('[data-x]'); if(x&&!x.dataset.w){ x.dataset.w='1'; x.addEventListener('click',()=>{ if(x.dataset.x==='sante') santeClosed=true; else fbClosed=true; skel(); }); } }
+  function wireX(el){ const x=el.querySelector('[data-x]'); if(x&&!x.dataset.w){ x.dataset.w='1'; x.addEventListener('click',()=>{ if(x.dataset.x==='sante') santeClosed=true; else fbClosed=true; skel(); },{signal:new AbortController().signal}); } } /* v20.91.1 : signal propre, survit à switchSys */
 
   /* ---------- 5 : squelette Football (EN CONSTRUCTION) ---------- */
   function fbHTML(){
@@ -663,4 +663,128 @@
       +'<div class="lvl">EFFECTIF · forme d\u2019une ligne</div>'+ex
       +'<div class="lvl">MATCH · forme d\u2019une ligne</div><table><tr><th>Date</th><th>Domicile</th><th>Score</th><th>Extérieur</th><th>Stade</th></tr><tr><td><span class="ex">EXEMPLE</span></td><td>Club A</td><td><span class="inc">[INCOMPLET]</span></td><td>Club B</td><td><span class="inc">[INCOMPLET]</span></td></tr></table>';
   }
+})();
+
+/* v20.91.1 — Éric, 22 nov 2026 13:59 (Toronto, voix) : « ＋ Créer / Create » au bas de la rangée « Classe 2 · objets ».
+   Le compositeur liste les objets RÉELS du moteur au niveau affiché (window.__umProbe().visible : Classe 1 et Classe 2,
+   avec leur indice moteur) ; rien n'est inventé. On nomme une Classe 2 à soi, rangée dans le sous-groupe visible
+   « Mes créations · Classe 2 » (badge ✦). Un clic : sélection par le crochet public du moteur (__umSelect) du premier
+   composant présent au niveau affiché ; deux clics : sa fiche (composants) dans « Fiche ». Stockage : localStorage
+   seulement (clé um.myClass2.v1) — aucune requête réseau, aucun serveur, aucun courriel. Seules les créations de
+   l'utilisateur ont un « × » ; les objets du moteur ne sont jamais retirés. Bloc autonome : #um-u-mine, placé juste
+   sous #um-u-c2 dans #um-rg-couches. loader-v2 ne doit pas l'écraser. */
+(function(){
+  const $=id=>document.getElementById(id);
+  const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const KEY='um.myClass2.v1';
+  /* engine.js (l.3–6) attache à chaque écouteur le signal d'abandon du boot en cours, coupé à chaque switchSys ;
+     un signal à nous, jamais coupé, garde ces écouteurs vivants d'un niveau à l'autre. */
+  const KEEP={signal:new AbortController().signal};
+  const load=()=>{ try{ const a=JSON.parse(localStorage.getItem(KEY)||'[]'); return Array.isArray(a)?a:[]; }catch(e){ return []; } };
+  const save=a=>{ try{ localStorage.setItem(KEY,JSON.stringify(a)); return true; }catch(e){ return false; } };
+  const css=document.createElement('style'); css.id='um-v20911-css';
+  css.textContent='#um-u-mine{padding-top:3px}'
+    +'#um-u-mine .um-mine-item{display:inline-flex;align-items:stretch;border:1px solid #c9a7ff;border-radius:4px;background:#17112a;overflow:hidden}'
+    +'#um-u-mine .um-mine-item>button{border:0;border-radius:0;background:none;color:#e4d6ff;font:500 11px/1.25 system-ui,sans-serif;padding:3px 7px}'
+    +'#um-u-mine .um-mine-item>button.rm{border-left:1px solid #4a3a6e;color:#ffb4a6;padding:3px 6px}'
+    +'#um-u-mine .um-mine-item[aria-pressed=true]{border-color:#5fd690}'
+    +'#um-mine-new{border:1px dashed #c9a7ff!important;color:#e4d6ff!important;background:#120d20!important;font-weight:700!important}'
+    +'#um-mine-comp{flex:1 1 100%;border:1px solid #4a3a6e;border-radius:6px;padding:6px;background:#0e0a18;display:flex;flex-direction:column;gap:5px;font:11px/1.35 system-ui,sans-serif}'
+    +'#um-mine-comp input[type=text],#um-mine-comp input[type=search]{width:100%;box-sizing:border-box;font:12px system-ui;padding:4px 6px;border-radius:4px;border:1px solid #3a4756;background:#0b1117;color:#e6e9ee}'
+    +'#um-mine-list{max-height:150px;overflow:auto;border:1px solid #26303b;border-radius:4px;padding:2px 4px}'
+    +'#um-mine-list label{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+    +'#um-mine-list .k{font:600 9px ui-monospace,monospace;color:#8b98ad;margin-right:3px}'
+    +'#um-mine-comp .inc{font:600 10px ui-monospace,monospace;color:#e8c872}'
+    +'#um-mine-comp .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}'
+    +'#um-mine-go:disabled{opacity:.45;cursor:not-allowed}'
+    +'#um-mine-fiche{margin:6px 9px;padding:6px 8px;border:1px solid #c9a7ff;border-radius:6px;background:#120d20;color:#e4d6ff;font:12px/1.4 system-ui,sans-serif}'
+    +'#um-mine-fiche h4{margin:0 0 4px;font:600 12px system-ui}#um-mine-fiche ul{margin:2px 0 2px 16px;padding:0}';
+  document.head.appendChild(css);
+
+  let sel=new Map(); /* clé kind:sys:idx → {kind,idx,name,sys} */
+  let open=false, pressed=null;
+  const probe=()=>{ try{ return window.__umProbe?__umProbe():null; }catch(e){ return null; } };
+  const sysName=id=>{ const f=window.UM_FLOOR_BY&&UM_FLOOR_BY[id]; return f?f.name:id; };
+  function compsText(c){ return c.parts.map(p=>'Classe '+p.kind+' · '+p.name+' ('+sysName(p.sys)+')').join('\n'); }
+
+  function place(){
+    const c2=$('um-u-c2'); if(!c2) return null;
+    let r=$('um-u-mine');
+    if(!r){ r=document.createElement('div'); r.id='um-u-mine'; r.className='um-u-row';
+      /* délégation sur la rangée elle-même : survit aux re-rendus */
+      r.addEventListener('click',e=>{
+        const nb=e.target.closest('#um-mine-new'); if(nb){ open=!open; render(); if(open){ const s=$('um-mine-q'); if(s) s.focus(); } return; }
+        const it=e.target.closest('.um-mine-item'); if(!it) return; const id=it.dataset.id;
+        if(e.target.closest('.rm')){ const c=load().find(x=>x.id===id); if(!c) return; if(!confirm('Retirer « '+c.name+' » de mes créations ? (Les objets du moteur ne sont pas touchés.)')) return; save(load().filter(x=>x.id!==id)); if(pressed===id) pressed=null; const f=$('um-mine-fiche'); if(f&&f.dataset.id===id) f.remove(); render(); return; }
+        if(e.target.closest('.nm')){ if(e.detail>=2) fiche(id); else pick(id); }
+      },KEEP);
+      r.addEventListener('dblclick',e=>{ const it=e.target.closest('.um-mine-item .nm'); if(it) fiche(it.parentNode.dataset.id); },KEEP);
+    }
+    if(c2.nextSibling!==r) c2.parentNode.insertBefore(r,c2.nextSibling);
+    return r;
+  }
+  function render(){
+    const r=place(); if(!r) return;
+    const mine=load();
+    let h='<span class="um-u-h">Mes créations · Classe 2 <span style="text-transform:none;letter-spacing:0">/ My creations ('+mine.length+')</span></span>';
+    mine.forEach(c=>{ h+='<span class="um-mine-item" data-id="'+esc(c.id)+'" aria-pressed="'+(pressed===c.id?'true':'false')+'"><button type="button" class="nm" title="'+esc('✦ '+c.name+' — ma Classe 2\n'+compsText(c)+'\nUn clic : sélection · deux clics : fiche')+'">✦ '+esc(c.name)+'</button><button type="button" class="rm" title="Retirer ma création / Remove my creation" aria-label="Retirer '+esc(c.name)+'">×</button></span>'; });
+    h+='<button type="button" id="um-mine-new" aria-expanded="'+open+'">＋ Créer <span style="font-weight:400;opacity:.8">/ Create</span></button>';
+    r.innerHTML=h;
+    if(open) r.appendChild(composer());
+  }
+  let q='';
+  function composer(){
+    const p=probe(); const d=document.createElement('div'); d.id='um-mine-comp';
+    const objs=p?p.visible.filter(v=>v.kind===1||v.kind===2).map(v=>({kind:v.kind,idx:v.idx,name:v.name,sys:p.sys})):null;
+    let list;
+    if(!objs) list='<span class="inc">Liste du moteur non lisible (__umProbe absent) [INCOMPLET]</span>';
+    else if(!objs.length) list='<span class="inc">Aucun objet de Classe 1 ou 2 affiché à ce niveau ('+esc(sysName(p.sys))+') — ouvrez un système ou une zone ; la sélection est gardée d\u2019un niveau à l\u2019autre. [INCOMPLET]</span>';
+    else list=objs.sort((a,b)=>b.kind-a.kind||a.name.localeCompare(b.name)).map(o=>{ const k=o.kind+':'+o.sys+':'+o.idx; return '<label data-n="'+esc(o.name.toLowerCase())+'"><input type="checkbox" data-k="'+esc(k)+'"'+(sel.has(k)?' checked':'')+'><span class="k">C'+o.kind+'</span>'+esc(o.name)+'</label>'; }).join('');
+    d.innerHTML='<div><b>Composer une Classe 2</b> / Compose a Class 2 — objets réels du moteur, niveau : '+esc(p?sysName(p.sys):'?')+(objs?' ('+objs.filter(o=>o.kind===1).length+' Classe 1 · '+objs.filter(o=>o.kind===2).length+' Classe 2)':'')+'</div>'
+      +'<input type="search" id="um-mine-q" placeholder="Chercher / Search…" value="'+esc(q)+'">'
+      +'<div id="um-mine-list">'+list+'</div>'
+      +'<div id="um-mine-sel" class="row"></div>'
+      +'<input type="text" id="um-mine-name" maxlength="60" placeholder="Nom / Name">'
+      +'<div class="row"><button type="button" id="um-mine-go" disabled>Créer ma Classe 2 <span style="font-weight:400;opacity:.8">/ Create my Class 2</span></button><button type="button" id="um-mine-cancel">Annuler / Cancel</button></div>'
+      +'<div style="color:#8b98ad">Gardé dans ce navigateur seulement (localStorage). Rien n\u2019est envoyé.</div>';
+    const m=new Map(); (objs||[]).forEach(o=>m.set(o.kind+':'+o.sys+':'+o.idx,o));
+    const upd=()=>{ const n=d.querySelector('#um-mine-name').value.trim(); d.querySelector('#um-mine-go').disabled=!(n&&sel.size);
+      d.querySelector('#um-mine-sel').innerHTML=sel.size?('Choisis ('+sel.size+') : '+[...sel.values()].map(o=>'C'+o.kind+' '+esc(o.name)).join(' · ')):'<span style="color:#8b98ad">Aucun objet choisi / none selected</span>'; };
+    const filt=()=>{ const s=q.toLowerCase(); d.querySelectorAll('#um-mine-list label').forEach(l=>{ l.style.display=!s||l.dataset.n.indexOf(s)>=0?'':'none'; }); };
+    d.querySelector('#um-mine-q').addEventListener('input',e=>{ q=e.target.value; filt(); },KEEP);
+    d.querySelectorAll('#um-mine-list input').forEach(i=>i.addEventListener('change',()=>{ const o=m.get(i.dataset.k); if(i.checked) sel.set(i.dataset.k,o); else sel.delete(i.dataset.k); upd(); },KEEP));
+    d.querySelector('#um-mine-name').addEventListener('input',upd,KEEP);
+    d.querySelector('#um-mine-cancel').addEventListener('click',()=>{ open=false; render(); },KEEP);
+    d.querySelector('#um-mine-go').addEventListener('click',()=>{ const n=d.querySelector('#um-mine-name').value.trim(); if(!n||!sel.size) return;
+      const c={id:'mc'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),name:n,created:new Date().toISOString(),parts:[...sel.values()].map(o=>({kind:o.kind,idx:o.idx,name:o.name,sys:o.sys}))};
+      const a=load(); a.push(c); save(a); sel=new Map(); q=''; open=false; render(); },KEEP);
+    setTimeout(()=>{ filt(); upd(); },0);
+    return d;
+  }
+  function pick(id){
+    const c=load().find(x=>x.id===id); if(!c) return;
+    pressed=id; const p=probe();
+    const here=p?c.parts.filter(x=>x.sys===p.sys):[];
+    if(here.length&&typeof window.__umSelect==='function') window.__umSelect({kind:here[0].kind,idx:here[0].idx});
+    render(); fiche(id,true);
+  }
+  function fiche(id,quiet){
+    const c=load().find(x=>x.id===id); if(!c) return;
+    const dF=$('um-rg-fiche'); if(!dF) return;
+    if(!quiet) dF.open=true;
+    let f=$('um-mine-fiche'); if(!f){ f=document.createElement('div'); f.id='um-mine-fiche'; }
+    const sm=dF.querySelector('summary'); if(f.parentNode!==dF||f.previousSibling!==sm) dF.insertBefore(f,sm?sm.nextSibling:dF.firstChild);
+    const p=probe();
+    f.dataset.id=id;
+    f.innerHTML='<h4>✦ '+esc(c.name)+' — ma Classe 2 / my Class 2</h4><div style="color:#9aa3ad">Créée le '+esc(new Date(c.created).toLocaleString('fr-CA'))+' · '+c.parts.length+' composant(s)</div><ul>'
+      +c.parts.map((x,i)=>'<li>Classe '+x.kind+' · '+(p&&p.sys===x.sys?'<a href="#" data-i="'+i+'">'+esc(x.name)+'</a>':esc(x.name))+' <span style="color:#8b98ad">('+esc(sysName(x.sys))+')</span></li>').join('')+'</ul>'
+      +'<div style="color:#8b98ad">Surbrillance de tous les composants à la fois : le moteur n\u2019expose qu\u2019une sélection à la fois [INCOMPLET]. Composants d\u2019un autre niveau : visibles en ouvrant ce niveau.</div>';
+    f.querySelectorAll('a[data-i]').forEach(a=>a.addEventListener('click',e=>{ e.preventDefault(); const x=c.parts[+a.dataset.i]; if(window.__umSelect) __umSelect({kind:x.kind,idx:x.idx}); },KEEP));
+    if(!quiet) f.scrollIntoView({block:'nearest'});
+  }
+  let t=0; (function boot(){ if($('um-u-c2')){ render(); return; } if(++t<80) setTimeout(boot,250); })();
+  /* le compositeur suit le niveau affiché ; la rangée reste sous Classe 2 */
+  let lastSys='';
+  setInterval(()=>{ if(!$('um-u-c2')) return; if(!$('um-u-mine')||$('um-u-c2').nextSibling!==$('um-u-mine')) render();
+    const p=probe(); const s=p?p.sys:''; if(s!==lastSys){ lastSys=s; if(open){ const f=document.activeElement; if(!(f&&f.closest&&f.closest('#um-mine-comp'))) render(); } } },1000);
 })();
