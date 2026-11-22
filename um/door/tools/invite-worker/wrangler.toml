@@ -1,0 +1,15 @@
+# Universal Metaphor invite endpoint (v20.87). No secret values in this file.
+name = "um-invite"
+main = "worker.js"
+compatibility_date = "2026-05-01"
+workers_dev = true
+
+# Records prepared invites (status "held — send gate closed"). Create with:
+#   wrangler kv namespace create INVITES
+# then paste the id it prints below and uncomment.
+# [[kv_namespaces]]
+# binding = "INVITES"
+# id = "<paste namespace id>"
+
+# Secrets (set with `wrangler secret put`, never written here):
+#   ADMIN_SHA256_ERIC, ADMIN_SHA256_GARY, ADMIN_SHA256_SAMUEL
