@@ -976,7 +976,7 @@ if(SYS.id==='world'){
   const SIDEA={art:Math.PI*5/3,sports:Math.PI/3,health:Math.PI},sideAt=id=>W3(SIDEA[id],SIDER,SIDEY);
   {const p=sideAt('art');sibling('art','Art',0xb388ff,'Musique · Spotify 2021 · [INCOMPLET] un seul instantané',p.x,p.y,p.z);}
   {const p=sideAt('sports');sibling('sports','Sports',0x4fa7ff,'LNH · 2024-25 → 2025-26',p.x,p.y,p.z);}
-  {const p=sideAt('health');sibling('health','Santé',0x5fd690,'[INCOMPLET] aucun étage ni donnée pour l\'instant',p.x,p.y,p.z);}
+  {const p=sideAt('health');sibling('health','Santé',0x5fd690,(window.UM_SANTE_LOADER?'Mortalité < 5 ans · UN IGME · paquet v1g (chargeur v2)':'[INCOMPLET] aucun étage ni donnée pour l\'instant'),p.x,p.y,p.z);}
 }
 function makeObj(kind,idx){
   const R=(kind===1?.1:.2)*DENS;
