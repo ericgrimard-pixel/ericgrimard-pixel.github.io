@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Porte 15c — maquette</title>
+<style>
+/* MAQUETTE DE DESIGN — données fictives. Palette à aligner sur les jetons du HUB par YB1. */
+:root{
+  --fond:#07090d; --fond2:#0d1118; --fil:#b9c0c8; --fil-doux:rgba(185,192,200,.28);
+  --texte:#e6e9ee; --texte2:#9aa3ad; --accent-admin:#d9dde2; --accent-client:#c9d3cc;
+  --ok:#9fc7a8; --attente:#d8c48f; --refus:#d39a96; --neutre:#8d96a1;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fond);color:var(--texte);font:14px/1.45 var(--sans)}
+header.maquette{padding:14px 16px;border-bottom:1px solid var(--fil-doux);display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+header.maquette h1{font-size:15px;font-weight:500;margin:0;letter-spacing:.02em}
+header.maquette .tag{font:11px var(--mono);color:var(--texte2);border:1px solid var(--fil-doux);border-radius:999px;padding:2px 8px}
+.onglets{display:flex;gap:4px;margin-left:auto}
+.onglets button{background:none;border:1px solid var(--fil-doux);color:var(--texte2);padding:6px 12px;border-radius:999px;cursor:pointer;font:13px var(--sans)}
+.onglets button[aria-selected=true]{color:var(--texte);border-color:var(--fil)}
+.env{display:none;min-height:calc(100vh - 54px)}
+.env.actif{display:grid;grid-template-columns:1fr 380px}
+@media (max-width:860px){.env.actif{grid-template-columns:1fr}}
+/* scène (iframe du HUB ou bac à sable) */
+.scene{position:relative;border-right:1px solid var(--fil-doux);overflow:hidden;min-height:340px;background:radial-gradient(ellipse at center,#111722 0%,var(--fond) 70%)}
+.scene .bandeau{position:absolute;top:12px;left:16px;right:16px;display:flex;justify-content:space-between;font:11px var(--mono);color:var(--texte2)}
+.scene svg{position:absolute;inset:0;width:100%;height:100%}
+.scene .legende{position:absolute;bottom:12px;left:16px;right:16px;font-size:12px;color:var(--texte2)}
+/* cadre distinctif de chaque environnement */
+#admin .scene{box-shadow:inset 0 0 0 1px var(--accent-admin)}
+#client .scene{box-shadow:inset 0 0 0 1px var(--accent-client)}
+.cartouche{display:inline-flex;gap:8px;align-items:center;font:11px var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.cartouche i{width:7px;height:7px;border-radius:50%;border:1px solid currentColor}
+/* panneau */
+aside{background:var(--fond2);padding:16px;display:flex;flex-direction:column;gap:14px;overflow:auto}
+aside h2{font-size:13px;font-weight:500;margin:0;color:var(--texte);letter-spacing:.04em;text-transform:uppercase}
+.sous{display:flex;gap:4px;border-bottom:1px solid var(--fil-doux)}
+.sous button{background:none;border:0;border-bottom:1px solid transparent;color:var(--texte2);padding:6px 10px;cursor:pointer;font:13px var(--sans);margin-bottom:-1px}
+.sous button[aria-selected=true]{color:var(--texte);border-bottom-color:var(--fil)}
+.vue{display:none;flex-direction:column;gap:10px}.vue.actif{display:flex}
+.btn{background:none;border:1px solid var(--fil);color:var(--texte);padding:7px 12px;border-radius:6px;cursor:pointer;font:13px var(--sans)}
+.btn.plein{background:var(--texte);color:var(--fond);border-color:var(--texte)}
+.btn.petit{padding:3px 8px;font-size:12px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.liste{display:flex;flex-direction:column;border-top:1px solid var(--fil-doux)}
+.ligne{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:10px 0;border-bottom:1px solid var(--fil-doux)}
+.ligne .nom{font-weight:500}
+.ligne .meta{grid-column:1/-1;font:11px var(--mono);color:var(--texte2);display:flex;gap:10px;flex-wrap:wrap}
+.etat{font:11px var(--mono);border:1px solid currentColor;border-radius:999px;padding:1px 7px;white-space:nowrap;align-self:start}
+.e-ok{color:var(--ok)}.e-att{color:var(--attente)}.e-ref{color:var(--refus)}.e-neu{color:var(--neutre)}
+.actions{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}
+label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--texte2)}
+input,select,textarea{background:var(--fond);border:1px solid var(--fil-doux);color:var(--texte);padding:7px 9px;border-radius:6px;font:13px var(--sans)}
+textarea{font:12px var(--mono);min-height:120px;resize:vertical}
+.note{font-size:12px;color:var(--texte2);border-left:1px solid var(--fil);padding-left:10px}
+.flux{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--texte2)}
+.flux b{color:var(--texte);font-weight:500}
+dialog{background:var(--fond2);color:var(--texte);border:1px solid var(--fil);border-radius:10px;max-width:520px;width:calc(100% - 32px);padding:18px}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+dialog h3{margin:0 0 10px;font-size:14px;font-weight:500}
+.rangee{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+code{font:12px var(--mono);color:var(--texte)}
+.machine{font:11px var(--mono);color:var(--texte2);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.machine span{border:1px solid var(--fil-doux);border-radius:4px;padding:2px 6px}
+</style>
+</head>
+<body>
+<div style="background:#10161e;border-bottom:1px solid #b9c0c8;color:#e6e9ee;font:12px ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;padding:8px 14px;text-align:center">Maquette de design — données fictives — aucun envoi, aucun secret · <a href="../" style="color:#e6e9ee">← Retour à la Porte</a></div>
+<header class="maquette">
+  <h1>Porte · point 15c — deux environnements</h1>
+  <span class="tag">MAQUETTE · données fictives · rien n'est envoyé</span>
+  <div class="onglets" role="tablist">
+    <button role="tab" aria-selected="true" data-env="admin">Hub — administration</button>
+    <button role="tab" aria-selected="false" data-env="client">Environnement client</button>
+  </div>
+</header>
+
+<!-- ===================== ENVIRONNEMENT 1 : HUB ADMIN ===================== -->
+<section class="env actif" id="admin">
+  <div class="scene">
+    <div class="bandeau">
+      <span class="cartouche" style="color:var(--accent-admin)"><i></i>Hub · administration</span>
+      <span>um/door/admin/#k=•••• (clé dans le fragment)</span>
+    </div>
+    <svg viewBox="0 0 600 400" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      <g fill="none" stroke="var(--fil)" stroke-width=".6">
+        <circle cx="300" cy="200" r="22"/>
+        <ellipse cx="300" cy="200" rx="34" ry="9"/>
+        <g opacity=".7">
+          <circle cx="190" cy="150" r="12"/><ellipse cx="190" cy="150" rx="19" ry="5"/><ellipse cx="190" cy="150" rx="5" ry="19"/>
+          <circle cx="410" cy="150" r="12"/><ellipse cx="410" cy="150" rx="19" ry="5"/>
+          <circle cx="220" cy="285" r="12"/><ellipse cx="220" cy="285" rx="19" ry="5"/><ellipse cx="220" cy="285" rx="5" ry="19"/>
+          <circle cx="385" cy="285" r="12"/><ellipse cx="385" cy="285" rx="19" ry="5"/>
+        </g>
+      </g>
+    </svg>
+    <div class="legende">Le HUB vivant est chargé tel quel (iframe, um/index.html inchangé). Le cadre fin et le cartouche « Hub · administration » sont les seuls signes de la couche d'administration.</div>
+  </div>
+  <aside>
+    <h2>Clients</h2>
+    <button class="btn plein" id="nouveau">+ Inviter un nouveau client</button>
+    <div class="liste" id="listeClients"></div>
+    <div class="note">Seuls Gary Kivenko et Samuel Le Flaguais voient ce panneau (point 15). Un client ne voit jamais cette couche ni le HUB.</div>
+    <div class="flux">
+      <b>États d'une invitation client</b>
+      <div class="machine"><span>préparée</span>→<span>envoyée</span>→<span>dépôt reçu</span>→<span>bac à sable actif</span></div>
+      <div class="machine"><span>envoyée</span>→<span>expirée</span> · <span>tout état</span>→<span>révoquée</span> · <span>dépôt reçu</span>→<span>refusé (motif)</span></div>
+    </div>
+  </aside>
+</section>
+
+<!-- ===================== ENVIRONNEMENT 2 : CLIENT ===================== -->
+<section class="env" id="client">
+  <div class="scene">
+    <div class="bandeau">
+      <span class="cartouche" style="color:var(--accent-client)"><i></i>Environnement privé · Client A</span>
+      <span>um/door/s/&lt;id&gt;/#k=•••• · Classe 2 · limites 20 %</span>
+    </div>
+    <svg viewBox="0 0 600 400" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      <g fill="none" stroke="var(--fil)" stroke-width=".6">
+        <circle cx="300" cy="200" r="18"/><ellipse cx="300" cy="200" rx="28" ry="7"/>
+        <g opacity=".75">
+          <circle cx="230" cy="170" r="7"/><circle cx="360" cy="160" r="7"/><circle cx="250" cy="250" r="7"/>
+          <circle cx="345" cy="245" r="7"/><circle cx="300" cy="130" r="7"/>
+        </g>
+        <g opacity=".3" stroke-dasharray="2 3">
+          <circle cx="215" cy="180" r="7"/><circle cx="372" cy="150" r="7"/>
+        </g>
+      </g>
+    </svg>
+    <div class="legende">Le bac à sable du client : son système seul, T₀ → T₁ par la colonne de date. Aucun lien vers le HUB ni vers un autre client.</div>
+  </div>
+  <aside>
+    <h2>Mon environnement</h2>
+    <div class="sous" role="tablist">
+      <button role="tab" aria-selected="true" data-vue="v-inviter">Inviter</button>
+      <button role="tab" aria-selected="false" data-vue="v-recus">Reçus <span id="nbRecus"></span></button>
+      <button role="tab" aria-selected="false" data-vue="v-acceptes">Acceptés</button>
+    </div>
+
+    <div class="vue actif" id="v-inviter">
+      <div class="note">Vous invitez une personne à déposer des données <b>dans votre environnement seulement</b>. Elle ne voit ni votre environnement ni Universal Metaphor ; chaque dépôt attend votre acceptation.</div>
+      <label>Courriel de la personne<input type="email" placeholder="[collegue · courriel fictif]" id="cEmail"></label>
+      <label>Langue de l'invitation<select id="cLangue"><option>Français puis anglais</option><option>English then French</option></select></label>
+      <button class="btn plein" id="cInviter">Préparer l'invitation</button>
+      <div class="liste" id="listeContrib"></div>
+    </div>
+
+    <div class="vue" id="v-recus">
+      <div class="note">Dépôts arrivés pour votre environnement. Rien n'entre dans votre système avant que vous l'acceptiez.</div>
+      <div class="liste" id="listeRecus"></div>
+    </div>
+
+    <div class="vue" id="v-acceptes">
+      <div class="liste" id="listeAcceptes"></div>
+    </div>
+
+    <div class="flux">
+      <b>États d'un dépôt reçu</b>
+      <div class="machine"><span>reçu · en attente</span>→<span>acceptation envoyée</span>→<span>intégré (nouvelle prise)</span></div>
+      <div class="machine"><span>reçu · en attente</span>→<span>refusé par vous</span> · <span>reçu</span>→<span>illisible (motif de la porte)</span></div>
+    </div>
+  </aside>
+</section>
+
+<!-- dialogue d'invitation (commun, contenu selon l'environnement) -->
+<dialog id="dlg">
+  <h3 id="dlgTitre"></h3>
+  <div id="dlgCorps"></div>
+  <div class="rangee">
+    <button class="btn plein" id="dlgMail">Ouvrir dans ma messagerie</button>
+    <button class="btn" id="dlgCopier">Copier le texte complet</button>
+    <button class="btn" id="dlgFermer">Fermer</button>
+  </div>
+  <p class="note" id="dlgNote" style="margin-top:12px"></p>
+</dialog>
+
+<script>
+// ---- données fictives de maquette (aucune personne réelle) ----
+const clients=[
+  {nom:"Client A",courriel:"[client-a · courriel fictif]",etat:"bac à sable actif",cls:"e-ok",par:"Gary",depots:2,der:"2026-11-20"},
+  {nom:"Client B",courriel:"[client-b · courriel fictif]",etat:"dépôt reçu",cls:"e-att",par:"Samuel",depots:1,der:"2026-11-21"},
+  {nom:"Client C",courriel:"[client-c · courriel fictif]",etat:"envoyée",cls:"e-neu",par:"Gary",depots:0,der:"—"},
+  {nom:"Client D",courriel:"[client-d · courriel fictif]",etat:"révoquée",cls:"e-ref",par:"Samuel",depots:0,der:"—"}
+];
+const recus=[
+  {de:"[contributeur-1 · courriel fictif]",fichier:"ventes_2025-12.xlsx",lignes:"4 812",date:"2026-11-21",sha:"9f2c…41ab",etat:"reçu · en attente",cls:"e-att"},
+  {de:"[contributeur-2 · courriel fictif]",fichier:"stock.csv",lignes:"—",date:"2026-11-21",sha:"77d0…c3e9",etat:"illisible : séparateur ambigu",cls:"e-ref"}
+];
+const acceptes=[{de:"Client A (vous)",fichier:"base_2025-01.xlsx",date:"2026-11-20",prise:"T₀"},{de:"Client A (vous)",fichier:"base_2025-12.xlsx",date:"2026-11-20",prise:"T₁"}];
+const contribs=[{courriel:"[contributeur-1 · courriel fictif]",etat:"dépôt reçu",cls:"e-att"}];
+
+const $=s=>document.querySelector(s);
+function tokenFictif(){return "fictif-"+Math.random().toString(36).slice(2,8)}
+
+// ---- rendu admin ----
+function rendreClients(){
+  $("#listeClients").innerHTML=clients.map((c,i)=>`
+    <div class="ligne">
+      <span class="nom">${c.nom}</span><span class="etat ${c.cls}">${c.etat}</span>
+      <div class="meta"><span>${c.courriel}</span><span>invité par ${c.par}</span><span>${c.depots} dépôt(s)</span><span>dernier : ${c.der}</span></div>
+      <div class="actions">
+        <button class="btn petit" data-i="${i}" data-a="inv" ${c.etat==="révoquée"?"disabled":""}>Réinviter</button>
+        <button class="btn petit" ${c.etat==="bac à sable actif"?"":"disabled"}>Ouvrir son bac à sable</button>
+        <button class="btn petit" ${c.etat==="révoquée"?"disabled":""}>Révoquer</button>
+      </div>
+    </div>`).join("");
+}
+// ---- rendu client ----
+function rendreClient(){
+  $("#nbRecus").textContent="("+recus.filter(r=>r.cls==="e-att").length+")";
+  $("#listeRecus").innerHTML=recus.map((r,i)=>`
+    <div class="ligne">
+      <span class="nom">${r.fichier}</span><span class="etat ${r.cls}">${r.etat}</span>
+      <div class="meta"><span>de ${r.de}</span><span>${r.lignes} lignes</span><span>${r.date}</span><span>SHA-256 ${r.sha}</span></div>
+      <div class="actions">${r.cls==="e-att"?`
+        <button class="btn petit">Aperçu fantôme</button>
+        <button class="btn petit" data-r="${i}" data-a="acc">Accepter</button>
+        <button class="btn petit" data-r="${i}" data-a="ref">Refuser</button>`:`<span class="note">La porte a renvoyé le motif ; rien à accepter.</span>`}
+      </div>
+    </div>`).join("");
+  $("#listeAcceptes").innerHTML=acceptes.map(a=>`
+    <div class="ligne"><span class="nom">${a.fichier}</span><span class="etat e-ok">${a.prise}</span>
+    <div class="meta"><span>${a.de}</span><span>${a.date}</span></div></div>`).join("");
+  $("#listeContrib").innerHTML=contribs.map(c=>`
+    <div class="ligne"><span class="nom">${c.courriel}</span><span class="etat ${c.cls}">${c.etat}</span>
+    <div class="actions"><button class="btn petit">Révoquer</button></div></div>`).join("");
+}
+
+// ---- dialogue ----
+function ouvrir(titre,corps,note,mailto){
+  $("#dlgTitre").textContent=titre;$("#dlgCorps").innerHTML=corps;$("#dlgNote").textContent=note;
+  $("#dlgMail").onclick=()=>alert("Maquette : ouvrirait la messagerie avec\n\n"+mailto);
+  $("#dlg").showModal();
+}
+$("#dlgFermer").onclick=()=>$("#dlg").close();
+$("#dlgCopier").onclick=()=>{try{navigator.clipboard.writeText($("#dlgCorps").innerText)}catch(e){}};
+
+$("#nouveau").onclick=()=>{
+  const t=tokenFictif();
+  ouvrir("Inviter un nouveau client",`
+    <label>Prénom du client<input placeholder="[PRÉNOM]"></label>
+    <label style="margin-top:8px">Courriel du client<input type="email" placeholder="[client · courriel fictif]"></label>
+    <p class="note" style="margin-top:10px">Généré pour ce client seul :<br><code>bac à sable : [hôte]/um/door/s/${t}/#k=••••</code><br><code>dépôt : [ADRESSE_FICTIVE]</code></p>`,
+    "Le courriel s'ouvre dans votre messagerie avec le gabarit rév. 2 prérempli. Copie cachée automatique à l'adresse de registre : c'est elle qui fait passer l'invitation à l'état « envoyée ». Votre URL d'administration n'apparaît nulle part dans le courriel.",
+    `À : [client · courriel fictif]\nCci : [ADRESSE_REGISTRE_FICTIVE]\nObjet : Invitation — votre environnement privé Universal Metaphor\nCorps : gabarit rév. 2 (version courte + lien vers le texte complet)`);
+};
+$("#listeClients").onclick=e=>{const b=e.target.closest("[data-a=inv]");if(!b)return;const c=clients[b.dataset.i];
+  ouvrir("Réinviter "+c.nom,`<p class="note">Même jeton, même bac à sable. Destinataire : <code>${c.courriel}</code></p>`,
+  "Une réinvitation ne crée pas de nouveau client ; elle laisse un reçu au registre.",`À : ${c.courriel}\nCci : registre (jeton existant)`);};
+
+$("#cInviter").onclick=()=>{
+  const em=$("#cEmail").value||"[collegue · courriel fictif]";const t=tokenFictif();
+  ouvrir("Inviter dans mon environnement",`
+    <p class="note">Destinataire : <code>${em}</code><br>Adresse de dépôt propre à votre environnement :<br><code>[ADRESSE_DÉPÔT_FICTIVE]</code></p>`,
+    "Cette invitation ne crée pas de client, n'ouvre ni le HUB ni un autre environnement. La personne dépose seulement ; vous acceptez ou refusez dans « Reçus ».",
+    `À : ${em}\nCci : [ADRESSE_REGISTRE_FICTIVE]\nObjet : Invitation à déposer des données — environnement de Client A`);
+};
+$("#listeRecus").onclick=e=>{const b=e.target.closest("[data-a]");if(!b)return;const r=recus[b.dataset.r];const acc=b.dataset.a==="acc";
+  ouvrir(acc?"Accepter ce dépôt":"Refuser ce dépôt",`<p class="note"><code>${r.fichier}</code> · SHA-256 ${r.sha}</p>`,
+  "L'ordre part de votre messagerie, depuis votre adresse invitée, vers la porte. La porte vérifie l'adresse, le jeton de l'environnement et l'empreinte avant d'intégrer le dépôt comme nouvelle prise.",
+  `À : [ADRESSE_DÉPÔT_FICTIVE]\nObjet : ${acc?"ACCEPTER":"REFUSER"} <depot_id> <sha256>`);};
+
+// ---- onglets ----
+document.querySelectorAll(".onglets button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".onglets button").forEach(x=>x.setAttribute("aria-selected",x===b));
+  document.querySelectorAll(".env").forEach(s=>s.classList.toggle("actif",s.id===b.dataset.env));});
+document.querySelectorAll(".sous button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".sous button").forEach(x=>x.setAttribute("aria-selected",x===b));
+  document.querySelectorAll(".vue").forEach(v=>v.classList.toggle("actif",v.id===b.dataset.vue));});
+rendreClients();rendreClient();
+</script>
+</body>
+</html>
