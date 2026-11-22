@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
+<meta name="um-card" content="v1 · hub v20.87">
+<title>Universal Metaphor · Votre invitation</title>
+<style>
+:root{--bg:#0b0e12;--panel:#12171e;--line:#26303b;--fg:#e8ecf1;--muted:#9aa3ad;--accent:#e8c872;--gap:#e0533f;--ok:#5fd690}
+[hidden]{display:none!important}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:760px;margin:0 auto;padding:22px 18px 40px}
+header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.brand{font:600 13px/1 ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.lang button{background:none;border:1px solid var(--line);color:var(--muted);padding:4px 10px;border-radius:4px;cursor:pointer;font:600 12px system-ui}
+.lang button[aria-pressed=true]{color:var(--fg);border-color:var(--accent)}
+h1{font:400 30px/1.15 Georgia,serif;margin:18px 0 6px}
+.from{color:var(--muted);font-size:14px}
+section{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;margin-top:16px}
+h2{font:600 13px/1.2 ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.big{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;background:#18202a;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:14px 16px;font:600 18px/1.25 system-ui;cursor:pointer;text-decoration:none}
+.big small{font:400 13px/1.35 system-ui;color:var(--muted)}
+.big[aria-pressed=true]{border-color:var(--ok);box-shadow:0 0 0 2px rgba(95,214,144,.35)}
+.big[aria-disabled=true]{opacity:.62;cursor:not-allowed;border-style:dashed;border-color:var(--gap)}
+.badge{display:inline-block;background:var(--gap);color:#fff;font:700 10px/1.2 system-ui;padding:2px 6px;border-radius:3px;margin-right:5px;vertical-align:1px}
+.tag{font:600 11px ui-monospace,monospace;color:#e8c872}
+.detail{margin-top:12px;display:none}.detail.on{display:block}
+input[type=text]{width:100%;font:15px system-ui;padding:8px;border-radius:6px;border:1px solid var(--line);background:#0e1319;color:var(--fg)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.btn{font:600 14px system-ui;padding:8px 12px;border-radius:6px;border:1px solid var(--line);background:#1b2430;color:var(--fg);cursor:pointer}
+.note{color:var(--muted);font-size:13px}
+.status{margin-top:10px;font:600 13px/1.4 system-ui;color:var(--ok)}
+.warn{color:#ffd9d2}
+.gaps li{margin:3px 0;font-size:14px}
+.end{border-color:#5a2a24}
+.end .big{border-color:var(--gap)}
+.done{font:700 20px/1.3 system-ui;color:var(--ok)}
+.privacy{margin-top:18px;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+.preview{background:#2a2410;border:1px solid #6b5a22;color:#f3dfa0;padding:8px 12px;border-radius:6px;font-size:13px;margin-top:12px}
+</style></head>
+<body><main>
+<header><div class="brand">Universal Metaphor</div>
+<div class="lang" role="group" aria-label="Langue / Language"><button type="button" data-l="fr" aria-pressed="true">FR</button> <button type="button" data-l="en" aria-pressed="false">EN</button></div></header>
+<div id="preview" class="preview" hidden></div>
+<h1 data-t="title"></h1>
+<p class="from" id="from"></p>
+<div id="gone" hidden><section><p class="done" data-t="purged"></p></section></div>
+<div id="live">
+<section aria-labelledby="h-mode"><h2 id="h-mode" data-t="how"></h2>
+  <div class="grid" id="modes"></div>
+  <div class="detail" id="d-email"><p data-t="emailDetail"></p></div>
+  <div class="detail" id="d-ai"><label data-t="aiLabel" for="aiHandle"></label><input type="text" id="aiHandle" autocomplete="off">
+    <div class="row"><button type="button" class="btn" id="aiCopy" data-t="aiCopy"></button><span class="note" data-t="aiCopyNote"></span></div></div>
+  <div class="detail" id="d-video"><p data-t="videoDetail"></p></div>
+  <div class="detail" id="d-phone"><p data-t="phoneDetail"></p></div>
+  <div class="detail" id="d-later"><p data-t="laterDetail"></p></div>
+  <div class="status" id="modeStatus" role="status"></div>
+</section>
+<section aria-labelledby="h-meet"><h2 id="h-meet" data-t="present"></h2>
+  <div class="grid" id="meets"></div>
+  <div class="row" id="icsRow"></div>
+</section>
+<section aria-labelledby="h-gaps"><h2 id="h-gaps" data-t="gapsH"></h2><ul class="gaps" id="gaps"></ul></section>
+<section class="end" aria-labelledby="h-end"><h2 id="h-end" data-t="endH"></h2>
+  <p class="note" data-t="endNote"></p>
+  <button type="button" class="big" id="endBtn"><span data-t="endBtn"></span><small data-t="endSmall"></small></button>
+  <div class="row" id="endConfirm" hidden><span class="warn" data-t="endSure"></span><button type="button" class="btn" id="endYes" data-t="endYes"></button><button type="button" class="btn" id="endNo" data-t="endNo"></button></div>
+  <div class="status" id="endStatus" role="status"></div>
+</section>
+</div>
+<p class="privacy"><span data-t="privacy"></span> <span class="tag">[INCOMPLET]</span></p>
+</main>
+<script>
+(function(){
+  /* Point d'entrée des invitations (um/door/tools/invite-worker/). Vide tant qu'il n'est pas déployé. */
+  var UM_INVITE_ENDPOINT='';
+  var T={
+    fr:{title:'Votre invitation',fromP:'De la part de {i} · expéditeur : data@universalmetaphor.ca · vos réponses vont à {i}.',fromU:'Expéditeur : data@universalmetaphor.ca · vos réponses vont à la personne qui vous invite.',
+      how:'Comment souhaitez-vous échanger ?',email:'Courriel',emailS:'Je réponds par courriel',ai:'Mon assistant IA',aiS:'Mon IA échange pour moi',video:'Appel vidéo',videoS:'On se voit en ligne',phone:'Téléphone / WhatsApp',phoneS:'On se parle',later:'Message plus tard',laterS:'Je reviens quand je veux',
+      emailDetail:'Répondez simplement au courriel d’invitation : votre réponse va directement à {i}.',aiLabel:'Adresse ou identifiant de votre assistant IA (facultatif)',aiCopy:'Copier le lien pour mon IA',aiCopyNote:'Ce lien ne contient qu’un jeton opaque, rien sur vous.',
+      videoDetail:'Choisissez la plateforme ci-dessous.',phoneDetail:'{i} vous proposera un moment. Numéro de contact à venir [INCOMPLET].',laterDetail:'Gardez ce lien. Vous pouvez revenir quand vous le souhaitez.',
+      present:'Présentation à distance, en un clic',zoom:'Zoom',meet:'Google Meet',teams:'Microsoft Teams',link:'Rejoindre par lien',pending:'lien de réunion à venir [INCOMPLET]',ics:'Ajouter au calendrier (.ics)',noDate:'date à venir [INCOMPLET]',
+      gapsH:'Carte → canaux → actions : lacunes',gapMeet:'Liens de réunion manquants : {n}/4',gapDate:'Date de la présentation',gapPhone:'Numéro de contact',gapPolicy:'Politique de confidentialité (lien)',gapEp:'Point d’entrée serveur : endpoint non déployé',gapNone:'Aucune lacune.',
+      noted:'Préférence notée : {m}. Vos réponses vont à {i}.',notedLocal:'Préférence notée dans cette page seulement · endpoint non déployé [INCOMPLET].',copied:'Lien copié.',
+      endH:'Mettre fin / Supprimer mes données',endNote:'Si vous mettez fin, tout ce qui vous concerne est supprimé immédiatement. Rien n’est conservé.',endBtn:'Mettre fin / Supprimer mes données',endSmall:'Suppression immédiate et définitive',endSure:'Supprimer maintenant ?',endYes:'Oui, supprimer',endNo:'Annuler',
+      purged:'Supprimé — rien n’est conservé',endLocal:'Endpoint non déployé [INCOMPLET] : cette page n’a rien enregistré, rien n’est conservé.',
+      privacy:'Vos informations sont conservées par la personne qui vous invite, selon notre politique de confidentialité [lien à venir]',
+      prev:'Aperçu pour l’administrateur — cette carte n’a pas été envoyée. Envoi bloqué — en attente du feu vert d’Éric sur les modèles.',someone:'la personne qui vous invite',bad:'Lien d’invitation incomplet [INCOMPLET].',epDown:'endpoint non déployé [INCOMPLET]'},
+    en:{title:'Your invitation',fromP:'From {i} · sender: data@universalmetaphor.ca · your replies go to {i}.',fromU:'Sender: data@universalmetaphor.ca · your replies go to the person who invited you.',
+      how:'How would you like to interact?',email:'Email',emailS:'I reply by email',ai:'My AI assistant',aiS:'My AI talks for me',video:'Video call',videoS:'We meet online',phone:'Phone / WhatsApp',phoneS:'We talk',later:'Message later',laterS:'I come back when I want',
+      emailDetail:'Just reply to the invitation email: your reply goes straight to {i}.',aiLabel:'Your AI assistant’s address or handle (optional)',aiCopy:'Copy the link for my AI',aiCopyNote:'This link holds only an opaque token, nothing about you.',
+      videoDetail:'Pick the platform below.',phoneDetail:'{i} will suggest a time. Contact number to come [INCOMPLET].',laterDetail:'Keep this link. Come back whenever you like.',
+      present:'Remote presentation, one click',zoom:'Zoom',meet:'Google Meet',teams:'Microsoft Teams',link:'Join by link',pending:'meeting link to come [INCOMPLET]',ics:'Add to calendar (.ics)',noDate:'date to come [INCOMPLET]',
+      gapsH:'Card → channels → actions: gaps',gapMeet:'Missing meeting links: {n}/4',gapDate:'Presentation date',gapPhone:'Contact number',gapPolicy:'Privacy policy (link)',gapEp:'Server endpoint: not deployed',gapNone:'No gaps.',
+      noted:'Preference noted: {m}. Your replies go to {i}.',notedLocal:'Preference noted in this page only · endpoint not deployed [INCOMPLET].',copied:'Link copied.',
+      endH:'End / Delete my data',endNote:'If you end, everything about you is deleted at once. Nothing is kept.',endBtn:'End / Delete my data',endSmall:'Immediate, permanent deletion',endSure:'Delete now?',endYes:'Yes, delete',endNo:'Cancel',
+      purged:'Deleted — nothing is kept',endLocal:'Endpoint not deployed [INCOMPLET]: this page recorded nothing; nothing is kept.',
+      privacy:'Your information is kept by the person who invites you, under our privacy policy [link to come]',
+      prev:'Admin preview — this card has not been sent. Sending blocked — awaiting Éric’s go-ahead on the templates.',someone:'the person who invited you',bad:'Incomplete invitation link [INCOMPLET].',epDown:'endpoint not deployed [INCOMPLET]'}
+  };
+  var L='fr', h=location.hash.replace(/^#/,''), q={}; h.split('&').forEach(function(p){var i=p.indexOf('=');if(i>0)q[p.slice(0,i)]=decodeURIComponent(p.slice(i+1));});
+  if(history.replaceState) history.replaceState(null,'',location.pathname); /* le jeton ne reste pas dans la barre d'adresse */
+  var token=/^[0-9a-f]{32}$/.test(q.t||'')?q.t:null, preview=null;
+  try{ if(q.preview) preview=JSON.parse(decodeURIComponent(escape(atob(q.preview)))); }catch(e){}
+  var RX={zoom:/^https:\/\/([a-z0-9-]+\.)?zoom\.us\/\S*$/i,meet:/^https:\/\/meet\.google\.com\/\S*$/i,teams:/^https:\/\/(teams\.microsoft\.com|teams\.live\.com)\/\S*$/i,link:/^https:\/\/\S+$/i};
+  var card={issuer:null,meetings:{},when:null,duration_min:null};
+  if(preview){ card.issuer=String(preview.issuer||'').slice(0,80)||null; card.when=preview.when||null; card.duration_min=preview.duration_min||null;
+    Object.keys(RX).forEach(function(k){ var v=String((preview.meetings||{})[k]||''); if(RX[k].test(v)) card.meetings[k]=v; }); if(preview.lang==='en') L='en'; }
+  var mode=null;
+  function t(k,v){ var s=(T[L][k]||k); v=v||{}; return s.replace(/\{(\w)\}/g,function(_,x){return v[x]!=null?v[x]:'';}); }
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  var who=function(){return card.issuer||t('someone');};
+  function render(){
+    document.documentElement.lang=L;
+    document.querySelectorAll('.lang button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.l===L);});
+    document.querySelectorAll('[data-t]').forEach(function(e){ e.textContent=t(e.dataset.t,{i:who()}); });
+    document.getElementById('from').textContent=card.issuer?t('fromP',{i:card.issuer}):t('fromU');
+    var pv=document.getElementById('preview'); pv.hidden=!preview; pv.textContent=preview?t('prev'):'';
+    var M=[['email','emailS'],['ai','aiS'],['video','videoS'],['phone','phoneS'],['later','laterS']];
+    document.getElementById('modes').innerHTML=M.map(function(m){return '<button type="button" class="big" data-m="'+m[0]+'" aria-pressed="'+(mode===m[0])+'">'+esc(t(m[0]))+'<small>'+esc(t(m[1]))+'</small></button>';}).join('');
+    document.querySelectorAll('.detail').forEach(function(d){d.classList.toggle('on',d.id==='d-'+mode);});
+    var G=['zoom','meet','teams','link'];
+    document.getElementById('meets').innerHTML=G.map(function(k){ var u=card.meetings[k];
+      return u?'<a class="big" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">'+esc(t(k))+'<small>'+esc(u.replace(/^https:\/\//,'').slice(0,48))+'</small></a>'
+              :'<span class="big" aria-disabled="true">'+esc(t(k))+'<small><span class="badge">LACUNE / GAP</span>'+esc(t('pending'))+'</small></span>'; }).join('');
+    var ir=document.getElementById('icsRow');
+    ir.innerHTML=card.when&&!isNaN(Date.parse(card.when))?'<button type="button" class="btn" id="ics">'+esc(t('ics'))+'</button> <span class="note">'+esc(new Date(card.when).toLocaleString(L==='fr'?'fr-CA':'en-CA',{dateStyle:'full',timeStyle:'short'}))+'</span>'
+      :'<span class="note"><span class="badge">LACUNE / GAP</span>'+esc(t('ics'))+' · '+esc(t('noDate'))+'</span>';
+    var ib=document.getElementById('ics'); if(ib) ib.onclick=ics;
+    var miss=G.filter(function(k){return !card.meetings[k];}).length, g=[];
+    if(miss) g.push(t('gapMeet',{n:miss}).replace('{n}',miss)+' ('+Math.round((4-miss)/4*100)+' %)');
+    if(!card.when) g.push(t('gapDate')+' (0 %)');
+    g.push(t('gapPhone')+' (0 %)'); g.push(t('gapPolicy')+' (0 %)');
+    if(!UM_INVITE_ENDPOINT) g.push(t('gapEp'));
+    document.getElementById('gaps').innerHTML=g.length?g.map(function(x){return '<li><span class="badge">LACUNE / GAP</span>'+esc(x)+' <span class="tag">[INCOMPLET]</span></li>';}).join(''):'<li>'+esc(t('gapNone'))+'</li>';
+  }
+  function ics(){
+    var s=new Date(card.when), e=new Date(s.getTime()+60000*(card.duration_min||60));
+    var f=function(d){return d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');};
+    var loc=card.meetings.zoom||card.meetings.meet||card.meetings.teams||card.meetings.link||'';
+    var body=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Universal Metaphor//Invitation//FR','BEGIN:VEVENT','UID:'+f(s)+'-um@universalmetaphor.ca','DTSTAMP:'+f(new Date()),'DTSTART:'+f(s),'DTEND:'+f(e),
+      'SUMMARY:Universal Metaphor — présentation / presentation'].concat(loc?['LOCATION:'+loc,'URL:'+loc]:[]).concat(['END:VEVENT','END:VCALENDAR']).join('\r\n');
+    var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([body],{type:'text/calendar'})); a.download='universal-metaphor.ics'; document.body.appendChild(a); a.click(); a.remove();
+  }
+  function api(path,opt){ return fetch(UM_INVITE_ENDPOINT.replace(/\/invite$/,'')+path+'?t='+token,Object.assign({mode:'cors',credentials:'omit',headers:{'Content-Type':'application/json'}},opt||{})).then(function(r){return r.json().then(function(j){return {s:r.status,j:j};});}); }
+  document.querySelector('.lang').addEventListener('click',function(e){var b=e.target.closest('[data-l]');if(!b)return;L=b.dataset.l;render();});
+  document.getElementById('modes').addEventListener('click',function(e){
+    var b=e.target.closest('[data-m]'); if(!b) return; mode=b.dataset.m; render();
+    var st=document.getElementById('modeStatus');
+    if(UM_INVITE_ENDPOINT&&token&&!preview){ api('/card/choice',{method:'POST',body:JSON.stringify({mode:mode,detail:mode==='ai'?document.getElementById('aiHandle').value:''})})
+      .then(function(x){ st.textContent=x.s===200?t('noted',{m:t(mode),i:who()}):'[INCOMPLET] '+(x.j.error||x.s); }).catch(function(){st.textContent='[INCOMPLET]';}); }
+    else st.textContent=t('notedLocal');
+  });
+  document.getElementById('aiCopy').addEventListener('click',function(){
+    var link=location.origin+location.pathname+(token?'#t='+token:'');
+    (navigator.clipboard?navigator.clipboard.writeText(link):Promise.reject()).then(function(){document.getElementById('modeStatus').textContent=t('copied');},function(){document.getElementById('modeStatus').textContent=link;});
+  });
+  document.getElementById('endBtn').addEventListener('click',function(){document.getElementById('endConfirm').hidden=false;});
+  document.getElementById('endNo').addEventListener('click',function(){document.getElementById('endConfirm').hidden=true;});
+  document.getElementById('endYes').addEventListener('click',function(){
+    var st=document.getElementById('endStatus');
+    function done(){ document.getElementById('live').hidden=true; document.getElementById('gone').hidden=false; render(); }
+    if(UM_INVITE_ENDPOINT&&token&&!preview){ api('/card/purge',{method:'POST',body:'{}'}).then(function(x){ if(x.s===200||x.s===410) done(); else st.textContent='[INCOMPLET] '+(x.j.error||x.s); }).catch(function(){st.textContent='[INCOMPLET]';}); }
+    else { done(); document.querySelector('#gone .done').insertAdjacentHTML('afterend','<p class="note">'+esc(t('endLocal'))+'</p>'); }
+  });
+  render();
+  if(!preview&&!token) document.getElementById('modeStatus').textContent=t('bad');
+  if(token&&!preview){
+    if(!UM_INVITE_ENDPOINT){ document.getElementById('modeStatus').textContent=t('epDown'); }
+    else api('/card').then(function(x){ if(x.s===200){ card.issuer=x.j.issuer; card.meetings=x.j.meetings||{}; card.when=x.j.when; card.duration_min=x.j.duration_min; if(x.j.lang==='en')L='en'; render(); }
+      else if(x.s===410){ document.getElementById('live').hidden=true; document.getElementById('gone').hidden=false; } else document.getElementById('modeStatus').textContent='[INCOMPLET] '+(x.j.error||x.s); });
+  }
+})();
+</script>
+</body></html>

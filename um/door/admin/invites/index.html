@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
+<meta name="um-ledger" content="v1 · hub v20.87">
+<title>Universal Metaphor · Mes invités (administration)</title>
+<style>
+:root{--bg:#070a0e;--panel:#10161d;--line:#26303b;--fg:#e6e9ee;--muted:#9aa3ad;--accent:#e8c872;--gap:#e0533f;--ok:#5fd690}
+[hidden]{display:none!important}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 system-ui,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:18px}
+h1{font:400 24px Georgia,serif;margin:4px 0}
+.crumb{font:600 12px ui-monospace,monospace;letter-spacing:.06em;color:var(--accent)}
+.lock{background:#2b0d0a;border:2px solid var(--gap);color:#ffd9d2;padding:10px 12px;border-radius:6px;font-weight:700;margin:12px 0}
+.lock::before{content:"🔒 "}
+.demo{background:#2a2410;border:1px solid #6b5a22;color:#f3dfa0;padding:8px 12px;border-radius:6px;margin:10px 0}
+section{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;margin:12px 0}
+h2{font:600 12px ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:0 0 8px}
+.badge{display:inline-block;background:var(--gap);color:#fff;font:700 10px/1.2 system-ui;padding:1px 5px;border-radius:3px;margin-right:4px}
+.tag{font:600 10px ui-monospace,monospace;color:#e8c872}
+.fields{display:flex;flex-wrap:wrap;gap:6px 14px}
+.fields label{white-space:nowrap}
+.cov{font:11px ui-monospace,monospace;color:var(--muted)}
+.cov.thin{color:#ffb4a6}
+.rec{border:1px solid var(--line);border-radius:6px;padding:10px;margin:8px 0;background:#0c1117}
+.rec.arch{opacity:.6}
+.rec h3{margin:0 0 6px;font:600 15px system-ui}
+.kv{display:grid;grid-template-columns:170px 1fr;gap:2px 10px;font-size:13px}
+.kv dt{color:var(--muted)}
+.ctl{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+input,select,textarea{font:13px system-ui;background:#0e1319;color:var(--fg);border:1px solid var(--line);border-radius:4px;padding:3px 6px}
+button{font:600 12px system-ui;padding:4px 10px;border-radius:4px;border:1px solid var(--line);background:#1b2430;color:var(--fg);cursor:pointer}
+button.danger{border-color:var(--gap);color:#ffb4a6}
+.status{font:600 12px system-ui;color:var(--ok)}
+#denied{margin:20vh auto;text-align:center;color:var(--muted)}
+</style></head><body>
+<div id="denied" hidden>Page réservée.</div>
+<main id="app" hidden>
+<div class="crumb">ADMIN → INVITÉS → CHAMPS → CONSERVATION / FRAIS</div>
+<h1>Mes invités · <span id="who"></span></h1>
+<div class="lock" role="note">Règle immuable : si l’invité met fin, purge immédiate — aucune conservation, aucun frais.</div>
+<div class="demo" id="mode"></div>
+<section><h2>Lacunes (règle des champs clairsemés : &lt; 25 %)</h2><div id="gaps"></div></section>
+<section><h2>Champs conservés (vous choisissez)</h2><div class="fields" id="keep"></div><div class="cov" style="margin-top:6px">Un champ décoché n’est plus conservé pour vos invités.</div></section>
+<section><h2>Invités <span id="count" class="cov"></span></h2><div id="list"></div></section>
+<p class="cov">Envoi bloqué — en attente du feu vert d’Éric sur les modèles. Rien n’est envoyé depuis cette page. Frais et conservation : visibles ici seulement, jamais sur la carte d’invitation. Sur un site statique, cette page est cachée, pas protégée ; la vraie protection est le point d’entrée serveur.</p>
+</main>
+<script>
+(function(){
+  var ADM=[{"id": "eric-grimard", "name": "Éric Grimard", "sha256": "21669f81997d77778ff0a49bd074280f3014886b2b82d208b7658d73eca39dca"}, {"id": "gary-kivenko", "name": "Gary Kivenko", "sha256": "70e470961f91196ebef1ca2f12c6c513f0da49d411e61648e1fe12525f17fb77"}, {"id": "samuel-le-flaguais", "name": "Samuel Le Flaguais", "sha256": "2d5b286b362b467d5aa4601639ca72bd316fe73d39e5ffa42381878292ba2e44"}], LS='um.hubGuestKey';
+  var UM_INVITE_ENDPOINT=''; /* même constante que hub-nav.js ; vide = non déployé */
+  var tok=null; try{tok=localStorage.getItem(LS);}catch(e){}
+  function deny(){ document.getElementById('denied').hidden=false; }
+  if(!tok||!window.crypto||!crypto.subtle) return deny();
+  crypto.subtle.digest('SHA-256',new TextEncoder().encode(tok)).then(function(b){
+    var hex=Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('');
+    var me=ADM.filter(function(a){return a.sha256===hex})[0]; if(!me) return deny();
+    start(me);
+  });
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  var F=[['label','Nom ou libellé'],['invited_at','Date d’invitation'],['status','Statut'],['mode','Mode d’interaction'],['meetings','Liens de réunion'],['files','Choix de remise des fichiers'],['card','Autres données de la carte'],['notes','Notes libres']];
+  function start(me){
+    document.getElementById('app').hidden=false;
+    document.getElementById('who').textContent=me.name;
+    var KEY='um.ledgerDemo.'+me.id, state;
+    var live=!!UM_INVITE_ENDPOINT;
+    document.getElementById('mode').textContent=live?'Registre serveur : vos invités seulement (portée de votre clé).':'EXEMPLE / sample — point d’entrée serveur non déployé [INCOMPLET]. Les fiches ci-dessous sont fictives, sans personne réelle ni coordonnées ; vos modifications restent dans ce navigateur.';
+    function demo(){ return {keep:F.map(function(f){return f[0]}),records:[
+      {id:'ex-1',label:'EXEMPLE A — invité fictif',invited_at:'2026-11-20',status:'held — send gate closed',mode:'video',meetings:{},files:'',card:'',notes:'',keep_alive:{on:false,days:0},fee:{amount:null,period:'',status:''},archived:false},
+      {id:'ex-2',label:'EXEMPLE B — invité fictif',invited_at:'2026-11-21',status:'held — send gate closed',mode:'ai',meetings:{},files:'dépôt par lien',card:'',notes:'',keep_alive:{on:true,days:30},fee:{amount:null,period:'',status:''},archived:false},
+      {id:'ex-3',label:'EXEMPLE C — invité fictif',invited_at:'2026-11-21',status:'held — send gate closed',mode:'',meetings:{},files:'',card:'',notes:'',keep_alive:{on:false,days:0},fee:{amount:null,period:'',status:''},archived:true}],
+      purgedByInvitee:1}; }
+    function load(){ try{ state=JSON.parse(localStorage.getItem(KEY)); }catch(e){} if(!state||!state.records) state=demo(); }
+    function save(){ try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){} }
+    function api(path,opt){ return fetch(UM_INVITE_ENDPOINT.replace(/\/invite$/,'')+path,Object.assign({mode:'cors',credentials:'omit',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok}},opt||{})).then(function(r){return r.json().then(function(j){return {s:r.status,j:j};});}); }
+    function has(r,k){ var v=r[k]; return k==='meetings'?v&&Object.keys(v).length>0:!(v==null||v===''); }
+    function render(){
+      var recs=state.records, keep=state.keep;
+      document.getElementById('count').textContent='('+recs.length+' · '+recs.filter(function(r){return r.archived}).length+' archivé(s)'+(state.purgedByInvitee?' · '+state.purgedByInvitee+' purgé(s) par l’invité, sans trace':'')+')';
+      document.getElementById('keep').innerHTML=F.map(function(f){ var n=recs.filter(function(r){return has(r,f[0])}).length, p=recs.length?Math.round(n/recs.length*100):0;
+        return '<label><input type="checkbox" data-keep="'+f[0]+'" '+(keep.indexOf(f[0])>=0?'checked':'')+'> '+esc(f[1])+' <span class="cov'+(p<25?' thin':'')+'">'+n+'/'+recs.length+' · '+p+' %</span></label>'; }).join('');
+      var g=F.filter(function(f){return keep.indexOf(f[0])>=0}).map(function(f){ var n=recs.filter(function(r){return has(r,f[0])}).length, p=recs.length?Math.round(n/recs.length*100):0; return [f[1],n,p]; }).filter(function(x){return x[2]<25});
+      document.getElementById('gaps').innerHTML=g.length?g.map(function(x){return '<div><span class="badge">LACUNE / GAP</span>'+esc(x[0])+' : '+x[1]+'/'+recs.length+' · '+x[2]+' % <span class="tag">[À CONFIRMER]</span></div>'}).join(''):'Aucune lacune.';
+      document.getElementById('list').innerHTML=recs.map(function(r){
+        var kv=F.filter(function(f){return keep.indexOf(f[0])>=0&&f[0]!=='notes'}).map(function(f){ var v=f[0]==='meetings'?Object.keys(r.meetings||{}).join(', '):r[f[0]];
+          return '<dt>'+esc(f[1])+'</dt><dd>'+(has(r,f[0])?esc(v):'<span class="badge">LACUNE / GAP</span><span class="tag">[INCOMPLET]</span>')+'</dd>'; }).join('');
+        return '<div class="rec'+(r.archived?' arch':'')+'" data-id="'+esc(r.id)+'"><h3>'+esc(r.label||'(sans libellé)')+(r.archived?' · <span class="tag">ARCHIVÉ</span>':'')+'</h3><dl class="kv">'+kv+'</dl>'
+          +(keep.indexOf('notes')>=0?'<div style="margin-top:6px"><textarea data-a="notes" rows="2" style="width:100%" placeholder="Notes libres">'+esc(r.notes)+'</textarea></div>':'')
+          +'<div class="ctl"><label><input type="checkbox" data-a="ka" '+(r.keep_alive.on?'checked':'')+'> Conserver / Keep alive</label> <label>durée <input type="number" min="0" max="3650" data-a="kad" value="'+(r.keep_alive.days||0)+'" style="width:70px"> jours</label>'
+          +'<span>Frais : <input type="number" min="0" step="0.01" data-a="fa" value="'+(r.fee.amount==null?'':r.fee.amount)+'" placeholder="montant" style="width:90px"> <select data-a="fp">'+['','mois','trimestre','année','unique'].map(function(o){return '<option'+(r.fee.period===o?' selected':'')+'>'+o+'</option>'}).join('')+'</select> <select data-a="fs">'+['','à proposer','proposé','accepté','payé','refusé'].map(function(o){return '<option'+(r.fee.status===o?' selected':'')+'>'+o+'</option>'}).join('')+'</select></span>'
+          +'<button type="button" data-a="arch">'+(r.archived?'Désarchiver':'Archiver')+'</button> <button type="button" class="danger" data-a="purge">Purger…</button> <span class="status" data-s></span></div></div>';
+      }).join('');
+    }
+    function rec(id){ return state.records.filter(function(r){return r.id===id})[0]; }
+    function commit(r,patch,msgEl){ if(live){ api('/ledger/'+r.id,{method:'PATCH',body:JSON.stringify(patch)}).then(function(x){ if(x.s===200){ Object.assign(r,x.j); render(); } else if(msgEl) msgEl.textContent=(x.s===410?'Purgé par l’invité — refusé':'Refusé ('+x.s+')'); }); } else { save(); render(); } }
+    document.getElementById('keep').addEventListener('change',function(e){ var k=e.target.dataset.keep; if(!k) return;
+      state.keep=e.target.checked?state.keep.concat([k]):state.keep.filter(function(x){return x!==k});
+      if(live) state.records.forEach(function(r){ api('/ledger/'+r.id,{method:'PATCH',body:JSON.stringify({keep:state.keep})}); }); save(); render(); });
+    document.getElementById('list').addEventListener('change',function(e){ var box=e.target.closest('.rec'); if(!box) return; var r=rec(box.dataset.id), a=e.target.dataset.a, st=box.querySelector('[data-s]');
+      if(a==='ka'||a==='kad'){ r.keep_alive={on:box.querySelector('[data-a=ka]').checked,days:+box.querySelector('[data-a=kad]').value||0}; commit(r,{keep_alive:r.keep_alive},st); }
+      if(a==='fa'||a==='fp'||a==='fs'){ var v=box.querySelector('[data-a=fa]').value; r.fee={amount:v===''?null:+v,period:box.querySelector('[data-a=fp]').value,status:box.querySelector('[data-a=fs]').value}; commit(r,{fee:r.fee},st); }
+      if(a==='notes'){ r.notes=e.target.value; commit(r,{notes:r.notes},st); } });
+    document.getElementById('list').addEventListener('click',function(e){ var box=e.target.closest('.rec'); if(!box) return; var r=rec(box.dataset.id), a=e.target.dataset.a, st=box.querySelector('[data-s]');
+      if(a==='arch'){ r.archived=!r.archived; commit(r,{archived:r.archived},st); }
+      if(a==='purge'){ st.innerHTML='Purger définitivement « '+esc(r.label)+' » ? <button type="button" class="danger" data-a="purgeYes">Oui, purger</button> <button type="button" data-a="purgeNo">Annuler</button>'; }
+      if(a==='purgeNo'){ st.textContent=''; }
+      if(a==='purgeYes'){ var drop=function(){ state.records=state.records.filter(function(x){return x.id!==r.id}); save(); render(); };
+        if(live) api('/ledger/'+r.id+'?confirm='+encodeURIComponent(r.id),{method:'DELETE'}).then(function(x){ if(x.s===200) drop(); else st.textContent='Refusé ('+x.s+')'; }); else drop(); } });
+    if(live) api('/ledger',{method:'GET'}).then(function(x){ if(x.s===200){ state={keep:(x.j.records[0]&&x.j.records[0].keep)||F.map(function(f){return f[0]}),records:x.j.records}; render(); } else { load(); render(); document.getElementById('mode').textContent='Registre serveur injoignable ('+x.s+') [INCOMPLET] — EXEMPLE affiché.'; } });
+    else { load(); render(); }
+  }
+})();
+</script></body></html>

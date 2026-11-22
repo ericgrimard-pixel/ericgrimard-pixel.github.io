@@ -1,0 +1,1 @@
+{ "name": "um-invite", "private": true, "type": "module", "scripts": { "test": "node test.mjs", "dev": "wrangler dev --local" } }
