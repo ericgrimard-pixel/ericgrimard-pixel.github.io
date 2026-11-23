@@ -799,3 +799,48 @@
     +'.um-skel .x{position:sticky;top:0;z-index:3;margin:-4px -6px 0 6px;background:#0b0f14;color:#ffe9a8;border:1px solid #e8c872;border-radius:4px;line-height:1.3;min-width:28px;min-height:26px;cursor:pointer}';
   document.head.appendChild(css);
 })();
+
+
+/* v20.93 — 23 nov 2026 (Toronto) : lien un-clic « TURN IT ON — PDF » (aucun emplacement
+   « livre blanc / white paper » n'existait dans hub-nav.js ni um/door/ ; le lien est
+   placé dans le groupe Porte · démo, sans retirer aucun lien existant, et aussi en
+   lien toujours visible du pied pour un vrai un-clic) ; entrée « Santé · paquet réel »
+   dans Porte · démo, qui ouvre le pôle Santé (switchSys('health')) et le panneau réel
+   (UM_SANTE_LOADER.show). Rien n'est retiré. Écouteurs en propriété onclick, pour
+   échapper au signal BOOT.ac du moteur. */
+(function(){
+  const PDF='https://drive.google.com/file/d/1K1rSEdumPInmciOcCHoSs7-KewezNKE3/view';
+  function openSanteReel(e){
+    if(e) e.preventDefault();
+    try{ if(typeof switchSys==='function') switchSys('health'); }catch(err){}
+    try{ if(window.UM_SANTE_LOADER&&typeof window.UM_SANTE_LOADER.show==='function') window.UM_SANTE_LOADER.show(); }catch(err){}
+  }
+  let tries=0;
+  function put(){
+    const foot=document.getElementById('um-rg-foot');
+    const door=document.getElementById('um-rg-door');
+    const body=door&&door.querySelector('.um-rg-body');
+    if(!foot||!body){ if(++tries<80) setTimeout(put,250); return; }
+    if(!document.getElementById('um-door-turniton')){
+      body.insertAdjacentHTML('beforeend',
+        '<a id="um-door-turniton" href="'+PDF+'" target="_blank" rel="noopener">TURN IT ON \u2014 PDF \u2197</a>'
+        +'<a id="um-door-sante-real" href="#sante-paquet-reel">Sant\u00e9 \u00b7 paquet r\u00e9el</a>');
+      document.getElementById('um-door-sante-real').onclick=openSanteReel;
+    }
+    if(!document.getElementById('um-turniton')){
+      if(!document.getElementById('um-v2093-docs-css')){
+        const css=document.createElement('style'); css.id='um-v2093-docs-css';
+        css.textContent='#um-rg-docs-quick{display:flex;flex-wrap:wrap;gap:4px;flex:1 1 100%;align-items:center}'
+          +'#um-rg-docs-quick a{font:500 11px/1.25 system-ui,sans-serif;padding:3px 7px;border:1px solid #7fd1ff;border-radius:4px;color:#bfe8ff;background:#0d1a26;text-decoration:none}'
+          +'#um-sante-paquet-reel,#um-door-sante-real{border-color:#5fd690;color:#c9f5da}';
+        document.head.appendChild(css);
+      }
+      const q=document.createElement('div'); q.id='um-rg-docs-quick';
+      q.innerHTML='<a id="um-turniton" href="'+PDF+'" target="_blank" rel="noopener">TURN IT ON \u2014 PDF \u2197</a>'
+        +'<a id="um-sante-paquet-reel" href="#sante-paquet-reel">Sant\u00e9 \u00b7 paquet r\u00e9el</a>';
+      if(door.nextSibling) foot.insertBefore(q, door.nextSibling); else foot.appendChild(q);
+      document.getElementById('um-sante-paquet-reel').onclick=openSanteReel;
+    }
+  }
+  put();
+})();
