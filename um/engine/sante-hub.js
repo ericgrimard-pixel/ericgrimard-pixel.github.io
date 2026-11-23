@@ -22,10 +22,11 @@
         marqués [INCOMPLET] avec la couverture publiée du treillis v1.4. Caractères agrandis (lisibilité).
      c) Le panneau se rouvre à chaque nouvelle entrée sur Santé (le × ne vaut que pour la visite en cours).
      (Aucun lien direct vers l'étage : le Hub s'ouvre toujours sur Finance, canon engine.js.)
+   v20.95.1 : la liste des sous-domaines lisait seulement les libellés entre guillemets (2 sur 7) ; elle les lit tous.
    Noms de pays : absents du paquet ; on n'en ajoute pas (codes REF_AREA seulement) [INCOMPLET]. */
 (function(){
   'use strict';
-  const VERSION='v20.95';
+  const VERSION='v20.95.1';
   const DEFAULT_BASE='/um/data/sante/u5mr/';
   const BASE=(typeof window.UM_SANTE_BASE==='string'&&window.UM_SANTE_BASE)||DEFAULT_BASE;
   const LAT='/plumb-dump-data/lattice/v1.4/';
@@ -109,7 +110,7 @@
     S.sub={state:'lecture'};
     Promise.all([fetch(LAT+'coverage_by_field_v1.4.csv').then(r=>r.ok?r.text():'').catch(()=>''), fetch(LAT+'gaps_v1.4.json').then(r=>r.ok?r.json():null).catch(()=>null)])
       .then(([csv,gj])=>{
-        const F={}; csv.split('\n').slice(1).forEach(l=>{ const m=l.match(/^([^,]+),"([^"]*)",([^,]+),(\d+),(\d+),([\d.]+),/); if(!m) return;
+        const F={}; csv.split('\n').slice(1).forEach(l=>{ const m=l.match(/^([^,]+),(?:"([^"]*)"|([^,"]*)),([^,]+),(\d+),(\d+),([\d.]+),/); if(!m) return; m.splice(2,2,m[2]!=null?m[2]:m[3]); /* v20.95.1 : libellés avec ou sans guillemets */
           const f=F[m[1]]||(F[m[1]]={id:m[1],label:m[2],cells:0,filled:0}); f.cells+=+m[4]; f.filled+=+m[5]; });
         S.sub={state:'ok', fields:Object.values(F), gaps:(gj&&gj.gaps)||[]}; S.dirty=true;
       });
