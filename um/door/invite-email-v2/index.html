@@ -5,105 +5,205 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="dark">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; connect-src 'none'; form-action 'none'; base-uri 'none'">
-<link rel="icon" href="data:,">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230b1016'/%3E%3Ccircle cx='32' cy='32' r='18' fill='none' stroke='%23c4a574' stroke-width='3'/%3E%3C/svg%3E">
 <title>Universal Metaphor · Invitation email v2 — compose preview</title>
 <style>
-/* Universal Metaphor — invitation email v2, compose preview (v20.94 — v20.94.1: Myrioamphibot only, 23 Nov 2026, Toronto).
-   New artifact. Prior templates (um-invite-demo-v2.html, form-draft/, card/) are untouched.
-   Inert by design: no link, form, font, image or request leaves this page.
-   Everything clicked here is a local visual preview only. */
+/* Universal Metaphor — invitation email v2, compose preview.
+   v20.94 (23 Nov 2026, Toronto) · v20.94.1 Myrioamphibot only · v20.94.2 dark-chamber redesign with depth.
+   Palette taken from the live Hub and Door, not invented:
+     Hub  um/index.html        --bg #05080d · --panel #0a1019 · --raise #101826 · --line #1a2636 · --line-2 #2b3c55
+                               --fg #dbe3ee · --muted #8b98ad · --accent #a6dcff · --core #e8c872
+     Door um/door/index.html   --bg #0b1016 · --bg-2 #121821 · --ink #e8e0d4 · --muted #9a9286 · --line #2a3340
+                               --gold #c4a574 · --gold-dim #8a734c
+     Card um/door/card/        --accent #e8c872 · #f3dfa0 · Invitee journey: --dawn #e8d9b0 · --panel #121a2c
+   New artifact; prior templates untouched. Inert: no link, form, font, image or request leaves this page. */
 :root{
-  --stone:#e7e4de; --stone2:#d9d5cd; --ivory:#FAF9F6; --white:#FFFFFF;
-  --navy:#1B2A4A; --ink:#23283a; --mist:#6b7182; --gold:#B8934A; --hair:rgba(27,42,74,.14); --goldhair:rgba(184,147,74,.55);
+  --obsidian:#05080d; --night:#0b1016; --panel:#0a1019; --raise:#101826; --bg2:#121821; --journey:#121a2c; --deep:#0e1622;
+  --line:#1a2636; --line2:#2b3c55; --dline:#2a3340;
+  --fg:#dbe3ee; --ink:#e8e0d4; --ink2:#d8d0c4; --muted:#9a9286; --hmuted:#8b98ad; --dim:#5c6a82;
+  --core:#e8c872; --gold:#c4a574; --golddim:#8a734c; --champ:#f3dfa0; --dawn:#e8d9b0; --accent:#a6dcff;
   --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
-  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI","Helvetica Neue",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{margin:0}
-body{background:linear-gradient(180deg,var(--stone) 0%,var(--stone2) 100%);min-height:100vh;color:var(--ink);font:15px/1.6 var(--sans);-webkit-font-smoothing:antialiased;padding:22px 16px 48px}
+html{background:var(--obsidian)}
+body{min-height:100vh;color:var(--ink2);font:15px/1.65 var(--sans);-webkit-font-smoothing:antialiased;padding:26px 18px 56px;
+  background:
+    radial-gradient(1100px 620px at 50% -140px, rgba(232,200,114,.10), rgba(232,200,114,0) 62%),
+    radial-gradient(900px 700px at 50% 38%, rgba(43,60,85,.42), rgba(43,60,85,0) 70%),
+    radial-gradient(1400px 900px at 50% 118%, rgba(18,26,44,.9), rgba(5,8,13,0) 70%),
+    linear-gradient(180deg,#070b12 0%,var(--obsidian) 55%,#04060a 100%);
+  background-repeat:no-repeat}
+/* faint architectural ring lattice behind everything */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.55;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 1200'%3E%3Cg fill='none' stroke='%23c4a574' stroke-opacity='.07'%3E%3Ccircle cx='600' cy='600' r='560'/%3E%3Ccircle cx='600' cy='600' r='440'/%3E%3Ccircle cx='600' cy='600' r='320'/%3E%3Cellipse cx='600' cy='600' rx='560' ry='190' transform='rotate(-24 600 600)'/%3E%3Cellipse cx='600' cy='600' rx='560' ry='190' transform='rotate(24 600 600)'/%3E%3Cpath d='M600 20v1160M20 600h1160'/%3E%3C/g%3E%3C/svg%3E") center 40px/min(1200px,140vw) no-repeat}
 button,input,select{font:inherit;color:inherit}
-:focus-visible{outline:1px solid var(--gold);outline-offset:3px}
-.wrap{max-width:760px;margin:0 auto}
+:focus-visible{outline:1px solid var(--core);outline-offset:3px}
+.wrap{position:relative;max-width:800px;margin:0 auto}
 
 /* ---------- preview banner — outside the email ---------- */
-.pv{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;font-size:12px;color:#4d5262;margin:0 0 14px;padding:0 2px}
-.pv .tag{display:inline-block;font:600 10.5px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--navy);border:1px solid var(--hair);border-radius:20px;padding:5px 10px;background:rgba(255,255,255,.45)}
-.pv .meta{flex:1 1 320px;line-height:1.5}
-.pv .meta b{font-weight:600;color:var(--navy)}
-.lang{display:inline-flex;border:1px solid var(--hair);border-radius:20px;overflow:hidden;background:rgba(255,255,255,.55)}
-.lang button{border:0;background:none;padding:5px 12px;font-size:11.5px;letter-spacing:.08em;cursor:pointer;color:var(--mist)}
-.lang button[aria-pressed=true]{background:var(--navy);color:var(--ivory)}
+.pv{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;font-size:12px;color:var(--hmuted);margin:0 0 16px;padding:0 4px}
+.pv .tag{display:inline-flex;align-items:center;gap:8px;font:500 10.5px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--dawn);border:1px solid rgba(196,165,116,.35);border-radius:20px;padding:6px 12px;background:rgba(10,16,25,.7);box-shadow:inset 0 1px 0 rgba(232,217,176,.08)}
+.pv .tag::before{content:"";width:7px;height:7px;border-radius:50%;border:1px solid var(--core)}
+.pv .meta{flex:1 1 320px;line-height:1.55}
+.pv .meta b{font-weight:600;color:var(--fg)}
+.lang{display:inline-flex;border:1px solid var(--line2);border-radius:20px;overflow:hidden;background:var(--panel);box-shadow:inset 0 2px 4px rgba(0,0,0,.5)}
+.lang button{border:0;background:none;padding:6px 13px;font:500 11px/1 var(--mono);letter-spacing:.12em;cursor:pointer;color:var(--hmuted)}
+.lang button[aria-pressed=true]{background:linear-gradient(180deg,var(--champ),var(--core) 55%,var(--gold));color:#1a1406;box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
 
-/* ---------- compose window ---------- */
-.win{background:var(--white);border:1px solid rgba(27,42,74,.12);border-radius:12px;box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 18px 50px -22px rgba(27,42,74,.35);overflow:hidden}
-.bar{display:flex;align-items:center;justify-content:space-between;padding:11px 18px;background:var(--navy);color:var(--ivory)}
-.bar .t{font:500 13px/1 var(--sans);letter-spacing:.04em}
-.bar .dots{display:flex;gap:6px}.bar .dots i{width:8px;height:8px;border-radius:50%;background:rgba(250,249,246,.28);display:block}
-.hdr{padding:4px 18px 0;border-bottom:1px solid var(--hair)}
-.f{display:grid;grid-template-columns:78px 1fr;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--hair);font-size:13.5px}
+/* ---------- compose window: recessed outer frame ---------- */
+.win{position:relative;border-radius:20px;padding:1px;
+  background:linear-gradient(180deg,rgba(196,165,116,.42),rgba(43,60,85,.5) 22%,rgba(26,38,54,.6) 70%,rgba(196,165,116,.22));
+  box-shadow:0 60px 120px -40px rgba(0,0,0,.95),0 24px 48px -24px rgba(0,0,0,.8),0 0 0 1px rgba(0,0,0,.6)}
+.win>.in{border-radius:19px;overflow:hidden;background:linear-gradient(180deg,var(--raise) 0%,var(--panel) 30%,#080d15 100%);box-shadow:inset 0 1px 0 rgba(232,217,176,.10)}
+.bar{display:flex;align-items:center;gap:12px;padding:13px 20px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(18,26,44,.9),rgba(10,16,25,.9))}
+.bar svg{width:22px;height:22px;flex:none}
+.bar .t{font:500 11.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--dawn);flex:1}
+.bar .dots{display:flex;gap:7px}.bar .dots i{width:9px;height:9px;border-radius:50%;display:block;background:radial-gradient(circle at 35% 30%,#3b4a60,#141d2b);box-shadow:inset 0 1px 1px rgba(0,0,0,.6),0 1px 0 rgba(255,255,255,.05)}
+.hdr{margin:16px 18px 0;border-radius:12px;background:#070b12;border:1px solid var(--line);box-shadow:inset 0 3px 10px rgba(0,0,0,.65),0 1px 0 rgba(255,255,255,.03);padding:2px 16px}
+.f{display:grid;grid-template-columns:84px 1fr;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid rgba(43,60,85,.45);font-size:13.5px}
 .f:last-child{border-bottom:0}
-.f label,.f .k{color:var(--mist);font-size:12px;letter-spacing:.04em}
-.f .v{color:var(--ink);min-width:0}
-.f .v small{color:var(--mist);font-size:12px}
-.f input[type=email]{width:100%;border:0;border-bottom:1px dashed transparent;background:none;padding:3px 0;outline:none;font-size:14px}
-.f input[type=email]::placeholder{color:#a2a6b2}
-.f input[type=email]:focus{border-bottom-color:var(--goldhair)}
-.f select{border:1px solid var(--hair);border-radius:6px;background:var(--ivory);padding:2px 6px;font-size:12.5px}
-.f .subj{font-family:var(--serif);font-size:15.5px;color:var(--navy)}
-.act{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;padding:12px 18px;border-bottom:1px solid var(--hair);background:#fcfbf8}
-.send{border:1px solid var(--navy);background:var(--navy);color:var(--ivory);border-radius:6px;padding:8px 16px;font-size:13px;letter-spacing:.03em;cursor:pointer}
-.send:hover{background:#24365c}
-.act .why{font-size:12px;color:var(--mist)}
-.note{margin:0;padding:11px 18px;font-size:12.5px;line-height:1.55;color:var(--navy);background:#f4efe3;border-bottom:1px solid var(--goldhair)}
-.note.warn{background:#f7efe9;color:#6a3b2a;border-bottom-color:rgba(160,90,60,.35)}
+.f label,.f .k{font:500 10.5px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--golddim)}
+.f .v{color:var(--fg);min-width:0}
+.f .v small{color:var(--hmuted);font-size:12px}
+.f input[type=email]{width:100%;border:1px solid transparent;border-radius:7px;background:rgba(18,26,44,.6);padding:6px 10px;outline:none;font-size:14px;color:var(--fg);box-shadow:inset 0 1px 3px rgba(0,0,0,.6)}
+.f input[type=email]::placeholder{color:var(--dim)}
+.f input[type=email]:focus{border-color:rgba(232,200,114,.55);box-shadow:inset 0 1px 3px rgba(0,0,0,.6),0 0 0 3px rgba(232,200,114,.10)}
+.f select{border:1px solid var(--line2);border-radius:6px;background:var(--raise);color:var(--fg);padding:3px 8px;font-size:12.5px}
+.f .subj{font-family:var(--serif);font-size:16.5px;color:var(--ink);letter-spacing:.005em}
+.act{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;padding:16px 20px 18px}
+.send,.cta .ghost{border:1px solid rgba(138,115,76,.9);background:linear-gradient(180deg,var(--champ) 0%,var(--core) 42%,var(--gold) 100%);color:#1a1406;border-radius:9px;padding:10px 20px;font:600 13px/1.2 var(--sans);letter-spacing:.03em;cursor:pointer;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(90,70,30,.45),0 10px 24px -10px rgba(232,200,114,.45),0 2px 4px rgba(0,0,0,.5);transition:transform .15s,box-shadow .2s}
+.send:hover,.cta .ghost:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -1px 0 rgba(90,70,30,.45),0 14px 30px -10px rgba(232,200,114,.55),0 2px 4px rgba(0,0,0,.5)}
+.send:active,.cta .ghost:active{transform:translateY(1px)}
+.act .why{font-size:12.5px;color:var(--hmuted)}
+.note{margin:0 18px 16px;padding:12px 16px;font-size:12.5px;line-height:1.6;color:var(--dawn);border-radius:10px;background:linear-gradient(180deg,rgba(42,36,16,.55),rgba(20,17,10,.55));border:1px solid rgba(196,165,116,.35);box-shadow:inset 0 1px 0 rgba(243,223,160,.08)}
+.note.warn{color:#ffd9d2;background:linear-gradient(180deg,rgba(90,42,36,.45),rgba(40,20,18,.45));border-color:rgba(224,83,63,.35)}
 
-/* ---------- the email itself ---------- */
-.mailpad{background:var(--ivory);padding:34px 18px 40px}
-.mail{max-width:600px;margin:0 auto;background:var(--white);border:1px solid rgba(27,42,74,.08);border-top:2px solid var(--gold);padding:44px 48px 36px}
-.mark{font:600 11px/1 var(--sans);letter-spacing:.32em;text-transform:uppercase;color:var(--navy);text-align:center}
-.rule{width:44px;height:1px;background:var(--gold);margin:16px auto 30px}
-.mail h1{font:400 34px/1.15 var(--serif);color:var(--navy);margin:0 0 20px;letter-spacing:-.005em}
-.mail p{margin:0 0 15px;color:var(--ink)}
-.ph{border-bottom:1px dotted var(--gold);color:var(--navy)}
-.sec{margin:30px 0 0;padding:24px 0 0;border-top:1px solid var(--hair)}
-.sec h2{font:600 10.5px/1.2 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin:0 0 10px}
-.sec h3{font:400 21px/1.25 var(--serif);color:var(--navy);margin:0 0 10px}
-.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0 8px}
-.modes button{border:1px solid var(--hair);background:var(--white);border-radius:6px;padding:11px 8px;font-size:13px;color:var(--navy);cursor:pointer;text-align:center;line-height:1.3;transition:border-color .2s,background .2s}
-.modes button small{display:block;color:var(--mist);font-size:11px;margin-top:2px}
-.modes button:hover{border-color:var(--goldhair)}
-.modes button[aria-pressed=true]{border-color:var(--gold);background:#fbf6ea;box-shadow:inset 0 0 0 1px var(--gold)}
-.fine{font-size:12.5px;color:var(--mist);margin:6px 0 0}
-.fine.on{color:var(--navy)}
-.ghost{display:inline-block;border:1px solid var(--navy);background:none;color:var(--navy);border-radius:6px;padding:10px 18px;font-size:13.5px;letter-spacing:.02em;cursor:pointer;margin:6px 0 4px}
-.ghost:hover{background:#f3f4f8}
-.cta{text-align:center;margin:30px 0 4px}
-.cta .ghost{background:var(--navy);color:var(--ivory);padding:12px 26px}
-.cta .ghost:hover{background:#24365c}
-.safe{margin:30px 0 0;padding:18px 20px;background:var(--ivory);border-left:2px solid var(--gold)}
-.safe h2{font:600 10.5px/1.2 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin:0 0 8px}
-.safe p{margin:0 0 6px;font-size:13.5px}
+/* ---------- the invitation chamber: raised ---------- */
+.mailpad{padding:14px 18px 34px;background:radial-gradient(700px 260px at 50% 0,rgba(232,200,114,.06),rgba(0,0,0,0) 70%)}
+.mail{position:relative;max-width:640px;margin:0 auto;border-radius:16px;padding:54px 56px 40px;
+  background:
+    radial-gradient(520px 240px at 50% -40px,rgba(232,217,176,.09),rgba(0,0,0,0) 70%),
+    linear-gradient(180deg,var(--journey) 0%,var(--raise) 38%,var(--deep) 100%);
+  border:1px solid rgba(196,165,116,.30);
+  box-shadow:inset 0 1px 0 rgba(243,223,160,.22),inset 0 0 0 1px rgba(255,255,255,.015),inset 0 -24px 48px -24px rgba(0,0,0,.55),
+    0 2px 0 #05080d,0 36px 70px -26px rgba(0,0,0,.92),0 12px 24px -12px rgba(0,0,0,.7)}
+.mail::before{content:"";position:absolute;left:12%;right:12%;top:-1px;height:1px;background:linear-gradient(90deg,rgba(232,200,114,0),var(--champ),rgba(232,200,114,0))}
+.emblem{display:block;width:118px;height:118px;margin:0 auto 18px;filter:drop-shadow(0 6px 18px rgba(232,200,114,.18))}
+.mark{font:500 12px/1 var(--serif);letter-spacing:.42em;text-transform:uppercase;color:var(--dawn);text-align:center;padding-left:.42em}
+.rule{display:flex;align-items:center;justify-content:center;gap:10px;margin:18px auto 34px}
+.rule::before,.rule::after{content:"";width:56px;height:1px;background:linear-gradient(90deg,rgba(196,165,116,0),var(--gold))}
+.rule::after{transform:scaleX(-1)}
+.rule i{width:5px;height:5px;transform:rotate(45deg);border:1px solid var(--core)}
+.mail h1{font:400 44px/1.1 var(--serif);color:var(--ink);margin:0 0 24px;letter-spacing:-.01em;text-shadow:0 2px 18px rgba(0,0,0,.5)}
+.mail h1 em{font-style:italic;color:var(--core)}
+.mail p{margin:0 0 16px;color:var(--ink2)}
+.ph{border-bottom:1px dotted var(--gold);color:var(--dawn)}
+.sec{margin:36px 0 0;padding:30px 0 0;position:relative}
+.sec::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:linear-gradient(90deg,rgba(43,60,85,0),var(--line2) 18%,var(--line2) 82%,rgba(43,60,85,0))}
+.sec h2,.safe h2,.agentc h2{display:flex;align-items:center;gap:10px;font:500 10.5px/1.2 var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:0 0 12px}
+.sec h2::before,.safe h2::before,.agentc h2::before{content:"";width:9px;height:9px;border-radius:50%;border:1px solid var(--core);box-shadow:0 0 0 3px rgba(232,200,114,.08)}
+.sec h3{font:400 25px/1.25 var(--serif);color:var(--ink);margin:0 0 10px}
+
+/* six transfer plates */
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0 10px}
+.modes button{position:relative;border:1px solid var(--dline);border-radius:12px;padding:30px 10px 15px;font:500 13.5px/1.3 var(--sans);color:var(--fg);cursor:pointer;text-align:center;
+  background:linear-gradient(180deg,#172133 0%,var(--bg2) 45%,#0c121b 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),inset 0 -2px 6px rgba(0,0,0,.45),0 10px 18px -10px rgba(0,0,0,.9),0 1px 0 rgba(0,0,0,.6);
+  transition:border-color .2s,box-shadow .25s,transform .15s,background .25s,color .2s}
+.modes button::before{content:"";position:absolute;left:50%;top:11px;width:11px;height:11px;margin-left:-6px;border-radius:50%;border:1px solid var(--golddim);background:radial-gradient(circle,#0b1016 45%,rgba(0,0,0,0) 46%);transition:all .25s}
+.modes button small{display:block;color:var(--hmuted);font:400 10.5px/1.4 var(--mono);letter-spacing:.04em;margin-top:4px}
+.modes button:hover{border-color:rgba(196,165,116,.55);transform:translateY(-1px)}
+.modes button[aria-pressed=true]{border-color:var(--core);color:var(--champ);transform:translateY(1px);
+  background:linear-gradient(180deg,#2a2410 0%,#1a160b 55%,#120f08 100%);
+  box-shadow:inset 0 1px 0 rgba(243,223,160,.25),inset 0 2px 8px rgba(0,0,0,.5),0 0 0 1px rgba(232,200,114,.35),0 0 28px -6px rgba(232,200,114,.45)}
+.modes button[aria-pressed=true]::before{border-color:var(--champ);background:radial-gradient(circle,var(--core) 38%,rgba(0,0,0,0) 42%);box-shadow:0 0 10px rgba(232,200,114,.7)}
+.modes button[aria-pressed=true] small{color:var(--dawn)}
+.fine{font-size:12.5px;color:var(--muted);margin:8px 0 0}
+.fine.on{color:var(--dawn)}
+
+/* Myrioamphibot agent chamber */
+.agentc{margin:38px -18px 0;padding:30px 30px 26px;border-radius:14px;position:relative;
+  background:radial-gradient(420px 200px at 0% 0%,rgba(166,220,255,.07),rgba(0,0,0,0) 70%),radial-gradient(420px 220px at 100% 100%,rgba(232,200,114,.08),rgba(0,0,0,0) 70%),linear-gradient(180deg,#0d1522,#0a1019);
+  border:1px solid var(--line2);
+  box-shadow:inset 0 1px 0 rgba(166,220,255,.10),inset 0 4px 14px rgba(0,0,0,.45),0 18px 34px -20px rgba(0,0,0,.9)}
+.agentc .ahead{display:flex;gap:18px;align-items:center;margin:0 0 12px}
+.agentc .ahead svg{width:78px;height:46px;flex:none}
+.agentc h2{margin:0 0 6px}
+.agentc h3{font:400 25px/1.2 var(--serif);color:var(--ink);margin:0}
+.ghost{display:inline-block;border:1px solid rgba(196,165,116,.65);background:linear-gradient(180deg,rgba(42,36,16,.35),rgba(10,16,25,.4));color:var(--dawn);border-radius:9px;padding:10px 20px;font:500 13.5px/1.2 var(--sans);letter-spacing:.02em;cursor:pointer;margin:8px 0 4px;
+  box-shadow:inset 0 1px 0 rgba(243,223,160,.12),0 8px 18px -10px rgba(0,0,0,.9);transition:all .2s}
+.ghost:hover{border-color:var(--core);color:var(--champ)}
+.ghost[aria-pressed=true]{border-color:var(--core);color:var(--champ);box-shadow:inset 0 1px 0 rgba(243,223,160,.2),0 0 0 1px rgba(232,200,114,.3),0 0 22px -6px rgba(232,200,114,.45)}
+.cta{text-align:center;margin:40px 0 4px}
+.cta .ghost{padding:13px 30px;font-size:14px}
+.cta .ghost:hover,.cta .ghost:focus-visible{color:#1a1406;border-color:rgba(138,115,76,.9)}
+
+/* privacy well: recessed */
+.safe{margin:34px 0 0;padding:20px 22px;border-radius:12px;background:#080d15;border:1px solid var(--line);border-left:2px solid var(--gold);box-shadow:inset 0 3px 10px rgba(0,0,0,.6),0 1px 0 rgba(255,255,255,.03)}
+.safe p{margin:0 0 6px;font-size:13.5px;color:var(--ink2)}
 .safe p:last-child{margin:0}
-.sig{margin:34px 0 0}
-.sig .w{color:var(--mist);font-size:13.5px;margin:0 0 10px}
-.sig .n{font:400 22px/1.2 var(--serif);color:var(--navy);margin:0}
-.sig .o{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mist);margin:4px 0 0}
-.foot{margin:34px 0 0;padding:16px 0 0;border-top:1px solid var(--hair);font-size:11.5px;color:#8a8f9c;text-align:center;line-height:1.55}
-.after{font-size:11.5px;color:#5c6170;text-align:center;margin:16px 0 0}
+.sig{margin:40px 0 0;display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.sig .w{color:var(--muted);font-size:13.5px;margin:0 0 10px}
+.sig .n{font:italic 400 27px/1.2 var(--serif);color:var(--ink);margin:0}
+.sig .o{font:500 10.5px/1 var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:8px 0 0}
+.sig svg{width:44px;height:44px;opacity:.85;flex:none}
+.foot{margin:36px 0 0;padding:18px 0 0;border-top:1px solid var(--line);font-size:11.5px;color:var(--dim);text-align:center;line-height:1.6}
+.foot #footSender{color:var(--hmuted)}
+.after{font:400 10.5px/1.5 var(--mono);letter-spacing:.08em;color:var(--dim);text-align:center;margin:20px 0 0}
 
-@media (max-width:560px){
-  body{padding:12px 8px 32px}
-  .mail{padding:32px 22px 28px}
-  .mail h1{font-size:28px}
-  .modes{grid-template-columns:1fr 1fr}
-  .f{grid-template-columns:62px 1fr}
-  .mailpad{padding:18px 8px 26px}
+@media (max-width:600px){
+  body{padding:14px 8px 36px}
+  .hdr{margin:12px 10px 0;padding:2px 12px}
+  .f{grid-template-columns:64px 1fr;gap:8px}
+  .act{padding:14px 12px 16px}
+  .note{margin:0 10px 14px}
+  .mailpad{padding:8px 8px 22px}
+  .mail{padding:38px 22px 30px}
+  .emblem{width:92px;height:92px}
+  .mail h1{font-size:34px}
+  .sec h3,.agentc h3{font-size:22px}
+  .modes{grid-template-columns:1fr 1fr;gap:10px}
+  .agentc{margin:32px -8px 0;padding:24px 18px 20px}
+  .agentc .ahead svg{width:60px;height:36px}
 }
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="umg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f3dfa0"/><stop offset=".45" stop-color="#e8c872"/><stop offset="1" stop-color="#8a734c"/>
+    </linearGradient>
+    <radialGradient id="umcore" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#f3dfa0"/><stop offset=".55" stop-color="#e8c872"/><stop offset="1" stop-color="#e8c872" stop-opacity="0"/>
+    </radialGradient>
+    <symbol id="ummark" viewBox="0 0 120 120">
+      <g fill="none" stroke="url(#umg)">
+        <circle cx="60" cy="60" r="55" stroke-width="1" stroke-opacity=".55"/>
+        <g stroke-width="1.2" stroke-opacity=".7">
+          <path d="M60 2v6M60 112v6M2 60h6M112 60h6"/>
+          <path d="M19 19l4 4M97 97l4 4M101 19l-4 4M23 97l-4 4" stroke-opacity=".45"/>
+        </g>
+        <circle cx="60" cy="60" r="42" stroke-width="1.4"/>
+        <ellipse cx="60" cy="60" rx="42" ry="14" stroke-width="1.1" transform="rotate(-28 60 60)"/>
+        <ellipse cx="60" cy="60" rx="42" ry="14" stroke-width="1.1" transform="rotate(28 60 60)"/>
+        <ellipse cx="60" cy="60" rx="14" ry="42" stroke-width=".8" stroke-opacity=".6"/>
+        <circle cx="60" cy="60" r="20" stroke-width="1" stroke-opacity=".8"/>
+      </g>
+      <circle cx="60" cy="60" r="9" fill="url(#umcore)"/>
+      <circle cx="60" cy="60" r="3" fill="#f3dfa0"/>
+      <circle cx="97" cy="40" r="2.4" fill="#e8c872"/>
+      <circle cx="23" cy="80" r="2.4" fill="#a6dcff" fill-opacity=".85"/>
+    </symbol>
+  </defs>
+</svg>
 <div class="wrap">
 
   <!-- Preview banner: outside the email, never part of what the invitee receives -->
@@ -119,8 +219,8 @@ button,input,select{font:inherit;color:inherit}
     </span>
   </div>
 
-  <div class="win">
-    <div class="bar"><span class="t" data-i="winTitle">New invitation — ready to send</span><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
+  <div class="win"><div class="in">
+    <div class="bar"><svg aria-hidden="true"><use href="#ummark"/></svg><span class="t" data-i="winTitle">New invitation — ready to send</span><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
 
     <div class="hdr">
       <div class="f"><span class="k" data-i="kFrom">From</span>
@@ -149,10 +249,11 @@ button,input,select{font:inherit;color:inherit}
 
     <div class="mailpad">
       <article class="mail" aria-label="Email body">
+        <svg class="emblem" role="img" aria-label="Universal Metaphor"><use href="#ummark"/></svg>
         <div class="mark">Universal Metaphor</div>
-        <div class="rule"></div>
+        <div class="rule" aria-hidden="true"><i></i></div>
 
-        <h1 data-i="h1">You are invited.</h1>
+        <h1 data-i="h1">You are <em>invited</em>.</h1>
         <p><span data-i="dear">Dear</span> <span class="ph" data-i="name">[Invitee name]</span>,</p>
         <p data-i="p1">Universal Metaphor invites you to see your own data take shape, in a private session created for you alone.</p>
         <p data-i="p2">There is nothing to install and no account to create. You decide what you share, how you share it, and when it ends.</p>
@@ -172,9 +273,18 @@ button,input,select{font:inherit;color:inherit}
           <p class="fine" id="modeNote" role="status" aria-live="polite" data-i="modeIdle">A shared link or attached files are all we need.</p>
         </section>
 
-        <section class="sec">
-          <h2 data-i="s2k">Your AI agent</h2>
-          <h3 data-i="s2h">Link your own agent with ours</h3>
+        <section class="agentc">
+          <div class="ahead">
+            <svg viewBox="0 0 78 46" aria-hidden="true">
+              <circle cx="27" cy="23" r="17" fill="none" stroke="#a6dcff" stroke-opacity=".75" stroke-width="1.3"/>
+              <circle cx="51" cy="23" r="17" fill="none" stroke="url(#umg)" stroke-width="1.5"/>
+              <ellipse cx="51" cy="23" rx="17" ry="6" fill="none" stroke="url(#umg)" stroke-width=".9" stroke-opacity=".7" transform="rotate(-28 51 23)"/>
+              <circle cx="27" cy="23" r="2.4" fill="#a6dcff"/>
+              <circle cx="51" cy="23" r="3" fill="#e8c872"/>
+              <path d="M30 23h18" stroke="#c4a574" stroke-width=".9" stroke-dasharray="2 3"/>
+            </svg>
+            <div><h2 data-i="s2k">Your AI agent</h2><h3 data-i="s2h">Link your own agent with ours</h3></div>
+          </div>
           <p data-i="s2p">If you work with an AI agent, it can connect directly with Universal Metaphor's Myrioamphibot — through this same email thread, exchanging data, never instructions. Only you can start the link, and you may end it whenever you wish.</p>
           <button type="button" class="ghost" id="agent" aria-pressed="false" data-i="agentBtn">Link your AI agent (preview)</button>
           <p class="fine" id="agentNote" role="status" aria-live="polite" hidden></p>
@@ -192,9 +302,12 @@ button,input,select{font:inherit;color:inherit}
         </div>
 
         <div class="sig">
-          <p class="w" data-i="regards">With my warm regards,</p>
-          <p class="n">Éric Grimard</p>
-          <p class="o">Universal Metaphor</p>
+          <div>
+            <p class="w" data-i="regards">With my warm regards,</p>
+            <p class="n">Éric Grimard</p>
+            <p class="o">Universal Metaphor</p>
+          </div>
+          <svg aria-hidden="true"><use href="#ummark"/></svg>
         </div>
 
         <div class="foot">
@@ -203,9 +316,9 @@ button,input,select{font:inherit;color:inherit}
         </div>
       </article>
     </div>
-  </div>
+  </div></div>
 
-  <p class="after" data-i="after">Universal Metaphor · invitation email v2 · compose preview for authorized senders · v20.94.1</p>
+  <p class="after" data-i="after">Universal Metaphor · invitation email v2 · compose preview for authorized senders · v20.94.2</p>
 </div>
 
 <script>
@@ -226,7 +339,7 @@ button,input,select{font:inherit;color:inherit}
       sendEmpty:'Add the invitee\u2019s email address in the To field to preview the send.',
       sendBad:'This does not look like a complete email address yet.',
       sendOk:'Preview only — nothing was sent to {to}. In live mode, sending this message starts the entire security protocol through the invitee\u2019s email address alone: no password, no token, no credential is ever requested.',
-      h1:'You are invited.', dear:'Dear', name:'[Invitee name]',
+      h1:'You are <em>invited</em>.', dear:'Dear', name:'[Invitee name]',
       p1:'Universal Metaphor invites you to see your own data take shape, in a private session created for you alone.',
       p2:'There is nothing to install and no account to create. You decide what you share, how you share it, and when it ends.',
       s1k:'Sharing your data', s1h:'How would you prefer to send it?',
@@ -246,7 +359,7 @@ button,input,select{font:inherit;color:inherit}
       regards:'With my warm regards,',
       foot1:'This invitation was written for you alone and sent from data@universalmetaphor.ca on behalf of Éric Grimard by',
       foot2:'If it reached you by mistake, simply disregard it; nothing is kept.',
-      after:'Universal Metaphor · invitation email v2 · compose preview for authorized senders · v20.94.1'
+      after:'Universal Metaphor · invitation email v2 · compose preview for authorized senders · v20.94.2'
     },
     fr:{
       pvTag:'Aperçu · Courriel d\u2019invitation v2',
@@ -261,7 +374,7 @@ button,input,select{font:inherit;color:inherit}
       sendEmpty:'Ajoutez l\u2019adresse courriel de l\u2019invité dans le champ « À » pour prévisualiser l\u2019envoi.',
       sendBad:'Cette adresse courriel ne semble pas encore complète.',
       sendOk:'Aperçu seulement — rien n\u2019a été envoyé à {to}. En mode réel, l\u2019envoi de ce message lance tout le protocole de sécurité par la seule adresse courriel de l\u2019invité : aucun mot de passe, aucun jeton, aucun identifiant n\u2019est jamais demandé.',
-      h1:'Vous êtes invité.', dear:'Bonjour', name:'[Nom de l\u2019invité]',
+      h1:'Vous êtes <em>invité</em>.', dear:'Bonjour', name:'[Nom de l\u2019invité]',
       p1:'Universal Metaphor vous invite à voir vos propres données prendre forme, dans une session privée créée pour vous seul.',
       p2:'Rien à installer, aucun compte à créer. Vous décidez de ce que vous partagez, de la manière, et du moment où cela prend fin.',
       s1k:'Partager vos données', s1h:'Comment préférez-vous les transmettre ?',
@@ -281,7 +394,7 @@ button,input,select{font:inherit;color:inherit}
       regards:'Avec mes salutations chaleureuses,',
       foot1:'Cette invitation a été écrite pour vous seul et envoyée depuis data@universalmetaphor.ca au nom d\u2019Éric Grimard par',
       foot2:'Si elle vous est parvenue par erreur, ignorez-la simplement ; rien n\u2019est conservé.',
-      after:'Universal Metaphor · courriel d\u2019invitation v2 · aperçu de rédaction pour expéditeurs autorisés · v20.94.1'
+      after:'Universal Metaphor · courriel d\u2019invitation v2 · aperçu de rédaction pour expéditeurs autorisés · v20.94.2'
     }
   };
   var lang='en', mode=null, agentOn=false, lastSend=null;
