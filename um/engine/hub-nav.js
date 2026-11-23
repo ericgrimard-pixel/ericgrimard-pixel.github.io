@@ -844,3 +844,39 @@
   }
   put();
 })();
+
+
+/* v20.94 — 23 nov 2026 (Toronto) : courriel d'invitation v2, fenêtre de rédaction prête à
+   envoyer (/um/door/invite-email-v2/, aperçu inerte : aucun lien, envoi ni requête branché).
+   Le clic « ✉ Invitation » (rangée Pôles et tête de la colonne de gauche) ouvre désormais ce
+   modèle directement. L'ancien parcours (/um/door/um-invite-demo-v2.html) et le brouillon
+   (/um/door/form-draft/) restent intacts et accessibles dans Porte · démo. Ajout d'une entrée
+   « ✉ Modèle courriel · aperçu » en tête de Porte · démo et au pied, à côté de TURN IT ON et
+   Santé · paquet réel. Rien n'est retiré. */
+(function(){
+  const MAIL='/um/door/invite-email-v2/';
+  const TIP='Courriel d\u2019invitation v2 \u2014 fen\u00eatre pr\u00eate \u00e0 envoyer (aper\u00e7u inerte). Ancien parcours : Porte \u00b7 d\u00e9mo';
+  let tries=0;
+  function put(){
+    const first=document.getElementById('um-invite-first');
+    const left=document.getElementById('um-invite-left');
+    const door=document.getElementById('um-rg-door');
+    const body=door&&door.querySelector('.um-rg-body');
+    const quick=document.getElementById('um-rg-docs-quick');
+    [first,left].forEach(a=>{ if(a&&a.getAttribute('href')!==MAIL){ a.href=MAIL; a.target='_blank'; a.rel='noopener'; a.title=TIP; } });
+    if(body&&!document.getElementById('um-door-mail')){
+      body.insertAdjacentHTML('afterbegin','<a id="um-door-mail" href="'+MAIL+'" target="_blank" rel="noopener">\u2709 Mod\u00e8le courriel \u00b7 aper\u00e7u / Invite email \u00b7 preview \u2197</a>');
+    }
+    if(quick&&!document.getElementById('um-invite-mail')){
+      quick.insertAdjacentHTML('afterbegin','<a id="um-invite-mail" href="'+MAIL+'" target="_blank" rel="noopener">\u2709 Invite email \u00b7 preview \u2197</a>');
+      if(!document.getElementById('um-v2094-css')){
+        const css=document.createElement('style'); css.id='um-v2094-css';
+        css.textContent='#um-invite-mail,#um-door-mail{border-color:#e8c872!important;color:#ffe9a8!important}';
+        document.head.appendChild(css);
+      }
+    }
+    const done=first&&left&&first.getAttribute('href')===MAIL&&left.getAttribute('href')===MAIL&&document.getElementById('um-door-mail')&&document.getElementById('um-invite-mail');
+    if(!done&&++tries<120) setTimeout(put,250);
+  }
+  put();
+})();

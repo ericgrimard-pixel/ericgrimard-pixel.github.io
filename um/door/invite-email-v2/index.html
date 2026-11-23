@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<link rel="icon" href="data:,">
+<title>Universal Metaphor · Invitation email v2 — compose preview</title>
+<style>
+/* Universal Metaphor — invitation email v2, compose preview (v20.94, 23 Nov 2026, Toronto).
+   New artifact. Prior templates (um-invite-demo-v2.html, form-draft/, card/) are untouched.
+   Inert by design: no link, form, font, image or request leaves this page.
+   Everything clicked here is a local visual preview only. */
+:root{
+  --stone:#e7e4de; --stone2:#d9d5cd; --ivory:#FAF9F6; --white:#FFFFFF;
+  --navy:#1B2A4A; --ink:#23283a; --mist:#6b7182; --gold:#B8934A; --hair:rgba(27,42,74,.14); --goldhair:rgba(184,147,74,.55);
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:linear-gradient(180deg,var(--stone) 0%,var(--stone2) 100%);min-height:100vh;color:var(--ink);font:15px/1.6 var(--sans);-webkit-font-smoothing:antialiased;padding:22px 16px 48px}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:1px solid var(--gold);outline-offset:3px}
+.wrap{max-width:760px;margin:0 auto}
+
+/* ---------- preview banner — outside the email ---------- */
+.pv{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;font-size:12px;color:#4d5262;margin:0 0 14px;padding:0 2px}
+.pv .tag{display:inline-block;font:600 10.5px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--navy);border:1px solid var(--hair);border-radius:20px;padding:5px 10px;background:rgba(255,255,255,.45)}
+.pv .meta{flex:1 1 320px;line-height:1.5}
+.pv .meta b{font-weight:600;color:var(--navy)}
+.lang{display:inline-flex;border:1px solid var(--hair);border-radius:20px;overflow:hidden;background:rgba(255,255,255,.55)}
+.lang button{border:0;background:none;padding:5px 12px;font-size:11.5px;letter-spacing:.08em;cursor:pointer;color:var(--mist)}
+.lang button[aria-pressed=true]{background:var(--navy);color:var(--ivory)}
+
+/* ---------- compose window ---------- */
+.win{background:var(--white);border:1px solid rgba(27,42,74,.12);border-radius:12px;box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 18px 50px -22px rgba(27,42,74,.35);overflow:hidden}
+.bar{display:flex;align-items:center;justify-content:space-between;padding:11px 18px;background:var(--navy);color:var(--ivory)}
+.bar .t{font:500 13px/1 var(--sans);letter-spacing:.04em}
+.bar .dots{display:flex;gap:6px}.bar .dots i{width:8px;height:8px;border-radius:50%;background:rgba(250,249,246,.28);display:block}
+.hdr{padding:4px 18px 0;border-bottom:1px solid var(--hair)}
+.f{display:grid;grid-template-columns:78px 1fr;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--hair);font-size:13.5px}
+.f:last-child{border-bottom:0}
+.f label,.f .k{color:var(--mist);font-size:12px;letter-spacing:.04em}
+.f .v{color:var(--ink);min-width:0}
+.f .v small{color:var(--mist);font-size:12px}
+.f input[type=email]{width:100%;border:0;border-bottom:1px dashed transparent;background:none;padding:3px 0;outline:none;font-size:14px}
+.f input[type=email]::placeholder{color:#a2a6b2}
+.f input[type=email]:focus{border-bottom-color:var(--goldhair)}
+.f select{border:1px solid var(--hair);border-radius:6px;background:var(--ivory);padding:2px 6px;font-size:12.5px}
+.f .subj{font-family:var(--serif);font-size:15.5px;color:var(--navy)}
+.act{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;padding:12px 18px;border-bottom:1px solid var(--hair);background:#fcfbf8}
+.send{border:1px solid var(--navy);background:var(--navy);color:var(--ivory);border-radius:6px;padding:8px 16px;font-size:13px;letter-spacing:.03em;cursor:pointer}
+.send:hover{background:#24365c}
+.act .why{font-size:12px;color:var(--mist)}
+.note{margin:0;padding:11px 18px;font-size:12.5px;line-height:1.55;color:var(--navy);background:#f4efe3;border-bottom:1px solid var(--goldhair)}
+.note.warn{background:#f7efe9;color:#6a3b2a;border-bottom-color:rgba(160,90,60,.35)}
+
+/* ---------- the email itself ---------- */
+.mailpad{background:var(--ivory);padding:34px 18px 40px}
+.mail{max-width:600px;margin:0 auto;background:var(--white);border:1px solid rgba(27,42,74,.08);border-top:2px solid var(--gold);padding:44px 48px 36px}
+.mark{font:600 11px/1 var(--sans);letter-spacing:.32em;text-transform:uppercase;color:var(--navy);text-align:center}
+.rule{width:44px;height:1px;background:var(--gold);margin:16px auto 30px}
+.mail h1{font:400 34px/1.15 var(--serif);color:var(--navy);margin:0 0 20px;letter-spacing:-.005em}
+.mail p{margin:0 0 15px;color:var(--ink)}
+.ph{border-bottom:1px dotted var(--gold);color:var(--navy)}
+.sec{margin:30px 0 0;padding:24px 0 0;border-top:1px solid var(--hair)}
+.sec h2{font:600 10.5px/1.2 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin:0 0 10px}
+.sec h3{font:400 21px/1.25 var(--serif);color:var(--navy);margin:0 0 10px}
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0 8px}
+.modes button{border:1px solid var(--hair);background:var(--white);border-radius:6px;padding:11px 8px;font-size:13px;color:var(--navy);cursor:pointer;text-align:center;line-height:1.3;transition:border-color .2s,background .2s}
+.modes button small{display:block;color:var(--mist);font-size:11px;margin-top:2px}
+.modes button:hover{border-color:var(--goldhair)}
+.modes button[aria-pressed=true]{border-color:var(--gold);background:#fbf6ea;box-shadow:inset 0 0 0 1px var(--gold)}
+.fine{font-size:12.5px;color:var(--mist);margin:6px 0 0}
+.fine.on{color:var(--navy)}
+.ghost{display:inline-block;border:1px solid var(--navy);background:none;color:var(--navy);border-radius:6px;padding:10px 18px;font-size:13.5px;letter-spacing:.02em;cursor:pointer;margin:6px 0 4px}
+.ghost:hover{background:#f3f4f8}
+.cta{text-align:center;margin:30px 0 4px}
+.cta .ghost{background:var(--navy);color:var(--ivory);padding:12px 26px}
+.cta .ghost:hover{background:#24365c}
+.safe{margin:30px 0 0;padding:18px 20px;background:var(--ivory);border-left:2px solid var(--gold)}
+.safe h2{font:600 10.5px/1.2 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin:0 0 8px}
+.safe p{margin:0 0 6px;font-size:13.5px}
+.safe p:last-child{margin:0}
+.sig{margin:34px 0 0}
+.sig .w{color:var(--mist);font-size:13.5px;margin:0 0 10px}
+.sig .n{font:400 22px/1.2 var(--serif);color:var(--navy);margin:0}
+.sig .o{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mist);margin:4px 0 0}
+.foot{margin:34px 0 0;padding:16px 0 0;border-top:1px solid var(--hair);font-size:11.5px;color:#8a8f9c;text-align:center;line-height:1.55}
+.after{font-size:11.5px;color:#5c6170;text-align:center;margin:16px 0 0}
+
+@media (max-width:560px){
+  body{padding:12px 8px 32px}
+  .mail{padding:32px 22px 28px}
+  .mail h1{font-size:28px}
+  .modes{grid-template-columns:1fr 1fr}
+  .f{grid-template-columns:62px 1fr}
+  .mailpad{padding:18px 8px 26px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Preview banner: outside the email, never part of what the invitee receives -->
+  <div class="pv" role="note">
+    <span class="tag" data-i="pvTag">Preview · Invitation email v2</span>
+    <span class="meta">
+      <span data-i="pvSenders"><b>Authorized senders:</b> Gary Kivenko and Samuel Le Flaguais only.</span>
+      <span data-i="pvSigned">Signed: Éric Grimard · Universal Metaphor.</span><br>
+      <span data-i="pvInert">Preview only — inert placeholders, no links or sending wired.</span>
+    </span>
+    <span class="lang" role="group" aria-label="Language">
+      <button type="button" id="l-en" aria-pressed="true">EN</button><button type="button" id="l-fr" aria-pressed="false">FR</button>
+    </span>
+  </div>
+
+  <div class="win">
+    <div class="bar"><span class="t" data-i="winTitle">New invitation — ready to send</span><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
+
+    <div class="hdr">
+      <div class="f"><span class="k" data-i="kFrom">From</span>
+        <span class="v">Universal Metaphor &lt;data@universalmetaphor.ca&gt;
+          <small> · <span data-i="via">sent by</span>
+            <select id="sender" aria-label="Authorized sender">
+              <option value="Gary Kivenko">Gary Kivenko</option>
+              <option value="Samuel Le Flaguais">Samuel Le Flaguais</option>
+            </select>
+          </small>
+        </span>
+      </div>
+      <div class="f"><label for="to" data-i="kTo">To</label>
+        <span class="v"><input type="email" id="to" autocomplete="off" spellcheck="false" placeholder="invitee@example.com" data-ph="toPh"></span>
+      </div>
+      <div class="f"><span class="k" data-i="kSubj">Subject</span>
+        <span class="v subj" data-i="subject">An invitation from Universal Metaphor</span>
+      </div>
+    </div>
+
+    <div class="act">
+      <button type="button" class="send" id="send" data-i="send">Send invitation (preview only — not wired)</button>
+      <span class="why" data-i="why">Type the invitee's address, then send. The rest follows on its own.</span>
+    </div>
+    <p class="note" id="sendNote" role="status" aria-live="polite" hidden></p>
+
+    <div class="mailpad">
+      <article class="mail" aria-label="Email body">
+        <div class="mark">Universal Metaphor</div>
+        <div class="rule"></div>
+
+        <h1 data-i="h1">You are invited.</h1>
+        <p><span data-i="dear">Dear</span> <span class="ph" data-i="name">[Invitee name]</span>,</p>
+        <p data-i="p1">Universal Metaphor invites you to see your own data take shape, in a private session created for you alone.</p>
+        <p data-i="p2">There is nothing to install and no account to create. You decide what you share, how you share it, and when it ends.</p>
+
+        <section class="sec">
+          <h2 data-i="s1k">Sharing your data</h2>
+          <h3 data-i="s1h">How would you prefer to send it?</h3>
+          <p data-i="s1p">Choose the way that suits you best. You can change your mind at any time.</p>
+          <div class="modes" role="group" aria-label="Preferred mode of data transfer">
+            <button type="button" data-mode="Google Drive" aria-pressed="false">Google Drive</button>
+            <button type="button" data-mode="OneDrive / SharePoint" aria-pressed="false">OneDrive<small>SharePoint</small></button>
+            <button type="button" data-mode="Dropbox" aria-pressed="false">Dropbox</button>
+            <button type="button" data-mode="Box" aria-pressed="false">Box</button>
+            <button type="button" data-mode="WeTransfer" aria-pressed="false">WeTransfer</button>
+            <button type="button" data-mode="files" aria-pressed="false"><span data-i="mFiles">Files in reply</span><small data-i="mFilesD">Excel · CSV · OpenDocument</small></button>
+          </div>
+          <p class="fine" id="modeNote" role="status" aria-live="polite" data-i="modeIdle">A shared link or attached files are all we need.</p>
+        </section>
+
+        <section class="sec">
+          <h2 data-i="s2k">Your AI agent</h2>
+          <h3 data-i="s2h">Link your own agent with ours</h3>
+          <p data-i="s2p">If you work with an AI agent, it can connect directly with Universal Metaphor's Myrioamphibot and its Fio Buds — through this same email thread, exchanging data, never instructions. Only you can start the link, and you may end it whenever you wish.</p>
+          <button type="button" class="ghost" id="agent" aria-pressed="false" data-i="agentBtn">Link your AI agent (preview)</button>
+          <p class="fine" id="agentNote" role="status" aria-live="polite" hidden></p>
+        </section>
+
+        <div class="safe">
+          <h2 data-i="s3k">Your privacy</h2>
+          <p data-i="s3a">We will never ask for a password, a token or any credential. Everything runs through your email address alone.</p>
+          <p data-i="s3b">Close your session at any moment, and its record is purged immediately.</p>
+        </div>
+
+        <div class="cta">
+          <button type="button" class="ghost" id="open" data-i="openBtn">Begin when you are ready (preview)</button>
+          <p class="fine" id="openNote" role="status" aria-live="polite" hidden></p>
+        </div>
+
+        <div class="sig">
+          <p class="w" data-i="regards">With my warm regards,</p>
+          <p class="n">Éric Grimard</p>
+          <p class="o">Universal Metaphor</p>
+        </div>
+
+        <div class="foot">
+          <span data-i="foot1">This invitation was written for you alone and sent from data@universalmetaphor.ca on behalf of Éric Grimard by</span> <span id="footSender">Gary Kivenko</span>.<br>
+          <span data-i="foot2">If it reached you by mistake, simply disregard it; nothing is kept.</span>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <p class="after" data-i="after">Universal Metaphor · invitation email v2 · compose preview for authorized senders · v20.94</p>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  /* Inert preview: no fetch, no XHR, no beacon, no navigation, no form. CSP above blocks any connection. */
+  var T={
+    en:{
+      pvTag:'Preview · Invitation email v2',
+      pvSenders:'<b>Authorized senders:</b> Gary Kivenko and Samuel Le Flaguais only.',
+      pvSigned:'Signed: Éric Grimard · Universal Metaphor.',
+      pvInert:'Preview only — inert placeholders, no links or sending wired.',
+      winTitle:'New invitation — ready to send',
+      kFrom:'From', via:'sent by', kTo:'To', kSubj:'Subject', toPh:'invitee@example.com',
+      subject:'An invitation from Universal Metaphor',
+      send:'Send invitation (preview only — not wired)',
+      why:'Type the invitee\u2019s address, then send. The rest follows on its own.',
+      sendEmpty:'Add the invitee\u2019s email address in the To field to preview the send.',
+      sendBad:'This does not look like a complete email address yet.',
+      sendOk:'Preview only — nothing was sent to {to}. In live mode, sending this message starts the entire security protocol through the invitee\u2019s email address alone: no password, no token, no credential is ever requested.',
+      h1:'You are invited.', dear:'Dear', name:'[Invitee name]',
+      p1:'Universal Metaphor invites you to see your own data take shape, in a private session created for you alone.',
+      p2:'There is nothing to install and no account to create. You decide what you share, how you share it, and when it ends.',
+      s1k:'Sharing your data', s1h:'How would you prefer to send it?',
+      s1p:'Choose the way that suits you best. You can change your mind at any time.',
+      mFiles:'Files in reply', mFilesD:'Excel · CSV · OpenDocument',
+      modeIdle:'A shared link or attached files are all we need.',
+      modeSel:'Your choice: {m}. (Preview — nothing opens and no link is wired yet.)',
+      s2k:'Your AI agent', s2h:'Link your own agent with ours',
+      s2p:'If you work with an AI agent, it can connect directly with Universal Metaphor\u2019s Myrioamphibot and its Fio Buds — through this same email thread, exchanging data, never instructions. Only you can start the link, and you may end it whenever you wish.',
+      agentBtn:'Link your AI agent (preview)',
+      agentNote:'Preview — no connection is made. In the live invitation, your agent joins through your own email address; no password or credential is involved.',
+      s3k:'Your privacy',
+      s3a:'We will never ask for a password, a token or any credential. Everything runs through your email address alone.',
+      s3b:'Close your session at any moment, and its record is purged immediately.',
+      openBtn:'Begin when you are ready (preview)',
+      openNote:'Preview — this button is not wired yet.',
+      regards:'With my warm regards,',
+      foot1:'This invitation was written for you alone and sent from data@universalmetaphor.ca on behalf of Éric Grimard by',
+      foot2:'If it reached you by mistake, simply disregard it; nothing is kept.',
+      after:'Universal Metaphor · invitation email v2 · compose preview for authorized senders · v20.94'
+    },
+    fr:{
+      pvTag:'Aperçu · Courriel d\u2019invitation v2',
+      pvSenders:'<b>Expéditeurs autorisés :</b> Gary Kivenko et Samuel Le Flaguais seulement.',
+      pvSigned:'Signé : Éric Grimard · Universal Metaphor.',
+      pvInert:'Aperçu seulement — espaces réservés inertes, aucun lien ni envoi branché.',
+      winTitle:'Nouvelle invitation — prête à envoyer',
+      kFrom:'De', via:'envoyé par', kTo:'À', kSubj:'Objet', toPh:'invite@exemple.com',
+      subject:'Une invitation de Universal Metaphor',
+      send:'Envoyer l\u2019invitation (aperçu — non branché)',
+      why:'Inscrivez l\u2019adresse de l\u2019invité, puis envoyez. La suite se fait d\u2019elle-même.',
+      sendEmpty:'Ajoutez l\u2019adresse courriel de l\u2019invité dans le champ « À » pour prévisualiser l\u2019envoi.',
+      sendBad:'Cette adresse courriel ne semble pas encore complète.',
+      sendOk:'Aperçu seulement — rien n\u2019a été envoyé à {to}. En mode réel, l\u2019envoi de ce message lance tout le protocole de sécurité par la seule adresse courriel de l\u2019invité : aucun mot de passe, aucun jeton, aucun identifiant n\u2019est jamais demandé.',
+      h1:'Vous êtes invité.', dear:'Bonjour', name:'[Nom de l\u2019invité]',
+      p1:'Universal Metaphor vous invite à voir vos propres données prendre forme, dans une session privée créée pour vous seul.',
+      p2:'Rien à installer, aucun compte à créer. Vous décidez de ce que vous partagez, de la manière, et du moment où cela prend fin.',
+      s1k:'Partager vos données', s1h:'Comment préférez-vous les transmettre ?',
+      s1p:'Choisissez la voie qui vous convient. Vous pouvez changer d\u2019avis à tout moment.',
+      mFiles:'Fichiers en réponse', mFilesD:'Excel · CSV · OpenDocument',
+      modeIdle:'Un lien partagé ou des fichiers joints suffisent.',
+      modeSel:'Votre choix : {m}. (Aperçu — rien ne s\u2019ouvre, aucun lien n\u2019est encore branché.)',
+      s2k:'Votre agent IA', s2h:'Reliez votre agent au nôtre',
+      s2p:'Si vous travaillez avec un agent IA, il peut se relier directement au Myrioamphibot de Universal Metaphor et à ses Fio Buds — par ce même fil de courriel, en échangeant des données, jamais des instructions. Vous seul pouvez lancer le lien, et y mettre fin quand vous le souhaitez.',
+      agentBtn:'Relier votre agent IA (aperçu)',
+      agentNote:'Aperçu — aucune connexion n\u2019est établie. Dans l\u2019invitation réelle, votre agent se joint par votre propre adresse courriel ; aucun mot de passe ni identifiant.',
+      s3k:'Votre confidentialité',
+      s3a:'Nous ne vous demanderons jamais de mot de passe, de jeton ni d\u2019identifiant. Tout passe par votre seule adresse courriel.',
+      s3b:'Fermez votre session à tout moment : son dossier est purgé immédiatement.',
+      openBtn:'Commencer quand vous êtes prêt (aperçu)',
+      openNote:'Aperçu — ce bouton n\u2019est pas encore branché.',
+      regards:'Avec mes salutations chaleureuses,',
+      foot1:'Cette invitation a été écrite pour vous seul et envoyée depuis data@universalmetaphor.ca au nom d\u2019Éric Grimard par',
+      foot2:'Si elle vous est parvenue par erreur, ignorez-la simplement ; rien n\u2019est conservé.',
+      after:'Universal Metaphor · courriel d\u2019invitation v2 · aperçu de rédaction pour expéditeurs autorisés · v20.94'
+    }
+  };
+  var lang='en', mode=null, agentOn=false, lastSend=null;
+  var $=function(id){return document.getElementById(id);};
+  var esc=function(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
+  function fill(s,o){return s.replace(/\{(\w+)\}/g,function(_,k){return esc(o[k]||'');});}
+  function modeLabel(){ if(!mode) return ''; return mode==='files'?T[lang].mFiles:mode; }
+  function render(){
+    var t=T[lang]; document.documentElement.lang=lang;
+    document.querySelectorAll('[data-i]').forEach(function(el){ var k=el.getAttribute('data-i'); if(t[k]!=null) el.innerHTML=t[k]; });
+    document.querySelectorAll('[data-ph]').forEach(function(el){ el.placeholder=t[el.getAttribute('data-ph')]; });
+    $('l-en').setAttribute('aria-pressed',lang==='en'); $('l-fr').setAttribute('aria-pressed',lang==='fr');
+    var mn=$('modeNote'); if(mode){ mn.innerHTML=fill(t.modeSel,{m:modeLabel()}); mn.className='fine on'; } else { mn.innerHTML=t.modeIdle; mn.className='fine'; }
+    if(agentOn){ $('agentNote').innerHTML=t.agentNote; }
+    if(!$('openNote').hidden) $('openNote').innerHTML=t.openNote;
+    if(lastSend) showSend(lastSend);
+  }
+  function showSend(kind){
+    var t=T[lang], n=$('sendNote'), to=$('to').value.trim();
+    lastSend=kind; n.hidden=false; n.className='note'+(kind==='ok'?'':' warn');
+    n.innerHTML=kind==='ok'?fill(t.sendOk,{to:to}):(kind==='bad'?t.sendBad:t.sendEmpty);
+  }
+  $('l-en').onclick=function(){lang='en';render();};
+  $('l-fr').onclick=function(){lang='fr';render();};
+  $('sender').onchange=function(){ $('footSender').textContent=this.value; };
+  $('to').oninput=function(){ if(lastSend){ lastSend=null; $('sendNote').hidden=true; } };
+  $('send').onclick=function(){
+    var to=$('to').value.trim();
+    showSend(!to?'empty':(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(to)?'ok':'bad'));
+  };
+  document.querySelectorAll('[data-mode]').forEach(function(b){
+    b.onclick=function(){ mode=(mode===b.dataset.mode)?null:b.dataset.mode;
+      document.querySelectorAll('[data-mode]').forEach(function(x){x.setAttribute('aria-pressed',x.dataset.mode===mode);}); render(); };
+  });
+  $('agent').onclick=function(){ agentOn=!agentOn; this.setAttribute('aria-pressed',agentOn); $('agentNote').hidden=!agentOn; render(); };
+  $('open').onclick=function(){ var n=$('openNote'); n.hidden=!n.hidden; render(); };
+  if(/^fr/i.test((location.hash||'').slice(1))) lang='fr';
+  render();
+})();
+</script>
+</body>
+</html>
