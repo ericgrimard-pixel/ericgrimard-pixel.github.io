@@ -880,3 +880,52 @@
   }
   put();
 })();
+
+
+/* v20.96 — 23 nov 2026 (Toronto) : (1) liens un-clic vers les deux éditions anglaises de
+   TURN IT ON (passages 42 et 43), placés AVANT « TURN IT ON — PDF » dans Porte · démo et au
+   pied ; rien n'est retiré. L'édition anglaise de YB1 est liée dans sa v2 corrigée
+   (terminologie « Entropy Reducing Mechanism », note 1nNWhJw3…) ; l'original reste intact
+   dans ÉCHANGE. (2) Entrée « Agent » à côté de ✉ Invitation, derrière l'INTERRUPTEUR UNIQUE
+   /um/engine/agent-switch.js (on:false) : tant qu'il est OFF, rien n'est affiché ni lié. */
+(function(){
+  const BP='https://drive.google.com/file/d/1sU9TOauhIJ8m0loM8Du7VpH2feDnEvbY/view';
+  const WP='https://drive.google.com/file/d/1i9zpDXCAmSyCbS2tYUPOlVYsh2kHQxBf/view';
+  const BPT='Turn It On \u2014 Object Navigation \u2014 Board Paper (English) \u2014 2026-11-23';
+  const WPT='Turn It On \u2014 Object Navigation \u2014 Executive White Paper (English) \u2014 v2, Entropy Reducing Mechanism \u2014 2026-11-23';
+  function links(p){
+    return '<a id="'+p+'bp-en" href="'+BP+'" target="_blank" rel="noopener" title="'+BPT+'">TURN IT ON \u2014 Board Paper (EN) \u2197</a>'
+      +'<a id="'+p+'wp-en" href="'+WP+'" target="_blank" rel="noopener" title="'+WPT+'">TURN IT ON \u2014 White Paper (EN) v2 \u2197</a>';
+  }
+  let tries=0;
+  function put(){
+    const dPdf=document.getElementById('um-door-turniton');
+    const qPdf=document.getElementById('um-turniton');
+    if(dPdf&&!document.getElementById('um-door-bp-en')) dPdf.insertAdjacentHTML('beforebegin',links('um-door-'));
+    if(qPdf&&!document.getElementById('um-bp-en')) qPdf.insertAdjacentHTML('beforebegin',links('um-'));
+    if(!document.getElementById('um-v2096-css')){
+      const css=document.createElement('style'); css.id='um-v2096-css';
+      css.textContent='#um-bp-en,#um-wp-en,#um-door-bp-en,#um-door-wp-en{border-color:#e8c872!important;color:#f3dfa0!important}';
+      document.head.appendChild(css);
+    }
+    if(!(document.getElementById('um-door-bp-en')&&document.getElementById('um-bp-en'))&&++tries<120) setTimeout(put,250);
+  }
+  put();
+})();
+(function(){
+  function on(){ const S=window.UM_AGENT_SWITCH; return !!(S&&S.on===true&&typeof S.entry==='string'); }
+  let tries=0;
+  function put(){
+    if(!on()) return;                                  /* OFF : rien n'est affiché ni lié */
+    const E=window.UM_AGENT_SWITCH.entry;
+    const first=document.getElementById('um-invite-first'), left=document.getElementById('um-invite-left');
+    const door=document.getElementById('um-rg-door'), body=door&&door.querySelector('.um-rg-body');
+    function mk(id,cls){ const a=document.createElement('a'); a.id=id; if(cls) a.className=cls; a.href=E; a.target='_blank'; a.rel='noopener'; a.textContent='Agent'; a.title='Agent'; return a; }
+    if(first&&!document.getElementById('um-agent-first')) first.insertAdjacentElement('afterend',mk('um-agent-first','um-u-a'));
+    if(left&&!document.getElementById('um-agent-left')) left.insertAdjacentElement('afterend',mk('um-agent-left',''));
+    if(body&&!document.getElementById('um-door-agent')){ const m=document.getElementById('um-door-mail'); const a=mk('um-door-agent',''); if(m) m.insertAdjacentElement('afterend',a); else body.insertBefore(a,body.firstChild); }
+    if(!(document.getElementById('um-agent-first')&&document.getElementById('um-agent-left')&&document.getElementById('um-door-agent'))&&++tries<120) setTimeout(put,250);
+  }
+  if(window.UM_AGENT_SWITCH){ put(); return; }
+  const s=document.createElement('script'); s.src='/um/engine/agent-switch.js?v=20.96'; s.onload=put; document.head.appendChild(s);
+})();
