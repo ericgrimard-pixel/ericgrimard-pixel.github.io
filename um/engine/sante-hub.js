@@ -26,7 +26,7 @@
    Noms de pays : absents du paquet ; on n'en ajoute pas (codes REF_AREA seulement) [INCOMPLET]. */
 (function(){
   'use strict';
-  const VERSION='v20.95.1';
+  const VERSION='v20.97';
   const DEFAULT_BASE='/um/data/sante/u5mr/';
   const BASE=(typeof window.UM_SANTE_BASE==='string'&&window.UM_SANTE_BASE)||DEFAULT_BASE;
   const LAT='/plumb-dump-data/lattice/v1.4/';
@@ -44,7 +44,7 @@
   const REDUCED=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const S={packs:null, index:null, err:null, opening:null, zone:null, geo:null, shardView:null, closed:false, el:null,
-    scan:null, q:'', wasOn:false, sub:null, dirty:false, obs:null};
+    scan:null, q:'', wasOn:false, sub:null, dirty:false, err3:null};
   window.UM_SANTE_LOADER={version:VERSION, base:BASE,
     get state(){ return {open:!!S.index, error:S.err, zone:S.zone, geo:S.geo,
       scanned:S.scan?S.scan.done:0, total:S.index?S.index.shards.length:0, rows:S.scan?S.scan.rows:0, errors:S.scan?S.scan.err.length:0}; },
@@ -96,14 +96,6 @@
     for(let k=0;k<3;k++) next();
     layoutAngles();
   }
-  /* angle fixe de chaque pays dans le secteur de sa zone (ordre des codes) — positions stables pendant la lecture */
-  function layoutAngles(){
-    const per={}; S.index.shards.forEach(m=>{ if(ZONES.includes(m.zone)) (per[m.zone]=per[m.zone]||[]).push(m.geo); });
-    S.angles={};
-    ZONES.forEach((z,zi)=>{ const L=(per[z]||[]).sort(); const a0=-Math.PI/2+zi*Math.PI/3, span=Math.PI/3;
-      L.forEach((g,k)=>{ S.angles[g]=a0+span*(0.07+0.86*(L.length<2?.5:k/(L.length-1))); }); });
-  }
-
   /* ---------- sous-domaines Santé publiés par le treillis (couverture seulement, aucune valeur) ---------- */
   function loadSub(){
     if(S.sub) return;
@@ -160,7 +152,7 @@
   }
   function searchResultsHTML(){
     if(!S.index) return '';
-    const q=S.q.trim().toUpperCase(); if(!q) return '<div class="sub">Taper un code REF_AREA (ex. CAN, FRA, NGA, UNICEF_SSA, WB_LI) — ou choisir dans les classements, les zones ou l\u2019observatoire.</div>';
+    const q=S.q.trim().toUpperCase(); if(!q) return '<div class="sub">Taper un code REF_AREA (ex. CAN, FRA, NGA, UNICEF_SSA, WB_LI) — ou choisir dans les classements, les zones ou un nœud 3D de la chambre.</div>';
     const by=S.scan?S.scan.by:{};
     const L=S.index.shards.filter(m=>String(m.geo).toUpperCase().includes(q)).slice(0,40);
     if(!L.length) return '<div class="sub">Aucun code ne contient « '+esc(q)+' ».</div>';
@@ -260,22 +252,23 @@
     ZONES.forEach(k=>{ if(!z[k]) g.push('zone '+k+' : aucun paquet'); });
     g.push('noms de pays : absents du paquet (codes REF_AREA seulement)');
     g.push('un seul indicateur servi (CME_MRY0T4) ; paquet v1 values-v1.3 non servi sous /um/');
-    g.push('étage Santé de floors.js : n = 0 inchangé ; objets 3D de Classe 1/2 non construits — l\u2019observatoire 2D (v20.95) occupe la scène en attendant');
+    g.push('étage Santé de floors.js : n = 0 inchangé ; objets 3D de Classe 1/2 non construits — les objets 3D Santé (v20.97, groupe um-sante-3d, ancrés et découpés dans la chambre) occupent la scène en attendant');
     return '<div class="lvl">INDEX DES LACUNES</div><ul>'+g.map(x=>'<li>'+GAP+' '+esc(x)+'</li>').join('')+'</ul>';
   }
 
   /* ---------- panneau : sections mises à jour séparément (la recherche garde le focus) ---------- */
-  const SECS=['st','hd','sr','dr','rk','zn','sb','gp'];
+  const SECS=['st','pl','hd','sr','dr','rk','zn','sb','gp'];
   function frame(){
     return '<button type="button" class="x" data-x="1" title="Replier (revient à la prochaine entrée sur Santé)">×</button>'
       +'<h3>Santé · mortalité des moins de 5 ans · paquet réel UN IGME <span class="ver">'+VERSION+'</span></h3>'
-      +'<div data-s="st"></div><div data-s="hd"></div>'
+      +'<div data-s="st"></div><div data-s="pl"></div><div data-s="hd"></div>'
       +'<div class="lvl">RECHERCHE</div><input type="search" class="um-sh-q" placeholder="Code REF_AREA : CAN, FRA, WORLD…" aria-label="Chercher un code REF_AREA" value="'+esc(S.q)+'">'
       +'<div data-s="sr"></div><div data-s="dr"></div><div data-s="rk"></div><div data-s="zn"></div><div data-s="sb"></div><div data-s="gp"></div>';
   }
   function secHTML(k){
     switch(k){
       case 'st': return statusHTML()+'<details class="um-sh-meta"><summary>Métadonnées du paquet</summary>'+headHTML()+'</details>';
+      case 'pl': return playHTML();
       case 'hd': return headlineHTML();
       case 'sr': return searchResultsHTML();
       case 'dr': return shardHTML();
@@ -290,7 +283,7 @@
     if(!S.el||!S.index) return;
     (keys||SECS).forEach(k=>{ const d=S.el.querySelector('[data-s="'+k+'"]'); if(!d) return;
       const keepOpen=[...d.querySelectorAll('details')].map(x=>x.open);
-      d.innerHTML=secHTML(k); wire(d);
+      d.innerHTML=secHTML(k); wire(d); if(k==='pl') wirePlay(d);
       const ds=d.querySelectorAll('details'); keepOpen.forEach((o,i)=>{ if(ds[i]) ds[i].open=o; }); });
   }
   function render(){
@@ -315,92 +308,194 @@
     el.querySelectorAll('[data-geo]').forEach(b=>{ b.onclick=()=>selectGeo(b.dataset.geo); });
   }
 
-  /* ---------- observatoire (calque 2D au-dessus de l'anneau 3D vide de l'étage Santé) ---------- */
-  const LMIN=Math.log(1.5), LMAX=Math.log(350);
-  function rr(v){ const t=(Math.log(Math.max(1.5,Math.min(350,v)))-LMIN)/(LMAX-LMIN); return .16+.84*t; }
+  /* ---------- v20.97 : objets Santé en 3D, ancrés et découpés dans la chambre du Hub ----------
+     Signalement vocal d'Éric, 19 h 46 (Toronto) : le calque 2D (v20.95) restait un plan plat, non intégrable à l'espace 3D.
+     Il est remplacé par un groupe Three.js « um-sante-3d » ajouté au groupe WORLD de la vraie scène du moteur (crochet
+     additif window.UM_ENGINE3D, une ligne dans engine.js), visible seulement sur l'étage Santé. Il tourne, s'incline,
+     zoome et suit le bouton Volume avec la chambre. Couche n-dimensionnelle additive : rien du moteur n'est modifié.
+
+     Géométrie de la chambre (engine.js) : tore cuboïdal, rayon intérieur 1 (centre réservé à l'objet de Classe 4),
+     rayon extérieur 3, plancher y = −1, plafond y = +1 ; W3(a, r, y) = (r·sin a, y, −r·cos a) ; a = 0 = méridien d'or.
+
+     Trois variables de placement (inspectables : window.UM_SANTE_3D) :
+       SANTE_RADIAL    — rayon : taux réel u5mr (‰, échelle log 1,5–350) → r dans l'enveloppe [1 + PAD, 3 − PAD], borné.
+       SANTE_ANGULAR   — angle : six secteurs de 60° depuis le méridien d'or (a = 0), un par zone, codes répartis
+                         dans le secteur de leur zone, marges aux murs de secteur.
+       SANTE_ELEVATION — hauteur : baisse réelle du taux depuis 1990 (ou la première année de la série) → y dans la
+                         dalle [−1 + PAD, +1 − PAD] ; chaque nœud est relié au plancher (y = −1) par une tige verticale
+                         et un pied posé sur le plancher.
+     Découpe : (1) bornage de chaque position par les trois variables ; (2) plans de découpe Three.js réels
+     (renderer.localClippingEnabled = true) : plancher y ≥ −1, plafond y ≤ +1 et enveloppe extérieure r ≤ 3 (24 plans
+     tangents), recalculés à chaque image depuis WORLD.matrixWorld, donc justes quand le Volume change l'échelle.
+     Le centre r < 1 n'est jamais atteint (bornage radial) : l'objet central reste seul dans son espace réservé.
+     Survol : étiquette ; clic : ouvre le forage du pays dans le panneau (lancer de rayon sur les nœuds Santé seulement). */
   function col(v){ /* vert → or → rouge, selon le taux réel (‰) */
     const t=Math.max(0,Math.min(1,(Math.log(Math.max(2,v))-Math.log(2))/(Math.log(150)-Math.log(2))));
     const A=[95,214,144], B=[232,200,114], C=[255,92,92];
     const m=(a,b,u)=>a.map((x,i)=>Math.round(x+(b[i]-x)*u));
     const c=t<.5?m(A,B,t*2):m(B,C,(t-.5)*2); return 'rgb('+c.join(',')+')';
   }
-  function valAt(r,y){ /* valeur réelle de l'année y ; sinon rien (aucune invention) */
-    return r.byY.has(y)?r.byY.get(y):null;
+  const SANTE_RADIAL={R_IN:1, R_OUT:3, PAD:0.1, V_MIN:1.5, V_MAX:350,
+    r(v){ const t=(Math.log(Math.max(this.V_MIN,Math.min(this.V_MAX,v)))-Math.log(this.V_MIN))/(Math.log(this.V_MAX)-Math.log(this.V_MIN));
+      return Math.max(this.R_IN+this.PAD,Math.min(this.R_OUT-this.PAD,this.R_IN+this.PAD+t*(this.R_OUT-this.R_IN-2*this.PAD))); }};
+  const SANTE_ANGULAR={ORIGIN:0, SECTOR:Math.PI/3, MARGIN:0.08, ZONES:ZONES,
+    sector(z){ return ZONES.indexOf(z); },
+    a(z,k,n){ const zi=this.sector(z); if(zi<0) return null; const u=n<2?.5:k/(n-1); return this.ORIGIN+zi*this.SECTOR+this.SECTOR*(this.MARGIN+(1-2*this.MARGIN)*u); },
+    mid(z){ return this.ORIGIN+(this.sector(z)+.5)*this.SECTOR; }};
+  const SANTE_ELEVATION={FLOOR_Y:-1, CEIL_Y:1, PAD:0.06, BASE_YEAR:1990,
+    base(rec){ if(rec.byY.has(this.BASE_YEAR)) return rec.byY.get(this.BASE_YEAR); const p=rec.ser.find(q=>q.y>=this.BASE_YEAR)||rec.ser[0]; return p?p.v:null; },
+    frac(rec,v){ const b=this.base(rec); if(!b||!(v>=0)) return 0; return Math.max(0,Math.min(1,(b-v)/b)); },
+    y(rec,v){ return this.FLOOR_Y+this.PAD+this.frac(rec,v)*(this.CEIL_Y-this.FLOOR_Y-2*this.PAD); }};
+  function layoutAngles(){
+    const per={}; S.index.shards.forEach(m=>{ if(ZONES.includes(m.zone)) (per[m.zone]=per[m.zone]||[]).push(m.geo); });
+    S.angles={};
+    ZONES.forEach(z=>{ const L=(per[z]||[]).sort(); L.forEach((g,k)=>{ S.angles[g]=SANTE_ANGULAR.a(z,k,L.length); }); });
   }
-  function obsEnsure(st){
-    let c=$('um-sante-obs');
-    if(!c){ c=document.createElement('canvas'); c.id='um-sante-obs'; c.setAttribute('aria-hidden','true');
-      const wgl=st.querySelector('canvas'); if(wgl&&wgl.nextSibling) st.insertBefore(c,wgl.nextSibling); else st.appendChild(c); }
-    return c;
+  const W3=(a,r,y,T)=>new T.Vector3(r*Math.sin(a),y,-r*Math.cos(a));
+  const P3={playing:!REDUCED, year:null, t0:0, last:0, scene:null};
+  function yearRange(){ let yMax=1990; Object.values(S.scan?S.scan.by:{}).forEach(r=>{ if(r.last&&r.last.y>yMax) yMax=r.last.y; }); return [1990,yMax]; }
+  function sprite3(T,text,color,h,weight){
+    const c=document.createElement('canvas'), g=c.getContext('2d'), fs=44; g.font=(weight||600)+' '+fs+'px system-ui,sans-serif';
+    const w=Math.ceil(g.measureText(text).width)+20; c.width=w; c.height=fs+20; g.font=(weight||600)+' '+fs+'px system-ui,sans-serif';
+    g.fillStyle='rgba(5,8,13,.55)'; g.fillRect(0,0,w,c.height); g.fillStyle=color; g.textBaseline='middle'; g.fillText(text,10,c.height/2+2);
+    const tx=new T.CanvasTexture(c); tx.minFilter=T.LinearFilter;
+    const sp=new T.Sprite(new T.SpriteMaterial({map:tx,transparent:true,depthWrite:false})); sp.scale.set(h*w/c.height,h,1); sp.renderOrder=6; sp.userData.text=text; return sp;
   }
-  function obsStart(){
-    const st=$('stage'); if(!st) return;
-    const c=obsEnsure(st); c.hidden=false;
-    if(S.obs) return;
-    S.obs={t0:performance.now(), prev:{}, raf:0};
-    const loop=now=>{ if(!S.obs) return; drawObs(c,st,now); S.obs.raf=requestAnimationFrame(loop); };
-    S.obs.raf=requestAnimationFrame(loop);
+  function setSpriteText(T,sp,text,color,h){ if(sp.userData.text===text) return; const n=sprite3(T,text,color,h); sp.material.map.dispose(); sp.material.dispose(); sp.material=n.material; sp.scale.copy(n.scale); sp.userData.text=text; }
+  function build3D(E){
+    const T=E.THREE||window.THREE; if(!T) return null;
+    const grp=new T.Group(); grp.name='um-sante-3d';
+    /* plans de découpe, exprimés dans le repère de WORLD puis portés en coordonnées du monde à chaque image */
+    const local=[new T.Plane(new T.Vector3(0,1,0),1), new T.Plane(new T.Vector3(0,-1,0),1)];
+    const NP=24, D=SANTE_RADIAL.R_OUT+0.02;
+    for(let k=0;k<NP;k++){ const a=k/NP*Math.PI*2; const u=new T.Vector3(Math.sin(a),0,-Math.cos(a)); local.push(new T.Plane(u.clone().negate(),D)); }
+    const planes=local.map(p=>p.clone());
+    E.renderer.localClippingEnabled=true;
+    const mk=(o)=>Object.assign(o,{clippingPlanes:planes});
+    /* repères au plancher : arcs et rayons de secteurs, cercles de lecture du taux */
+    const guides=new T.Group(); guides.name='um-sante-guides'; grp.add(guides);
+    const FY=SANTE_ELEVATION.FLOOR_Y+0.004;
+    ZONES.forEach(z=>{ const zi=SANTE_ANGULAR.sector(z), a0=SANTE_ANGULAR.ORIGIN+zi*SANTE_ANGULAR.SECTOR, pts=[];
+      for(let s=0;s<=32;s++) pts.push(W3(a0+SANTE_ANGULAR.SECTOR*(.02+.96*s/32),SANTE_RADIAL.R_OUT-0.03,FY,T));
+      guides.add(new T.Line(new T.BufferGeometry().setFromPoints(pts),new T.LineBasicMaterial(mk({color:new T.Color(ZCOL[z]),transparent:true,opacity:.95}))));
+      guides.add(new T.Line(new T.BufferGeometry().setFromPoints([W3(a0,SANTE_RADIAL.R_IN,FY,T),W3(a0,SANTE_RADIAL.R_OUT,FY,T)]),new T.LineBasicMaterial(mk({color:0x5fd690,transparent:true,opacity:.35}))));
+      const lb=sprite3(T,z,ZCOL[z],.15); lb.position.copy(W3(SANTE_ANGULAR.mid(z),SANTE_RADIAL.R_OUT-0.32,FY+0.1,T)); guides.add(lb); });
+    [2,5,10,25,50,100,200].forEach(v=>{ const r=SANTE_RADIAL.r(v), pts=[]; for(let s=0;s<=96;s++) pts.push(W3(s/96*Math.PI*2,r,FY,T));
+      const l=new T.Line(new T.BufferGeometry().setFromPoints(pts),new T.LineDashedMaterial(mk({color:0x8b98ad,transparent:true,opacity:.4,dashSize:.05,gapSize:.05}))); l.computeLineDistances(); guides.add(l);
+      if(v===5||v===25||v===100){ const s=sprite3(T,v+' ‰','#9fb0c6',.09,500); s.position.copy(W3(Math.PI-0.05,r,FY+0.05,T)); guides.add(s); } });
+    /* Monde : anneau d'or autour du cœur (r = 1,03, hors de l'espace réservé), hauteur = SANTE_ELEVATION, six attaches au plancher */
+    const world=new T.Group(); world.name='um-sante-world'; grp.add(world);
+    const wt=new T.Mesh(new T.TorusGeometry(SANTE_RADIAL.R_IN+0.03,0.014,8,96),new T.MeshStandardMaterial(mk({color:0xe8c872,emissive:0x6b5520,metalness:.5,roughness:.35})));
+    wt.rotation.x=Math.PI/2; world.add(wt);
+    const wteth=[]; for(let k=0;k<6;k++){ const a=SANTE_ANGULAR.ORIGIN+k*SANTE_ANGULAR.SECTOR, g=new T.BufferGeometry().setFromPoints([W3(a,SANTE_RADIAL.R_IN+0.03,-1,T),W3(a,SANTE_RADIAL.R_IN+0.03,-1,T)]);
+      const l=new T.Line(g,new T.LineBasicMaterial(mk({color:0xe8c872,transparent:true,opacity:.55}))); grp.add(l); wteth.push({l,a}); }
+    const wlab=sprite3(T,'Monde','#f3e3b0',.14); grp.add(wlab);
+    const ylab=sprite3(T,'1990','#e8c872',.22,600); grp.add(ylab);
+    /* nœuds pays : sphère + tige + pied (créés à mesure que les paquets sont lus et vérifiés) */
+    const SG=new T.SphereGeometry(0.045,16,12), HG=new T.SphereGeometry(0.1,8,6), FG=new T.RingGeometry(0.02,0.045,20);
+    const HM=new T.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}); HM.colorWrite=false;
+    const nodes={}, hits=[];
+    const sel=sprite3(T,' ','#ffffff',.13); sel.visible=false; grp.add(sel);
+    const halo=new T.Mesh(new T.TorusGeometry(0.085,0.006,8,32),new T.MeshBasicMaterial(mk({color:0xffffff})));
+    halo.visible=false; grp.add(halo);
+    function node(rec){
+      const c=new T.Color(col(rec.last?rec.last.v:10));
+      const m=new T.Mesh(SG,new T.MeshStandardMaterial(mk({color:c,emissive:c.clone().multiplyScalar(.35),roughness:.45,metalness:.1})));
+      const h=new T.Mesh(HG,HM); h.userData.geo=rec.geo; m.add(h); hits.push(h);
+      const sg=new T.BufferGeometry(); sg.setAttribute('position',new T.BufferAttribute(new Float32Array(6),3));
+      const st=new T.Line(sg,new T.LineBasicMaterial(mk({color:c,transparent:true,opacity:.5})));
+      const ft=new T.Mesh(FG,new T.MeshBasicMaterial(mk({color:c,transparent:true,opacity:.7,side:T.DoubleSide}))); ft.rotation.x=-Math.PI/2;
+      grp.add(m); grp.add(st); grp.add(ft);
+      return nodes[rec.geo]={rec,m,st,ft,c,born:performance.now()};
+    }
+    E.WORLD.add(grp);
+    const ray=new T.Raycaster(), mouse=new T.Vector2();
+    const tip=document.createElement('div'); tip.id='um-sante-tip'; E.stage.appendChild(tip);
+    function pick(e){ const r=E.renderer.domElement.getBoundingClientRect(); mouse.x=(e.clientX-r.left)/r.width*2-1; mouse.y=-(e.clientY-r.top)/r.height*2+1;
+      ray.setFromCamera(mouse,E.camera); const vis=hits.filter(h=>h.parent&&h.parent.visible); const hs=ray.intersectObjects(vis,false);
+      return hs.length?hs[0].object.userData.geo:null; }
+    const cv=E.renderer.domElement; let down=null;
+    cv.addEventListener('pointermove',e=>{ if(!grp.visible) return; const g=pick(e); const n=g&&nodes[g];
+      if(!n){ tip.style.display='none'; return; } cv.style.cursor='pointer';
+      const v=n.cur; tip.innerHTML='<b>'+esc(g)+'</b> · '+esc(n.rec.zone)+'<br>'+(v!=null?v1(v)+' ‰ en '+P3.year:'—')+'<br><small>clic : forage dans le panneau</small>';
+      const r=E.stage.getBoundingClientRect(); tip.style.left=Math.min(r.width-180,e.clientX-r.left+14)+'px'; tip.style.top=Math.max(4,e.clientY-r.top-10)+'px'; tip.style.display='block'; });
+    cv.addEventListener('pointerleave',()=>{ tip.style.display='none'; });
+    cv.addEventListener('pointerdown',e=>{ down=[e.clientX,e.clientY]; });
+    cv.addEventListener('pointerup',e=>{ if(!grp.visible||!down) return; const mv=Math.hypot(e.clientX-down[0],e.clientY-down[1]); down=null; if(mv>6) return;
+      const g=pick(e); if(g){ S.closed=false; tick(); selectGeo(g); } });
+    return {T,E,grp,guides,world,wt,wteth,wlab,ylab,nodes,hits,node,local,planes,sel,halo,tip,offset:null};
   }
-  function obsStop(){ if(S.obs){ cancelAnimationFrame(S.obs.raf); S.obs=null; } const c=$('um-sante-obs'); if(c) c.hidden=true; }
-  function drawObs(c,st,now){
-    const dpr=Math.min(2,window.devicePixelRatio||1), W=st.clientWidth, H=st.clientHeight;
-    if(c.width!==Math.round(W*dpr)||c.height!==Math.round(H*dpr)){ c.width=Math.round(W*dpr); c.height=Math.round(H*dpr); }
-    const g=c.getContext('2d'); g.setTransform(dpr,0,0,dpr,0,0); g.clearRect(0,0,W,H);
-    /* zone libre : à droite du panneau, ou au-dessus de lui (écran étroit) */
-    let x0=0,y0=0,x1=W,y1=H-70;
-    if(S.el&&!S.el.hidden){ const sr=st.getBoundingClientRect(), pr=S.el.getBoundingClientRect();
-      const right=pr.right-sr.left, top=pr.top-sr.top;
-      if(W-right>=Math.max(200,top)) { x0=right+4; } else if(top>120){ y1=top-4; } }
-    const narrow=(x1-x0)<420; g.font='600 12px system-ui,sans-serif'; const lw=Math.max(...ZONES.map(z=>g.measureText(z).width));
-    const cx=(x0+x1)/2, cy=(y0+y1)/2+(narrow?14:22), R=Math.max(40,Math.min((x1-x0)/2-(narrow?22:lw+22),(y1-y0)/2-(narrow?30:40)));
-    g.save();
-    /* fond doux pour lire les nœuds sur l'anneau */
-    const bg=g.createRadialGradient(cx,cy,R*.1,cx,cy,R*1.15); bg.addColorStop(0,'rgba(5,8,13,.78)'); bg.addColorStop(1,'rgba(5,8,13,0)');
-    g.fillStyle=bg; g.beginPath(); g.arc(cx,cy,R*1.15,0,Math.PI*2); g.fill();
-    /* anneaux de lecture (‰) */
-    g.font='11px system-ui,sans-serif'; g.textAlign='left'; g.textBaseline='middle';
-    [2,5,10,25,50,100,200].forEach(v=>{ const r=R*rr(v); g.strokeStyle='rgba(159,176,198,.16)'; g.lineWidth=1; g.beginPath(); g.arc(cx,cy,r,0,Math.PI*2); g.stroke();
-      g.fillStyle='rgba(159,176,198,.55)'; g.fillText(v+' ‰',cx+3,cy-r-6); });
-    /* secteurs de zones */
-    ZONES.forEach((z,zi)=>{ const a=-Math.PI/2+zi*Math.PI/3;
-      g.strokeStyle='rgba(232,200,114,.22)'; g.beginPath(); g.moveTo(cx+Math.cos(a)*R*.12,cy+Math.sin(a)*R*.12); g.lineTo(cx+Math.cos(a)*R*1.02,cy+Math.sin(a)*R*1.02); g.stroke();
-      const am=a+Math.PI/6, lx=cx+Math.cos(am)*(R+14), ly=cy+Math.sin(am)*(R+14);
-      g.fillStyle=ZCOL[z]; g.font='600 12px system-ui,sans-serif'; const tw=g.measureText(z).width;
-      let tx=Math.cos(am)>.25?lx+tw/2:Math.cos(am)<-.25?lx-tw/2:lx; tx=Math.max(x0+tw/2+4,Math.min(x1-tw/2-4,tx)); g.textAlign='center'; g.fillText(z,tx,ly); });
-    /* année balayée : 1990 → dernière année réelle, puis pause */
-    const by=S.scan?S.scan.by:{}; const recs=Object.values(by);
-    let yMax=1990; recs.forEach(r=>{ if(r.last&&r.last.y>yMax) yMax=r.last.y; });
-    const Y0=1990, span=Math.max(1,yMax-Y0), per=REDUCED?1e9:0.55, cyc=span*per+5;
-    const el=(now-S.obs.t0)/1000, ph=REDUCED?cyc:el%cyc, yf=Math.min(yMax,Y0+ph/per);
-    const yi=Math.floor(yf), fr=yf-yi;
-    let shown=0, sum=0;
-    recs.forEach(r=>{
-      if(!ZONES.includes(r.zone)||!r.ser.length) return; const a=S.angles&&S.angles[r.geo]; if(a==null) return;
-      const va=valAt(r,yi); if(va==null) return;
-      const vb=valAt(r,Math.min(yMax,yi+1)); const v=vb==null?va:va+(vb-va)*(fr*fr*(3-2*fr)); /* adoucissement visuel entre deux années réelles */
-      const rad=R*rr(v), x=cx+Math.cos(a)*rad, y=cy+Math.sin(a)*rad; shown++; sum++;
-      const born=S.obs.prev[r.geo]||(S.obs.prev[r.geo]=now); const fade=Math.min(1,(now-born)/900);
-      const sel=S.geo===r.geo;
-      g.globalAlpha=.25+.75*fade; g.fillStyle=col(v); g.beginPath(); g.arc(x,y,sel?5.5:3.2,0,Math.PI*2); g.fill();
-      if(sel){ g.strokeStyle='#ffffff'; g.lineWidth=1.5; g.beginPath(); g.arc(x,y,9+2*Math.sin(now/250),0,Math.PI*2); g.stroke();
-        g.fillStyle='#ffffff'; g.font='600 12px system-ui,sans-serif'; g.textAlign='left'; g.fillText(r.geo+' '+v1(v),x+11,y); }
-      g.globalAlpha=1;
+  function frame3D(now){
+    const E=window.UM_ENGINE3D;
+    if(!E||!E.scene||E.sys!=='health'){ return; }
+    if(!P3.scene||P3.scene.E!==E){ if(P3.scene&&P3.scene.tip) P3.scene.tip.remove(); P3.scene=build3D(E); if(!P3.scene) return; P3.t0=now; }
+    const D=P3.scene, T=D.T; D.grp.visible=true;
+    E.WORLD.updateMatrixWorld(true);
+    D.local.forEach((p,i)=>{ D.planes[i].copy(p).applyMatrix4(E.WORLD.matrixWorld); });
+    /* panneau ouvert sur grand écran : la chambre est recentrée dans l'espace libre (décalage de vue, caméra de Santé seulement) */
+    const W=E.stage.clientWidth, H=E.stage.clientHeight; let off=0;
+    if(S.el&&!S.el.hidden&&W>=700){ const sr=E.stage.getBoundingClientRect(), pr=S.el.getBoundingClientRect(); off=Math.round((pr.right-sr.left)/2); }
+    const key=W+'x'+H+':'+off;
+    if(D.offset!==key){ D.offset=key; if(off) E.camera.setViewOffset(W,H,-off,0,W,H); else E.camera.clearViewOffset(); }
+    /* année : lecture 1990 → dernière année réelle (0,6 s par année, pause 3 s) */
+    const [Y0,Y1]=yearRange(), per=.6, cyc=(Y1-Y0)*per+3;
+    let yf;
+    if(P3.playing){ const el=((now-P3.t0)/1000)%cyc; yf=Math.min(Y1,Y0+el/per); }
+    else yf=P3.year!=null?P3.year:Y1;
+    const yi=Math.floor(yf), fr=yf-yi, sm=fr*fr*(3-2*fr);
+    if(P3.year!==yi){ P3.year=yi; syncPlay(); }
+    const by=S.scan?S.scan.by:{};
+    Object.values(by).forEach(rec=>{ if(!ZONES.includes(rec.zone)||!rec.ser.length||!S.angles||S.angles[rec.geo]==null) return; if(!D.nodes[rec.geo]) D.node(rec); });
+    Object.values(D.nodes).forEach(n=>{
+      const rec=n.rec, va=rec.byY.has(yi)?rec.byY.get(yi):null;
+      if(va==null){ n.m.visible=n.st.visible=n.ft.visible=false; n.cur=null; return; }
+      const vb=rec.byY.has(yi+1)&&yi+1<=Y1?rec.byY.get(yi+1):va, v=va+(vb-va)*sm; n.cur=va;
+      const a=S.angles[rec.geo], r=SANTE_RADIAL.r(v), y=SANTE_ELEVATION.y(rec,v);
+      const fade=Math.min(1,(now-n.born)/900);
+      n.m.visible=n.st.visible=n.ft.visible=true;
+      n.m.position.copy(W3(a,r,y,T)); n.m.scale.setScalar((S.geo===rec.geo?1.7:1)*(.3+.7*fade));
+      const p=n.st.geometry.attributes.position; p.setXYZ(0,n.m.position.x,SANTE_ELEVATION.FLOOR_Y,n.m.position.z); p.setXYZ(1,n.m.position.x,y,n.m.position.z); p.needsUpdate=true; n.st.geometry.computeBoundingSphere();
+      n.ft.position.set(n.m.position.x,SANTE_ELEVATION.FLOOR_Y+0.003,n.m.position.z);
+      const c=col(v); if(n.lastC!==c){ n.lastC=c; n.m.material.color.set(c); n.m.material.emissive.set(c).multiplyScalar(.35); n.st.material.color.set(c); n.ft.material.color.set(c); }
     });
-    /* centre : MONDE */
-    const w=by.WORLD, wv=w?valAt(w,yi):null;
-    g.textAlign='center'; g.fillStyle='#e8c872'; g.font='600 '+Math.max(18,Math.min(30,R*.16))+'px Georgia,serif'; g.fillText(String(yi),cx,cy-R*.05-8);
-    g.font='12px system-ui,sans-serif'; g.fillStyle='#c9f5da';
-    g.fillText(wv!=null?'Monde '+v1(wv)+' ‰':'Monde : lecture…',cx,cy+R*.05+6);
-    /* légende */
-    const sc=S.scan, tot=S.index?S.index.shards.length:269;
-    g.textAlign='right'; g.font=(narrow?'11px':'12.5px')+' system-ui,sans-serif'; g.fillStyle='rgba(232,200,114,.95)';
-    const lx=x1-10, ly=y0+16, lh=narrow?14:17;
-    g.fillText('OBSERVATOIRE SANTÉ · mortalité < 5 ans (‰)',lx,ly);
-    g.fillStyle='rgba(190,200,212,.9)';
-    g.fillText((sc?sc.done:0)+' / '+tot+' paquets vérifiés · '+shown+' pays en '+yi,lx,ly+lh);
-    if(!narrow) g.fillText('centre = faible · bord = élevé · source UN IGME',lx,ly+2*lh);
-    g.restore();
+    /* sélection */
+    const sn=S.geo&&D.nodes[S.geo];
+    if(sn&&sn.m.visible){ D.halo.visible=D.sel.visible=true; D.halo.position.copy(sn.m.position); D.halo.quaternion.copy(E.camera.quaternion);
+      setSpriteText(T,D.sel,S.geo+' '+v1(sn.cur)+' ‰','#ffffff',.13); D.sel.position.copy(sn.m.position).add(new T.Vector3(0,.16,0)); }
+    else D.halo.visible=D.sel.visible=false;
+    /* Monde */
+    const w=by.WORLD, wv=w&&w.byY.has(yi)?w.byY.get(yi):null;
+    if(wv!=null){ const wy=SANTE_ELEVATION.y(w,wv); D.wt.position.y=wy; D.wt.visible=true;
+      D.wteth.forEach(t=>{ const p=t.l.geometry.attributes.position; p.setY(1,wy); p.needsUpdate=true; t.l.geometry.computeBoundingSphere(); });
+      setSpriteText(T,D.wlab,'Monde '+v1(wv)+' ‰','#f3e3b0',.14); D.wlab.position.copy(W3(Math.PI,SANTE_RADIAL.R_IN+0.03,wy+0.13,T)); D.wlab.visible=true; }
+    else { D.wt.visible=false; D.wlab.visible=!!w; if(!w) setSpriteText(T,D.wlab,'Monde : lecture…','#f3e3b0',.14); D.wlab.position.copy(W3(Math.PI,SANTE_RADIAL.R_IN+0.03,-0.8,T)); }
+    setSpriteText(T,D.ylab,String(yi),'#e8c872',.22); D.ylab.position.copy(W3(SANTE_ANGULAR.ORIGIN,SANTE_RADIAL.R_OUT-0.3,SANTE_ELEVATION.CEIL_Y-0.15,T)); /* sur le méridien d'or, hors de l'espace réservé r < 1 */
   }
+  function syncPlay(){
+    const el=S.el&&S.el.querySelector('[data-s="pl"]'); if(!el) return;
+    const b=el.querySelector('.um-sh-play'), r=el.querySelector('.um-sh-yr'), t=el.querySelector('.um-sh-yv');
+    if(b) b.textContent=P3.playing?'⏸ Pause':'▶ Lecture'; if(t) t.textContent=P3.year!=null?P3.year:'—';
+    if(r&&document.activeElement!==r&&P3.year!=null) r.value=P3.year;
+  }
+  function playHTML(){
+    const [Y0,Y1]=yearRange(), E=window.UM_ENGINE3D, D=P3.scene, n=D?Object.values(D.nodes).filter(x=>x.m.visible).length:0;
+    return '<div class="lvl">3D · CHAMBRE SANTÉ · année <span class="um-sh-yv">'+(P3.year||'—')+'</span></div>'
+      +'<div class="um-sh-pl"><button type="button" class="um-sh-play">'+(P3.playing?'⏸ Pause':'▶ Lecture')+'</button>'
+      +'<input type="range" class="um-sh-yr" min="'+Y0+'" max="'+Y1+'" step="1" value="'+(P3.year||Y1)+'" aria-label="Année"></div>'
+      +'<div class="sub">'+(E&&E.sys==='health'&&D?'Groupe Three.js <code>um-sante-3d</code> dans la scène : '+Object.keys(D.nodes).length+' pays, '+n+' visibles en '+(P3.year||'—')+' · ':'')+'rayon = taux réel (bas près du cœur, élevé près du mur extérieur) · secteur = zone · hauteur = baisse depuis 1990, tige jusqu\u2019au plancher. Faire glisser pour tourner, molette pour zoomer, clic sur un nœud pour le forage.</div>';
+  }
+  function wirePlay(d){
+    const b=d.querySelector('.um-sh-play'), r=d.querySelector('.um-sh-yr');
+    if(b) b.onclick=()=>{ if(P3.playing){ P3.playing=false; } else { const [Y0]=yearRange(); P3.playing=true; P3.t0=performance.now()-((P3.year||Y0)-Y0)*600; } syncPlay(); };
+    if(r) r.oninput=()=>{ P3.playing=false; P3.year=+r.value; syncPlay(); };
+  }
+  let raf3=0;
+  function loop3(now){ try{ frame3D(now); }catch(e){ if(!S.err3){ S.err3=String(e&&e.message||e); } } raf3=requestAnimationFrame(loop3); }
+  window.UM_SANTE_3D={version:VERSION, SANTE_RADIAL, SANTE_ANGULAR, SANTE_ELEVATION,
+    get group(){ return P3.scene&&P3.scene.grp; }, get nodes(){ return P3.scene?Object.keys(P3.scene.nodes).length:0; },
+    get visibleNodes(){ return P3.scene?Object.values(P3.scene.nodes).filter(n=>n.m.visible).length:0; },
+    get year(){ return P3.year; }, get planes(){ return P3.scene?P3.scene.planes:null; }, get error(){ return S.err3||null; },
+    play(){ P3.playing=true; syncPlay(); }, pause(){ P3.playing=false; syncPlay(); }, setYear(y){ P3.playing=false; P3.year=y; syncPlay(); }};
 
   /* ---------- pastille, entrée et sortie de l'étage ---------- */
   function centerName(){ const c=$('hub-center'); return c?c.textContent.trim():''; }
@@ -415,10 +510,10 @@
       if(!S.el||!S.el.isConnected){ S.el=document.createElement('div'); S.el.id='um-sante-real'; S.el.className='um-skel um-sante-real'; st.appendChild(S.el); render(); open(); loadSub(); }
       S.el.hidden=false;
     } else if(S.el) S.el.hidden=true;
-    if(on){ obsStart(); if(!S.opening) open(); } else obsStop();
+    if(on){ if(!S.opening) open(); } else if(P3.scene&&P3.scene.grp){ P3.scene.grp.visible=false; if(P3.scene.tip) P3.scene.tip.style.display='none'; }
     const c=on&&S.closed?chip():$('um-sante-real-chip'); if(c) c.hidden=!(on&&S.closed);
   }
-  function pump(){ if(S.dirty&&S.el&&!S.el.hidden&&S.index){ S.dirty=false; upd(['st','hd','rk','sb','sr','zn']); } }
+  function pump(){ if(S.dirty&&S.el&&!S.el.hidden&&S.index){ S.dirty=false; upd(['st','pl','hd','rk','sb','sr','zn']); } }
   const css=document.createElement('style'); css.id='um-v2092-sante-css';
   css.textContent='.um-sante-real{position:absolute;left:10px;top:10px;z-index:7;width:min(600px,calc(100% - 20px));max-height:calc(100% - 130px);overflow:auto;background:rgba(9,13,18,.96);color:#e6e9ee;font:12px/1.45 system-ui,sans-serif;padding:10px 12px;border-radius:8px;border:2px solid #5fd690!important}'
     +'.um-sante-real h3{margin:0 0 4px;font:600 14px/1.3 system-ui,sans-serif;color:#c9f5da}'
@@ -430,7 +525,7 @@
     +'.um-sante-real button[aria-pressed=true]{border-color:#5fd690;color:#c9f5da}'
     +'.um-sh-geos{display:flex;flex-wrap:wrap;gap:2px;margin:4px 0 8px}'
     +'.um-sante-real code{font:10px ui-monospace,monospace;color:#bfe8ff}'
-    /* v20.95 : lisibilité (caractères plus grands), observatoire, cartes, classements */
+    /* v20.95 : lisibilité (caractères plus grands), cartes, classements (l'observatoire 2D est remplacé en v20.97 par le groupe 3D) */
     +'#um-sante-real{box-sizing:border-box;width:min(470px,calc(100% - 20px));font:14px/1.5 system-ui,sans-serif;padding:12px 14px;background:linear-gradient(180deg,rgba(10,16,22,.95),rgba(7,11,16,.95));box-shadow:0 14px 44px rgba(0,0,0,.55),inset 0 1px 0 rgba(232,200,114,.18)}'
     +'#um-sante-real h3{font:600 17px/1.3 Georgia,serif;color:#e8c872;margin:0 0 8px;padding-right:30px}#um-sante-real h3 .ver{font:500 11px ui-monospace,monospace;color:#8b98ad;margin-left:6px}'
     +'#um-sante-real .lvl{font:600 12.5px/1.4 ui-monospace,monospace;color:#bfe8ff;margin-top:14px;letter-spacing:.02em}'
@@ -452,10 +547,12 @@
     +'#um-sante-real td.barc{width:28%}#um-sante-real td.barc i{display:block;height:7px;border-radius:3px}'
     +'#um-sante-real .zt{font-size:12px}'
     +'.um-sh-yt{max-height:260px;overflow:auto;border:1px solid #26303b;border-radius:5px}'
-    +'#um-sante-obs{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}'
+    +'#um-sante-tip{position:absolute;display:none;z-index:6;pointer-events:none;background:rgba(9,14,22,.95);border:1px solid #5fd690;border-radius:5px;padding:6px 9px;font:13px/1.4 system-ui,sans-serif;color:#e6e9ee}#um-sante-tip small{color:#9fb0c6}'
+    +'.um-sh-pl{display:flex;gap:8px;align-items:center;margin:4px 0}.um-sh-pl .um-sh-play{font:600 13px system-ui,sans-serif;padding:4px 10px}.um-sh-pl input{flex:1}'
     +'@media (max-width:760px){#um-sante-real{top:auto;bottom:10px;max-height:56%;font-size:13.5px}.um-sh-cards,.um-sh-kpis{grid-template-columns:1fr}#um-sante-real td.barc{display:none}}';
   (document.head||document.documentElement).appendChild(css);
   setInterval(tick,1200);
   setInterval(pump,700);
+  raf3=requestAnimationFrame(loop3);
   setTimeout(tick,0);
 })();
