@@ -710,8 +710,6 @@ function label(text,col,h,weight){
 /* Boundaries of the cuboidal toroid */
 const G={bounds:new THREE.Group(),c3:new THREE.Group(),c4:new THREE.Group(),trails:new THREE.Group(),links:new THREE.Group()};
 Object.values(G).forEach(g=>WORLD.add(g));
-/* v20.97 — crochet additif (Santé 3D, sante-hub.js) : expose la scène de ce système, rien d'autre ne change. */
-try{window.UM_ENGINE3D={sys:SYS.id,THREE,scene,WORLD,camera,renderer,controls,stage};}catch(e){}
 [[1,1],[1,-1],[3,1],[3,-1]].forEach(([r,y])=>G.bounds.add(ring(r,y,0x3a5272,.75)));
 G.bounds.add(ring(2,0,0x2b4466,.55));G.bounds.add(ring(2,1,0x1c2a3c,.5));G.bounds.add(ring(2,-1,0x1c2a3c,.5));
 [-.6,-.2,.2,.6].forEach(y=>{G.bounds.add(ring(1,y,0x223349,.55,true));G.bounds.add(ring(3,y,0x223349,.55,true))});
