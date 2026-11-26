@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="Universal Metaphor">
+  <rect width="128" height="128" rx="22" fill="#05080d"/>
+  <rect x="3.5" y="3.5" width="121" height="121" rx="20" fill="none" stroke="#e8c872" stroke-width="2"/>
+  <g fill="none" stroke="#2b3c55" stroke-width="1.2" transform="translate(64 70)">
+    <ellipse rx="46" ry="22"/>
+    <ellipse rx="34" ry="16"/>
+    <ellipse rx="22" ry="10"/>
+    <ellipse rx="10" ry="5"/>
+    <line x1="0" y1="-40" x2="0" y2="18" stroke="#3d4f68"/>
+  </g>
+  <g transform="translate(64 48)">
+    <polygon points="0,-12 10,0 0,12 -10,0" fill="#7b6ad6" stroke="#b388ff" stroke-width="0.8"/>
+  </g>
+  <g transform="translate(64 72)">
+    <polygon points="0,-11 13,0 0,11 -13,0" fill="#3d8a6a" stroke="#5fd690" stroke-width="0.8"/>
+    <rect x="-4" y="8" width="8" height="8" fill="#5fd690" opacity="0.85"/>
+  </g>
+  <g transform="translate(28 70)">
+    <polygon points="0,-8 7,0 0,8 -7,0" fill="#6b4ca8" stroke="#b388ff" stroke-width="0.7"/>
+  </g>
+  <g transform="translate(100 70)">
+    <polygon points="0,-8 8,0 0,8 -8,0" fill="#2f6fb3" stroke="#4fa7ff" stroke-width="0.7"/>
+  </g>
+</svg>
