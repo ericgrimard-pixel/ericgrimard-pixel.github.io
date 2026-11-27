@@ -2,8 +2,8 @@
 <html lang="fr"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="um-build" content="v21.03">
-<!-- um-deploy: v21.03 -->
+<meta name="um-build" content="v21.04">
+<!-- um-deploy: v21.04 -->
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -29,6 +29,37 @@
   if(window.caches&&caches.keys){
     caches.keys().then(function(keys){keys.forEach(function(k){caches.delete(k);});});
   }
+})();
+</script>
+<!-- v21.04 — Bridget Guide & Host: lift ?host=bridget / ?from=world out of the hash before the engine rewrites #/world. -->
+<script>
+(function(){
+  function blank(s){return new URLSearchParams(s.charAt(0)==='?'?s.slice(1):s)}
+  function normalize(){
+    try{
+      var hash=location.hash||'',q=hash.indexOf('?');
+      var hashPath=q>=0?hash.slice(0,q):hash;
+      var hp=blank(q>=0?hash.slice(q+1):'');
+      var sp=blank(location.search);
+      var changed=q>=0;
+      hp.forEach(function(v,k){if(!sp.has(k)){sp.set(k,v);changed=true}});
+      var onWorld=hashPath==='#/world'||hashPath==='#world';
+      var ref='';
+      try{ref=document.referrer||''}catch(e){ref=''}
+      var refHit=/(?:^|[?#&])host=bridget|(?:^|[?#&])from=world|#\/world|\.world(?:$|[?#])/.test(ref);
+      var stored=false;
+      try{stored=sessionStorage.getItem('um-bridget-host')==='1'}catch(e){}
+      var activate=onWorld||sp.get('host')==='bridget'||sp.get('from')==='world'||sp.get('demo')==='ready'||refHit||stored;
+      if(activate&&sp.get('host')!=='bridget'){sp.set('host','bridget');changed=true}
+      if(activate){try{sessionStorage.setItem('um-bridget-host','1')}catch(e){}}
+      if(!changed)return;
+      var next=location.pathname+(sp.toString()?'?'+sp.toString():'')+hashPath;
+      if(next!==location.pathname+location.search+location.hash)history.replaceState(history.state,'',next);
+    }catch(e){}
+  }
+  normalize();
+  addEventListener('hashchange',normalize,true);
+  addEventListener('popstate',normalize,true);
 })();
 </script>
 <style>
@@ -326,63 +357,63 @@ canvas.vbars{width:100%;height:70px;display:block;margin-top:6px}
 </div>
 
 
-<script src="engine/vendor/three.min.js?v=21.03"></script>
-<script src="engine/vendor/OrbitControls.js?v=21.03"></script>
-<script src="engine/lib.js?v=21.03"></script>
-<script src="engine/markets.js?v=21.03"></script>
-<script src="engine/markets-intl.js?v=21.03"></script>
-<script src="engine/data/lib-jse40.js?v=21.03"></script>
-<script src="engine/data/lib-wig20.js?v=21.03"></script>
-<script src="engine/data/lib-set50.js?v=21.03"></script>
-<script src="engine/data/lib-nzx50.js?v=21.03"></script>
-<script src="engine/data/lib-colcap.js?v=21.03"></script>
-<script src="engine/data/lib-merval.js?v=21.03"></script>
-<script src="engine/data/lib-tw50.js?v=21.03"></script>
-<script src="engine/data/lib-ta35.js?v=21.03"></script>
-<script src="engine/data/lib-qe.js?v=21.03"></script>
-<script src="engine/data/lib-egx30.js?v=21.03"></script>
-<script src="engine/data/lib-bist30.js?v=21.03"></script>
-<script src="engine/data/lib-ipsa.js?v=21.03"></script>
-<script src="engine/data/lib-klci.js?v=21.03"></script>
-<script src="engine/data/lib-bel20.js?v=21.03"></script>
-<script src="engine/data/lib-obx.js?v=21.03"></script>
-<script src="engine/data/lib-atx.js?v=21.03"></script>
-<script src="engine/data/lib-omxc25.js?v=21.03"></script>
-<script src="engine/data/lib-omxh25.js?v=21.03"></script>
-<script src="engine/data/lib-psi.js?v=21.03"></script>
-<script src="engine/data/lib-iseq20.js?v=21.03"></script>
-<script src="engine/data/lib-lq45.js?v=21.03"></script>
-<script src="engine/data/lib-vn30.js?v=21.03"></script>
-<script src="engine/data/lib-ibrx50.js?v=21.03"></script>
-<script src="engine/data/lib-smll.js?v=21.03"></script>
-<script src="engine/data/lib-ifnc.js?v=21.03"></script>
-<script src="engine/data/lib-imob.js?v=21.03"></script>
-<script src="engine/data/lib-idiv.js?v=21.03"></script>
-<script src="engine/data/lib-icon.js?v=21.03"></script>
-<script src="engine/data/lib-mlcx.js?v=21.03"></script>
-<script src="engine/data/lib-sp100.js?v=21.03"></script>
-<script src="engine/data/lib-djcomp.js?v=21.03"></script>
-<script src="engine/data/lib-tasi-mat.js?v=21.03"></script>
-<script src="engine/data/lib-tasi-fin.js?v=21.03"></script>
-<script src="engine/data/lib-tasi-ind.js?v=21.03"></script>
-<script src="engine/data/lib-tasi-re.js?v=21.03"></script>
-<script src="engine/data/lib-tasi-cyc.js?v=21.03"></script>
-<script src="engine/data/lib-spx-tech.js?v=21.03"></script>
-<script src="engine/data/lib-spx-ind.js?v=21.03"></script>
-<script src="engine/data/lib-spx-fin.js?v=21.03"></script>
-<script src="engine/data/lib-spx-hlth.js?v=21.03"></script>
-<script src="engine/data/lib-spx-cyc.js?v=21.03"></script>
-<script src="engine/data/lib-n225-ind.js?v=21.03"></script>
-<script src="engine/data/lib-n225-cyc.js?v=21.03"></script>
-<script src="engine/data/lib-n225-tech.js?v=21.03"></script>
-<script src="engine/world.js?v=21.03"></script>
-<script src="engine/silos.js?v=21.03"></script>
-<script src="engine/data/sante-u5mr.js?v=21.03"></script>
-<script src="engine/floors.js?v=21.03"></script>
-<script src="engine/bloom.js?v=21.03"></script>
-<script src="engine/loader-v2.js?v=21.03"></script>
-<script src="engine/sante-hub.js?v=21.03"></script>
-<script src="engine/engine.js?v=21.03"></script>
-<script src="engine/hub-nav.js?v=21.03"></script>
-<script src="engine/bridget-demo.js?v=21.03"></script>
+<script src="engine/vendor/three.min.js?v=21.04"></script>
+<script src="engine/vendor/OrbitControls.js?v=21.04"></script>
+<script src="engine/lib.js?v=21.04"></script>
+<script src="engine/markets.js?v=21.04"></script>
+<script src="engine/markets-intl.js?v=21.04"></script>
+<script src="engine/data/lib-jse40.js?v=21.04"></script>
+<script src="engine/data/lib-wig20.js?v=21.04"></script>
+<script src="engine/data/lib-set50.js?v=21.04"></script>
+<script src="engine/data/lib-nzx50.js?v=21.04"></script>
+<script src="engine/data/lib-colcap.js?v=21.04"></script>
+<script src="engine/data/lib-merval.js?v=21.04"></script>
+<script src="engine/data/lib-tw50.js?v=21.04"></script>
+<script src="engine/data/lib-ta35.js?v=21.04"></script>
+<script src="engine/data/lib-qe.js?v=21.04"></script>
+<script src="engine/data/lib-egx30.js?v=21.04"></script>
+<script src="engine/data/lib-bist30.js?v=21.04"></script>
+<script src="engine/data/lib-ipsa.js?v=21.04"></script>
+<script src="engine/data/lib-klci.js?v=21.04"></script>
+<script src="engine/data/lib-bel20.js?v=21.04"></script>
+<script src="engine/data/lib-obx.js?v=21.04"></script>
+<script src="engine/data/lib-atx.js?v=21.04"></script>
+<script src="engine/data/lib-omxc25.js?v=21.04"></script>
+<script src="engine/data/lib-omxh25.js?v=21.04"></script>
+<script src="engine/data/lib-psi.js?v=21.04"></script>
+<script src="engine/data/lib-iseq20.js?v=21.04"></script>
+<script src="engine/data/lib-lq45.js?v=21.04"></script>
+<script src="engine/data/lib-vn30.js?v=21.04"></script>
+<script src="engine/data/lib-ibrx50.js?v=21.04"></script>
+<script src="engine/data/lib-smll.js?v=21.04"></script>
+<script src="engine/data/lib-ifnc.js?v=21.04"></script>
+<script src="engine/data/lib-imob.js?v=21.04"></script>
+<script src="engine/data/lib-idiv.js?v=21.04"></script>
+<script src="engine/data/lib-icon.js?v=21.04"></script>
+<script src="engine/data/lib-mlcx.js?v=21.04"></script>
+<script src="engine/data/lib-sp100.js?v=21.04"></script>
+<script src="engine/data/lib-djcomp.js?v=21.04"></script>
+<script src="engine/data/lib-tasi-mat.js?v=21.04"></script>
+<script src="engine/data/lib-tasi-fin.js?v=21.04"></script>
+<script src="engine/data/lib-tasi-ind.js?v=21.04"></script>
+<script src="engine/data/lib-tasi-re.js?v=21.04"></script>
+<script src="engine/data/lib-tasi-cyc.js?v=21.04"></script>
+<script src="engine/data/lib-spx-tech.js?v=21.04"></script>
+<script src="engine/data/lib-spx-ind.js?v=21.04"></script>
+<script src="engine/data/lib-spx-fin.js?v=21.04"></script>
+<script src="engine/data/lib-spx-hlth.js?v=21.04"></script>
+<script src="engine/data/lib-spx-cyc.js?v=21.04"></script>
+<script src="engine/data/lib-n225-ind.js?v=21.04"></script>
+<script src="engine/data/lib-n225-cyc.js?v=21.04"></script>
+<script src="engine/data/lib-n225-tech.js?v=21.04"></script>
+<script src="engine/world.js?v=21.04"></script>
+<script src="engine/silos.js?v=21.04"></script>
+<script src="engine/data/sante-u5mr.js?v=21.04"></script>
+<script src="engine/floors.js?v=21.04"></script>
+<script src="engine/bloom.js?v=21.04"></script>
+<script src="engine/loader-v2.js?v=21.04"></script>
+<script src="engine/sante-hub.js?v=21.04"></script>
+<script src="engine/engine.js?v=21.04"></script>
+<script src="engine/hub-nav.js?v=21.04"></script>
+<script src="engine/bridget-demo.js?v=21.04"></script>
 </body></html>

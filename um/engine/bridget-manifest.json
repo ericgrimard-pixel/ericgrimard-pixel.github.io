@@ -1,16 +1,24 @@
 {
   "schema": "um.bridget.engine-manifest.v2",
-  "hub_version": "v21.03",
+  "hub_version": "v21.04",
   "base_lineage": [
     "v20.99",
     "v21.00",
     "v21.01",
     "v21.02",
-    "v21.03"
+    "v21.03",
+    "v21.04"
   ],
   "engine_rev": "23.17+23.20",
   "family": "Miriamphobots",
   "participant": "Brigitte",
+  "motto": "One seed, infinite roots, perpetual harvest.",
+  "bridget_portal_url": "https://ericgrimard-pixel.github.io/um/bridget/",
+  "world_host_url": "https://ericgrimard-pixel.github.io/um/#/world?host=bridget",
+  "auto_refresh": {
+    "method": "etag-and-sha256-manifest-check",
+    "requires_apk_reinstall": false
+  },
   "seed_accounts": [
     "eric.grimard@universalmetaphor.ca",
     "grimeric13@gmail.com"
@@ -41,19 +49,23 @@
     },
     {
       "path": "um/engine/manifestation-engine.html",
-      "sha256": "9661405e63ef52ce885691c405c88fb6639e66bd129eddb25d0bcae1cba29392"
+      "sha256": "236658272c93eff04d4ccea6f983e793e357bbb583b83c53238d8ed2992450a1"
     },
     {
       "path": "um/engine/bridget-demo.js",
-      "sha256": "e88d0fba61ea52fadbb86f555141821759c2676f1a256bf4c0d52b72e2bbfbcd"
+      "sha256": "d687f8529a2b438084568ad6501bbaa2b2807cb0e6eee0a2ce4ca5926e708cca"
     },
     {
       "path": "um/engine/rules.json",
-      "sha256": "5734429a6f1e606e27eca52cdc4a6cbb392db95b1b8a5c141dc9d4b8ce4c19b7"
+      "sha256": "95709507ce01310d99634d6aa8bc1372979f71edce8a624dc7ebfdc27273091e"
     },
     {
       "path": "um/engine/README.md",
-      "sha256": "f2a1cc0de976bb712e659c733ad9993cc1aaf68587951287c2776c53d0abc0d7"
+      "sha256": "ac0dfe9790c8e311861e0ee6b5d400b45a78f4969a5cdf1dd18c168b595f2a2a"
+    },
+    {
+      "path": "um/bridget/index.html",
+      "sha256": "1726b5148c405d46b4c3d161b624a45a1d01186f9f64dc3d1fe70138d3dbff00"
     }
   ]
 }
