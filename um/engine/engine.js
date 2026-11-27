@@ -1009,7 +1009,7 @@ const O2=CARDS.map((c,i)=>makeObj(2,i));
 
 /* Cardinal trails (they lead the dance) */
 const TRL=48;
-const trails=CARDS.map(()=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(TRL*3),3));const l=new THREE.Line(g,new THREE.LineBasicMaterial({color:0xa6dcff,transparent:true,opacity:.32}));G.trails.add(l);return l});
+const trails=CARDS.map(()=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(TRL*3),3));const l=new THREE.Line(g,new THREE.LineBasicMaterial({color:0xa6dcff,transparent:true,opacity:.12}));G.trails.add(l);return l});
 /* Links: chain from a selection to its cardinals or members */
 const LCAP=(HK||GC)?Math.max(260,(N1+NC)*2+4):260;
 const linkGeo=new THREE.BufferGeometry();linkGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(LCAP*3),3));
@@ -1038,7 +1038,7 @@ function ptMake(op){const g=new THREE.BufferGeometry();g.setAttribute('position'
   for(let k=0;k<PTR.length;k++)for(let s=0;s<PTS;s++){c.copy(A).lerp(B,s/PTS);col.set([c.r,c.g,c.b],(k*PTS+s)*6);c.copy(A).lerp(B,(s+1)/PTS);col.set([c.r,c.g,c.b],(k*PTS+s)*6+3)}
   g.setAttribute('color',new THREE.BufferAttribute(col,3));
   const l=new THREE.LineSegments(g,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:op,depthWrite:false}));l.visible=false;G.links.add(l);return l}
-const ptLines=ptMake(.42),ptHi=ptMake(1);
+const ptLines=ptMake(.16),ptHi=ptMake(.6); /* rev. 23.17: temporal trail faded */
 const _pp={x:0,y:0,z:0};
 function hkPosAt(i,d0,d1,u,out){const b=i*F;if(!PRES[b+d0]||!PRES[b+d1])return false;const A=(b+d0)*10,B=(b+d1)*10;
   const X=zp(V,A,B,d0,d1,u,0),Y=zp(V,A,B,d0,d1,u,1),Z=zp(V,A,B,d0,d1,u,2),a=AZ(X),r=2-Z;out.x=r*Math.sin(a);out.y=Y;out.z=-r*Math.cos(a);
@@ -1060,7 +1060,7 @@ function applyPTrail(){
 }
 /* Year path of the selection */
 const pathGeo=new THREE.BufferGeometry();pathGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(F*3),3));
-const yearPath=new THREE.Line(pathGeo,new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.35}));WORLD.add(yearPath);
+const yearPath=new THREE.Line(pathGeo,new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.14}));WORLD.add(yearPath);
 let pathN=0,pathD0=0;
 /* Ghost (Fantôme) v19: ghosts laid at equal steps of the clock column's cumulative amount, all of one size; cardinal trails drawn session by session. */
 const GHOST={};
@@ -1096,7 +1096,7 @@ void main(){vec2 p=gl_PointCoord*2.0-1.0;float r=length(p);if(r>1.0||vA<0.002)di
   [['position',3],['aOther',3],['aDay',1],['aOD',1],['aCol',3],['aTy',1],['aCi',1]].forEach(([k,w])=>tg.setAttribute(k,new THREE.BufferAttribute(new Float32Array(ns*w),w)));
   tg.setDrawRange(0,0);
   const tm=new THREE.ShaderMaterial({
-    uniforms:{uCur:{value:0},uT0:{value:0},uTau:{value:20},uOp:{value:.75},uTy:{value:new THREE.Vector3(1,1,0)},uSel:{value:-1}},
+    uniforms:{uCur:{value:0},uT0:{value:0},uTau:{value:20},uOp:{value:.3},uTy:{value:new THREE.Vector3(1,1,0)},uSel:{value:-1}},
     vertexShader:`attribute vec3 aOther;attribute float aDay;attribute float aOD;attribute vec3 aCol;attribute float aTy;attribute float aCi;
 uniform float uCur;uniform float uT0;uniform float uTau;uniform float uOp;uniform vec3 uTy;uniform float uSel;
 varying vec3 vCol;varying float vA;
@@ -1411,13 +1411,13 @@ function buildThrowWin(){
 function buildThrowFrame(d){
   THR.d=d;const h=S.thr,g=THR.pts.geometry;THR.now=null;THR.nowR=null;
   if(!S.ghost||!h){g.setDrawRange(0,0);THRREP.fill(EMPTYL);updThrSel();return}
-  const items=[],D=[0,0,0],allow=repAllow(),q=new THREE.Quaternion(),e=new THREE.Euler();g.setDrawRange(0,0);
+  const items=[],D=[0,0,0],allow=repAllow(),q=new THREE.Quaternion(),e=new THREE.Euler();g.setDrawRange(0,0);const THRU=[]; /* rev. 23.17: step along the throw */
   for(let i=0;i<N1;i++){const j=i*F+d;if(!PRES[j]||!S.layers.c1)continue;if(TK[i]&&TK[i].nz0&&TK[i].bloom>bloomLevel)continue;if(allow&&!allow.has(i))continue;if(!thrDelta(i,d,h,D))continue;
-    for(let k=1;k<=h;k++){const u=k/h;items.push(i,clamp1(V[j*10]+CY(0,D[0],u)),clamp1(V[j*10+1]+CY(0,D[1],u)),clamp1(V[j*10+2]+CY(0,D[2],u)))}}
+    for(let k=1;k<=h;k++){const u=k/h;items.push(i,clamp1(V[j*10]+CY(0,D[0],u)),clamp1(V[j*10+1]+CY(0,D[1],u)),clamp1(V[j*10+2]+CY(0,D[2],u)));THRU.push(u)}}
   THRREP.fill({n:items.length/4,zone:k=>zoneOf(V[(items[k*4]*F+d)*10+3]),get:(k,o)=>{const i=items[k*4],j=(i*F+d)*10,X=items[k*4+1],p=w3v(X,items[k*4+2],items[k*4+3]);
     e.set(LV.pitch[zoneOf(V[j+6])],Math.PI/2-AZ(X),-LV.roll[zoneOf(V[j+8])],'YXZ');q.setFromEuler(e);const c=satRGB(zoneOf(V[j+5]),LV.sat[zoneOf(V[j+9])]);
     o.pos[0]=p[0];o.pos[1]=p[1];o.pos[2]=p[2];o.q[0]=q.x;o.q[1]=q.y;o.q[2]=q.z;o.q[3]=q.w;o.s=LV.stretch[zoneOf(V[j+4])];
-    o.col[0]=.6*c[0]+.4;o.col[1]=.6*c[1]+.4;o.col[2]=.6*c[2]+.4;o.day=0;o.tk=i;o.out=1;o.org=0;o.vol=1}});
+    o.col[0]=.6*c[0]+.4;o.col[1]=.6*c[1]+.4;o.col[2]=.6*c[2]+.4;o.day=0;o.tk=i;o.out=1;o.org=0;o.vol=.3+.7*THRU[k]}}); /* rev. 23.17: soft → firmer toward the far end */
   THR.nowR=thrScore(d,h);THR.now=summarize(THR.nowR);
   updThrSel();
 }
@@ -1597,8 +1597,9 @@ function applyObj(o,d0,d1,t,dt){
   paint(o,za(5),zb(5),za(9),zb(9),t);
   const dim=focusDim(o);
   const pf=(p0&&p1?1:(p0?1-t:t))*bk;
-  if(o.kind===1){const fo=dim*pf;o.faceMat.opacity=fo;o.faceMat.depthWrite=fo>.97;o.edgeMat.opacity=.45*fo}
-  else{o.edgeMat.opacity=.9*dim*pf;o.faceMat.opacity=.3*dim*pf}
+  /* rev. 23.17 (Éric via Grok, 27 Nov.): the object of consideration and the system's objects must be evident — edges raised */
+  if(o.kind===1){const fo=dim*pf;o.faceMat.opacity=fo;o.faceMat.depthWrite=fo>.97;o.edgeMat.opacity=.95*fo}
+  else{o.edgeMat.opacity=Math.min(1,dim*pf);o.faceMat.opacity=.45*dim*pf}
   syncRings(o, .95*dim*pf);
   if(o.label)o.label.visible=S.layers.labels&&dim>.5&&!o.card;
   if(HK&&o.tl){const ab=clubAt(o.idx,t<.5?da:db);if(ab&&o.tl.userData.ab!==ab){o.tl.material.map=objTex(o.idx,ab);o.tl.material.needsUpdate=true;o.tl.userData.ab=ab}} /* the logo changes, the object stays */
@@ -1707,7 +1708,7 @@ function relax(){
   relaxPts(P,R,M,nd,1);
 }
 function applyTrails(){
-  CARDS.forEach((c,ci)=>{const l=trails[ci],o=O2[ci];l.visible=!S.ghost&&S.layers.trails&&o.root.visible&&(l.userData.n||0)>1;if(l.visible)l.material.opacity=.32*focusDim(o)});
+  CARDS.forEach((c,ci)=>{const l=trails[ci],o=O2[ci];l.visible=!S.ghost&&S.layers.trails&&o.root.visible&&(l.userData.n||0)>1;if(l.visible)l.material.opacity=.12*focusDim(o)});
 }
 function applyLinks(){
   const s=S.sel,arr=linkGeo.attributes.position.array;let n=0;
@@ -1930,7 +1931,7 @@ function syncGhostUI(){
   gBtn.setAttribute('aria-pressed',(TWO?S.sghost:S.ghost)?'true':'false');gBtn.disabled=TWO&&GCSNAP;
   gBtn.title=TWO&&!GCSNAP?'Fantôme court : environ 8 copies proches derrière chaque objet, direction générale de T₀ vers T₁, même règle de condensation pour tous ; ce système n\'a que T₀ et T₁ (touche F)':TWO?(HK?"Le fantôme demande la saison match par match ; ce système n'a que T₀ et T₁, deux saisons.":GC?"Le fantôme demande une suite de prises ; ce système n'a qu'un instantané (T₀ = T₁).":"Le fantôme demande toutes les séances ; ce système n'a que T₀ et T₁."):'Fantôme : chaque titre laisse ses fantômes de T₀ à T₁ ; la colonne d\'horloge en règle seulement l\'espacement (touche F)';
   $('gwBox').hidden=$('gtauBox').hidden=$('thrBox').hidden=$('gContact').hidden=$('gvBox').hidden=!S.ghost;$('gvol').value=String(Math.round(Math.log2(S.gvol)*100));$('gvolN').textContent='×'+fmtGV(S.gvol);$('gclk').value=S.gclk;$('gtau').value=String(S.gtau);$('thr').value=String(S.thr);$('thrW').value=S.thrW;
-  $('sub').textContent='le corps · Universal Metaphor · moteur v2 · rév. 23.16 + relatif 23.18 · '+(S.ghost?'fantôme · horloge : '+(GCLKL[S.gclk]||'').toLowerCase()+(S.thr?' · lancer '+S.thr+' séances':''):(HK||(GC&&!GCSNAP)?'deux prises · deux saisons':GC?'un instantané · T₀ = T₁':'deux prises'));
+  $('sub').textContent='le corps · Universal Metaphor · moteur v2 · rév. 23.17 + relatif 23.18 · '+(S.ghost?'fantôme · horloge : '+(GCLKL[S.gclk]||'').toLowerCase()+(S.thr?' · lancer '+S.thr+' séances':''):(HK||(GC&&!GCSNAP)?'deux prises · deux saisons':GC?'un instantané · T₀ = T₁':'deux prises'));
   drawLegend();
 }
 function setGhost(on){
@@ -2373,7 +2374,7 @@ function drawVBars(i){
 }
 function copyState(){
   const d=curD();
-  const out={projet:'Manifestation',systeme:SYS.name,corps:'Universal Metaphor · moteur v2 · rév. 23.16 + relatif 23.18',ame:'CLAVIS × Esmeralda · pont non branché',volume:+S.exp.toFixed(4),transition:'T₀ → T₁, courbe F cycloïdale par axe',mode:S.mode,kobayashi:S.km||S.mode==='fourier',fantome:{actif:S.ghost,horloge:GCLKL[S.gclk],regle:'v20 : un fantôme par médiane cumulée du titre (médiane standard sur la fenêtre [T₀ du titre, T₁]) ; même taille pour tous ; espacement seulement ; bord à bord (×1) au plus serré → écart le plus long du système',diametre:GHOST.ruler?+GHOST.ruler.dg.toPrecision(6):null,ecartMax:GHOST.ruler?+GHOST.ruler.max.toFixed(2):null,fantomes:GHOST.ruler?GHOST.ruler.n:0,horsRegle:GHOST.ruler?GHOST.ruler.out:0,memoire:S.gtau||'toute la période'},
+  const out={projet:'Manifestation',systeme:SYS.name,corps:'Universal Metaphor · moteur v2 · rév. 23.17 + relatif 23.18',ame:'CLAVIS × Esmeralda · pont non branché',volume:+S.exp.toFixed(4),transition:'T₀ → T₁, courbe F cycloïdale par axe',mode:S.mode,kobayashi:S.km||S.mode==='fourier',fantome:{actif:S.ghost,horloge:GCLKL[S.gclk],regle:'v20 : un fantôme par médiane cumulée du titre (médiane standard sur la fenêtre [T₀ du titre, T₁]) ; même taille pour tous ; espacement seulement ; bord à bord (×1) au plus serré → écart le plus long du système',diametre:GHOST.ruler?+GHOST.ruler.dg.toPrecision(6):null,ecartMax:GHOST.ruler?+GHOST.ruler.max.toFixed(2):null,fantomes:GHOST.ruler?GHOST.ruler.n:0,horsRegle:GHOST.ruler?GHOST.ruler.out:0,memoire:S.gtau||'toute la période'},
     z0:{T0:Z0A.map(x=>+x.toFixed(6)),T1:Z0B.map(x=>+x.toFixed(6)),ensemble:Z0N.slice(),classe2:S.layers.z0c2,classe3:S.layers.z0c3,regle:'moyenne de tout, un seul ensemble ; fil linéaire ; écart cycloïdal par axe'},
     lancer:{horizon:S.thr,poids:S.thrW,seance:THR.d>=0?DATA.dates[THR.d]:null,maintenant:THR.now,fenetre:THR.win},
     session:S.session,prises:{T0:{date:DATA.dates[S.T0],zzero:+ZZ[S.T0].toFixed(8)},T1:{date:DATA.dates[S.T1],zzero:+ZZ[S.T1].toFixed(8)},dZ:+(ZZ[S.T1]-ZZ[S.T0]).toFixed(8)},
@@ -2402,7 +2403,7 @@ function tick(now){
   ghostFrame(gCur());sgFrame();
   z0Frame(S.ghost?tauOf(gCur()):t);applyC4(t,dt);vecFrame(S.ghost?tauOf(gCur()):t);microFrame(S.ghost?tauOf(gCur()):t,dt);
   if(S.ghost&&S.thr){const dI=Math.min(S.T1,Math.floor(gCur()));if(dI!==THR.d)buildThrowFrame(dI);
-    const U=THRREP.U;U.uSize.value=1/S.exp;U.uAll.value=1;U.uGain.value=.8;U.uSel.value=S.sel&&S.sel.kind===1?S.sel.idx:-1;
+    const U=THRREP.U;U.uSize.value=1/S.exp;U.uAll.value=1;U.uGain.value=.35; /* rev. 23.17: the secondary layer stays much softer */U.uSel.value=S.sel&&S.sel.kind===1?S.sel.idx:-1;
     THRREP.group.visible=S.layers.ghost;THR.pts.visible=false;}
   else{THR.pts.visible=false;THRREP.group.visible=false;THR.err.visible=false;THR.land.visible=false;if(THR.d!==-1&&(!S.ghost||!S.thr))THR.d=-1}
   applyTrails();applyLinks();applyXfer();applyPTrail();
