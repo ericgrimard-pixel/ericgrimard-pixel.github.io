@@ -351,7 +351,7 @@
   const R=document.getElementById('right'); if(!R) return;
   let tok=null; try{ tok=localStorage.getItem('um.hubGuestKey'); }catch(e){}
   if(!tok||!window.crypto||!crypto.subtle) return;
-  const fpReady=window.UM_ADMIN?Promise.resolve():new Promise((res,rej)=>{ const s=document.createElement('script'); s.src='/um/door/admin/fingerprints.js?v=20.88'; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
+  const fpReady=window.UM_ADMIN?Promise.resolve():new Promise((res,rej)=>{ const s=document.createElement('script'); s.src='/um/door/admin/fingerprints.js?v=20.99'; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
   fpReady.then(()=>UM_ADMIN.check(tok)).then(who=>{
     if(!who) return;
     const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -932,7 +932,7 @@
     if(!(document.getElementById('um-agent-first')&&document.getElementById('um-agent-left')&&document.getElementById('um-door-agent'))&&++tries<120) setTimeout(put,250);
   }
   if(window.UM_AGENT_SWITCH){ put(); return; }
-  const s=document.createElement('script'); s.src='/um/engine/agent-switch.js?v=20.96'; s.onload=put; document.head.appendChild(s);
+  const s=document.createElement('script'); s.src='/um/engine/agent-switch.js?v=20.99'; s.onload=put; document.head.appendChild(s);
 })();
 
 
