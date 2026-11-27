@@ -774,6 +774,10 @@ const mpos=(X,Y,Z,q)=>{const a=AZ(X),r=mR(2-Z);q.x=r*Math.sin(a);q.y=mY(Y);q.z=-
    Canon 8, fractal/telescopic: one gain on the whole displacement, so the path keeps its shape.
    Canon 9, entropy reduction: excess amplitude is absorbed, never spilled into the chamber (radius ≥ 1).
    The body is included. Scale drops only when the body itself is larger than the reserved volume. */
+/* rev. 23.20 — the Z0 progression (T₀ → T₁) is transposed into the microcosm. The chamber anchor stays at
+   [0, 0, 0]. The central object inside the microcosm rides that folded path: its relative position changes
+   with τ, together with its physical attributes (colour, shape, stretch, squash, angles). The same sens
+   gain keeps the skin inside the microcosm wall (0,74 < 1). The trajectory ghost follows this live position. */
 let MCG={scale:1,sens:1,er:0,wall:1};
 function mcMotionGain(er){
   const wall=Math.min(mR(3),1-1e-3),yWall=1-1e-3;
@@ -892,17 +896,18 @@ function mMesh(kind,z,cap){
     :new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:kind===4?.7:kind===3?.38:.45,depthWrite:false,side:THREE.DoubleSide});
   const m=new THREE.InstancedMesh(mGeo(z),mat,cap);m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   m.instanceColor=new THREE.InstancedBufferAttribute(new Float32Array(cap*3),3);m.instanceColor.setUsage(THREE.DynamicDrawUsage);
-  m.count=0;m.frustumCulled=false;MICRO.add(m);return m}
+  m.count=0;m.frustumCulled=false;if(kind===4)m.renderOrder=4;MICRO.add(m);return m}
 let MB1=null,MB2=null,MB3=null,MB4=null,MBALL=[]; /* built on the first frame: the shape geometries are declared further down */
 function mBuild(){if(MB1)return;const Z5=[0,1,2,3,4];MB1=Z5.map(z=>mMesh(1,z,Math.max(1,N1)));MB2=Z5.map(z=>mMesh(2,z,Math.max(1,NC)));MB3=Z5.map(z=>mMesh(3,z,5));MB4=Z5.map(z=>mMesh(4,z,1));MBALL=[...MB1,...MB2,...MB3,...MB4]}
 const MSP1=new Float32Array(N1).map(()=>Math.random()*6.28),MSP2=new Float32Array(NC).map(()=>Math.random()*6.28),MSP3=new Float32Array(5),MSP4=new Float32Array(1);
 const MQ=new THREE.Vector3(),MM=new THREE.Matrix4(),MRo=new THREE.Matrix4(),MSp=new THREE.Matrix4(),MSc=new THREE.Matrix4(),ME=new THREE.Euler(),MCc=new THREE.Color();
-function mObj(VV,A,B,OF,oa,ob,t,R,SP,si,dt,MB,fix){
+function mObj(VV,A,B,OF,oa,ob,t,R,SP,si,dt,MB,fix,at){
   const X=fix!=null?fix:CY(VV[A],VV[B],t),Y=fix!=null?fix:CY(VV[A+1],VV[B+1],t),Z=fix!=null?fix:CY(VV[A+2],VV[B+2],t);
-  mpos(X,Y,Z,MQ);
+  if(at)MQ.set(at[0],at[1],at[2]); /* rev. 23.20: a position already folded and gained (the transposed Z0 path) */
+  else{mpos(X,Y,Z,MQ);
   if(OF&&S.layers.spacing){const u=1-t;MQ.x+=OF[oa]*u+OF[ob]*t;MQ.y+=OF[oa+1]*u+OF[ob+1]*t;MQ.z+=OF[oa+2]*u+OF[ob+2]*t}
   {const r=Math.hypot(MQ.x,MQ.z),rHi=mR(3),yHi=Math.abs(mY(1));if(r>rHi&&r>1e-9){const k=rHi/r;MQ.x*=k;MQ.z*=k}if(MQ.y>yHi)MQ.y=yHi;else if(MQ.y<-yHi)MQ.y=-yHi}
-  const gs=MCG.sens;MQ.x*=gs;MQ.y*=gs;MQ.z*=gs; /* rev. 23.19: fold back to the microcosm wall, then one gain so the body stays inside */
+  const gs=MCG.sens;MQ.x*=gs;MQ.y*=gs;MQ.z*=gs;} /* rev. 23.19: fold back to the microcosm wall, then one gain so the body stays inside */
   const za=k=>zoneOf(VV[A+k]),zb=k=>zoneOf(VV[B+k]),L=(arr,k)=>CY(arr[za(k)],arr[zb(k)],t);
   const zs=t<.5?za(3):zb(3),st=L(LV.stretch,4),pit=L(LV.pitch,6),om=L(LV.spin,7),rol=L(LV.roll,8);
   SP[si]-=om*dt*(REDUCED?.25:1);
@@ -913,6 +918,19 @@ function mObj(VV,A,B,OF,oa,ob,t,R,SP,si,dt,MB,fix){
 }
 {const zn=document.getElementById('zzNow');if(zn&&zn.parentNode&&!document.getElementById('zzRel')){const sp=document.createElement('span');sp.className='ro';sp.id='zzRelRo';sp.innerHTML='Relatif <b id="zzRel">—</b>';zn.parentNode.after(sp)}}
 const f8r=x=>Number.isFinite(x)?x.toFixed(8):'—';
+function c4AttrAt(t){
+  const n0=C4N[0],n1=C4N[1];if(!n0&&!n1)return null;
+  const A=(n0?0:1)*10,B=(n1?1:0)*10,tt=Math.max(0,Math.min(1,+t||0));
+  const za=k=>zoneOf(C4V[A+k]),zb=k=>zoneOf(C4V[B+k]),L=(arr,k)=>CY(arr[za(k)],arr[zb(k)],tt);
+  const zs=tt<.5?za(3):zb(3),P=satRGB(za(5),LV.sat[za(9)]),Q=satRGB(zb(5),LV.sat[zb(9)]);
+  return {shape:zs,stretch:+L(LV.stretch,4).toFixed(4),pitch:+L(LV.pitch,6).toFixed(4),roll:+L(LV.roll,8).toFixed(4),spin:+L(LV.spin,7).toFixed(4),
+    color:[+CY(P[0],Q[0],tt).toFixed(4),+CY(P[1],Q[1],tt).toFixed(4),+CY(P[2],Q[2],tt).toFixed(4)]};
+}
+function c4Skin(p,stretch){
+  const body=MCG.er*MCG.scale,st=Math.max(1,+stretch||1);
+  const rad=Math.hypot(p[0],p[2]),skin=Math.max(rad+body,Math.abs(p[1])+body*(st/Math.max(LV.stretch[LV.stretch.length-1],1e-6)));
+  return {radial:+rad.toFixed(5),skin:+skin.toFixed(5),inside:skin<=MCG.wall+1e-4&&skin<1?1:0};
+}
 function microFrame(t,dt){
   t=Math.max(0,Math.min(1,+t||0));dt=+dt||0;
   mBuild();
@@ -927,17 +945,22 @@ function microFrame(t,dt){
       const a=c*2+(p0?0:1),b=c*2+(p1?1:0);mObj(CVR,a*10,b*10,MOFF2,a*3,b*3,t,.2*MS*DENS/E,MSP2,c,dt,MB2);n2++}
     if(S.layers.c3)for(let z=0;z<5;z++){if(!C3ON[z])continue;const h0=C3NR[z*2],h1=C3NR[z*2+1];if(!h0&&!h1)continue;
       mObj(C3VR,(z*2+(h0?0:1))*10,(z*2+(h1?1:0))*10,null,0,0,t,.3*MS/E,MSP3,z,dt,MB3,C3T[z]);n3++}
-    if(REL.n4[0]||REL.n4[1])mObj(MC4,REL.n4[0]?0:10,REL.n4[1]?10:0,MOFF4,REL.n4[0]?0:3,REL.n4[1]?3:0,t,C4O.R*MS/E,MSP4,0,dt,MB4);
+    /* rev. 23.20: the central object inside the microcosm rides the transposed Z0 path; its body stays the collapse (C4V) */
+    if(C4N[0]||C4N[1])mObj(C4V,(C4N[0]?0:1)*10,(C4N[1]?1:0)*10,null,0,0,t,C4O.R*MS/E,MSP4,0,dt,MB4,null,c4Hold(t,Z0A,Z0B,true,1));
   }
   MBALL.forEach(m=>{if(m.count){m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true}});
   const zr=document.getElementById('zzRel');
   if(zr)zr.textContent=REL.own?(REL.indep?'indépendant':'1 · propre'):f8r(CY(REL.ratio[0],REL.ratio[1],t))+' / '+REL.name;
-  if(window.__C4LIVE){const c4p=mpos(CY(MC4[0],MC4[10],t),CY(MC4[1],MC4[11],t),CY(MC4[2],MC4[12],t),new THREE.Vector3());
-    c4p.multiplyScalar(MCG.sens);
-    window.__C4LIVE.micro={n1,n2,n3,c4:REL.n4[0]||REL.n4[1]?1:0,inst:MBALL.reduce((s,m)=>s+m.count,0)};
-    window.__C4LIVE.contain={sens:+MCG.sens.toFixed(4),scale:+MCG.scale.toFixed(4),er:+MCG.er.toFixed(4),wall:+MCG.wall.toFixed(4)};
+  if(window.__C4LIVE){const live=c4Hold(t,Z0A,Z0B,true,1),attr=c4AttrAt(t),skin=c4Skin(live,attr&&attr.stretch);
+    let mesh=null;if(attr&&MB4[attr.shape]&&MB4[attr.shape].count){const e=new THREE.Matrix4();MB4[attr.shape].getMatrixAt(MB4[attr.shape].count-1,e);mesh=[+e.elements[12].toFixed(5),+e.elements[13].toFixed(5),+e.elements[14].toFixed(5)];}
+    window.__C4LIVE.anchor=[0,0,0];
+    window.__C4LIVE.micro={n1,n2,n3,c4:(C4N[0]||C4N[1])?1:0,inst:MBALL.reduce((s,m)=>s+m.count,0)};
+    window.__C4LIVE.contain={sens:+MCG.sens.toFixed(4),scale:+MCG.scale.toFixed(4),er:+MCG.er.toFixed(4),wall:+MCG.wall.toFixed(4),radial:skin.radial,skin:skin.skin,inside:skin.inside};
+    window.__C4LIVE.attr=attr;
+    window.__C4LIVE.z0pos=live.map(x=>+x.toFixed(5));
+    window.__C4LIVE.placeMicro='microcosme · progression Z0 transposée (rév. 23.20)';
     window.__C4LIVE.rel={entry:REL.entry,name:REL.name,own:REL.own,indep:REL.indep,miss:REL.miss.slice(),zz:REL.zz.map(x=>+(+x).toFixed(8)),ezz:REL.ezz.map(x=>+(+x).toFixed(8)),ratio:REL.ratio.map(x=>+(+x).toFixed(8)),
-      c4clash:[Array.from(MC4.subarray(0,10)).map(x=>+x.toFixed(6)),Array.from(MC4.subarray(10,20)).map(x=>+x.toFixed(6))],c4micro:[+c4p.x.toFixed(4),+c4p.y.toFixed(4),+c4p.z.toFixed(4)]};}
+      c4clash:[Array.from(MC4.subarray(0,10)).map(x=>+x.toFixed(6)),Array.from(MC4.subarray(10,20)).map(x=>+x.toFixed(6))],c4micro:live.map(x=>+x.toFixed(5)),live:live.map(x=>+x.toFixed(5)),mesh};}
   c4GhostFrame(t);
 }
 function c4Hold(u,A,B,lin,inset){
@@ -958,13 +981,8 @@ function c4ClearOf(tau,dir,A,B,lin){
 }
 function c4GhostFrame(tau){
   const microOn=!!(MICRO.visible&&S.layers.c4gh);
-  const clash=!!(REL.n4[0]||REL.n4[1]);
-  const cA=clash?[MC4[REL.n4[0]?0:10],MC4[(REL.n4[0]?0:10)+1],MC4[(REL.n4[0]?0:10)+2]]:Z0A;
-  const cB=clash?[MC4[REL.n4[1]?10:0],MC4[(REL.n4[1]?10:0)+1],MC4[(REL.n4[1]?10:0)+2]]:Z0B;
-  const cD=Math.hypot(cB[0]-cA[0],cB[1]-cA[1],cB[2]-cA[2]);
   const zD=Math.hypot(Z0B[0]-Z0A[0],Z0B[1]-Z0A[1],Z0B[2]-Z0A[2]);
-  let A=cA,B=cB,lin=!clash,has=cD>1e-4;
-  if(!has&&zD>1e-4){A=Z0A;B=Z0B;lin=true;has=true;}
+  const A=Z0A,B=Z0B,lin=true,has=zD>1e-4; /* rev. 23.20: the ghost is the transposed Z0 path, the same one the central object rides */
   const predictive=has&&(S.ghost||S.mode==='fourier')&&(S.thr>0||S.mode==='fourier');
   const thread=!!(S.layers.micro&&S.layers.c4&&S.layers.z0&&zD>1e-4);
   c4gPast.visible=c4gFwd.visible=false;
@@ -986,13 +1004,14 @@ function c4GhostFrame(tau){
       c4Write(c4gFwd,rest,i=>.18+.2*(u1+(1-u1)*i/Math.max(1,n)));}
   }
   C4GH.visible=c4gPast.visible||c4gFwd.visible||c4gZ.visible;
-  if(window.__C4LIVE)window.__C4LIVE.ghost={on:C4GH.visible?1:0,drift:+(has?Math.hypot(B[0]-A[0],B[1]-A[1],B[2]-A[2]):0).toFixed(5),fwd:predictive&&c4gFwd.visible?1:0,sens:+MCG.sens.toFixed(4)};
+  if(window.__C4LIVE){const live=c4Hold(Math.max(0,Math.min(1,+tau||0)),A,B,lin,1);
+    window.__C4LIVE.ghost={on:C4GH.visible?1:0,drift:+(has?zD:0).toFixed(5),fwd:predictive&&c4gFwd.visible?1:0,sens:+MCG.sens.toFixed(4),path:'Z0',live:live.map(x=>+x.toFixed(5))};}
 }
 function relBlock(){
   const r=REL;
-  if(r.own)return `<dl class="kv"><dt>Lecture relative</dt><dd>${r.indep?'indépendante':'ouvert seul · ratio 1'}</dd></dl><p class="note">${r.indep?`Le point d'entrée du drill-down ne mesure pas ce système avec les mêmes lignes (${esc(r.miss.join(', '))}) : il se lit seul, avec son propre Z-ZERO (Éric, 15 nov.).`:`Ce système est son propre point d'entrée : micro et macro se lisent de la même façon, et la Classe 4 du microcosme se tient en Σ.`}</p>`;
+  if(r.own)return `<dl class="kv"><dt>Lecture relative</dt><dd>${r.indep?'indépendante':'ouvert seul · ratio 1'}</dd></dl><p class="note">${r.indep?`Le point d'entrée du drill-down ne mesure pas ce système avec les mêmes lignes (${esc(r.miss.join(', '))}) : il se lit seul, avec son propre Z-ZERO (Éric, 15 nov.).`:`Ce système est son propre point d'entrée : micro et macro se lisent de la même façon. Dans le microcosme, l'objet central parcourt la progression Z0 transposée.`}</p>`;
   return `<dl class="kv"><dt>Point d'entrée du drill-down</dt><dd>${esc(r.name)}</dd><dt>Z-ZERO relatif(T₀)</dt><dd>${f8r(r.zz[0])} / ${f8r(r.ezz[0])}</dd><dt>Z-ZERO relatif(T₁)</dt><dd>${f8r(r.zz[1])} / ${f8r(r.ezz[1])}</dd><dt>Ratio T₀ → T₁</dt><dd class="big">${f8r(r.ratio[0])} → ${f8r(r.ratio[1])}</dd></dl>
-    <p class="note">Ce système lu avec la mesure de ${esc(r.name)} (ses lignes et ses seuils à cinq zones), divisé par le Z-ZERO de ${esc(r.name)} (Éric, 15 nov.). Déplacer les seuils au point d'entrée règle ce ratio. Le microcosme porte cette lecture ; la chambre extérieure, la lecture absolue. La Classe 4 s'y place au collapse du choc micro − macro : x ${f8r(MC4[0])} → ${f8r(MC4[10])}, y ${f8r(MC4[1])} → ${f8r(MC4[11])}, z ${f8r(MC4[2])} → ${f8r(MC4[12])}.</p>`;
+    <p class="note">Ce système lu avec la mesure de ${esc(r.name)} (ses lignes et ses seuils à cinq zones), divisé par le Z-ZERO de ${esc(r.name)} (Éric, 15 nov.). Déplacer les seuils au point d'entrée règle ce ratio. Le microcosme porte cette lecture ; la chambre extérieure, la lecture absolue. Le choc micro − macro reste la lecture : x ${f8r(MC4[0])} → ${f8r(MC4[10])}, y ${f8r(MC4[1])} → ${f8r(MC4[11])}, z ${f8r(MC4[2])} → ${f8r(MC4[12])}. La position relative vivante de l'objet central suit la progression Z0 transposée.</p>`;
 }
 function relRow1(i){
   const p0=PRES[i*F+S.T0],p1=PRES[i*F+S.T1];
@@ -1714,11 +1733,12 @@ function applyC3(t,dt){
 }
 /* Rev. 23.10: the central object holds its reserved space, the hollow centre; its position in space is not established.
    Only its body reacts (applyC4). Z0(τ) keeps the thread, the gold marker and the vectors.
-   Rev. 23.19: the motion (Z0 path, drift, clash, spacing) is carried inside the microcosm and kept there by one gain. The chamber anchor does not leave the hollow. */
+   Rev. 23.19: the motion stays inside the microcosm, kept there by one gain. The chamber anchor does not leave the hollow.
+   Rev. 23.20: inside the microcosm the same object rides the transposed Z0 path (see microFrame). The anchor stays at [0, 0, 0]. */
 function c4Frame(tau){
   const X=z0lin(0,tau),Y=z0lin(1,tau),Z=z0lin(2,tau);
   core.position.set(0,0,0);C4O.a=0;
-  window.__C4LIVE={sys:SYS.id,tau:Math.round(tau*1e4)/1e4,z0:[X,Y,Z],pos:[0,0,0],place:'espace réservé · position non établie',size:{c4:C4O.R,c1:.1*DENS,ratio:C4O.R/(.1*DENS)},parts:core.children.length,drift:[Z0B[0]-Z0A[0],Z0B[1]-Z0A[1],Z0B[2]-Z0A[2]],n:[C4N[0],C4N[1]]}; /* read-only state, as in YB1's hub */
+  window.__C4LIVE={sys:SYS.id,tau:Math.round(tau*1e4)/1e4,z0:[X,Y,Z],anchor:[0,0,0],pos:[0,0,0],place:'espace réservé · ancre [0, 0, 0] · position dans l\'espace non établie',size:{c4:C4O.R,c1:.1*DENS,ratio:C4O.R/(.1*DENS)},parts:core.children.length,drift:[Z0B[0]-Z0A[0],Z0B[1]-Z0A[1],Z0B[2]-Z0A[2]],n:[C4N[0],C4N[1]]}; /* read-only state, as in YB1's hub */
 }
 function applyC4(t,dt){
   const o=C4O,n0=C4N[0],n1=C4N[1];
@@ -2015,7 +2035,8 @@ LAY.forEach(([k])=>$('ly-'+k).addEventListener('change',e=>{S.layers[k]=e.target
 /* Legend */
 function drawLegend(){
   let h=[4,3,2,1,0].map(z=>`<span><span class="sw" style="background:${ZCOL[z]}"></span>${ZN[z]} ${esc(ATTR[3].levels[z])}</span>`).join('')+`<span>· taille : Classe 1 = 0,1 · Classe 2 = 0,2 · Classe 3 = 0,3 · objet central (Classe 4) = quatre fois la Classe 1, sans enveloppe</span>`;
-  if(S.layers.c4gh&&S.layers.micro)h+=`<span class="brk"></span><span>fantôme de trajectoire de l'objet central : dans le microcosme seulement, plus doux que l'objet et que le fil Z0 ; passé fidèle et très effacé ; lancer (Fantôme ou Fourier) doux → ferme ; caché sans dérive</span>`;
+  if(S.layers.micro)h+=`<span class="brk"></span><span>objet central dans le microcosme : il parcourt la progression Z0 transposée (T₀ → T₁) ; forme, couleur, étirement et angles suivent le collapse</span>`;
+  if(S.layers.c4gh&&S.layers.micro)h+=`<span class="brk"></span><span>fantôme de trajectoire de l'objet central : dans le microcosme seulement, sous l'objet et le fil Z0, sur la même progression ; passé fidèle et très effacé ; lancer (Fantôme ou Fourier) doux → ferme ; caché sans dérive</span>`;
   if(S.ghost)h+=`<span class="brk"></span><span>fantômes : copies de l'objet${N1>150?', déployées pour le titre ou le cardinal choisi':''} ; secteurs :</span>`+CARDS.filter(c=>c.ty==='sec').map(c=>`<span><span class="gl" style="background:${secCol(c.name)}"></span>${esc(c.name)}</span>`).join('')+`<span>· à la taille du canon, sans symbole ; lancés : creux · horloge : ${esc((GCLKL[S.gclk]||'').toLowerCase())}, un fantôme par médiane cumulée du titre ; elle règle seulement l'espacement${GHOST.ruler?` · règle du système : bord à bord (×1) au plus serré → ×${GHOST.ruler.max.toFixed(0)} au plus large · ${GHOST.ruler.n.toLocaleString('fr-CA')} fantômes, dont ${GHOST.ruler.out.toLocaleString('fr-CA')} creux : sur la paroi, hors bornes, hors règle`:''}</span>`;
   if(HK)h+=HKLEG;
   $('legend').innerHTML=h;
@@ -2027,7 +2048,7 @@ function syncGhostUI(){
   gBtn.setAttribute('aria-pressed',(TWO?S.sghost:S.ghost)?'true':'false');gBtn.disabled=TWO&&GCSNAP;
   gBtn.title=TWO&&!GCSNAP?'Fantôme court : environ 8 copies proches derrière chaque objet, direction générale de T₀ vers T₁, même règle de condensation pour tous ; ce système n\'a que T₀ et T₁ (touche F)':TWO?(HK?"Le fantôme demande la saison match par match ; ce système n'a que T₀ et T₁, deux saisons.":GC?"Le fantôme demande une suite de prises ; ce système n'a qu'un instantané (T₀ = T₁).":"Le fantôme demande toutes les séances ; ce système n'a que T₀ et T₁."):'Fantôme : chaque titre laisse ses fantômes de T₀ à T₁ ; la colonne d\'horloge en règle seulement l\'espacement (touche F)';
   $('gwBox').hidden=$('gtauBox').hidden=$('thrBox').hidden=$('gContact').hidden=$('gvBox').hidden=!S.ghost;$('gvol').value=String(Math.round(Math.log2(S.gvol)*100));$('gvolN').textContent='×'+fmtGV(S.gvol);$('gclk').value=S.gclk;$('gtau').value=String(S.gtau);$('thr').value=String(S.thr);$('thrW').value=S.thrW;
-  $('sub').textContent='le corps · Universal Metaphor · moteur v2 · rév. 23.17 + relatif 23.19 · '+(S.ghost?'fantôme · horloge : '+(GCLKL[S.gclk]||'').toLowerCase()+(S.thr?' · lancer '+S.thr+' séances':''):(HK||(GC&&!GCSNAP)?'deux prises · deux saisons':GC?'un instantané · T₀ = T₁':'deux prises'));
+  $('sub').textContent='le corps · Universal Metaphor · moteur v2 · rév. 23.17 + relatif 23.20 · '+(S.ghost?'fantôme · horloge : '+(GCLKL[S.gclk]||'').toLowerCase()+(S.thr?' · lancer '+S.thr+' séances':''):(HK||(GC&&!GCSNAP)?'deux prises · deux saisons':GC?'un instantané · T₀ = T₁':'deux prises'));
   drawLegend();
 }
 function setGhost(on){
@@ -2213,7 +2234,7 @@ function tipHTML(ref){
   if(ref.kind===5)return `<div class="t">Z0 · moyenne de tout</div><div class="k">placeholder : moyennes · fil linéaire de Z0(T₀) à Z0(T₁)</div><div class="k" style="margin-top:5px">Z0(T₀) <b>${z0txt(Z0A)}</b> · ${Z0N[0]} points<br>Z0(T₁) <b>${z0txt(Z0B)}</b> · ${Z0N[1]} points</div><div class="k" style="margin-top:4px">dérive |Δ| <b>${Math.hypot(Z0B[0]-Z0A[0],Z0B[1]-Z0A[1],Z0B[2]-Z0A[2]).toFixed(5)}</b> · ancre des vecteurs de la Classe 4 vivante</div>`;
   if(ref.kind===4){
     const o0=zoneCounts(S.open,S.T0),o1=zoneCounts(S.open,S.T1);
-    return `<div class="t">Classe 4 · objet central</div><div class="k">${esc(SYS.name)} · contenu et borné · dans son espace réservé · position dans l'espace non établie</div><div class="k" style="margin-top:4px">dérive de Z0 |Δ| <b>${Math.hypot(Z0B[0]-Z0A[0],Z0B[1]-Z0A[1],Z0B[2]-Z0A[2]).toFixed(5)}</b> · ${C4N[0]} → ${C4N[1]} ${UN} · microcosme contenu (gain ${MCG.sens.toFixed(3)})</div>
+    return `<div class="t">Classe 4 · objet central</div><div class="k">${esc(SYS.name)} · ancre de la chambre en [0, 0, 0] · dans le microcosme, progression Z0 transposée</div><div class="k" style="margin-top:4px">dérive de Z0 |Δ| <b>${Math.hypot(Z0B[0]-Z0A[0],Z0B[1]-Z0A[1],Z0B[2]-Z0A[2]).toFixed(5)}</b> · ${C4N[0]} → ${C4N[1]} ${UN} · microcosme contenu (gain ${MCG.sens.toFixed(3)})</div>
     <div class="k" style="margin-top:5px">Z-ZERO(T₀) ${DATA.dates[S.T0]} <b>${f8(ZZ[S.T0])}</b><br>Z-ZERO(T₁) ${DATA.dates[S.T1]} <b>${f8(ZZ[S.T1])}</b><br>ΔZ <b>${(ZZ[S.T1]-ZZ[S.T0]>=0?'+':'')+f8(ZZ[S.T1]-ZZ[S.T0])}</b></div>
     <div class="k" style="margin-top:5px">${esc(ATTR[S.open].name)} · T₀ ${[4,3,2,1,0].map(z=>ZN[z]+' '+o0[z]).join(' ')}<br>${esc(ATTR[S.open].name)} · T₁ ${[4,3,2,1,0].map(z=>ZN[z]+' '+o1[z]).join(' ')}</div>`;
   }
@@ -2263,6 +2284,7 @@ function statusBlock(){
   <li><span class="st g">GOVERNANCE</span>Microcosme (Éric, 15 nov. 2026, vocal ; rév. 23.18) : le microcosme porte la lecture relative, la chambre extérieure la lecture absolue ; côte à côte, elles montrent les tensions et servent au réglage. Chaque élément du microcosme manifeste ses dix attributs. La Classe 4 y occupe une place : le collapse du choc entre les deux systèmes, micro et macro. À l'ouverture : seulement des objets, aucune ligne, toutes les classes jusqu'à la Classe 1 (le fil Z0 devient une couche à allumer).</li>
   <li><span class="st p">PROPOSED</span>Lecture de la règle (rév. 23.18) : l'élément est lu avec les lignes et les seuils à cinq zones publiés par le point d'entrée ; le choc est, attribut par attribut, micro − macro sur l'ensemble de Z0 (Classe 1 présente ; Classe 2 et Classe 3 selon les cases de Z0), moyenné et borné à ±1 ; la Classe 4 du microcosme se place en Σ + ce choc et en prend les dix attributs (sans choc : un cube vert, droit, immobile, en Σ). Microcosme : rayon 1 → 3 ramené à 0,50 → 0,74, hauteur × 0,3, tailles × 0,24, jamais de chevauchement. Lignes Fourier d'un point d'entrée : recalculées sur les axes lus avec sa mesure.</li>
   <li><span class="st g">GOVERNANCE</span>Confinement du microcosme (rév. 23.19) : le mouvement de l'objet central — fil Z0, dérive, choc micro − macro, espacement — reste dans le volume intérieur de son microcosme. Ce qui dépasserait est repris par un seul gain, lisse, sur tout le déplacement (et sur la taille seulement si le corps est plus grand que le volume). Rien ne sort dans la chambre. Le fantôme de trajectoire est une couche (« Classe 4 · fantôme de trajectoire ») : passé fidèle et très effacé, lancer vers l'avant (Fantôme ou Fourier) doux puis plus ferme, caché quand aucune trajectoire ne s'applique. L'objet central reste premier ; le fil Z0 n'est pas couvert.</li>
+  <li><span class="st g">GOVERNANCE</span>Progression Z0 transposée (rév. 23.20) : dans le microcosme, l'objet central parcourt le fil Z0 replié de T₀ à T₁. Sa position relative change avec la séquence, en même temps que la forme, la couleur, l'étirement-écrasement et les angles. L'ancre de la chambre reste en [0, 0, 0]. Le gain lisse garde le corps à l'intérieur de la paroi (0,74). Le fantôme de trajectoire suit cette position vivante.</li>
   <li><span class="st o">OPEN</span>Espace provisoire (Éric, 10 nov., 23 h 20) : c'est du microcosme qu'on projettera un espace provisoire. La règle de projection n'est pas encore donnée ; rien n'est projeté.</li>
   <li><span class="st g">GOVERNANCE</span>Canon Z0 (Éric, 5 nov.) : Z0 est la moyenne de tout, calculée comme un seul ensemble (Classe 1 ; Classe 2 des niveaux actifs si la case est cochée ; conteneurs de Classe 3 actifs si la case est cochée). Fil Z0 linéaire de Z0(T₀) à Z0(T₁) ; chaque objet, chaque fantôme = fil + écart, et l'écart suit la demi-arche cycloïdale axe par axe : montée c(t) = (πt − sin πt)/π, descente 1 − c(1 − t), axe inchangé immobile. Les couleurs suivent la même règle, canal par canal. Pousser et tirer : cocher ou décocher recalcule aussitôt le fil, les positions, les fantômes et les lancers.</li>
   <li><span class="st g">GOVERNANCE</span>Axe de rotation des formes (Éric) : par les sommets, jamais par les faces. Dodécaèdre α de sommet à sommet opposé ; merkaba Ω de pointe à pointe ; tétraèdre φ⁺ sommet en haut, il roule sur sa base ; octaèdre φ⁻ de sommet à sommet ; cube Σ, seule exception, posé à plat sur une face. Survol exact : un objet de Classe 1 répond d'abord, même à l'intérieur d'une Classe 2.</li>
@@ -2312,8 +2334,8 @@ function drawSpark(series,cuts,label){
 /* Rev. 23.10: the central object holds its reserved space, the hollow centre. Nothing is projected there yet (Éric, 10 Nov., 23 h 20). */
 function c4Place(){
   return `<dl class="kv"><dt>Place</dt><dd>espace réservé · centre creux de la chambre (rayon &lt; 1)</dd>
-    <dt>Position dans l'espace</dt><dd>non établie</dd>
-    <dt>Microcosme</dt><dd>lecture relative au point d'entrée du drill-down · dix attributs · Classe 4 au collapse du choc micro − macro (couche « Classe 4 · microcosme », allumée à l'ouverture) · trajet contenu, gain ${MCG.sens.toFixed(3)} · fantôme de trajectoire dans le microcosme · projection d'un espace provisoire : pas encore</dd></dl>
+    <dt>Position dans l'espace</dt><dd>non établie · ancre de la chambre en [0, 0, 0]</dd>
+    <dt>Microcosme</dt><dd>lecture relative 23.18 conservée · position relative vivante sur la progression Z0 transposée (T₀ → T₁, rév. 23.20) · gain ${MCG.sens.toFixed(3)} · paroi ${MCG.wall.toFixed(2)} · fantôme synchronisé · projection d'un espace provisoire : pas encore</dd></dl>
     <p class="note"><span class="st g">GOVERNANCE</span>Éric, 15 nov. : le microcosme et la couche extérieure forment le gabarit pour comparer les deux lectures, tracer les tensions et ajuster le réglage. <span class="st o">OPEN</span>La projection d'un espace provisoire depuis le microcosme (Éric, 10 nov.) n'a toujours pas de règle.</p>`;
 }
 function c4Block(){
@@ -2471,7 +2493,7 @@ function drawVBars(i){
 }
 function copyState(){
   const d=curD();
-  const out={projet:'Manifestation',systeme:SYS.name,corps:'Universal Metaphor · moteur v2 · rév. 23.17 + relatif 23.19',ame:'CLAVIS × Esmeralda · pont non branché',volume:+S.exp.toFixed(4),transition:'T₀ → T₁, courbe F cycloïdale par axe',mode:S.mode,kobayashi:S.km||S.mode==='fourier',fantome:{actif:S.ghost,horloge:GCLKL[S.gclk],regle:'v20 : un fantôme par médiane cumulée du titre (médiane standard sur la fenêtre [T₀ du titre, T₁]) ; même taille pour tous ; espacement seulement ; bord à bord (×1) au plus serré → écart le plus long du système',diametre:GHOST.ruler?+GHOST.ruler.dg.toPrecision(6):null,ecartMax:GHOST.ruler?+GHOST.ruler.max.toFixed(2):null,fantomes:GHOST.ruler?GHOST.ruler.n:0,horsRegle:GHOST.ruler?GHOST.ruler.out:0,memoire:S.gtau||'toute la période'},
+  const out={projet:'Manifestation',systeme:SYS.name,corps:'Universal Metaphor · moteur v2 · rév. 23.17 + relatif 23.20',ame:'CLAVIS × Esmeralda · pont non branché',volume:+S.exp.toFixed(4),transition:'T₀ → T₁, courbe F cycloïdale par axe',mode:S.mode,kobayashi:S.km||S.mode==='fourier',fantome:{actif:S.ghost,horloge:GCLKL[S.gclk],regle:'v20 : un fantôme par médiane cumulée du titre (médiane standard sur la fenêtre [T₀ du titre, T₁]) ; même taille pour tous ; espacement seulement ; bord à bord (×1) au plus serré → écart le plus long du système',diametre:GHOST.ruler?+GHOST.ruler.dg.toPrecision(6):null,ecartMax:GHOST.ruler?+GHOST.ruler.max.toFixed(2):null,fantomes:GHOST.ruler?GHOST.ruler.n:0,horsRegle:GHOST.ruler?GHOST.ruler.out:0,memoire:S.gtau||'toute la période'},
     z0:{T0:Z0A.map(x=>+x.toFixed(6)),T1:Z0B.map(x=>+x.toFixed(6)),ensemble:Z0N.slice(),classe2:S.layers.z0c2,classe3:S.layers.z0c3,regle:'moyenne de tout, un seul ensemble ; fil linéaire ; écart cycloïdal par axe'},
     lancer:{horizon:S.thr,poids:S.thrW,seance:THR.d>=0?DATA.dates[THR.d]:null,maintenant:THR.now,fenetre:THR.win},
     session:S.session,prises:{T0:{date:DATA.dates[S.T0],zzero:+ZZ[S.T0].toFixed(8)},T1:{date:DATA.dates[S.T1],zzero:+ZZ[S.T1].toFixed(8)},dZ:+(ZZ[S.T1]-ZZ[S.T0]).toFixed(8)},

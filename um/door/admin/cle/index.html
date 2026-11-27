@@ -12,7 +12,7 @@ table{border-collapse:collapse;width:100%;margin:10px 0}td,th{border-bottom:1px 
 <p class="n">Une clé par administrateur. Seules les empreintes sont publiées (um/door/admin/fingerprints.js) ; les clés ne sont jamais dans le dépôt. Rotation : Éric génère une nouvelle clé, remplace l'empreinte dans fingerprints.js et le secret ADMIN_SHA256_… du Worker ; l'ancienne clé cesse de fonctionner. Sur un site statique, cette page est cachée, pas protégée.</p>
 <p><a href="/um/door/">Porte</a> · <a href="/um/">Hub</a> · <button id="forget" type="button">Oublier la clé dans ce navigateur</button></p>
 </main>
-<script src="/um/door/admin/fingerprints.js?v=21.01"></script>
+<script src="/um/door/admin/fingerprints.js?v=21.02"></script>
 <script>
 (function(){
   var m=(location.hash||'').match(/(?:^#|&)k=([A-Za-z0-9_-]{22,128})/), fresh=m?m[1]:null;
