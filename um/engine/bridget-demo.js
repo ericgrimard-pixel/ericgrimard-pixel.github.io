@@ -1,9 +1,11 @@
-/* Brigitte — active demonstration layer, Hub v21.03 (Miriamphobots).
+/* Brigitte — active demonstration layer and Guide & Host, Hub v21.04 (Miriamphobots).
    Loaded by um/index.html and um/engine/manifestation-engine.html.
    Does not modify the Manifestation Engine. Listeners use DOM properties so the
-   engine's boot AbortSignal cannot drop them on a system switch. */
+   engine's boot AbortSignal cannot drop them on a system switch.
+   On #/world, ?host=bridget, ?from=world, or a .world arrival, Bridget is Guide & Active Host.
+   Motto: One seed, infinite roots, perpetual harvest. */
 (function () {
-  if (window.BridgetDemo && window.BridgetDemo.version === 'v21.03') return;
+  if (window.BridgetDemo && window.BridgetDemo.version === 'v21.04') return;
 
   var pace = { move: 480, pulse: 180, step: 240 };
   var generation = 0;
@@ -353,7 +355,7 @@
     var zz = document.getElementById('zzNow');
     var app = document.querySelector('.app');
     return {
-      hub: meta && meta.content || 'v21.03',
+      hub: meta && meta.content || 'v21.04',
       version: meta && meta.content || null,
       engineRev: sub ? sub.textContent : null,
       page: location.pathname + location.hash,
@@ -531,7 +533,7 @@
   }
 
   var api = {
-    version: 'v21.03',
+    version: 'v21.04',
     family: 'Miriamphobots',
     moveCursor: moveCursor,
     clickButton: clickButton,
@@ -553,9 +555,326 @@
     }
   };
 
+  api.motto = 'One seed, infinite roots, perpetual harvest.';
   window.BridgetDemo = api;
   window.BrigitteDemo = api;
 
-  if (document.body) mountTrigger();
-  else setTimeout(mountTrigger, 0);
+  var hostActive = false;
+  var manifestStamp = '';
+  var manifestEtag = '';
+  var manifestTimer = 0;
+
+  function blankParams(s) {
+    return new URLSearchParams(s && s.charAt(0) === '?' ? s.slice(1) : (s || ''));
+  }
+
+  function normalizeHostUrl() {
+    try {
+      var hash = location.hash || '';
+      var q = hash.indexOf('?');
+      var hashPath = q >= 0 ? hash.slice(0, q) : hash;
+      var hp = blankParams(q >= 0 ? hash.slice(q + 1) : '');
+      var sp = blankParams(location.search);
+      var changed = q >= 0;
+      hp.forEach(function (v, k) {
+        if (!sp.has(k)) { sp.set(k, v); changed = true; }
+      });
+      var onWorld = hashPath === '#/world' || hashPath === '#world';
+      var inEngine = /\/engine\//.test(location.pathname || '');
+      var ref = '';
+      try { ref = document.referrer || ''; } catch (e) { ref = ''; }
+      var refHit = /(?:^|[?#&])host=bridget|(?:^|[?#&])from=world|#\/world|\.world(?:$|[?#])/.test(ref);
+      var stored = false;
+      try { stored = sessionStorage.getItem('um-bridget-host') === '1'; } catch (e) {}
+      var activate = onWorld || sp.get('host') === 'bridget' || sp.get('from') === 'world' || sp.get('demo') === 'ready' || refHit || (!inEngine && stored);
+      if (activate && sp.get('host') !== 'bridget') { sp.set('host', 'bridget'); changed = true; }
+      if (activate) { try { sessionStorage.setItem('um-bridget-host', '1'); } catch (e) {} }
+      if (changed) {
+        var next = location.pathname + (sp.toString() ? '?' + sp.toString() : '') + hashPath;
+        if (next !== location.pathname + location.search + location.hash) history.replaceState(history.state, '', next);
+      }
+      return activate;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function hostWanted() {
+    var hash = location.hash || '';
+    var q = hash.indexOf('?');
+    var hashPath = q >= 0 ? hash.slice(0, q) : hash;
+    var sp = blankParams(location.search);
+    if (hashPath === '#/world' || hashPath === '#world') return true;
+    if (sp.get('host') === 'bridget' || sp.get('from') === 'world' || sp.get('demo') === 'ready') return true;
+    if (/\/engine\//.test(location.pathname || '')) return false;
+    try { if (sessionStorage.getItem('um-bridget-host') === '1') return true; } catch (e) {}
+    return false;
+  }
+
+  function assetPaths() {
+    var path = location.pathname || '';
+    if (/\/engine\//.test(path)) {
+      return {
+        manifest: 'bridget-manifest.json',
+        rules: 'rules.json',
+        engine: 'manifestation-engine.html?host=bridget&demo=ready',
+        portal: '../bridget/'
+      };
+    }
+    if (/\/bridget\//.test(path)) {
+      return {
+        manifest: '../engine/bridget-manifest.json',
+        rules: '../engine/rules.json',
+        engine: '../engine/manifestation-engine.html?host=bridget&demo=ready',
+        portal: './'
+      };
+    }
+    return {
+      manifest: 'engine/bridget-manifest.json',
+      rules: 'engine/rules.json',
+      engine: 'engine/manifestation-engine.html?host=bridget&demo=ready',
+      portal: 'bridget/'
+    };
+  }
+
+  function sha256Hex(buf) {
+    if (!window.crypto || !crypto.subtle) return Promise.resolve('');
+    return crypto.subtle.digest('SHA-256', buf).then(function (hash) {
+      var bytes = new Uint8Array(hash);
+      var hex = '';
+      for (var i = 0; i < bytes.length; i++) hex += (bytes[i] < 16 ? '0' : '') + bytes[i].toString(16);
+      return hex;
+    }, function () { return ''; });
+  }
+
+  function pageVersion() {
+    var meta = document.querySelector('meta[name="um-build"]');
+    return (meta && meta.content) || api.version;
+  }
+
+  function rememberHost() {
+    try { sessionStorage.setItem('um-bridget-host', '1'); } catch (e) {}
+  }
+
+  function preserveLinks() {
+    document.addEventListener('click', function (ev) {
+      var node = ev.target;
+      if (!node || !node.closest) return;
+      var a = node.closest('a[href]');
+      if (!a) return;
+      var raw = a.getAttribute('href') || '';
+      if (!raw || raw.indexOf('mailto:') === 0 || raw.indexOf('javascript:') === 0) return;
+      var worldLink = a.classList.contains('world') || /#\/world|[?&]host=bridget|[?&]from=world|\.world(?:$|[?#])/.test(raw);
+      if (!hostActive && !worldLink) return;
+      if (raw.charAt(0) === '#') {
+        var hq = raw.indexOf('?');
+        if (hq < 0) return;
+        var hashPath = raw.slice(0, hq) || '#/world';
+        if (hashPath === '#world') hashPath = '#/world';
+        var hp = blankParams(raw.slice(hq + 1));
+        var sp = blankParams(location.search);
+        hp.forEach(function (v, k) { if (!sp.has(k)) sp.set(k, v); });
+        if (!sp.get('host')) sp.set('host', 'bridget');
+        rememberHost();
+        var search = sp.toString();
+        var sameSearch = ('?' + search) === location.search;
+        a.href = sameSearch ? hashPath : ('?' + search + hashPath);
+        return;
+      }
+      var url;
+      try { url = new URL(raw, location.href); } catch (e) { return; }
+      if (url.origin !== location.origin) return;
+      var hash = url.hash || '';
+      var uq = hash.indexOf('?');
+      var hashPath2 = uq >= 0 ? hash.slice(0, uq) : hash;
+      if (uq >= 0) {
+        blankParams(hash.slice(uq + 1)).forEach(function (v, k) {
+          if (!url.searchParams.has(k)) url.searchParams.set(k, v);
+        });
+      }
+      if (worldLink && (hashPath2 === '#/world' || hashPath2 === '#world' || !hashPath2)) hashPath2 = '#/world';
+      url.hash = hashPath2;
+      if (!url.searchParams.get('host')) url.searchParams.set('host', 'bridget');
+      rememberHost();
+      var next = url.pathname + url.search + url.hash;
+      if (a.href !== url.href) a.href = next;
+    }, true);
+  }
+
+  function mountHost() {
+    if (!hostWanted()) return;
+    hostActive = true;
+    api.role = 'Guide & Active Host';
+    rememberHost();
+    normalizeHostUrl();
+    if (document.getElementById('bridget-host')) return;
+    var style = document.createElement('style');
+    style.id = 'bridget-host-style';
+    style.textContent = [
+      '#bridget-host{position:fixed;z-index:70;left:0;right:0;top:0;display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:8px max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left));padding-top:max(8px,env(safe-area-inset-top));background:#05080d;color:#fff;border-bottom:2px solid #e8c872;font:600 16px/1.35 system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.35)}',
+      '#bridget-host .who{color:#fff;letter-spacing:.02em}',
+      '#bridget-host .who small{display:block;color:#e8c872;font:600 12px/1.3 ui-monospace,monospace;letter-spacing:.04em}',
+      '#bridget-host .motto{flex:1 1 16rem;margin:0;color:#e8c872;font:600 16px/1.35 Georgia,serif}',
+      '#bridget-host .ver{font:600 14px/1.3 ui-monospace,monospace;color:#dbe3ee}',
+      '#bridget-host .ver[data-state="update"]{color:#ffcf8a}',
+      '#bridget-host .ver[data-state="error"]{color:#ffb4a6}',
+      '#bridget-host a,#bridget-host button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:8px 12px;font:600 15px/1.2 system-ui,sans-serif;color:#05080d;background:#e8c872;border:2px solid #fff;border-radius:8px;text-decoration:none;cursor:pointer}',
+      '#bridget-host a:focus-visible,#bridget-host button:focus-visible{outline:3px solid #a6dcff;outline-offset:2px}',
+      '#bridget-host [hidden]{display:none !important}',
+      'body.bridget-host-on .app{margin-top:var(--bridget-host-h,0px)}',
+      '@media (min-width:981px){body.bridget-host-on .app{height:calc(100% - var(--bridget-host-h,0px))}}',
+      '#bridget-rules{max-width:min(42rem,calc(100vw - 24px));width:100%;border:2px solid #e8c872;border-radius:12px;background:#05080d;color:#fff;padding:16px;font:16px/1.45 system-ui,sans-serif}',
+      '#bridget-rules::backdrop{background:rgba(0,0,0,.62)}',
+      '#bridget-rules h2{font:400 1.4rem/1.2 Georgia,serif;margin:0 0 8px}',
+      '#bridget-rules p{margin:0 0 10px}',
+      '#bridget-rules a{color:#a6dcff}',
+      '#bridget-rules pre{max-height:40vh;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;background:#0a1019;color:#dbe3ee;border:1px solid #2b3c55;border-radius:8px;padding:10px;font:13px/1.4 ui-monospace,monospace}',
+      '#bridget-rules button{min-height:44px;padding:8px 14px;font:600 15px/1.2 system-ui,sans-serif;color:#05080d;background:#e8c872;border:2px solid #fff;border-radius:8px;cursor:pointer}',
+      '@media (forced-colors:active){#bridget-host{border-color:CanvasText}#bridget-host a,#bridget-host button{border:2px solid ButtonText}}'
+    ].join('');
+    document.head.appendChild(style);
+
+    var paths = assetPaths();
+    var dock = document.createElement('nav');
+    dock.id = 'bridget-host';
+    dock.setAttribute('aria-label', 'Bridget, Guide et hôte actif');
+    dock.innerHTML = ''
+      + '<div class="who">Guide &amp; Host<small>Brigitte · Miriamphobots</small></div>'
+      + '<p class="motto" id="bridget-host-motto">One seed, infinite roots, perpetual harvest.</p>'
+      + '<span class="ver" id="bridget-host-ver" role="status" aria-live="polite" data-state="check">' + pageVersion() + ' · vérification</span>'
+      + '<button type="button" id="bridget-host-refresh" hidden>Actualiser</button>'
+      + '<button type="button" id="bridget-host-demo">Démo Brigitte</button>'
+      + '<a id="bridget-host-engine" href="' + paths.engine + '">Moteur autonome</a>'
+      + '<a id="bridget-host-portal" href="' + paths.portal + '">Portail Bridget</a>'
+      + '<button type="button" id="bridget-host-rules">Règles &amp; Manifeste</button>';
+    document.body.appendChild(dock);
+
+    var dialog = document.createElement('dialog');
+    dialog.id = 'bridget-rules';
+    dialog.innerHTML = ''
+      + '<h2>Règles &amp; Manifeste</h2>'
+      + '<p id="bridget-rules-lead">One seed, infinite roots, perpetual harvest.</p>'
+      + '<p><a href="' + paths.rules + '">rules.json</a> · <a href="' + paths.manifest + '">bridget-manifest.json</a></p>'
+      + '<pre id="bridget-rules-body">Chargement…</pre>'
+      + '<button type="button" id="bridget-rules-close">Fermer</button>';
+    document.body.appendChild(dialog);
+
+    function fit() {
+      document.body.classList.add('bridget-host-on');
+      document.documentElement.style.setProperty('--bridget-host-h', dock.offsetHeight + 'px');
+    }
+    fit();
+    addEventListener('resize', fit);
+    if (window.ResizeObserver) {
+      try { new ResizeObserver(fit).observe(dock); } catch (e) {}
+    }
+
+    document.getElementById('bridget-host-refresh').onclick = function () {
+      location.reload();
+    };
+    document.getElementById('bridget-host-demo').onclick = function (ev) {
+      if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+      api.stop();
+      var btn = document.getElementById('bridgetDemo');
+      if (btn) btn.setAttribute('aria-pressed', 'true');
+      api.runSampleDemo().then(function () {
+        if (btn) btn.setAttribute('aria-pressed', 'false');
+      }, function () {
+        if (btn) btn.setAttribute('aria-pressed', 'false');
+      });
+    };
+    document.getElementById('bridget-host-rules').onclick = function () {
+      openRules(paths);
+    };
+    document.getElementById('bridget-rules-close').onclick = function () {
+      if (dialog.close) dialog.close();
+      dialog.removeAttribute('open');
+    };
+
+    function paint(state, data) {
+      var el = document.getElementById('bridget-host-ver');
+      var refresh = document.getElementById('bridget-host-refresh');
+      if (!el) return;
+      var live = data && data.hub_version ? data.hub_version : pageVersion();
+      var label = live + (state === 'update' ? ' · nouvelle version' : state === 'error' ? ' · manifeste indisponible' : ' · à jour');
+      el.textContent = label;
+      el.setAttribute('data-state', state);
+      if (refresh) refresh.hidden = state !== 'update';
+      fit();
+    }
+
+    function checkManifest() {
+      var url = paths.manifest + (paths.manifest.indexOf('?') >= 0 ? '&' : '?') + 'cb=' + Date.now();
+      var headers = { 'Accept': 'application/json' };
+      if (manifestEtag) headers['If-None-Match'] = manifestEtag;
+      return fetch(url, { cache: 'no-store', headers: headers }).then(function (res) {
+        var etag = res.headers.get('ETag') || '';
+        if (res.status === 304) { paint('current', { hub_version: pageVersion() }); return null; }
+        if (!res.ok) throw new Error('manifest');
+        return res.arrayBuffer().then(function (buf) {
+          return sha256Hex(buf).then(function (hex) {
+            var text = '';
+            try { text = new TextDecoder().decode(buf); } catch (e) { text = String.fromCharCode.apply(null, new Uint8Array(buf)); }
+            var data = JSON.parse(text);
+            var stamp = (data.hub_version || '') + '|' + hex;
+            var newer = data.hub_version && data.hub_version !== pageVersion();
+            if (!manifestStamp) {
+              manifestStamp = stamp;
+              manifestEtag = etag;
+              paint(newer ? 'update' : 'current', data);
+              return data;
+            }
+            var moved = (etag && manifestEtag && etag !== manifestEtag) || stamp !== manifestStamp || newer;
+            if (moved && (stamp !== manifestStamp || newer)) paint('update', data);
+            else paint('current', data);
+            return data;
+          });
+        });
+      }).catch(function () { paint('error'); });
+    }
+
+    checkManifest();
+    manifestTimer = setInterval(function () { checkManifest(); }, 30000);
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) checkManifest();
+    });
+
+    function openRules(p) {
+      var body = document.getElementById('bridget-rules-body');
+      var lead = document.getElementById('bridget-rules-lead');
+      if (body) body.textContent = 'Chargement…';
+      if (dialog.showModal) dialog.showModal();
+      else dialog.setAttribute('open', '');
+      Promise.all([
+        fetch(p.rules, { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error('rules'); return r.json(); }),
+        fetch(p.manifest, { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error('manifest'); return r.json(); })
+      ]).then(function (pair) {
+        var rules = pair[0];
+        var manifest = pair[1];
+        if (lead) {
+          lead.textContent = (rules.motto || api.motto) + ' · ' + (rules.family || 'Miriamphobots') + ' · ' + (rules.hub_version || pageVersion())
+            + ' · APK ' + (rules.auto_refresh && rules.auto_refresh.requires_apk_reinstall ? 'à réinstaller' : 'inchangé');
+        }
+        if (body) body.textContent = 'rules.json\n' + JSON.stringify(rules, null, 2) + '\n\nbridget-manifest.json\n' + JSON.stringify(manifest, null, 2);
+      }).catch(function () {
+        if (body) body.textContent = 'Lecture impossible pour le moment.';
+      });
+    }
+  }
+
+  preserveLinks();
+  addEventListener('hashchange', function () {
+    if (normalizeHostUrl() || hostWanted()) mountHost();
+  }, true);
+  addEventListener('popstate', function () {
+    if (normalizeHostUrl() || hostWanted()) mountHost();
+  }, true);
+
+  function boot() {
+    mountTrigger();
+    normalizeHostUrl();
+    if (hostWanted()) mountHost();
+  }
+  if (document.body) boot();
+  else setTimeout(boot, 0);
 })();

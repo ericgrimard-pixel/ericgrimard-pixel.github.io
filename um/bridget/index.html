@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="um-build" content="v21.04">
+<meta name="theme-color" content="#05080d">
+<meta name="color-scheme" content="dark">
+<meta name="application-name" content="Bridget">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bridget">
+<meta name="description" content="One seed, infinite roots, perpetual harvest. Bridget, Guide &amp; Host. Miriamphobots.">
+<title>Bridget — Guide &amp; Host</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+html{font-size:100%}
+body{margin:0;background:#05080d;color:#f4f7fb;font:1.125rem/1.5 system-ui,sans-serif}
+main{max-width:40rem;margin:0 auto;padding:max(1.25rem,env(safe-area-inset-top)) max(1rem,env(safe-area-inset-right)) 3rem max(1rem,env(safe-area-inset-left))}
+header{margin-bottom:1.25rem}
+.kicker{margin:0;color:#a6dcff;font:600 .95rem/1.3 ui-monospace,monospace;letter-spacing:.04em}
+h1{font:400 2rem/1.15 Georgia,serif;margin:.2rem 0 .6rem}
+#motto{margin:0;color:#e8c872;font:600 1.35rem/1.35 Georgia,serif}
+.panel{background:#0a1019;border:1px solid #2b3c55;border-radius:12px;padding:1rem;margin:1rem 0}
+.panel p{margin:.4rem 0}
+#hub-version,#sha-status,#refresh-note{font:600 1rem/1.4 ui-monospace,monospace}
+#hub-version{color:#a6dcff}
+#sha-status[data-state="ok"]{color:#b9e48e}
+#sha-status[data-state="bad"],#sha-status[data-state="error"]{color:#ffb4a6}
+#sha-status[data-state="wait"],#hub-version[data-state="update"]{color:#ffcf8a}
+#refresh-hub[hidden]{display:none}
+a.btn,button{display:flex;align-items:center;justify-content:center;width:100%;min-height:3rem;margin:.75rem 0 0;padding:.75rem 1rem;font:600 1.0625rem/1.3 system-ui,sans-serif;text-align:center;text-decoration:none;color:#05080d;background:#e8c872;border:2px solid #fff;border-radius:10px;cursor:pointer}
+button.ghost{background:transparent;color:#e8c872}
+a:focus-visible,button:focus-visible{outline:3px solid #a6dcff;outline-offset:2px}
+h2{font:600 1.05rem/1.3 system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#e8c872;margin:1.5rem 0 .4rem}
+.note{margin:.4rem 0 0;font-size:1.05rem}
+.note a{color:#a6dcff}
+pre{margin:.5rem 0 0;max-height:50vh;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;background:#070b12;color:#dbe3ee;border:1px solid #2b3c55;border-radius:10px;padding:1rem;font:.95rem/1.45 ui-monospace,monospace}
+pre[hidden]{display:none}
+ul{margin:.4rem 0 0;padding-left:1.2rem}
+li{margin:.2rem 0;overflow-wrap:anywhere}
+@media (forced-colors:active){a.btn,button{border:2px solid ButtonText}}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="kicker">Guide &amp; Host · Miriamphobots</p>
+    <h1>Bridget</h1>
+    <p id="motto">One seed, infinite roots, perpetual harvest.</p>
+  </header>
+
+  <section class="panel" aria-label="Version du HUB">
+    <p id="hub-version" role="status" aria-live="polite" data-state="wait">HUB v21.04 · vérification</p>
+    <p id="refresh-note">Contrôle ETag et SHA-256 du manifeste. Aucune réinstallation d’APK.</p>
+    <p id="sha-status" role="status" aria-live="polite" data-state="wait">SHA-256 · vérification…</p>
+    <ul id="sha-list"></ul>
+    <button type="button" id="refresh-hub" hidden>Actualiser</button>
+  </section>
+
+  <h2>Une touche</h2>
+  <a class="btn world" id="open-world" href="../index.html#/world?host=bridget">Ouvrir le HUB #/world · Guide &amp; Host</a>
+  <a class="btn" id="open-engine" href="../engine/manifestation-engine.html?demo=ready">Ouvrir le Moteur autonome</a>
+  <button type="button" class="ghost" id="btn-rules">Inspecter rules.json</button>
+  <pre id="rules-view" hidden></pre>
+  <button type="button" class="ghost" id="btn-manifest">Inspecter bridget-manifest.json</button>
+  <pre id="manifest-view" hidden></pre>
+
+  <h2>Graine minimale</h2>
+  <p class="note" id="seed-note">Accessible aux deux téléphones d’Éric, <a href="mailto:eric.grimard@universalmetaphor.ca">eric.grimard@universalmetaphor.ca</a> et <a href="mailto:grimeric13@gmail.com">grimeric13@gmail.com</a>. La graine minimale n’a pas de bac à sable de 4 Go et pas de cristaux d’agent. Ceux-ci n’arrivent qu’avec des extensions.</p>
+  <a class="btn" id="seed-link" href="https://drive.google.com/file/d/19wzqeus-_oJweHWvDFmOr-2VjlgU0KLo/view" target="_blank" rel="noopener">Graine minimale sur Drive</a>
+</main>
+<script>
+(function () {
+  var pageVersion = (document.querySelector('meta[name="um-build"]') || {}).content || 'v21.04';
+  var seenEtag = '';
+  var seenHash = '';
+  var verEl = document.getElementById('hub-version');
+  var shaEl = document.getElementById('sha-status');
+  var shaList = document.getElementById('sha-list');
+  var refreshBtn = document.getElementById('refresh-hub');
+  var noteEl = document.getElementById('refresh-note');
+
+  function manifestUrl() {
+    return new URL('../engine/bridget-manifest.json', location.href);
+  }
+  function rulesUrl() {
+    return new URL('../engine/rules.json', location.href);
+  }
+  function fileUrl(path) {
+    var rel = path.indexOf('um/') === 0 ? '../' + path.slice(3) : '../' + path;
+    return new URL(rel, location.href).href;
+  }
+  function sha256Hex(buf) {
+    if (!window.crypto || !crypto.subtle) return Promise.resolve('');
+    return crypto.subtle.digest('SHA-256', buf).then(function (hash) {
+      var bytes = new Uint8Array(hash);
+      var hex = '';
+      for (var i = 0; i < bytes.length; i++) hex += (bytes[i] < 16 ? '0' : '') + bytes[i].toString(16);
+      return hex;
+    }, function () { return ''; });
+  }
+  function paintVersion(state, data) {
+    var live = data && data.hub_version ? data.hub_version : pageVersion;
+    verEl.setAttribute('data-state', state);
+    verEl.textContent = 'HUB ' + live + (state === 'update' ? ' · nouvelle version' : state === 'error' ? ' · manifeste indisponible' : ' · à jour');
+    refreshBtn.hidden = state !== 'update';
+    if (data && data.auto_refresh) {
+      noteEl.textContent = 'Contrôle ' + data.auto_refresh.method + '. '
+        + (data.auto_refresh.requires_apk_reinstall ? 'Réinstallation d’APK requise.' : 'Aucune réinstallation d’APK.');
+    }
+  }
+  function verifyFiles(data) {
+    var files = data && data.files || [];
+    if (!files.length) {
+      shaEl.setAttribute('data-state', 'error');
+      shaEl.textContent = 'SHA-256 · manifeste sans fichiers';
+      return Promise.resolve();
+    }
+    shaList.innerHTML = '';
+    var pending = files.map(function (file) {
+      var li = document.createElement('li');
+      li.textContent = file.path + ' · …';
+      shaList.appendChild(li);
+      return fetch(fileUrl(file.path), { cache: 'no-store' }).then(function (res) {
+        if (!res.ok) throw new Error(String(res.status));
+        return res.arrayBuffer();
+      }).then(sha256Hex).then(function (hex) {
+        var ok = hex && hex === file.sha256;
+        li.textContent = file.path + ' · ' + (ok ? 'conforme' : 'écart');
+        return ok;
+      }).catch(function () {
+        li.textContent = file.path + ' · illisible';
+        return false;
+      });
+    });
+    return Promise.all(pending).then(function (flags) {
+      var good = flags.filter(Boolean).length;
+      var ok = good === flags.length;
+      shaEl.setAttribute('data-state', ok ? 'ok' : 'bad');
+      shaEl.textContent = ok
+        ? ('SHA-256 vérifié · ' + good + '/' + flags.length)
+        : ('SHA-256 · écart · ' + good + '/' + flags.length);
+    });
+  }
+  function take(res) {
+    var etag = res.headers.get('ETag') || '';
+    if (res.status === 304) {
+      paintVersion('current', { hub_version: pageVersion });
+      return null;
+    }
+    if (!res.ok) throw new Error('manifest');
+    return res.arrayBuffer().then(function (buf) {
+      return sha256Hex(buf).then(function (hex) {
+        var text = new TextDecoder().decode(buf);
+        var data = JSON.parse(text);
+        var first = !seenHash;
+        var changed = (!first && ((etag && seenEtag && etag !== seenEtag) || hex !== seenHash)) || (data.hub_version && data.hub_version !== pageVersion);
+        if (first) { seenHash = hex; seenEtag = etag; }
+        paintVersion(changed ? 'update' : 'current', data);
+        if (first || changed) return verifyFiles(data).then(function () { return data; });
+        return data;
+      });
+    });
+  }
+  function check() {
+    var base = manifestUrl();
+    var url = base.href + (base.search ? '&' : '?') + 'cb=' + Date.now();
+    var headers = { 'Accept': 'application/json' };
+    if (seenEtag) headers['If-None-Match'] = seenEtag;
+    return fetch(url, { cache: 'no-store', headers: headers }).then(take).catch(function () {
+      paintVersion('error');
+      shaEl.setAttribute('data-state', 'error');
+      shaEl.textContent = 'SHA-256 · manifeste indisponible';
+    });
+  }
+  function showJson(url, pre) {
+    pre.hidden = false;
+    pre.textContent = 'Chargement…';
+    fetch(url, { cache: 'no-store' }).then(function (res) {
+      if (!res.ok) throw new Error(String(res.status));
+      return res.json();
+    }).then(function (data) {
+      pre.textContent = JSON.stringify(data, null, 2);
+    }).catch(function () {
+      pre.textContent = 'Lecture impossible pour le moment.';
+    });
+  }
+  refreshBtn.addEventListener('click', function () { location.reload(); });
+  document.getElementById('btn-rules').addEventListener('click', function () {
+    showJson(rulesUrl().href, document.getElementById('rules-view'));
+  });
+  document.getElementById('btn-manifest').addEventListener('click', function () {
+    showJson(manifestUrl().href, document.getElementById('manifest-view'));
+  });
+  check();
+  setInterval(function () { check(); }, 30000);
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) check();
+  });
+})();
+</script>
+</body>
+</html>
