@@ -23,6 +23,22 @@
     function enabled(name) {
       return declared().indexOf(name) >= 0 && host && host[name];
     }
+    /* Claude's model hook (um/seed/model-hook.mjs). CommonJS bridge: do not edit that file. */
+    function modelModule() {
+      if (typeof require !== 'function') return null;
+      try { return require('./model-hook.mjs'); } catch (e) { return null; }
+    }
+    function hostProvider(adapter) {
+      var p = adapter && adapter.provider;
+      return p && typeof p.generate === 'function' ? p : undefined;
+    }
+    function bindModel(adapter) {
+      var api = modelModule();
+      var model = api ? api.createModelHook({ provider: hostProvider(adapter) }) : null;
+      if (adapter && typeof adapter === 'object') adapter.model = model;
+      return model;
+    }
+    var modelHook = null;
 
     var fallback = {
       storage: {
@@ -59,6 +75,7 @@
     var seed = {
       activate: function (adapter) {
         host = adapter || {};
+        modelHook = bindModel(host);
         active = true;
         paused = false;
         if (enabled('lifecycle') && host.lifecycle.onActivate) host.lifecycle.onActivate();
@@ -67,6 +84,7 @@
       swap: function (adapter) {
         if (enabled('lifecycle') && host.lifecycle.onDeactivate) host.lifecycle.onDeactivate();
         host = adapter || {};
+        modelHook = bindModel(host);
         paused = false;
         if (enabled('lifecycle') && host.lifecycle.onActivate) host.lifecycle.onActivate();
         return seed.describe();
@@ -78,6 +96,9 @@
       describe: function () {
         var d = (host && typeof host.describe === 'function') ? (host.describe() || {}) : {};
         var caps = Array.isArray(d.capabilities) ? d.capabilities.filter(function (c) { return HOOKS.indexOf(c) >= 0; }) : [];
+        var realModel = !!(modelHook && modelHook.describe && modelHook.describe().real);
+        caps = caps.filter(function (c) { return c !== 'model'; });
+        if (realModel) caps.push('model');
         return {
           name: d.name || 'null',
           version: d.version || '0',
@@ -105,8 +126,9 @@
       },
       model: {
         generate: function (prompt, opts) {
-          if (!enabled('model')) return fallback.model.generate(prompt, opts);
-          return host.model.generate(prompt, opts);
+          var hook = modelHook || bindModel(host);
+          if (!hook) return Promise.resolve('[aucun modèle] Aucun fournisseur de modèle n\'est branché sur cet hôte.');
+          return hook.generate(prompt, opts);
         }
       },
       transport: {
