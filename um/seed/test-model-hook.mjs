@@ -115,7 +115,7 @@ await t('6. aucun fournisseur → modèle nul explicite', async () => {
   assert.equal(nullProvider.isNull, true);
 });
 
-// 7. describe() ne déclare model que s'il est réel
+// 7. describe() honnête
 await t('7. describe() ne déclare model que s\'il est réel', async () => {
   assert.deepEqual(createModelHook().describe(), { capability: null, provider: null, real: false });
   assert.deepEqual(createModelHook({ provider: fakeProvider({ name: 'faux' }) }).describe(), { capability: 'model', provider: 'faux', real: true });
