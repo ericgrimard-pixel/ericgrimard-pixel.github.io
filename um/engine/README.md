@@ -1,10 +1,14 @@
-# MANIFESTATION ENGINE — Hub v21.06
+# MANIFESTATION ENGINE — Hub v21.07
 
-Canonical lineage: `v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06`. Next free number: `v21.07`.
+Canonical lineage: `v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06 -> v21.07`. Next free number: `v21.08`.
 
-The live Hub (`/um/`, `engine.js`) is moteur v2 · rév. 23.17 + relatif 23.20. The standalone page is `/um/engine/manifestation-engine.html` (paroi du microcosme 0,94 ; the Hub engine folds the same chamber to 0,74). Both keep the central object on the transposed Z0 path, anchor `[0, 0, 0]`, and containment `skin < 1`. `engine.js` is unchanged in v21.06 (same bytes as v21.05).
+## v21.07 changelog
+
+Minimal bar: the system selector, the tiles, T₀/T₁ and the volume factor stay on screen. Redundant toggles (Fourier / Libre, session, fantôme, filet, acteurs, attributs / fiche / vue pleine, plus and minus) stay in the DOM because `engine.js` binds them, and are not shown. Invitation, door, mail, duplicate “dernière version” and “Santé · paquet réel” links are not added. Gap badges stay. One Brigitte button opens listening (fr-CA mic and a focused field). « j’ai besoin de … » answers and shows the section in the same step. `escalate` stays off. `engine.js` is unchanged.
 
 ## v21.06 changelog
+
+The live Hub (`/um/`, `engine.js`) is moteur v2 · rév. 23.17 + relatif 23.20. The standalone page is `/um/engine/manifestation-engine.html` (paroi du microcosme 0,94 ; the Hub engine folds the same chamber to 0,74). Both keep the central object on the transposed Z0 path, anchor `[0, 0, 0]`, and containment `skin < 1`. `engine.js` is unchanged in v21.06 (same bytes as v21.05).
 
 Brigitte stays the single top entry. Questions go through `um/bridget/bridget-hub.js` (`Bridget.createEngine` / `Bridget.load`) and `um/bridget/index.json`, built by `um/bridget/build-index.mjs`. The index covers the left rack, the Gaussian window, the fiche, and the two new health cuts. An answer cites its section and offers « Montre-moi », which uses the v21.05 command layer. Voice (fr-CA) stays: Éric ordered it for this Hub; Claude’s note had reserved voice for the phone. `escalate` stays off. No Drive, mail, or contacts.
 

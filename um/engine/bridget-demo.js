@@ -9,7 +9,7 @@
    et l'index du panneau de gauche. La voix, le salut et la couche d'action de v21.05
    restent. escalate reste éteint. Aucun appel hors du site. */
 (function () {
-  if (window.BridgetDemo && window.BridgetDemo.version === 'v21.06') return;
+  if (window.BridgetDemo && window.BridgetDemo.version === 'v21.07') return;
 
   var pace = { move: 480, pulse: 180, step: 240 };
   var generation = 0;
@@ -400,7 +400,7 @@
     var zz = document.getElementById('zzNow');
     var app = document.querySelector('.app');
     return {
-      hub: meta && meta.content || 'v21.06',
+      hub: meta && meta.content || 'v21.07',
       version: meta && meta.content || null,
       engineRev: sub ? sub.textContent : null,
       page: location.pathname + location.hash,
@@ -549,7 +549,7 @@
   }
 
   var api = {
-    version: 'v21.06',
+    version: 'v21.07',
     family: 'Miriamphobots',
     moveCursor: moveCursor,
     clickButton: clickButton,
@@ -596,10 +596,10 @@
     passages: [],
     motto: api.motto,
     family: 'Miriamphobots',
-    hub_version: 'v21.06',
-    lineage: 'v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06'
+    hub_version: 'v21.07',
+    lineage: 'v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06 -> v21.07'
   };
-  var GREETING = 'Je suis Brigitte, je suis là pour toutes tes questions.';
+  var GREETING = 'Je suis Brigitte.';
   var CLEAR_Q = "Est-ce que c'est clair pour toi ?";
   var STOPWORDS = ['le','la','les','un','une','des','du','de','au','aux','et','ou','a','en','dans','sur','pour','par','que','qui','quoi','est','ce','je','tu','me','te','mon','ma','ton','ta','avec','sans','plus','tout','tous','cette','cet','cela','dans','moi','toi'];
 
@@ -793,15 +793,7 @@
   }
 
   function finishClear() {
-    say(CLEAR_Q);
-    showChoice([
-      { label: 'Oui', run: onYes },
-      { label: 'Réexplique', run: function () {
-        Promise.resolve(onReexplain()).then(function (res) {
-          if (res && res.executed && !res.stopped) finishClear();
-        });
-      } }
-    ]);
+    hideChoice();
   }
 
   function onYes() {
@@ -847,6 +839,16 @@
     placePanel();
   }
 
+  function listenNow() {
+    openPanel();
+    if (!greeted) { greeted = true; say(GREETING); }
+    if (inputEl) {
+      try { inputEl.focus(); } catch (e) {}
+    }
+    var Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    startMic(Rec);
+  }
+
   function closePanel() {
     if (!panelEl) return;
     panelEl.hidden = true;
@@ -871,8 +873,7 @@
     if (!btn.getAttribute('aria-expanded')) btn.setAttribute('aria-expanded', 'false');
     btn.onclick = function (ev) {
       if (ev) { ev.preventDefault(); ev.stopPropagation(); }
-      if (panelEl && !panelEl.hidden) closePanel();
-      else openPanel();
+      listenNow();
     };
 
     panelEl = document.createElement('section');
@@ -900,26 +901,9 @@
     logEl.setAttribute('role', 'log');
     logEl.setAttribute('aria-live', 'polite');
 
-    var chips = document.createElement('div');
-    chips.id = 'bridget-chips';
-    [
-      ['Poser une question', 'question'],
-      ['Me guider', 'guide'],
-      ['Fais-le pour moi', 'do'],
-      ['Trouve et montre-moi', 'find']
-    ].forEach(function (pair) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.textContent = pair[0];
-      b.onclick = function (ev) {
-        if (ev) { ev.preventDefault(); ev.stopPropagation(); }
-        setMode(pair[1]);
-      };
-      chips.appendChild(b);
-    });
-
     choiceEl = document.createElement('div');
     choiceEl.id = 'bridget-choice';
+    choiceEl.hidden = true;
 
     var form = document.createElement('form');
     form.id = 'bridget-form';
@@ -927,7 +911,7 @@
     inputEl.id = 'bridget-input';
     inputEl.type = 'text';
     inputEl.setAttribute('aria-label', 'Ta demande');
-    inputEl.placeholder = 'Ta demande';
+    inputEl.placeholder = 'j’ai besoin de …';
     inputEl.autocomplete = 'off';
     var mic = document.createElement('button');
     mic.id = 'bridget-mic';
@@ -970,7 +954,6 @@
 
     panelEl.appendChild(bar);
     panelEl.appendChild(logEl);
-    panelEl.appendChild(chips);
     panelEl.appendChild(choiceEl);
     panelEl.appendChild(form);
     panelEl.appendChild(refreshEl);
@@ -1506,6 +1489,26 @@
     }]);
   }
 
+  function answerAndShow(q, before) {
+    if (!docEngine) {
+      say('Je lis encore la documentation.');
+      return Promise.resolve({ ok: true, executed: false });
+    }
+    var found = preferPanel(docEngine.ask(q));
+    if (found && found.answered && found.passages.length) {
+      var p = found.passages[0];
+      var body = String(p.text || '').replace(/\s+/g, ' ').trim();
+      if (body.length > 420) body = body.slice(0, 417) + '…';
+      say(body + ' Source : ' + (p.title || 'la documentation') + '.');
+      if (p.section || p.selector) return showFromDoc(p, before);
+      return Promise.resolve({ ok: true, executed: false });
+    }
+    var sys = matchSystem(q);
+    if (sys) return showSystem(sys, before);
+    say('Je n’ai pas cette réponse dans la documentation du Hub.');
+    return Promise.resolve({ ok: true, executed: false });
+  }
+
   function answerWithIndex(q) {
     if (docEngine) {
       var found = preferPanel(docEngine.ask(q));
@@ -1632,6 +1635,13 @@
   }
 
   function route(raw, q, before) {
+    var need = q.match(/^(?:j ai besoin(?: de| d| du| des)?|i need(?: a| the| to)?)\s+(.+)$/);
+    if (need) {
+      var rest = stripLead(need[1]);
+      var sysNeed = matchSystem(rest);
+      if (sysNeed) return showSystem(sysNeed, before);
+      return answerAndShow(rest, before);
+    }
     if (/^(aide|help)$/.test(q) || q.indexOf('que peux tu') === 0 || q.indexOf('qu est ce que tu peux') === 0) {
       say(helpText());
       return Promise.resolve({ ok: true, executed: false });
@@ -1769,11 +1779,11 @@
 
   listen(window, 'hashchange', function () {
     normalizeHostUrl();
-    if (hostWanted()) openPanel();
+    if (hostWanted()) listenNow();
   }, true);
   listen(window, 'popstate', function () {
     normalizeHostUrl();
-    if (hostWanted()) openPanel();
+    if (hostWanted()) listenNow();
   }, true);
   listen(window, 'resize', placePanel);
   listen(window, 'scroll', placePanel, true);
@@ -1782,11 +1792,7 @@
     ensurePanel();
     preserveLinks();
     normalizeHostUrl();
-    openPanel();
-    if (!greeted) {
-      greeted = true;
-      say(GREETING);
-    }
+    if (hostWanted()) listenNow();
     loadKnowledge();
     loadDocEngine();
     checkManifest();

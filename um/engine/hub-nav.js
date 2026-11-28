@@ -351,7 +351,7 @@
   const R=document.getElementById('right'); if(!R) return;
   let tok=null; try{ tok=localStorage.getItem('um.hubGuestKey'); }catch(e){}
   if(!tok||!window.crypto||!crypto.subtle) return;
-  const fpReady=window.UM_ADMIN?Promise.resolve():new Promise((res,rej)=>{ const s=document.createElement('script'); s.src='/um/door/admin/fingerprints.js?v=21.06'; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
+  const fpReady=window.UM_ADMIN?Promise.resolve():new Promise((res,rej)=>{ const s=document.createElement('script'); s.src='/um/door/admin/fingerprints.js?v=21.07'; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
   fpReady.then(()=>UM_ADMIN.check(tok)).then(who=>{
     if(!who) return;
     const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -422,6 +422,7 @@
            ['/um/door/systems/a912f92cb325-finance-synthetique/','Moteur Manifestation \u2014 copie gelée (DÉMO Finance)']];
   let tries=0;
   function put(){
+    return; /* v21.07 : Porte · démo retirée de l'affichage */
     const foot=document.getElementById('um-rg-foot');
     if(!foot){ if(++tries<40) setTimeout(put,250); return; }
     if(document.getElementById('um-rg-door')) return;
@@ -530,6 +531,8 @@
   }
   let tries=0;
   function unify(){
+    /* v21.07 : le sélecteur reste dans la barre. Pas de liens d'invitation ni de déplacement. */
+    return;
     const dC=$('um-rg-couches'), nav=$('hub-nav'), lay=$('layers');
     if(!dC||!nav||!lay){ if(++tries<60) setTimeout(unify,250); return; }
     const sCou=lay.closest('section');
@@ -813,6 +816,7 @@
   }
   let tries=0;
   function put(){
+    return; /* v21.07 : « Santé · paquet réel » en double du sélecteur */
     const foot=document.getElementById('um-rg-foot');
     const door=document.getElementById('um-rg-door');
     const body=door&&door.querySelector('.um-rg-body');
@@ -851,6 +855,7 @@
   const TIP='Courriel d\u2019invitation v2 \u2014 fen\u00eatre pr\u00eate \u00e0 envoyer (aper\u00e7u inerte). Ancien parcours : Porte \u00b7 d\u00e9mo';
   let tries=0;
   function put(){
+    return; /* v21.07 : aperçu courriel retiré */
     const first=document.getElementById('um-invite-first');
     const left=document.getElementById('um-invite-left');
     const door=document.getElementById('um-rg-door');
@@ -893,7 +898,7 @@
     if(!(document.getElementById('um-agent-first')&&document.getElementById('um-agent-left')&&document.getElementById('um-door-agent'))&&++tries<120) setTimeout(put,250);
   }
   if(window.UM_AGENT_SWITCH){ put(); return; }
-  const s=document.createElement('script'); s.src='/um/engine/agent-switch.js?v=21.06'; s.onload=put; document.head.appendChild(s);
+  const s=document.createElement('script'); s.src='/um/engine/agent-switch.js?v=21.07'; s.onload=put; document.head.appendChild(s);
 })();
 
 
@@ -904,6 +909,7 @@
   const LABEL='Derni\u00e8re version';
   let tries=0;
   function put(){
+    return; /* v21.07 : « Dernière version » en double du contrôle dans Brigitte */
     const quick=document.getElementById('um-rg-docs-quick');
     const door=document.getElementById('um-rg-door');
     const body=door&&door.querySelector('.um-rg-body');
