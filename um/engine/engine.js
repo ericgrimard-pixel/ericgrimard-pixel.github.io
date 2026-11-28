@@ -455,7 +455,8 @@ const S={
   gclk:window.__umGclk||'vol',gtau:window.__umGtau!=null?window.__umGtau:0,
   layers:{c1:true,sec:true,cty:true,ind:false,genre:true,key:false,mode:false,expl:false,tsig:false,conf:true,assoc:true,league:true,lvl:false,mv:false,div:true,club:true,nat:true,pos:true,drnd:false,dyr:false,age:false,hand:false,xfer:false,ptrail:false,c3:true,c4:true,bounds:true,trails:false,ghost:true,gpaths:false,tlabels:true,links:true,labels:true,spacing:true,z0:false,z0c2:true,z0c3:true,c4v:false,c3d:false,micro:true,c4gh:true}, /* rev. 23.12 (Éric, 11 Nov., 13 h 38): on opening, no line between the objects; each one is a layer to switch on. Rev. 23.13: the LNH transfer trail too. Rev. 23.19: the central object's trajectory ghost is a layer, silent when no drift applies. */
   thr:window.__umThr!=null?window.__umThr:10,thrW:window.__umThrW||'tv',
-  gvol:window.__umGvol||1,gvolI:{} /* Volume du fantôme (Grok spec, 9 Nov.): global and per stock; never merged with the system Volume */
+  gvol:window.__umGvol||1,gvolI:{}, /* Volume du fantôme (Grok spec, 9 Nov.): density, not mesh size */
+  volScope:'all',volAll:1,volC2:1,gScope:'all',gAll:1,gC2:1,gPick:{},gOn:{},zoneThr:{0:0,1:0,2:0}
 };
 const eff=k=>{
   if(S.mode==='fourier'&&k>=3&&k<=8)return FOURIER_LINES[k-3];
@@ -660,8 +661,11 @@ const AZ=X=>Math.PI+X*(Math.PI-DMIN);
 const C3T=[-1,-.4,0,.4,1]; /* Class 3 containers on the diagonal X = Y = Z: Ω (−1,−1,−1), φ⁻, Σ (0,0,0), φ⁺, α (+1,+1,+1) */
 const c3xyz=z=>{const t=C3T[z],f=v=>(v>0?'+':v<0?'−':'')+String(Math.abs(v)).replace('.',',');return '('+f(t)+', '+f(t)+', '+f(t)+')'};
 const boxOf=(X,Y,Z)=>zoneOf((X+Y+Z)/3);
-const C3ROLE=['queue du serpent','','ventre du système','','tête du serpent'];
-const C3ON=[true,false,true,false,true],C3SYM=['Ω','λ⁻','Σ','λ⁺','α']; /* λ traps in the φ fields: placed, not activated */
+/* φ⁻ lies between Ω (−1) and Σ (0); φ⁺ lies between Σ (0) and α (+1), on X, Y and Z.
+   Each field is an array of λ so another trap can be pushed later. The demonstration ships one active λ per field. */
+const LAMBDA={'φ⁻':[{id:'λ⁻',field:'φ⁻',on:true}],'φ⁺':[{id:'λ⁺',field:'φ⁺',on:true}]};
+const C3ROLE=['queue du serpent','entre Ω (−1) et Σ (0), champ φ⁻','ventre du système','entre Σ (0) et α (+1), champ φ⁺','tête du serpent'];
+const C3ON=[true,LAMBDA['φ⁻'].some(l=>l.on),true,LAMBDA['φ⁺'].some(l=>l.on),true],C3SYM=['Ω',LAMBDA['φ⁻'][0].id,'Σ',LAMBDA['φ⁺'][0].id,'α'];
 function ring(r,y,col,op,dashed){
   const pts=[];for(let s=0;s<=192;s++)pts.push(W3(s/192*Math.PI*2,r,y));
   const g=new THREE.BufferGeometry().setFromPoints(pts);
@@ -747,6 +751,8 @@ const core=new THREE.Group();G.c4.add(core);
    Its hit sphere stays on layer 0 so the pointer still finds it. */
 function coreTop(){
   core.traverse(o=>{if(o.material!==HITMAT)o.layers.set(1)});
+  if(typeof C4GH!=='undefined')C4GH.traverse(o=>o.layers.set(1));
+  if(typeof SING!=='undefined')SING.traverse(o=>o.layers.set(1));
   camera.layers.set(0);renderer.render(scene,camera);
   if(G.c4.visible){const ac=renderer.autoClear;renderer.autoClear=false;renderer.clearDepth();camera.layers.set(1);renderer.render(scene,camera);renderer.autoClear=ac;camera.layers.set(0)}
 }
@@ -791,26 +797,41 @@ function mcMotionGain(er){
   if(yWorst>yRoom)need=Math.max(need,yWorst/yRoom);
   return {scale,sens:1/need,er,wall};
 }
-/* Trajectory ghost of the central object, drawn strictly inside the microcosm, under the Z0 thread.
-   Past: faithful and heavily faded. Forward throw (Fantôme or Fourier): soft at the object, firmer at the tip.
-   Hidden when the layer is off or no measurable drift exists. */
-const C4GH=new THREE.Group();MICRO.add(C4GH);C4GH.visible=false;
-const C4G_N=48,C4G_F=16,C4GOLD=[0.910,0.784,0.447];
+/* Trajectory ghost of the central object. Same T₀→T₁ fold as the object (c4Hold), then re-centred
+   on the system centre so the path orbits the singularité. Hidden when the layer is off or drift ≤ 1e-4.
+   C4G_MODE 'A': the path passes through the object. 'B': it starts on the object and runs toward T₁. */
+let C4G_MODE='A';
+const C4GH=new THREE.Group();MICRO.add(C4GH);C4GH.visible=false;C4GH.renderOrder=9;
+const C4G_N=48,C4G_F=16,C4GOLD=[1,224/255,138/255];
 function c4gLine(){
   const g=new THREE.BufferGeometry();
   g.setAttribute('position',new THREE.BufferAttribute(new Float32Array((C4G_N+1)*3),3));
   g.setAttribute('color',new THREE.BufferAttribute(new Float32Array((C4G_N+1)*3),3));
   g.setDrawRange(0,0);
-  const l=new THREE.Line(g,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.8,depthWrite:false}));
-  l.frustumCulled=false;l.renderOrder=2;l.visible=false;C4GH.add(l);return l;
+  const l=new THREE.Line(g,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.82,depthTest:false,depthWrite:false}));
+  l.frustumCulled=false;l.renderOrder=9;l.visible=false;C4GH.add(l);return l;
 }
 const c4gPast=c4gLine(),c4gFwd=c4gLine();
-c4gPast.material.opacity=.34;c4gFwd.material.opacity=.62;
+c4gPast.material.opacity=.7;c4gFwd.material.opacity=.9;
+function c4DotTex(){const c=document.createElement('canvas');c.width=c.height=32;const g=c.getContext('2d'),r=g.createRadialGradient(16,16,1,16,16,16);r.addColorStop(0,'#fff');r.addColorStop(.55,'#ffe08a');r.addColorStop(1,'rgba(255,224,138,0)');g.fillStyle=r;g.fillRect(0,0,32,32);const t=new THREE.CanvasTexture(c);t.needsUpdate=true;return t}
+const c4gDots=new THREE.Points(new THREE.BufferGeometry(),new THREE.PointsMaterial({map:c4DotTex(),color:0xffe08a,size:5,sizeAttenuation:false,transparent:true,opacity:.85,depthTest:false,depthWrite:false}));
+c4gDots.geometry.setAttribute('position',new THREE.BufferAttribute(new Float32Array(5*3),3));
+c4gDots.frustumCulled=false;c4gDots.renderOrder=9;c4gDots.visible=false;C4GH.add(c4gDots);
+const c4gEnds=new THREE.Points(new THREE.BufferGeometry(),new THREE.PointsMaterial({map:c4DotTex(),color:0xffe08a,size:10,sizeAttenuation:false,transparent:true,opacity:.95,depthTest:false,depthWrite:false}));
+c4gEnds.geometry.setAttribute('position',new THREE.BufferAttribute(new Float32Array(2*3),3));
+c4gEnds.frustumCulled=false;c4gEnds.renderOrder=10;c4gEnds.visible=false;C4GH.add(c4gEnds);
 const c4gZGeo=new THREE.BufferGeometry();
 c4gZGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array((C4G_N+1)*3),3));
 c4gZGeo.setDrawRange(0,0);
-const c4gZ=new THREE.Line(c4gZGeo,new THREE.LineDashedMaterial({color:0xe8c872,transparent:true,opacity:.82,dashSize:.016,gapSize:.011,depthWrite:false}));
-c4gZ.frustumCulled=false;c4gZ.renderOrder=3;c4gZ.visible=false;C4GH.add(c4gZ);
+const c4gZ=new THREE.Line(c4gZGeo,new THREE.LineDashedMaterial({color:0xffe08a,transparent:true,opacity:.75,dashSize:.016,gapSize:.011,depthTest:false,depthWrite:false}));
+c4gZ.frustumCulled=false;c4gZ.renderOrder=8;c4gZ.visible=false;C4GH.add(c4gZ);
+function c4SingTex(dark){const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d'),r=g.createRadialGradient(32,32,0,32,32,32);
+  if(dark){r.addColorStop(0,'rgba(8,6,4,1)');r.addColorStop(.42,'rgba(10,8,6,1)');r.addColorStop(.55,'rgba(8,6,4,0)');r.addColorStop(1,'rgba(0,0,0,0)');}
+  else{r.addColorStop(0,'rgba(255,224,138,0)');r.addColorStop(.28,'rgba(255,224,138,0)');r.addColorStop(.40,'rgba(255,236,180,1)');r.addColorStop(.55,'rgba(255,196,90,.45)');r.addColorStop(1,'rgba(255,196,90,0)');}
+  g.fillStyle=r;g.fillRect(0,0,64,64);const t=new THREE.CanvasTexture(c);t.needsUpdate=true;return t}
+function c4SingSprite(dark,order){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:c4SingTex(dark),transparent:true,depthTest:false,depthWrite:false,blending:dark?THREE.NormalBlending:THREE.AdditiveBlending,sizeAttenuation:false}));sp.frustumCulled=false;sp.renderOrder=order;sp.name='singularité';return sp}
+const SING=new THREE.Group();SING.name='singularité';SING.position.set(0,0,0);
+const SINGh=c4SingSprite(false,11),SINGc=c4SingSprite(true,12);SING.add(SINGh);SING.add(SINGc);G.c4.add(SING);
 const MCGQ=new THREE.Vector3();
 [[1,1],[1,-1],[3,1],[3,-1]].forEach(([r,y])=>G.bounds.add(ring(mR(r),mY(y),0x8a7434,.45))); /* the microcosm's walls belong to the environment */
 const VR=new Float32Array(N1*20),VIR=new Float64Array(N1*2),CVR=new Float32Array(NC*20),C3VR=new Float32Array(100),C3NR=new Uint16Array(10),MC4=new Float32Array(20);
@@ -934,24 +955,25 @@ function c4Skin(p,stretch){
 function microFrame(t,dt){
   t=Math.max(0,Math.min(1,+t||0));dt=+dt||0;
   mBuild();
-  MCG=mcMotionGain(C4O.R*MS*LV.stretch[LV.stretch.length-1]/Math.max(S.exp,1e-3));
+  MCG=mcMotionGain(C4O.R*MS*LV.stretch[LV.stretch.length-1]);
   MICRO.visible=!!(S.layers.micro&&S.layers.c4);
   MBALL.forEach(m=>m.count=0);
-  let n1=0,n2=0,n3=0;
-  if(MICRO.visible){const E=S.exp;
+  let n1=0,n2=0,n3=0,orbit=null;
+  if(MICRO.visible){const aV=S.volAll||1,cV=aV*(S.volC2||1);
     for(let i=0;i<N1;i++){if(!O1[i].root.visible)continue;const p0=PRES[i*F+S.T0],p1=PRES[i*F+S.T1];if(!p0&&!p1)continue;
-      const a=i*2+(p0?0:1),b=i*2+(p1?1:0);mObj(VR,a*10,b*10,MOFF1,a*3,b*3,t,.1*MS*DENS/E,MSP1,i,dt,MB1);n1++}
+      const a=i*2+(p0?0:1),b=i*2+(p1?1:0);mObj(VR,a*10,b*10,MOFF1,a*3,b*3,t,.1*MS*DENS*aV,MSP1,i,dt,MB1);n1++}
     for(let c=0;c<NC;c++){if(!O2[c].root.visible)continue;const p0=CP[c*F+S.T0],p1=CP[c*F+S.T1];if(!p0&&!p1)continue;
-      const a=c*2+(p0?0:1),b=c*2+(p1?1:0);mObj(CVR,a*10,b*10,MOFF2,a*3,b*3,t,.2*MS*DENS/E,MSP2,c,dt,MB2);n2++}
+      const a=c*2+(p0?0:1),b=c*2+(p1?1:0);mObj(CVR,a*10,b*10,MOFF2,a*3,b*3,t,.2*MS*DENS*cV,MSP2,c,dt,MB2);n2++}
     if(S.layers.c3)for(let z=0;z<5;z++){if(!C3ON[z])continue;const h0=C3NR[z*2],h1=C3NR[z*2+1];if(!h0&&!h1)continue;
-      mObj(C3VR,(z*2+(h0?0:1))*10,(z*2+(h1?1:0))*10,null,0,0,t,.3*MS/E,MSP3,z,dt,MB3,C3T[z]);n3++}
+      mObj(C3VR,(z*2+(h0?0:1))*10,(z*2+(h1?1:0))*10,null,0,0,t,.3*MS*aV,MSP3,z,dt,MB3,C3T[z]);n3++}
     /* rev. 23.20: the central object inside the microcosm rides the transposed Z0 path; its body stays the collapse (C4V) */
-    if(C4N[0]||C4N[1])mObj(C4V,(C4N[0]?0:1)*10,(C4N[1]?1:0)*10,null,0,0,t,C4O.R*MS/E,MSP4,0,dt,MB4,null,c4Hold(t,Z0A,Z0B,true,1));
+    orbit=c4Orbit();
+    if(C4N[0]||C4N[1])mObj(C4V,(C4N[0]?0:1)*10,(C4N[1]?1:0)*10,null,0,0,t,C4O.R*MS*aV,MSP4,0,dt,MB4,null,orbit.at(t));
   }
   MBALL.forEach(m=>{if(m.count){m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true}});
   const zr=document.getElementById('zzRel');
   if(zr)zr.textContent=REL.own?(REL.indep?'indépendant':'1 · propre'):f8r(CY(REL.ratio[0],REL.ratio[1],t))+' / '+REL.name;
-  if(window.__C4LIVE){const live=c4Hold(t,Z0A,Z0B,true,1),attr=c4AttrAt(t),skin=c4Skin(live,attr&&attr.stretch);
+  if(window.__C4LIVE){const live=orbit?orbit.at(t):c4Hold(t,Z0A,Z0B,true,1),attr=c4AttrAt(t),skin=c4Skin(live,attr&&attr.stretch);
     let mesh=null;if(attr&&MB4[attr.shape]&&MB4[attr.shape].count){const e=new THREE.Matrix4();MB4[attr.shape].getMatrixAt(MB4[attr.shape].count-1,e);mesh=[+e.elements[12].toFixed(5),+e.elements[13].toFixed(5),+e.elements[14].toFixed(5)];}
     window.__C4LIVE.anchor=[0,0,0];
     window.__C4LIVE.micro={n1,n2,n3,c4:(C4N[0]||C4N[1])?1:0,inst:MBALL.reduce((s,m)=>s+m.count,0)};
@@ -961,7 +983,7 @@ function microFrame(t,dt){
     window.__C4LIVE.placeMicro='microcosme · progression Z0 transposée (rév. 23.20)';
     window.__C4LIVE.rel={entry:REL.entry,name:REL.name,own:REL.own,indep:REL.indep,miss:REL.miss.slice(),zz:REL.zz.map(x=>+(+x).toFixed(8)),ezz:REL.ezz.map(x=>+(+x).toFixed(8)),ratio:REL.ratio.map(x=>+(+x).toFixed(8)),
       c4clash:[Array.from(MC4.subarray(0,10)).map(x=>+x.toFixed(6)),Array.from(MC4.subarray(10,20)).map(x=>+x.toFixed(6))],c4micro:live.map(x=>+x.toFixed(5)),live:live.map(x=>+x.toFixed(5)),mesh};}
-  c4GhostFrame(t);
+  c4GhostFrame(t,orbit);
 }
 function c4Hold(u,A,B,lin,inset){
   let ax;
@@ -979,33 +1001,66 @@ function c4ClearOf(tau,dir,A,B,lin){
   for(let k=1;k<=24;k++){const u=tau+dir*k*0.02;if(u<0||u>2.001)return dir<0?0:2;const p=c4Hold(u,A,B,lin,.9);if(Math.hypot(p[0]-c[0],p[1]-c[1],p[2]-c[2])>=er)return Math.max(0,Math.min(2,u));}
   return Math.max(0,Math.min(2,tau+dir*.4));
 }
-function c4GhostFrame(tau){
+function c4Mean(pts){const c=[0,0,0];pts.forEach(p=>{c[0]+=p[0];c[1]+=p[1];c[2]+=p[2]});const n=Math.max(1,pts.length);return [c[0]/n,c[1]/n,c[2]/n]}
+function c4Sample(pts,u){const n=pts.length-1,x=Math.max(0,Math.min(1,u))*n,i=Math.min(n-1,Math.floor(x)),f=x-i,a=pts[i],b=pts[i+1]||a;return [a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f,a[2]+(b[2]-a[2])*f]}
+/* Fold T₀→T₁ exactly as the object does, then subtract the centroid so the path orbits the singularité at [0,0,0]. */
+function c4Orbit(){
+  const raw=[];for(let i=0;i<=C4G_N;i++)raw.push(c4Hold(i/C4G_N,Z0A,Z0B,true,1));
+  const before=c4Mean(raw),beforeDist=Math.hypot(before[0],before[1],before[2]);
+  let pts=raw.map(p=>[p[0]-before[0],p[1]-before[1],p[2]-before[2]]);
+  let len=0;for(let i=1;i<pts.length;i++)len+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1],pts[i][2]-pts[i-1][2]);
+  let maxR=0;pts.forEach(p=>{maxR=Math.max(maxR,Math.hypot(p[0],p[1],p[2]))});
+  const bodyR=C4O.R*MS*(MCG.scale||1);
+  const gFactor=(window.__umGhostScale>0)?window.__umGhostScale:1; /* hierarchical size already in bodyR; optional ghost factor, default 1 */
+  const want=3*gFactor;
+  const room=Math.max(1e-4,(MCG.wall||.74)*.92-bodyR);
+  const k=maxR>1e-9?Math.min(want,room/maxR):1;
+  if(k!==1)pts=pts.map(p=>[p[0]*k,p[1]*k,p[2]*k]);
+  const after=c4Mean(pts);
+  const pub={beforeDist:+beforeDist.toFixed(5),afterDist:+Math.hypot(after[0],after[1],after[2]).toFixed(6),k:+k.toFixed(4),len:+len.toFixed(5),mode:C4G_MODE,singularity:[0,0,0],centroid:after.map(x=>+x.toFixed(6))};
+  window.__UM_C4ORBIT=pub;
+  return {pts,raw,beforeDist,afterDist:pub.afterDist,k,at:u=>c4Sample(pts,u),pub};
+}
+function c4Mode(orbit,tau){
+  const obj=orbit.at(tau),pivot=C4G_MODE==='B'?orbit.pts[0]:obj;
+  const pts=orbit.pts.map(p=>[obj[0]+p[0]-pivot[0],obj[1]+p[1]-pivot[1],obj[2]+p[2]-pivot[2]]);
+  return {obj,pts};
+}
+function c4Px(px){const h=Math.max(1,renderer.domElement.clientHeight||1),fov=camera.fov*Math.PI/360;return px*2*Math.tan(fov)/h}
+function c4GhostFrame(tau,orbit){
   const microOn=!!(MICRO.visible&&S.layers.c4gh);
   const zD=Math.hypot(Z0B[0]-Z0A[0],Z0B[1]-Z0A[1],Z0B[2]-Z0A[2]);
-  const A=Z0A,B=Z0B,lin=true,has=zD>1e-4; /* rev. 23.20: the ghost is the transposed Z0 path, the same one the central object rides */
-  const predictive=has&&(S.ghost||S.mode==='fourier')&&(S.thr>0||S.mode==='fourier');
-  const thread=!!(S.layers.micro&&S.layers.c4&&S.layers.z0&&zD>1e-4);
-  c4gPast.visible=c4gFwd.visible=false;
-  if(thread){const P=c4gZGeo.attributes.position.array;
-    for(let i=0;i<=C4G_N;i++){const u=i/C4G_N,p=c4Hold(u,Z0A,Z0B,true,1/MCG.sens);P[i*3]=p[0];P[i*3+1]=p[1];P[i*3+2]=p[2];}
-    c4gZGeo.setDrawRange(0,C4G_N+1);c4gZGeo.attributes.position.needsUpdate=true;c4gZ.computeLineDistances();c4gZ.visible=true;}
+  const has=zD>1e-4;
+  const thread=!!(S.layers.micro&&S.layers.c4&&S.layers.z0&&has);
+  SING.visible=!!G.c4.visible;
+  const ps=c4Px(8),ph=c4Px(16);SINGc.scale.set(ps,ps,1);SINGh.scale.set(ph,ph,1);
+  if(!orbit)orbit=c4Orbit();
+  c4gPast.visible=c4gFwd.visible=c4gDots.visible=c4gEnds.visible=false;
+  if(thread){const P=c4gZGeo.attributes.position.array,b=orbit.pts;
+    for(let i=0;i<b.length;i++){P[i*3]=b[i][0];P[i*3+1]=b[i][1];P[i*3+2]=b[i][2];}
+    c4gZGeo.setDrawRange(0,b.length);c4gZGeo.attributes.position.needsUpdate=true;c4gZ.computeLineDistances();c4gZ.visible=true;}
   else c4gZ.visible=false;
+  let drawn=null;
   if(microOn&&has){
-    const t0=Math.max(0,Math.min(1,+tau||0));
-    const u0=c4ClearOf(t0,-1,A,B,lin),u1=c4ClearOf(t0,1,A,B,lin);
-    if(u0>1e-3){const n=Math.max(2,Math.round(C4G_N*u0)),past=[];
-      for(let i=0;i<=n;i++)past.push(c4Hold(u0*i/n,A,B,lin,.9));
-      c4gPast.material.opacity=.34;c4Write(c4gPast,past,(i,n)=>.16+.22*i/n);}
-    if(predictive){const fwd=[];c4gFwd.material.opacity=.62;
-      for(let i=0;i<=C4G_F;i++)fwd.push(c4Hold(u1+(2-u1)*i/C4G_F,A,B,lin,.9));
-      c4Write(c4gFwd,fwd,(i,n)=>.28+.72*i/n);}
-    else if(u1<1-1e-3){const n=Math.max(2,Math.round(C4G_N*(1-u1))),rest=[];c4gFwd.material.opacity=.34;
-      for(let i=0;i<=n;i++)rest.push(c4Hold(u1+(1-u1)*i/n,A,B,lin,.9));
-      c4Write(c4gFwd,rest,i=>.18+.2*(u1+(1-u1)*i/Math.max(1,n)));}
+    drawn=c4Mode(orbit,Math.max(0,Math.min(1,+tau||0)));
+    const t0=Math.max(0,Math.min(1,+tau||0)),n=drawn.pts.length-1,i0=Math.max(1,Math.round(t0*n));
+    const past=drawn.pts.slice(0,i0+1),fwd=drawn.pts.slice(i0);
+    if(past.length>1){c4gPast.material.opacity=.72;c4Write(c4gPast,past,(i,m)=>.5+.4*i/Math.max(1,m));}
+    if(fwd.length>1){c4gFwd.material.opacity=.9;c4Write(c4gFwd,fwd,(i,m)=>.5+.4*i/Math.max(1,m));}
+    const D=c4gDots.geometry.attributes.position.array;
+    for(let k=0;k<5;k++){const p=c4Sample(drawn.pts,(k+1)/6);D[k*3]=p[0];D[k*3+1]=p[1];D[k*3+2]=p[2];}
+    c4gDots.geometry.attributes.position.needsUpdate=true;c4gDots.visible=true;
+    const E=c4gEnds.geometry.attributes.position.array,a=drawn.pts[0],b=drawn.pts[drawn.pts.length-1];
+    E[0]=a[0];E[1]=a[1];E[2]=a[2];E[3]=b[0];E[4]=b[1];E[5]=b[2];
+    c4gEnds.geometry.attributes.position.needsUpdate=true;c4gEnds.visible=true;
+    const dc=c4Mean(drawn.pts);
+    window.__UM_C4ORBIT.drawnDist=+Math.hypot(dc[0],dc[1],dc[2]).toFixed(6);
+    window.__UM_C4ORBIT.obj=drawn.obj.map(x=>+x.toFixed(5));
   }
-  C4GH.visible=c4gPast.visible||c4gFwd.visible||c4gZ.visible;
-  if(window.__C4LIVE){const live=c4Hold(Math.max(0,Math.min(1,+tau||0)),A,B,lin,1);
-    window.__C4LIVE.ghost={on:C4GH.visible?1:0,drift:+(has?zD:0).toFixed(5),fwd:predictive&&c4gFwd.visible?1:0,sens:+MCG.sens.toFixed(4),path:'Z0',live:live.map(x=>+x.toFixed(5))};}
+  C4GH.visible=!!(microOn&&has&&(c4gPast.visible||c4gFwd.visible));
+  if(window.__C4LIVE){const live=(drawn?drawn.obj:orbit.at(Math.max(0,Math.min(1,+tau||0))));
+    window.__C4LIVE.ghost={on:C4GH.visible?1:0,drift:+(has?zD:0).toFixed(5),fwd:c4gFwd.visible?1:0,sens:+MCG.sens.toFixed(4),path:'Z0-centré',mode:C4G_MODE,singularite:[0,0,0],live:live.map(x=>+x.toFixed(5))};
+    window.__C4LIVE.z0pos=live.map(x=>+x.toFixed(5));}
 }
 function relBlock(){
   const r=REL;
@@ -1234,7 +1289,7 @@ void main(){if(vA<0.003)discard;gl_FragColor=vec4(vCol,min(1.0,vA));}`,
    Thrown ghosts (the throw ahead) are drawn hollow: edges only. */
 function makeReps(){
   const U={uCur:{value:0},uT0:{value:0},uTau:{value:0},uGain:{value:.5},uSel:{value:-1},uSize:{value:1},uAll:{value:0}};
-  const VS=`attribute vec3 iPos;attribute vec4 iQ;attribute float iS;attribute vec3 iCol;attribute float aDay;attribute float aTk;attribute float aOut;attribute float aOrg;attribute float aVol;
+  const VS=`attribute vec3 iPos;attribute vec4 iQ;attribute float iS;attribute vec3 iCol;attribute float aDay;attribute float aTk;attribute float aOut;attribute float aOrg;attribute float aVol;attribute float aScale;
 uniform float uCur;uniform float uT0;uniform float uTau;uniform float uGain;uniform float uSel;uniform float uSize;uniform float uFace;uniform float uAll;
 varying vec3 vCol;varying float vA;
 vec3 qrot(vec4 q,vec3 v){return v+2.0*cross(q.xyz,cross(q.xyz,v)+q.w*v);}
@@ -1249,7 +1304,7 @@ void main(){
   a*=g*aVol;
   if(uSel>-0.5){a=abs(aTk-uSel)<0.5?min(1.0,max(a,0.12)*2.2):a*0.22;}
   vA=a*(uFace>0.5?0.3:1.0);vCol=iCol*(0.35+0.65*g);
-  vec3 p=position*uSize;p.y*=iS;p=qrot(iQ,p)+iPos;
+  vec3 p=position*uSize*aScale;p.y*=iS;p=qrot(iQ,p)+iPos;
   gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.0);
 }`;
   const FS=`varying vec3 vCol;varying float vA;void main(){if(vA<0.004)discard;gl_FragColor=vec4(vCol,min(1.0,vA));}`;
@@ -1260,13 +1315,13 @@ void main(){
     const mk=(base,isFace)=>{const ig=new THREE.InstancedBufferGeometry();if(base.index)ig.setIndex(base.index);ig.setAttribute('position',base.attributes.position);ig.instanceCount=0;
       const o=isFace?new THREE.Mesh(ig,mf):new THREE.LineSegments(ig,me);o.frustumCulled=false;o.renderOrder=isFace?1:2;set.group.add(o);Z.objs.push(o)};
     g.faces.forEach(f=>mk(f,true));g.edges.forEach(e=>mk(e,false));set.zones.push(Z)}
-  const AT={iPos:3,iQ:4,iS:1,iCol:3,aDay:1,aTk:1,aOut:1,aOrg:1,aVol:1};
+  const AT={iPos:3,iQ:4,iS:1,iCol:3,aDay:1,aTk:1,aOut:1,aOrg:1,aVol:1,aScale:1};
   set.fill=function(list){
     const per=[[],[],[],[],[]];for(let k=0;k<list.n;k++){const z=list.zone(k);if(z>=0)per[z].push(k)}set.n=0;
-    const o={pos:[0,0,0],q:[0,0,0,1],s:1,col:[1,1,1],day:0,tk:0,out:0,org:0,vol:1};
+    const o={pos:[0,0,0],q:[0,0,0,1],s:1,col:[1,1,1],day:0,tk:0,out:0,org:0,vol:1,sc:1};
     per.forEach((ix,z)=>{const n=ix.length,A={};set.n+=n;
       Object.keys(AT).forEach(key=>{A[key]=new THREE.InstancedBufferAttribute(new Float32Array(Math.max(1,n)*AT[key]),AT[key])});
-      ix.forEach((k,m)=>{list.get(k,o);A.iPos.array.set(o.pos,m*3);A.iQ.array.set(o.q,m*4);A.iS.array[m]=o.s;A.iCol.array.set(o.col,m*3);A.aDay.array[m]=o.day;A.aTk.array[m]=o.tk;A.aOut.array[m]=o.out;A.aOrg.array[m]=o.org;A.aVol.array[m]=o.vol});
+      ix.forEach((k,m)=>{o.sc=1;list.get(k,o);A.iPos.array.set(o.pos,m*3);A.iQ.array.set(o.q,m*4);A.iS.array[m]=o.s;A.iCol.array.set(o.col,m*3);A.aDay.array[m]=o.day;A.aTk.array[m]=o.tk;A.aOut.array[m]=o.out;A.aOrg.array[m]=o.org;A.aVol.array[m]=o.vol;A.aScale.array[m]=o.sc||1});
       set.zones[z].objs.forEach(ob=>{const g=ob.geometry;Object.keys(A).forEach(key=>g.setAttribute(key,A[key]));g.instanceCount=n});
     });
   };
@@ -1320,10 +1375,19 @@ function buildShortGhost(){
 function sgFrame(){
   if(TWO&&S.sghost&&Math.abs(S.prog-(S.sgp==null?-1:S.sgp))>.004)buildShortGhost(); /* v20.84: the trail follows the run and the slider */
   const on=TWO&&!!S.sghost&&SGREP.n>0&&S.layers.c1!==false;SGREP.group.visible=on;if(!on)return;
-  const U=SGREP.U;U.uCur.value=S.prog;U.uT0.value=0;U.uTau.value=0;U.uSize.value=1/S.exp;U.uGain.value=SGK*SGG;U.uSel.value=S.sel&&S.sel.kind===1?S.sel.idx:-1;U.uAll.value=0;
+  const U=SGREP.U;U.uCur.value=S.prog;U.uT0.value=0;U.uTau.value=0;U.uSize.value=S.volAll*S.gAll;U.uGain.value=SGK*SGG;U.uSel.value=S.sel&&S.sel.kind===1?S.sel.idx:-1;U.uAll.value=0;
 }
 /* Large systems: the copies unfold for the chosen stock, or for the members of the chosen Class 2 object. */
 function repAllow(){if(N1<=150)return null;const s=S.sel;return new Set(s&&s.kind===1?[s.idx]:s&&s.kind===2?CARDS[s.idx].members:[])}
+function ghostMul(i){
+  const base=S.gAll||1;
+  if(S.gScope==='pick'){
+    for(let ci=0;ci<CARDS.length;ci++){if(S.gOn[ci]&&CARDS[ci].mset&&CARDS[ci].mset.has(i))return (S.gPick[ci]||1)/base}
+    return 1;
+  }
+  if(S.gScope==='c2')return (S.gC2||1)/base;
+  return 1;
+}
 function buildReplicas(){
   const rp=GHOST.rep;if(!rp||!S.ghost){REP.fill(EMPTYL);return}
   const allow=repAllow(),q=new THREE.Quaternion(),e=new THREE.Euler();
@@ -1334,7 +1398,7 @@ function buildReplicas(){
       e.set(L(LV.pitch,6),Math.PI/2-az,-L(LV.roll,8),'YXZ');q.setFromEuler(e);
       const ca=satRGB(zoneOf(V[A+5]),LV.sat[zoneOf(V[A+9])]),cb=satRGB(zoneOf(V[B+5]),LV.sat[zoneOf(V[B+9])]);
       o.pos[0]=rp.gp[k*3];o.pos[1]=rp.gp[k*3+1];o.pos[2]=rp.gp[k*3+2];o.q[0]=q.x;o.q[1]=q.y;o.q[2]=q.z;o.q[3]=q.w;o.s=L(LV.stretch,4);
-      o.col[0]=CY(ca[0],cb[0],u);o.col[1]=CY(ca[1],cb[1],u);o.col[2]=CY(ca[2],cb[2],u);o.day=rp.gd[k];o.tk=rp.gt[k];o.out=rp.go[k];o.org=ORG[rp.gt[k]];o.vol=Math.min(1.8,Math.sqrt(S.gvol*(S.gvolI[rp.gt[k]]||1)))}});
+      o.col[0]=CY(ca[0],cb[0],u);o.col[1]=CY(ca[1],cb[1],u);o.col[2]=CY(ca[2],cb[2],u);o.day=rp.gd[k];o.tk=rp.gt[k];o.out=rp.go[k];o.org=ORG[rp.gt[k]];o.vol=Math.min(1.8,Math.sqrt(S.gvol*(S.gvolI[rp.gt[k]]||1)));o.sc=ghostMul(rp.gt[k])}});
 }
 function buildGhost(){
   const g=GHOST.pts.geometry,t=GHOST.trl.geometry;
@@ -1403,8 +1467,8 @@ function ghostFrame(c){
   const on=S.ghost,u=GHOST.pts.material.uniforms,v=GHOST.trl.material.uniforms;
   GHOST.pts.visible=false;GHOST.trl.visible=on&&S.layers.gpaths;REP.group.visible=on&&S.layers.ghost;
   if(!on)return;
-  {const U=REP.U;U.uCur.value=c;U.uT0.value=S.T0;U.uTau.value=S.gtau;U.uSize.value=1/S.exp;U.uGain.value=N1>150?.6:Math.min(.55,.5*Math.sqrt(101/N1));U.uSel.value=S.sel&&S.sel.kind===1?S.sel.idx:-1;U.uAll.value=0}
-  u.uCur.value=c;u.uT0.value=S.T0;u.uTau.value=S.gtau;u.uD.value=(GHOST.ruler?GHOST.ruler.dg:.01)*S.exp;u.uPx.value=1.8*Math.min(2,window.devicePixelRatio||1); /* display floor: the ruler's diameter is below one pixel at the home view */
+  {const U=REP.U;U.uCur.value=c;U.uT0.value=S.T0;U.uTau.value=S.gtau;U.uSize.value=S.volAll*S.gAll;U.uGain.value=N1>150?.6:Math.min(.55,.5*Math.sqrt(101/N1));U.uSel.value=S.sel&&S.sel.kind===1?S.sel.idx:-1;U.uAll.value=0}
+  u.uCur.value=c;u.uT0.value=S.T0;u.uTau.value=S.gtau;u.uD.value=(GHOST.ruler?GHOST.ruler.dg:.01)*S.volAll*S.gAll;u.uPx.value=1.8*Math.min(2,window.devicePixelRatio||1); /* display floor: the ruler's diameter is below one pixel at the home view */
   u.uScale.value=renderer.domElement.height/(2*Math.tan(camera.fov*Math.PI/360));
   u.uGain.value=Math.min(.8,.6*Math.sqrt(101/N1));
   u.uSel.value=S.sel&&S.sel.kind===1?S.sel.idx:-1;
@@ -1461,8 +1525,8 @@ function updZ0Line(){
 }
 function z0Frame(tau){
   Z0G.visible=S.layers.z0;if(!Z0G.visible)return;
-  const p=w3v(z0lin(0,tau),z0lin(1,tau),z0lin(2,tau));z0Mark.position.set(p[0],p[1],p[2]);z0Mark.scale.setScalar(1/S.exp);
-  [z0L0,z0L1].forEach(l=>l.scale.set(l.userData.base.x/S.exp,l.userData.base.y/S.exp,1));
+  const p=w3v(z0lin(0,tau),z0lin(1,tau),z0lin(2,tau));  z0Mark.position.set(p[0],p[1],p[2]);z0Mark.scale.setScalar(1);
+  [z0L0,z0L1].forEach(l=>l.scale.set(l.userData.base.x,l.userData.base.y,1));
 }
 const z0txt=Z=>'('+Z.map(x=>(x>=0?'+':'')+x.toFixed(5)).join(', ')+')';
 
@@ -1544,7 +1608,7 @@ function updThrSel(){
   if(!info||!info.act){THR.err.visible=false;THR.land.visible=false;return}
   const a=w3v(...info.end),b=w3v(...info.act),arr=THR.err.geometry.attributes.position.array;
   arr.set([a[0],a[1],a[2],b[0],b[1],b[2]]);THR.err.geometry.attributes.position.needsUpdate=true;THR.err.computeLineDistances();
-  THR.land.position.set(b[0],b[1],b[2]);THR.land.scale.setScalar(1/S.exp);THR.err.visible=THR.land.visible=true;
+  THR.land.position.set(b[0],b[1],b[2]);THR.land.scale.setScalar(1);THR.err.visible=THR.land.visible=true;
 }
 const pct=x=>Number.isFinite(x)?((x>=0?'+':'')+(x*100).toFixed(1).replace('.',',')+' %'):'—';
 const pc0=x=>Number.isFinite(x)?Math.round(x*100)+' %':'—';
@@ -1801,11 +1865,11 @@ function spacingTakes(){
   [S.T0,S.T1].forEach((d,ti)=>{
     const P=[],R=[],M=[],ref=[];
     const gap=SYS.id==='world'?1.7:1; /* World doors must clear each other's hit sphere from the opening angle */
-    for(let i=0;i<N1;i++){const j=i*F+d;if(!PRES[j])continue;const p=posOf(V,j);P.push({x:p[0],y:p[1],z:p[2]});R.push(.1*DENS*gap/S.exp);M.push(1);ref.push([OFF1,i,p])}
-    for(let c=0;c<NC;c++){const q=c*F+d;if(!CP[q])continue;const p=posOf(CV,q);P.push({x:p[0],y:p[1],z:p[2]});R.push(.2*DENS*gap/S.exp);M.push(8);ref.push([OFF2,c,p])}
+    for(let i=0;i<N1;i++){const j=i*F+d;if(!PRES[j])continue;const p=posOf(V,j);P.push({x:p[0],y:p[1],z:p[2]});R.push(.1*DENS*gap);M.push(1);ref.push([OFF1,i,p])}
+    for(let c=0;c<NC;c++){const q=c*F+d;if(!CP[q])continue;const p=posOf(CV,q);P.push({x:p[0],y:p[1],z:p[2]});R.push(.2*DENS*gap);M.push(8);ref.push([OFF2,c,p])}
     const nd=P.length;
-    C3.forEach(g=>{P.push({x:g.position.x,y:g.position.y,z:g.position.z});R.push(.3/S.exp);M.push(0)});
-    P.push({x:0,y:0,z:0});R.push(C4O.R/S.exp);M.push(0); /* the central object in its reserved space (hollow centre): fixed, nothing overlaps it */
+    C3.forEach(g=>{P.push({x:g.position.x,y:g.position.y,z:g.position.z});R.push(.3);M.push(0)});
+    P.push({x:0,y:0,z:0});R.push(C4O.R);M.push(0); /* the central object in its reserved space (hollow centre): fixed, nothing overlaps it */
     relaxPts(P,R,M,nd,S.exp>=1?30:6); /* contracted below ×1 the field cannot hold every object apart: a short pass only */
     for(let k=0;k<nd;k++){const [OF,idx,p]=ref[k],b=(idx*2+ti)*3;OF[b]=P[k].x-p[0];OF[b+1]=P[k].y-p[1];OF[b+2]=P[k].z-p[2]}
   });
@@ -1814,11 +1878,11 @@ function spacingTakes(){
 function relax(){
   if(!S.layers.spacing)return;
   const P=[],R=[],M=[];
-  O1.forEach(o=>{if(o.root.visible){P.push(o.root.position);R.push(o.R/S.exp);M.push(1)}});
-  O2.forEach(o=>{if(o.root.visible){P.push(o.root.position);R.push(o.R/S.exp);M.push(8)}});
+  O1.forEach(o=>{if(o.root.visible){P.push(o.root.position);R.push(o.R);M.push(1)}});
+  O2.forEach(o=>{if(o.root.visible){P.push(o.root.position);R.push(o.R);M.push(8)}});
   const nd=P.length;
-  if(S.layers.c3)C3.forEach(g=>{P.push({x:g.position.x,y:g.position.y,z:g.position.z});R.push(.3/S.exp);M.push(0)});
-  if(S.layers.c4){P.push({x:core.position.x,y:core.position.y,z:core.position.z});R.push(C4O.R/S.exp);M.push(0)}
+  if(S.layers.c3)C3.forEach(g=>{P.push({x:g.position.x,y:g.position.y,z:g.position.z});R.push(.3);M.push(0)});
+  if(S.layers.c4){P.push({x:core.position.x,y:core.position.y,z:core.position.z});R.push(C4O.R);M.push(0)}
   relaxPts(P,R,M,nd,1);
 }
 function applyTrails(){
@@ -1981,18 +2045,26 @@ function scheduleSpacing(lazy){ /* while the knob turns, the spacing is recomput
   if(lazy){if(!spT)spT=setTimeout(()=>{spT=null;spacingTakes();microSpacing();buildShortGhost();dirty=true},140);return}
   if(spT){clearTimeout(spT);spT=null}spacingTakes();microSpacing();buildShortGhost();
 }
+function applyMeshVol(){
+  WORLD.scale.setScalar(1);
+  const a=S.volAll,c=S.volAll*S.volC2;
+  O1.forEach(o=>{o.root.scale.setScalar(a);if(o.hit)o.hit.scale.setScalar(1)});
+  O2.forEach(o=>{o.root.scale.setScalar(c);if(o.hit)o.hit.scale.setScalar(1)});
+  C3.forEach(g=>g.scale.setScalar(a));core.scale.setScalar(a);
+  const gs=a*S.gAll;
+  if(typeof REP!=='undefined'&&REP.U)REP.U.uSize.value=gs;
+  if(typeof SGREP!=='undefined'&&SGREP.U)SGREP.U.uSize.value=gs;
+  window.__umVol={all:+a.toFixed(4),c2:+c.toFixed(4),gAll:+S.gAll.toFixed(4),gC2:+S.gC2.toFixed(4),scope:S.volScope,gScope:S.gScope};
+}
 function setExp(E,fromSlider){
-  E=Math.max(.05,Math.min(1000,+E||1));const k=E/S.exp;S.exp=E;window.__umExp=E;
-  WORLD.scale.setScalar(E);
-  const hs=Math.max(1,Math.sqrt(E)); /* the click area grows a little with the field so objects stay easy to pick */
-  O1.forEach(o=>{o.root.scale.setScalar(1/E);o.hit.scale.setScalar(hs)});O2.forEach(o=>{o.root.scale.setScalar(1/E);o.hit.scale.setScalar(hs)});
-  C3.forEach(g=>g.scale.setScalar(1/E));core.scale.setScalar(1/E);
-  if(k!==1){tween=null;controls.target.multiplyScalar(k);camera.position.multiplyScalar(k)}
-  scene.fog.near=10*E;scene.fog.far=24*E;controls.maxDistance=20*Math.max(1,E);camera.far=Math.max(100,60*E);camera.updateProjectionMatrix();
-  scheduleSpacing(fromSlider);
-  try{localStorage.setItem('um.volume',String(E))}catch(e){}
+  E=Math.max(.05,Math.min(1000,+E||1));
+  if(S.volScope==='c2')S.volC2=E;else S.volAll=E;
+  S.exp=E;window.__umExp=S.volAll;
+  applyMeshVol();
+  try{localStorage.setItem('um.volume',String(S.volAll))}catch(e){}
   if(!fromSlider)$('vol').value=Math.round(Math.max(-200,Math.min(400,Math.log2(E)*100)));
   $('volNum').value=E>=10?E.toFixed(1):E.toFixed(2);
+  const vf=$('volScopeFactor');if(vf)vf.textContent='×'+(E>=10?E.toFixed(1):E.toFixed(2));
   dirty=true;
 }
 $('vol').addEventListener('input',e=>setExp(Math.pow(2,+e.target.value/100),true));
@@ -2000,6 +2072,47 @@ $('vol').addEventListener('change',e=>setExp(Math.pow(2,+e.target.value/100)));
 $('volNum').addEventListener('change',e=>setExp(e.target.value));
 $('volMinus').addEventListener('click',()=>setExp(S.exp/1.25));
 $('volPlus').addEventListener('click',()=>setExp(S.exp*1.25));
+function paintScope(){
+  const active=S.gScope==='pick'?'pick':S.volScope;
+  [['vol-scope-all','all'],['vol-scope-c2','c2'],['vol-scope-pick','pick']].forEach(([id,k])=>{
+    const b=$(id);if(!b)return;b.setAttribute('aria-pressed',k===active?'true':'false');
+  });
+  const g=S.gScope==='c2'?S.gC2:S.gScope==='pick'?null:S.gAll;
+  const ge=$('gvolScopeFactor');if(ge)ge.textContent=g==null?'mixte':'×'+(g>=10?g.toFixed(1):g.toFixed(2));
+  const n=Object.keys(S.gOn).filter(k=>S.gOn[k]).length;
+  const pk=$('vol-scope-pick');if(pk)pk.textContent=n?'Choix ('+n+')':'Choix';
+}
+function setScope(k){
+  if(k==='pick'){S.gScope='pick';openChoix();}
+  else{S.volScope=k;S.gScope=k;S.exp=k==='c2'?S.volC2:S.volAll;setExp(S.exp);const p=$('vol-scope-panel');if(p)p.hidden=true}
+  paintScope();
+}
+function bumpGhost(dir){
+  const f=dir>0?1.25:1/1.25;
+  if(S.gScope==='c2')S.gC2=Math.max(.05,Math.min(1000,S.gC2*f));
+  else if(S.gScope==='pick'){Object.keys(S.gOn).forEach(ci=>{if(S.gOn[ci])S.gPick[ci]=Math.max(.05,Math.min(1000,(S.gPick[ci]||1)*f))})}
+  else S.gAll=Math.max(.05,Math.min(1000,S.gAll*f));
+  applyMeshVol();if(S.ghost)buildReplicas();paintScope();dirty=true;
+}
+function openChoix(){
+  let p=$('vol-scope-panel');
+  if(!p){p=document.createElement('div');p.id='vol-scope-panel';document.body.appendChild(p)}
+  const rows=CARDS.filter(c=>c.ty==='sec'||c.ty==='cty'||c.ty==='ind'||!c.ty).map((c,i)=>c);
+  const list=CARDS.map((c,ci)=>({ci,name:c.name,floor:typeof class2Floor==='function'?class2Floor(ci):''})).filter(x=>x.name);
+  const btn=$('vol-scope-pick'),r=btn?btn.getBoundingClientRect():{left:8,bottom:40};
+  p.style.left=Math.max(8,r.left)+'px';p.style.top=(r.bottom+6)+'px';
+  p.hidden=false;
+  p.innerHTML='<header><b>Classe 2 · '+list.length+'</b><span><button type="button" id="vol-scope-allon">Tout cocher</button> <button type="button" id="vol-scope-alloff">Tout décocher</button> <button type="button" id="vol-scope-x">Fermer</button></span></header>'
+    +list.map(v=>'<label><input type="checkbox" data-ci="'+v.ci+'"'+(S.gOn[v.ci]?' checked':'')+'>'+esc(v.name)+(v.floor?' · '+esc(v.floor):'')+'</label>').join('');
+  p.querySelector('#vol-scope-x').onclick=()=>{p.hidden=true};
+  p.querySelector('#vol-scope-allon').onclick=()=>{list.forEach(v=>{S.gOn[v.ci]=true});openChoix();paintScope()};
+  p.querySelector('#vol-scope-alloff').onclick=()=>{S.gOn={};openChoix();paintScope();if(S.ghost)buildReplicas()};
+  p.querySelectorAll('input').forEach(inp=>inp.onchange=()=>{S.gOn[inp.dataset.ci]=inp.checked;if(!inp.checked)delete S.gPick[inp.dataset.ci];paintScope();if(S.ghost)buildReplicas()});
+}
+['all','c2','pick'].forEach(k=>{const b=$('vol-scope-'+k);if(b)b.addEventListener('click',()=>setScope(k))});
+const gm=$('gvolMinus'),gp=$('gvolPlus');if(gm)gm.addEventListener('click',()=>bumpGhost(-1));if(gp)gp.addEventListener('click',()=>bumpGhost(1));
+const sysSel=$('sys');if(sysSel)sysSel.addEventListener('change',()=>{S.gOn={};S.gPick={}});
+paintScope();
 function setMode(m){if(S.session||(TWO&&m==='fourier'))return;S.mode=m;rebuild();syncControls();drawGauss();renderFiche()}
 $('mFourier').addEventListener('click',()=>setMode('fourier'));
 $('mFree').addEventListener('click',()=>setMode('free'));
@@ -2036,7 +2149,8 @@ LAY.forEach(([k])=>$('ly-'+k).addEventListener('change',e=>{S.layers[k]=e.target
 function drawLegend(){
   let h=[4,3,2,1,0].map(z=>`<span><span class="sw" style="background:${ZCOL[z]}"></span>${ZN[z]} ${esc(ATTR[3].levels[z])}</span>`).join('')+`<span>· taille : Classe 1 = 0,1 · Classe 2 = 0,2 · Classe 3 = 0,3 · objet central (Classe 4) = quatre fois la Classe 1, sans enveloppe</span>`;
   if(S.layers.micro)h+=`<span class="brk"></span><span>objet central dans le microcosme : il parcourt la progression Z0 transposée (T₀ → T₁) ; forme, couleur, étirement et angles suivent le collapse</span>`;
-  if(S.layers.c4gh&&S.layers.micro)h+=`<span class="brk"></span><span>fantôme de trajectoire de l'objet central : dans le microcosme seulement, sous l'objet et le fil Z0, sur la même progression ; passé fidèle et très effacé ; lancer (Fantôme ou Fourier) doux → ferme ; caché sans dérive</span>`;
+  if(S.layers.c4gh&&S.layers.micro)h+=`<span class="brk"></span><span>fantôme de trajectoire : le chemin Z0 transposé, recentré sur la singularité, tourne autour du centre du système ; mode ${C4G_MODE==='B'?'B, le chemin part de l\'objet vers T₁':'A, le chemin passe par l\'objet'} ; caché sans dérive</span>`;
+  if(S.layers.c4)h+=`<span class="brk"></span><span>singularité : point sombre, liseré clair, au centre exact du système, où l'on plonge vers l'infini</span>`;
   if(S.ghost)h+=`<span class="brk"></span><span>fantômes : copies de l'objet${N1>150?', déployées pour le titre ou le cardinal choisi':''} ; secteurs :</span>`+CARDS.filter(c=>c.ty==='sec').map(c=>`<span><span class="gl" style="background:${secCol(c.name)}"></span>${esc(c.name)}</span>`).join('')+`<span>· à la taille du canon, sans symbole ; lancés : creux · horloge : ${esc((GCLKL[S.gclk]||'').toLowerCase())}, un fantôme par médiane cumulée du titre ; elle règle seulement l'espacement${GHOST.ruler?` · règle du système : bord à bord (×1) au plus serré → ×${GHOST.ruler.max.toFixed(0)} au plus large · ${GHOST.ruler.n.toLocaleString('fr-CA')} fantômes, dont ${GHOST.ruler.out.toLocaleString('fr-CA')} creux : sur la paroi, hors bornes, hors règle`:''}</span>`;
   if(HK)h+=HKLEG;
   $('legend').innerHTML=h;
@@ -2257,13 +2371,13 @@ function ghostTip(i,d){const j=i*F+d,t=TK[i];if(!PRES[j]||!(RVOL[j]>0))return ''
 let tween=null;
 function flyTo(p,t,ms){tween={p0:camera.position.clone(),t0:controls.target.clone(),p1:p.clone(),t1:t.clone(),s:performance.now(),ms:ms||700}}
 function enterFocus(ref){
-  S.focus=ref;S.plan=false;const o=(ref.kind===1?O1:O2)[ref.idx];const p=o.root.position.clone().multiplyScalar(S.exp);
+  S.focus=ref;S.plan=false;const o=(ref.kind===1?O1:O2)[ref.idx];const p=o.root.position.clone();
   const out=new THREE.Vector3(p.x,0,p.z).normalize();const dist=ref.kind===1?1.3:2.1;
   flyTo(p.clone().add(out.multiplyScalar(dist)).add(new THREE.Vector3(0,dist*.55,0)),p);
   banner('Mode Focus · '+(ref.kind===1?TK[ref.idx].s:CARDS[ref.idx].name)+' · la caméra suit l\'objet');dirty=true;
 }
-function enterPlan(){S.focus=null;S.plan=true;flyTo(new THREE.Vector3(0,10.5*S.exp,.01),new THREE.Vector3(0,0,0));banner('Mode Plan · cadran vu d\'en haut, midi en haut')}
-function exitModes(){S.focus=null;S.plan=false;$('banner').style.display='none';flyTo(HOME.p.clone().multiplyScalar(S.exp),HOME.t.clone().multiplyScalar(S.exp));dirty=true}
+function enterPlan(){S.focus=null;S.plan=true;flyTo(new THREE.Vector3(0,10.5,.01),new THREE.Vector3(0,0,0));banner('Mode Plan · cadran vu d\'en haut, midi en haut')}
+function exitModes(){S.focus=null;S.plan=false;$('banner').style.display='none';flyTo(HOME.p.clone(),HOME.t.clone());dirty=true}
 function banner(t){$('bannerTxt').textContent=t;$('banner').style.display='flex'}
 $('bannerExit').addEventListener('click',exitModes);
 addEventListener('keydown',e=>{const typing=/INPUT|SELECT|TEXTAREA/.test(e.target.tagName);if(!typing&&(e.key==='+'||e.key==='=')){e.preventDefault();setExp(S.exp*1.25)}if(!typing&&(e.key==='-'||e.key==='_')){e.preventDefault();setExp(S.exp/1.25)}if(!typing&&(e.key==='f'||e.key==='F')&&!e.metaKey&&!e.ctrlKey){e.preventDefault();setGhost(!S.ghost)}if(e.key==='Escape'&&(S.focus||S.plan))exitModes();if(e.key===' '&&e.target===document.body){e.preventDefault();$('play').click()}});
@@ -2274,7 +2388,7 @@ function statusBlock(){
   return `<ul class="status">${HK?hkStatus():''}
   <li><span class="st v">VERIFIED</span>τ = √(φ² + 5) = ${TAU.toFixed(10)} ; τ² − φ = ${(TAU*TAU-PHI).toFixed(10)}</li>
   <li><span class="st g">GOVERNANCE</span>Lecture en deux prises : T₀ et T₁, chacune un état constitué complet, jointes par une seule transition cycloïdale par axe (G-1, G-3), sans les séances intermédiaires.</li>
-  <li><span class="st g">GOVERNANCE</span>Conteneurs actifs : α en (+1, +1, +1), la tête du serpent, en haut, à l'intérieur, à 11 h 59 ; Ω en (−1, −1, −1), la queue, en bas, à l'extérieur, à 12 h 01 ; Σ en (0, 0, 0), le ventre, à 6 h. Z : +1 à l'intérieur, −1 à l'extérieur. Chaque conteneur actif manifeste les attributs physiques et angulaires du collapse de ses contenus. Les objets de Classe 1 sont solides. Volume (END GAME F3) : un bouton dilate ou contracte tout l'environnement, sans limite ; les positions s'écartent ou se rapprochent, les tailles restent au canon. Espacement selon le canon des tailles : 0,1 · 0,2 · 0,3 · 0,4, grille calibrée pour 1 234 objets, aucun chevauchement. Pièges λ⁻ (champ φ⁻) et λ⁺ (champ φ⁺) en place, non activés, prêts à être conditionnés pour recevoir leur cible. +1 à 11 h 59, −1 à 12 h 01. Quatre classes ; cinq zones, quatre bornes 20 / 40 / 60 / 80, fixées à l'ouverture de la session ; chaîne H → V → T par prise ; saturation = 10ᵉ résultat, le collapse (G-4 ; nom fixé par Éric le 6 nov.) ; tout cardinal est Classe 2 (G-5).</li>
+  <li><span class="st g">GOVERNANCE</span>Conteneurs actifs : α en (+1, +1, +1), la tête du serpent, en haut, à l'intérieur, à 11 h 59 ; Ω en (−1, −1, −1), la queue, en bas, à l'extérieur, à 12 h 01 ; Σ en (0, 0, 0), le ventre, à 6 h. Z : +1 à l'intérieur, −1 à l'extérieur. Chaque conteneur actif manifeste les attributs physiques et angulaires du collapse de ses contenus. Les objets de Classe 1 sont solides. Volume : les positions restent fixes ; seuls les maillages des objets et des fantômes grossissent ou rétrécissent autour de leur point. Le facteur multiplie la taille du canon et de la hiérarchie. Espacement selon le canon des tailles : 0,1 · 0,2 · 0,3 · 0,4, grille calibrée pour 1 234 objets, aucun chevauchement. Pièges λ⁻ (champ φ⁻, entre Ω et Σ) et λ⁺ (champ φ⁺, entre Σ et α) actifs, un λ par champ, même appartenance que α, Σ et Ω. D'autres λ peuvent s'ajouter au champ. +1 à 11 h 59, −1 à 12 h 01. Quatre classes ; cinq zones, quatre bornes 20 / 40 / 60 / 80, fixées à l'ouverture de la session ; chaîne H → V → T par prise ; saturation = 10ᵉ résultat, le collapse (G-4 ; nom fixé par Éric le 6 nov.) ; tout cardinal est Classe 2 (G-5).</li>
   <li><span class="st g">GOVERNANCE</span>Ordre fixe des dix attributs (Éric, 6 nov.) : X, Y, Z ; forme, étirement-écrasement, couleur ; avant-arrière, rotation, centre-extérieur (les trois moments triangulaires, sur X, Y, Z) ; saturation. Chaque case porte son icône : sept icônes Fleur de vie (UM Investor Deck v11, diapo 10) et trois dessins d'Éric (étirement-écrasement, avant-arrière, centre-extérieur), tels quels.</li>
   <li><span class="st g">GOVERNANCE</span>Objet central (Éric, 10 nov., 22 h 51 et 23 h 17 ; YB1 v20.21, « in the core, everywhere ») : la Classe 4 est un seul objet. Sa position dans l'espace n'est pas établie : il se tient dans son espace réservé, le centre creux de la chambre (rayon &lt; 1, où aucun objet de Classe 1, 2 ou 3 ne va), et ne fait que réagir. Son corps manifeste le collapse des attributs physiques et angulaires de tout le système, sur le même ensemble que Z0 (un seul ensemble, une seule moyenne). Il n'a pas d'enveloppe : ce corps est l'objet central, quatre fois la taille d'un objet de Classe 1, dessiné par-dessus tout (Éric, 11 nov., 5 h 32) ; il porte Z-ZERO. Le système est contenu dans sa borne ; les objets de Classe 2 y portent leur propre jeu de tensions. Les vecteurs or partent de Z0(τ), la moyenne de tout (marqueur or sur le fil), pas de lui. Rien ne le chevauche. Un seul chemin dans le cœur du moteur : toutes les ancres et tous les étages futurs le portent. Rév. 23.18 (Éric, 15 nov.) : dans son microcosme, la Classe 4 occupe désormais une place, le collapse du choc micro − macro ; dans la chambre extérieure, elle garde son espace réservé.</li>
   <li><span class="st g">GOVERNANCE</span>Vue d'ouverture (Éric, 11 nov., 13 h 38) : seulement les objets et l'environnement, aucune ligne entre les objets. Vecteurs depuis Z0(τ), traînées des cardinaux, liens club ↔ club, traînée du transfert (LNH) et diagonale Ω–Σ–α attendent dans Couches ; les liens de la chaîne n'apparaissent qu'au choix d'un objet. Tous les liens de la page restent.</li>
@@ -2350,6 +2464,22 @@ function c4Block(){
     <p class="note">L'objet central est la Classe 4 elle-même. Sa position dans l'espace n'est pas établie (Éric, 10 nov., 23 h 17) : il se tient dans son espace réservé, au centre creux de la chambre, et ne fait que réagir. Son corps manifeste le collapse des attributs physiques et angulaires de tout le système à chaque prise — forme, étirement-écrasement, couleur, avant-arrière, rotation, centre-extérieur, avec la saturation — sur le même ensemble que Z0 (un seul ensemble, une seule moyenne). Il passe de T₀ à T₁ par la demi-arche cycloïdale. Pas d'enveloppe autour de lui : ce corps est l'objet central, quatre fois la taille d'un objet de Classe 1, dessiné par-dessus tout. X, Y, Z effondrés sont Z0 lui-même : ils se lisent ici, ils ne placent pas l'objet. Les vecteurs or partent de Z0(τ), la moyenne de tout (marqueur or sur le fil), vers chaque objet rendu (couche « vecteurs depuis Z0(τ) »).</p>
     ${c4Place()}`;
 }
+function zoneBand(v,z,thr){const e=[-1,-.6,-.2,.2,.6,1];if(z===0)return v<e[1]+thr;if(z===4)return v>=e[4]-thr;return v>=e[z]-thr&&v<e[z+1]+thr}
+function axesNow(i){const p0=PRES[i*F+S.T0],p1=PRES[i*F+S.T1];if(!p0&&!p1)return null;const A=(i*F+(p0?S.T0:S.T1))*10,B=(i*F+(p1?S.T1:S.T0))*10,u=S.prog;return [0,1,2].map(k=>CY(V[A+k],V[B+k],u))}
+function zoneListHTML(z){
+  const thr=S.zoneThr||(S.zoneThr={0:0,1:0,2:0});
+  const rows=[];
+  for(let i=0;i<N1;i++){const ax=axesNow(i);if(!ax)continue;if(!zoneBand(ax[0],z,+thr[0]||0)||!zoneBand(ax[1],z,+thr[1]||0)||!zoneBand(ax[2],z,+thr[2]||0))continue;rows.push({i,name:TK[i].s,w:wOf(i*F+(PRES[i*F+S.T1]?S.T1:S.T0)),ax})}
+  rows.sort((a,b)=>b.w-a.w);
+  const gap=rows.length<3?' <span class="um-gap-badge" style="display:inline-block;background:#e0533f;color:#fff;font:700 10px/1.2 system-ui,sans-serif;padding:1px 5px;border-radius:3px">LACUNE / GAP</span>':'';
+  const defs='α +1 · Σ 0 · Ω −1 · λ⁺ entre 0 et +1 · λ⁻ entre −1 et 0';
+  const sl=(ax,lab)=>`<label style="display:flex;gap:6px;align-items:center;margin:2px 0">${lab} <input data-zthr="${ax}" type="range" min="-0.35" max="0.35" step="0.01" value="${(+thr[ax]||0).toFixed(2)}" aria-label="Seuil ${lab}"></label>`;
+  return `<p class="note"><b>${esc(ZNL[z])}</b> · ${defs}. Seuils sur X, Y, Z déjà normalisés par les bornes gaussiennes (S.cut, 20/40/60/80), au T du curseur. <button type="button" id="zone-close">Fermer</button></p>
+    <div>${sl(0,'X')}${sl(1,'Y')}${sl(2,'Z')}</div>
+    <h2 style="margin-top:10px">Contenu <span id="zone-n">${rows.length}</span>${gap}</h2>
+    ${rows.length>20?'<input id="zone-q" type="search" placeholder="Filtrer" aria-label="Filtrer le contenu" style="width:100%;margin:4px 0">':''}
+    <div class="members" id="zone-members">${rows.map(r=>`<button type="button" data-zmem="${r.i}">${esc(r.name)} <em>Classe 1</em> <em>${r.ax.map(x=>x.toFixed(2)).join(' ')}</em></button>`).join('')}</div>`;
+}
 function renderFiche(){
   const s=S.sel||{kind:4},d=curD(),k=S.open,id=eff(k);
   if(s.side){
@@ -2369,12 +2499,12 @@ function renderFiche(){
     for(let i=0;i<N1;i++){const a=i*F+S.T0,b=i*F+S.T1;if(PRES[a]&&PRES[b]){const za=zoneOf(V[a*10+k]),zb=zoneOf(V[b*10+k]);M[za][zb]++;if(za!==zb)migr++}}
     const mx=Math.max(1,...M.flat());
     h=`<div class="cls">Classe 4 · système contenu et borné</div><h3>${esc(SYS.name)}</h3>${SYS.empty?`<p class="note" style="color:#e8c872">[INCOMPLET] ${esc(SYS.name)} est vide : aucun étage ni donnée pour l'instant, rien n'est inventé. Deux clics sur l'objet central ramènent à l'accueil du HUB.</p>`:''}
-    <div class="meta">${HK?hkMeta4():GC?`${N1} ${UN} · `+Object.keys(CTYPE).map(ty=>CARDS.filter(c=>c.ty===ty).length+' '+CTYPE[ty].plural).join(' · '):`${N1} titres · ${CARDS.filter(c=>c.ty==='sec').length} secteurs · ${CARDS.filter(c=>c.ty==='cty').length} pays · ${CARDS.filter(c=>c.ty==='ind').length} industries`} · 3 conteneurs actifs (Ω, Σ, α) · 2 pièges λ en attente</div>
+    <div class="meta">${HK?hkMeta4():GC?`${N1} ${UN} · `+Object.keys(CTYPE).map(ty=>CARDS.filter(c=>c.ty===ty).length+' '+CTYPE[ty].plural).join(' · '):`${N1} titres · ${CARDS.filter(c=>c.ty==='sec').length} secteurs · ${CARDS.filter(c=>c.ty==='cty').length} pays · ${CARDS.filter(c=>c.ty==='ind').length} industries`} · 5 conteneurs actifs (Ω, λ⁻, Σ, λ⁺, α) · singularité au centre du système</div>
     <dl class="kv"><dt>Z-ZERO(T₀) · ${DATA.dates[S.T0]}</dt><dd>${f8(ZZ[S.T0])}</dd><dt>Z-ZERO(T₁) · ${DATA.dates[S.T1]}</dt><dd>${f8(ZZ[S.T1])}</dd>
     <dt>ΔZ</dt><dd class="big">${(ZZ[S.T1]-ZZ[S.T0]>=0?'+':'')+f8(ZZ[S.T1]-ZZ[S.T0])}</dd></dl>
     ${relBlock()}
     <dl class="kv"><dt>Z0(T₀) · fil</dt><dd>${z0txt(Z0A)}</dd><dt>Z0(T₁) · fil</dt><dd>${z0txt(Z0B)}</dd></dl>
-    <p class="note">L'objet central se tient dans son espace réservé, au centre creux de la chambre ; sa position dans l'espace n'est pas établie. Il porte Z-ZERO, sortie scalaire de la chaîne. Le fil Z0 (or pointillé, marqueur or à l'instant) est le repère des mouvements et l'ancre des vecteurs : trois choses distinctes. Pousser et tirer : dans Couches, « Z0 compte la Classe 2 », « Z0 compte la Classe 3 » et les niveaux de Classe 2 changent l'ensemble ; le corps de l'objet central, le fil, les positions, les fantômes et les lancers se recalculent aussitôt.</p>
+    <p class="note">singularité : au centre exact du système, un point sombre à liseré clair, où l'on plonge vers l'infini. Le fantôme de trajectoire est le chemin Z0 recentré sur elle. L'objet central se tient dans son espace réservé, au centre creux de la chambre ; sa position dans l'espace n'est pas établie. Il porte Z-ZERO, sortie scalaire de la chaîne. Le fil Z0 (or pointillé, marqueur or à l'instant) est le repère des mouvements et l'ancre des vecteurs : trois choses distinctes. Pousser et tirer : dans Couches, « Z0 compte la Classe 2 », « Z0 compte la Classe 3 » et les niveaux de Classe 2 changent l'ensemble ; le corps de l'objet central, le fil, les positions, les fantômes et les lancers se recalculent aussitôt.</p>
     ${c4Block()}
     ${S.ghost&&S.thr?thrBlock4():''}${HK?hkBlock4():''}
     <h2 style="margin-top:12px">Bibliothèque de Classe 4 <span>${esc(SYS.silo)} · ${LIB.filter(x=>x.data&&x.silo===SYS.silo).length} / ${LIB.filter(x=>x.silo===SYS.silo).length}</span></h2>
@@ -2398,7 +2528,7 @@ function renderFiche(){
       <div class="rows">${attrRows(c3v(z,0),c3v(z,1),null,null,[3,4,5,6,7,8])}</div>`
       :`<div class="cls">Classe 3 · piège <span style="text-transform:none">λ</span> · non activé</div><h3>${C3SYM[z]} · champ ${ZN[z]}</h3><div class="meta">En attente en (X, Y, Z) = ${c3xyz(z)} · rayon 0,3 · T₀ ${DATA.dates[S.T0]} → T₁ ${DATA.dates[S.T1]}</div><p class="note">Prêt à être conditionné pour recevoir sa cible. L'activation est un acte humain : tant qu'il n'est pas activé, le champ ${ZN[z]} reste ouvert et les ${UN} qui y passent ne sont pas contenus.</p>`)+`
     <p class="note">Nombre de ${UN} dans la zone ${ZN[z]}, attribut par attribut, de T₀ à T₁ :</p><div class="rows">${rows}</div>
-    <h2 style="margin-top:10px">${C3ON[z]?(HK?'Joueurs contenus à T₁':'Titres contenus à T₁'):(HK?'Joueurs dans le champ ouvert à T₁':'Titres dans le champ ouvert à T₁')} <span>${mem.length}</span></h2><p class="note">${HK?'Un joueur':'Un titre'} appartient au conteneur de la zone où tombe la moyenne de ses X, Y et Z : sa projection sur la diagonale (PROPOSED).</p><div class="members">${mem.map(i=>`<button type="button" data-sel="1:${i}">${esc(TK[i].s)}</button>`).join('')}</div>`;
+    ${zoneListHTML(z)}`;
   } else if(s.kind===1&&HK){
     h=hkFiche1(s);
   } else if(s.kind===1&&GC){
@@ -2459,6 +2589,10 @@ function renderFiche(){
 
   if(S.ghost&&s.kind===1)drawVBars(s.idx);
   fiche.querySelectorAll('[data-sel]').forEach(b=>b.addEventListener('click',()=>{const [kd,ix]=b.dataset.sel.split(':').map(Number);select(kd===4?{kind:4}:{kind:kd,idx:ix})}));
+  fiche.querySelectorAll('[data-zthr]').forEach(inp=>inp.addEventListener('input',()=>{S.zoneThr[inp.dataset.zthr]=+inp.value;if(S.sel&&S.sel.kind===3)renderFiche()}));
+  fiche.querySelectorAll('[data-zmem]').forEach(b=>b.addEventListener('click',()=>{const idx=+b.dataset.zmem;S.sel={kind:1,idx};setCard(S.sel);enterFocus({kind:1,idx});dirty=true;fiche.querySelectorAll('[data-zmem]').forEach(x=>x.style.outline=x===b?'2px solid #e8c872':'')}));
+  const zq=fiche.querySelector('#zone-q');if(zq)zq.addEventListener('input',()=>{const q=zq.value.toLowerCase();fiche.querySelectorAll('[data-zmem]').forEach(b=>{b.style.display=b.textContent.toLowerCase().indexOf(q)>=0?'':'none'})});
+  const zc=fiche.querySelector('#zone-close');if(zc)zc.addEventListener('click',()=>{S.sel={kind:4};renderFiche()});
   const cp=$('copyState');if(cp)cp.addEventListener('click',copyState);
   fiche.querySelectorAll('[data-scope]').forEach(b=>b.addEventListener('click',()=>setTimeout(()=>setScope(+b.dataset.scope),0)));
   fiche.querySelectorAll('[data-sys]').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.sys!==SYS.id)setTimeout(()=>switchSys(b.dataset.sys,{tk:b.dataset.tk||null}),0)}));
@@ -2522,7 +2656,7 @@ function tick(now){
   ghostFrame(gCur());sgFrame();
   z0Frame(S.ghost?tauOf(gCur()):t);applyC4(t,dt);vecFrame(S.ghost?tauOf(gCur()):t);microFrame(S.ghost?tauOf(gCur()):t,dt);
   if(S.ghost&&S.thr){const dI=Math.min(S.T1,Math.floor(gCur()));if(dI!==THR.d)buildThrowFrame(dI);
-    const U=THRREP.U;U.uSize.value=1/S.exp;U.uAll.value=1;U.uGain.value=.35; /* rev. 23.17: the secondary layer stays much softer */U.uSel.value=S.sel&&S.sel.kind===1?S.sel.idx:-1;
+    const U=THRREP.U;U.uSize.value=S.volAll*S.gAll;U.uAll.value=1;U.uGain.value=.35; /* rev. 23.17: the secondary layer stays much softer */U.uSel.value=S.sel&&S.sel.kind===1?S.sel.idx:-1;
     THRREP.group.visible=S.layers.ghost;THR.pts.visible=false;}
   else{THR.pts.visible=false;THRREP.group.visible=false;THR.err.visible=false;THR.land.visible=false;if(THR.d!==-1&&(!S.ghost||!S.thr))THR.d=-1}
   applyTrails();applyLinks();applyXfer();applyPTrail();

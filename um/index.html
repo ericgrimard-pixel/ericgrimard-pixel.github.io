@@ -273,7 +273,17 @@ canvas.vbars{width:100%;height:70px;display:block;margin-top:6px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 /* v21.07 — barre minimale. Les nœuds que le moteur lie au démarrage restent dans le DOM. */
-#mFourier,#mFree,#session,#ghost,#gContact,#gwBox,#gvBox,#gtauBox,#thrBox,.modes .seg,.modes>label.chk,#volMinus,#volPlus,#tgL,#tgR,#tgV,#umNetBar,.brand-thumb,#sub,#hubHome,#copyState,#rX,#um-invite-left,#um-invite-first,#um-rg-door,#um-rg-docs-quick,#um-rg-guest,#um-u-chk,#um-u-c2,#um-u-sys,#hub-nav,#um-rg-couches,#um-rg-foot,#um-u-mine,#um-mine-comp,#um-mine-fiche,#um-mine-new{display:none!important}
+#mFourier,#mFree,#session,#gContact,#gwBox,#gvBox,#gtauBox,#thrBox,.modes>.seg,.modes>label.chk,#tgL,#tgR,#tgV,#umNetBar,.brand-thumb,#sub,#hubHome,#copyState,#rX,#um-invite-left,#um-invite-first,#um-rg-door,#um-rg-docs-quick,#um-rg-guest,#um-u-chk,#um-u-c2,#um-u-sys,#hub-nav,#um-rg-couches,#um-rg-foot,#um-u-mine,#um-mine-comp,#um-mine-fiche,#um-mine-new{display:none!important}
+#vol-scope{display:inline-flex;border:1px solid var(--line-2);border-radius:3px;overflow:hidden;margin:0 4px}
+#vol-scope button{padding:2px 8px;font:700 12px/1.2 system-ui,sans-serif;background:transparent;color:var(--fg);border:0}
+#vol-scope button[aria-pressed="true"]{background:#e8c872;color:#05080d}
+#gvolMinus,#gvolPlus{margin-left:4px}
+#volScopeFactor,#gvolScopeFactor{min-width:2.4em;font:600 12px/1 ui-monospace,monospace;color:#e8c872}
+#vol-scope-panel{position:fixed;z-index:70;width:min(280px,calc(100vw - 16px));max-height:46vh;overflow:auto;background:#05080d;color:#fff;border:2px solid #e8c872;border-radius:10px;padding:8px;font:600 13px/1.35 system-ui,sans-serif}
+#vol-scope-panel[hidden]{display:none!important}
+#vol-scope-panel header{display:flex;justify-content:space-between;gap:8px;align-items:center}
+#vol-scope-panel button{font:700 12px/1.2 system-ui,sans-serif;color:#05080d;background:#e8c872;border:0;border-radius:6px;padding:4px 8px}
+#vol-scope-panel label{display:flex;gap:6px;align-items:center;margin:3px 0}
 #right>section.panel:not(.fiche):not(.src){display:none!important}
 
 </style>
@@ -310,7 +320,7 @@ canvas.vbars{width:100%;height:70px;display:block;margin-top:6px}
       <label class="take" id="gtauBox" hidden>Mémoire <select id="gtau" aria-label="Mémoire des fantômes"><option value="0" selected>toute la période</option><option value="63">63 séances</option><option value="20">20 séances</option><option value="5">5 séances</option></select></label>
       <button id="gContact" type="button" hidden title="Règle le Volume pour qu'au plus serré du système deux fantômes d'une même traîne se touchent bord à bord (×1)">Volume au contact</button>
       <label class="take" id="thrBox" hidden>Lancer <select id="thr" aria-label="Horizon du lancer devant l'objet"><option value="0">non</option><option value="5">5 séances</option><option value="10" selected>10 séances</option><option value="20">20 séances</option></select><select id="thrW" aria-label="Poids porté par les objets de Classe 2"><option value="tv" selected>poids : valeur échangée</option><option value="eq">poids : égal</option></select></label>
-      <span class="vol" title="Volume (END GAME F3) : dilate ou contracte tout l'environnement autour de son centre. Les objets gardent les tailles du canon ; seul l'espacement change."><b>Volume</b><button id="volMinus" type="button" aria-label="Contracter">−</button><input id="vol" type="range" min="-200" max="400" step="1" value="0" aria-label="Volume de l'environnement"><button id="volPlus" type="button" aria-label="Dilater">+</button><input id="volNum" type="number" min="0.05" step="0.05" value="1" aria-label="Facteur de volume">×</span>
+      <span class="vol" title="Volume : les positions restent fixes. Seuls les maillages des objets et des fantômes grossissent ou rétrécissent autour de leur point. Le facteur multiplie la taille du canon et de la hiérarchie."><b>Volume</b><span id="vol-scope" role="group" aria-label="Portée du volume"><button id="vol-scope-all" type="button" aria-pressed="true">Tous</button><button id="vol-scope-c2" type="button" aria-pressed="false">Classe 2</button><button id="vol-scope-pick" type="button" aria-pressed="false">Choix</button></span><button id="volMinus" type="button" aria-label="Contracter">−</button><input id="vol" type="range" min="-200" max="400" step="1" value="0" aria-label="Volume de l'environnement"><button id="volPlus" type="button" aria-label="Dilater">+</button><input id="volNum" type="number" min="0.05" step="0.05" value="1" aria-label="Facteur de volume"><b id="volScopeFactor">×1</b><button id="gvolMinus" type="button" aria-label="Réduire les fantômes">Fantôme −</button><button id="gvolPlus" type="button" aria-label="Grossir les fantômes">Fantôme +</button><b id="gvolScopeFactor">×1</b></span>
     </div>
     <div class="readouts">
       <button id="tgL" type="button" aria-pressed="true" title="Masquer ou afficher le panneau des attributs (touche [)">◧ Attributs</button>

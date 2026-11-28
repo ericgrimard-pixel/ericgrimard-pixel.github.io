@@ -107,7 +107,7 @@
     },
     "3": {
       "name": "Classe 3",
-      "what": "Conteneurs sur la diagonale. Ω (−1,−1,−1), Σ (0,0,0) et α (+1,+1,+1) sont actifs. Les pièges λ⁻ et λ⁺ sont dessinés en pointillé et ne sont pas actifs.",
+      "what": "Conteneurs sur la diagonale. Ω (−1,−1,−1), λ⁻ (champ φ⁻, entre −1 et 0), Σ (0,0,0), λ⁺ (champ φ⁺, entre 0 et +1) et α (+1,+1,+1) sont actifs. Chaque champ φ tient une liste de λ ; la démonstration en a un par champ.",
       "size_canon": 0.3,
       "rule": "Un conteneur actif manifeste le collapse de ce qu'il contient."
     },
@@ -130,12 +130,14 @@
         "rule_9": "L'excès d'amplitude est absorbé par un seul gain sur tout le déplacement. Rien ne sort dans la chambre (rayon ≥ 1)."
       },
       "trajectory_ghost": {
-        "where": "Strictement dans le microcosme, sous le fil Z0.",
-        "path": "Le même chemin Z0 transposé que l'objet central parcourt (rév. 23.20).",
-        "past": "Fidèle et fortement estompé.",
-        "forward": "Lancer devant l'objet quand le Fantôme ou le mode Fourier est actif.",
-        "hidden": "Caché si la couche est éteinte ou s'il n'y a pas de dérive mesurable. Pas de fantôme inventé.",
-        "layer": "c4gh — « Classe 4 · fantôme de trajectoire (microcosme) »."
+        "where": "Dans le microcosme, autour de la singularité, au centre vrai du système ([0, 0, 0] dans la chambre).",
+        "path": "Le même chemin Z0 transposé (T₀ → T₁), recentré : on soustrait le décalage pour que le chemin tourne autour de la singularité au lieu de rester à côté. La forme du trajet est gardée. S'il dépasse la paroi, il est ramené dedans.",
+        "singularite": "Point sombre, liseré clair, au centre exact. On peut y plonger vers l'infini. Visible tant que l'objet central est montré.",
+        "modes": "A (défaut) : le chemin passe par l'objet. B : le chemin part de l'objet et va vers T₁. Le basculement est la constante C4G_MODE, sans bouton.",
+        "past": "Partie déjà parcourue, or, encore lisible.",
+        "forward": "Suite du chemin vers T₁, plus claire.",
+        "hidden": "Caché si la couche est éteinte ou si la dérive est nulle (zD ≤ 1e-4). Pas de fantôme inventé.",
+        "layer": "c4gh — « Classe 4 · fantôme de trajectoire (microcosme) ». Le microcosme est ouvert par défaut."
       },
       "relative_reading": "Le microcosme porte la lecture relative (le point d'entrée du zoom). La chambre extérieure porte la lecture absolue. Côte à côte, elles montrent les tensions. La lecture relative 23.18 est conservée."
     }

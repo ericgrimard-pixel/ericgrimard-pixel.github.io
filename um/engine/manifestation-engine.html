@@ -1,7 +1,7 @@
 <!doctype html><html><head><link rel="icon" href="data:,"><meta charset=utf8><meta name="um-build" content="v21.07"><!-- um-deploy: v21.07 · lineage v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06 -> v21.07 --><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>UNIVERSAL METAPHOR</title>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<style id="um-min-v2107">#mFourier,#mFree,#session,#ghost,#gContact,#gwBox,#gvBox,#gtauBox,#thrBox,.modes .seg,.modes>label.chk,#volMinus,#volPlus,#tgL,#tgR,#tgV,#umNetBar,.brand-thumb,#sub,a.soul,#copyState,#rX,#right>section.panel:not(.fiche):not(.src){display:none!important}</style>
+<style id="um-min-v2107">#mFourier,#mFree,#session,#gContact,#gwBox,#gvBox,#gtauBox,#thrBox,.modes>.seg,.modes>label.chk,#tgL,#tgR,#tgV,#umNetBar,.brand-thumb,#sub,a.soul,#copyState,#rX,#right>section.panel:not(.fiche):not(.src){display:none!important}#vol-scope{display:inline-flex;border:1px solid #334;border-radius:3px;overflow:hidden;margin:0 4px}#vol-scope button{padding:2px 8px;font:700 12px/1.2 system-ui,sans-serif;background:transparent;color:inherit;border:0}#vol-scope button[aria-pressed="true"]{background:#e8c872;color:#05080d}#volScopeFactor,#gvolScopeFactor{min-width:2.4em;color:#e8c872;font:600 12px/1 ui-monospace,monospace}#vol-scope-panel{position:fixed;z-index:70;width:min(280px,calc(100vw - 16px));max-height:46vh;overflow:auto;background:#05080d;color:#fff;border:2px solid #e8c872;border-radius:10px;padding:8px;font:600 13px/1.35 system-ui,sans-serif}#vol-scope-panel[hidden]{display:none!important}#vol-scope-panel button{font:700 12px/1.2 system-ui,sans-serif;color:#05080d;background:#e8c872;border:0;border-radius:6px;padding:4px 8px}#vol-scope-panel label{display:flex;gap:6px;align-items:center;margin:3px 0}</style>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -246,7 +246,7 @@ canvas.vbars{width:100%;height:70px;display:block;margin-top:6px}
       <label class="take" id="gtauBox" hidden>Mémoire <select id="gtau" aria-label="Mémoire des fantômes"><option value="0" selected>toute la période</option><option value="63">63 séances</option><option value="20">20 séances</option><option value="5">5 séances</option></select></label>
       <button id="gContact" type="button" hidden title="Règle le Volume pour qu'au plus serré du système deux fantômes d'une même traîne se touchent bord à bord (×1)">Volume au contact</button>
       <label class="take" id="thrBox" hidden>Lancer <select id="thr" aria-label="Horizon du lancer devant l'objet"><option value="0">non</option><option value="5">5 séances</option><option value="10" selected>10 séances</option><option value="20">20 séances</option></select><select id="thrW" aria-label="Poids porté par les objets de Classe 2"><option value="tv" selected>poids : valeur échangée</option><option value="eq">poids : égal</option></select></label>
-      <span class="vol" title="Volume (END GAME F3) : dilate ou contracte tout l'environnement autour de son centre. Les objets gardent les tailles du canon ; seul l'espacement change."><b>Volume</b><button id="volMinus" type="button" aria-label="Contracter">−</button><input id="vol" type="range" min="-200" max="400" step="1" value="0" aria-label="Volume de l'environnement"><button id="volPlus" type="button" aria-label="Dilater">+</button><input id="volNum" type="number" min="0.05" step="0.05" value="1" aria-label="Facteur de volume">×</span>
+      <span class="vol" title="Volume : les positions restent fixes. Seuls les maillages des objets et des fantômes grossissent ou rétrécissent autour de leur point. Le facteur multiplie la taille du canon et de la hiérarchie."><b>Volume</b><span id="vol-scope" role="group" aria-label="Portée du volume"><button id="vol-scope-all" type="button" aria-pressed="true">Tous</button><button id="vol-scope-c2" type="button" aria-pressed="false">Classe 2</button><button id="vol-scope-pick" type="button" aria-pressed="false">Choix</button></span><button id="volMinus" type="button" aria-label="Contracter">−</button><input id="vol" type="range" min="-200" max="400" step="1" value="0" aria-label="Volume de l'environnement"><button id="volPlus" type="button" aria-label="Dilater">+</button><input id="volNum" type="number" min="0.05" step="0.05" value="1" aria-label="Facteur de volume"><b id="volScopeFactor">×1</b><button id="gvolMinus" type="button" aria-label="Réduire les fantômes">Fantôme −</button><button id="gvolPlus" type="button" aria-label="Grossir les fantômes">Fantôme +</button><b id="gvolScopeFactor">×1</b></span>
     </div>
     <div class="readouts">
       <button id="tgL" type="button" aria-pressed="true" title="Masquer ou afficher le panneau des attributs (touche [)">◧ Attributs</button>
@@ -790,7 +790,7 @@ const S={
   T0:0,T1:F-1,
   ghost:!TWO&&(window.__umGhost!=null?window.__umGhost:(()=>{try{return localStorage.getItem('um.fantome')!=='0'}catch(e){return true}})()),
   gclk:window.__umGclk||'vol',gtau:window.__umGtau!=null?window.__umGtau:0,
-  layers:{c1:true,sec:true,cty:true,ind:false,genre:true,key:false,mode:false,expl:false,tsig:false,conf:true,div:true,club:true,nat:true,pos:true,drnd:false,dyr:false,age:false,hand:false,xfer:false,ptrail:false,c3:true,c4:true,bounds:true,trails:false,ghost:true,gpaths:false,tlabels:true,links:true,labels:true,spacing:true,z0:true,z0c2:true,z0c3:true,c4v:false,c3d:false,micro:false,c4gh:true}, /* rev. 23.12 (Éric, 11 Nov., 13 h 38): on opening, no line between the objects; each one is a layer to switch on. Rev. 23.13: the LNH transfer trail too. Rev. 23.19: trajectory ghost of the central object, silent when no drift applies. */
+  layers:{c1:true,sec:true,cty:true,ind:false,genre:true,key:false,mode:false,expl:false,tsig:false,conf:true,div:true,club:true,nat:true,pos:true,drnd:false,dyr:false,age:false,hand:false,xfer:false,ptrail:false,c3:true,c4:true,bounds:true,trails:false,ghost:true,gpaths:false,tlabels:true,links:true,labels:true,spacing:true,z0:true,z0c2:true,z0c3:true,c4v:false,c3d:false,micro:true,c4gh:true}, /* rev. 23.12 (Éric, 11 Nov., 13 h 38): on opening, no line between the objects; each one is a layer to switch on. Rev. 23.13: the LNH transfer trail too. Rev. 23.19: trajectory ghost of the central object, silent when no drift applies. */
   thr:window.__umThr!=null?window.__umThr:10,thrW:window.__umThrW||'tv',
   gvol:window.__umGvol||1,gvolI:{} /* Volume du fantôme (Grok spec, 9 Nov.): global and per stock; never merged with the system Volume */
 };
@@ -978,8 +978,9 @@ const AZ=X=>Math.PI+X*(Math.PI-DMIN);
 const C3T=[-1,-.4,0,.4,1]; /* Class 3 containers on the diagonal X = Y = Z: Ω (−1,−1,−1), φ⁻, Σ (0,0,0), φ⁺, α (+1,+1,+1) */
 const c3xyz=z=>{const t=C3T[z],f=v=>(v>0?'+':v<0?'−':'')+String(Math.abs(v)).replace('.',',');return '('+f(t)+', '+f(t)+', '+f(t)+')'};
 const boxOf=(X,Y,Z)=>zoneOf((X+Y+Z)/3);
-const C3ROLE=['queue du serpent','','ventre du système','','tête du serpent'];
-const C3ON=[true,false,true,false,true],C3SYM=['Ω','λ⁻','Σ','λ⁺','α']; /* λ traps in the φ fields: placed, not activated */
+const LAMBDA={'φ⁻':[{id:'λ⁻',field:'φ⁻',on:true}],'φ⁺':[{id:'λ⁺',field:'φ⁺',on:true}]};
+const C3ROLE=['queue du serpent','entre Ω (−1) et Σ (0), champ φ⁻','ventre du système','entre Σ (0) et α (+1), champ φ⁺','tête du serpent'];
+const C3ON=[true,LAMBDA['φ⁻'].some(l=>l.on),true,LAMBDA['φ⁺'].some(l=>l.on),true],C3SYM=['Ω',LAMBDA['φ⁻'][0].id,'Σ',LAMBDA['φ⁺'][0].id,'α'];
 function ring(r,y,col,op,dashed){
   const pts=[];for(let s=0;s<=192;s++)pts.push(W3(s/192*Math.PI*2,r,y));
   const g=new THREE.BufferGeometry().setFromPoints(pts);
@@ -1036,6 +1037,8 @@ const core=new THREE.Group();G.c4.add(core);
    Its hit sphere stays on layer 0 so the pointer still finds it. */
 function coreTop(){
   core.traverse(o=>{if(o.material!==HITMAT)o.layers.set(1)});
+  if(typeof C4GH!=='undefined')C4GH.traverse(o=>o.layers.set(1));
+  if(typeof SING!=='undefined')SING.traverse(o=>o.layers.set(1));
   camera.layers.set(0);renderer.render(scene,camera);
   if(G.c4.visible){const ac=renderer.autoClear;renderer.autoClear=false;renderer.clearDepth();camera.layers.set(1);renderer.render(scene,camera);renderer.autoClear=ac;camera.layers.set(0)}
 }
@@ -1084,18 +1087,32 @@ function mcMotionGain(er){
   if(yWorst>yRoom)need=Math.max(need,yWorst/yRoom);
   return {scale,sens:1/need,er,wall};
 }
-const C4GH=new THREE.Group();MICRO.add(C4GH);C4GH.visible=false;
-const C4G_N=48,C4G_F=16,C4GOLD=[0.910,0.784,0.447];
+let C4G_MODE='A';
+const C4GH=new THREE.Group();MICRO.add(C4GH);C4GH.visible=false;C4GH.renderOrder=9;
+const C4G_N=48,C4G_F=16,C4GOLD=[1,224/255,138/255];
 function c4gLine(){
   const g=new THREE.BufferGeometry();
   g.setAttribute('position',new THREE.BufferAttribute(new Float32Array((C4G_N+1)*3),3));
   g.setAttribute('color',new THREE.BufferAttribute(new Float32Array((C4G_N+1)*3),3));
   g.setDrawRange(0,0);
-  const l=new THREE.Line(g,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.8,depthWrite:false}));
-  l.frustumCulled=false;l.renderOrder=2;l.visible=false;C4GH.add(l);return l;
+  const l=new THREE.Line(g,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.82,depthTest:false,depthWrite:false}));
+  l.frustumCulled=false;l.renderOrder=9;l.visible=false;C4GH.add(l);return l;
 }
 const c4gPast=c4gLine(),c4gFwd=c4gLine();
-c4gPast.material.opacity=.34;c4gFwd.material.opacity=.62;
+c4gPast.material.opacity=.7;c4gFwd.material.opacity=.9;
+function c4DotTex(){const c=document.createElement('canvas');c.width=c.height=32;const g=c.getContext('2d'),r=g.createRadialGradient(16,16,1,16,16,16);r.addColorStop(0,'#fff');r.addColorStop(.55,'#ffe08a');r.addColorStop(1,'rgba(255,224,138,0)');g.fillStyle=r;g.fillRect(0,0,32,32);const t=new THREE.CanvasTexture(c);t.needsUpdate=true;return t}
+const c4gDots=new THREE.Points(new THREE.BufferGeometry(),new THREE.PointsMaterial({map:c4DotTex(),color:0xffe08a,size:5,sizeAttenuation:false,transparent:true,opacity:.85,depthTest:false,depthWrite:false}));
+c4gDots.geometry.setAttribute('position',new THREE.BufferAttribute(new Float32Array(5*3),3));
+c4gDots.frustumCulled=false;c4gDots.renderOrder=9;c4gDots.visible=false;C4GH.add(c4gDots);
+const c4gEnds=new THREE.Points(new THREE.BufferGeometry(),new THREE.PointsMaterial({map:c4DotTex(),color:0xffe08a,size:10,sizeAttenuation:false,transparent:true,opacity:.95,depthTest:false,depthWrite:false}));
+c4gEnds.geometry.setAttribute('position',new THREE.BufferAttribute(new Float32Array(2*3),3));
+c4gEnds.frustumCulled=false;c4gEnds.renderOrder=10;c4gEnds.visible=false;C4GH.add(c4gEnds);
+function c4SingTex(dark){const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d'),r=g.createRadialGradient(32,32,0,32,32,32);
+  if(dark){r.addColorStop(0,'rgba(8,6,4,1)');r.addColorStop(.42,'rgba(10,8,6,1)');r.addColorStop(.55,'rgba(8,6,4,0)');r.addColorStop(1,'rgba(0,0,0,0)');}
+  else{r.addColorStop(0,'rgba(255,224,138,0)');r.addColorStop(.28,'rgba(255,224,138,0)');r.addColorStop(.40,'rgba(255,236,180,1)');r.addColorStop(.55,'rgba(255,196,90,.45)');r.addColorStop(1,'rgba(255,196,90,0)');}
+  g.fillStyle=r;g.fillRect(0,0,64,64);const t=new THREE.CanvasTexture(c);t.needsUpdate=true;return t}
+function c4SingSprite(dark,order){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:c4SingTex(dark),transparent:true,depthTest:false,depthWrite:false,blending:dark?THREE.NormalBlending:THREE.AdditiveBlending,sizeAttenuation:false}));sp.frustumCulled=false;sp.renderOrder=order;sp.name='singularité';return sp}
+const SING=new THREE.Group();SING.name='singularité';G.c4.add(SING);SING.add(c4SingSprite(false,11));SING.add(c4SingSprite(true,12));
 const mz0Geo=new THREE.BufferGeometry();mz0Geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(48*3),3));
 const mz0Line=new THREE.Line(mz0Geo,new THREE.LineDashedMaterial({color:0xe8c872,transparent:true,opacity:.9,dashSize:.02,gapSize:.015}));MICRO.add(mz0Line);
 const MCOL=new THREE.Color();
@@ -1131,28 +1148,49 @@ function c4ClearOf(tau,dir){
   for(let k=1;k<=24;k++){const u=tau+dir*k*0.02;if(u<0||u>2.001)return dir<0?0:2;const p=c4Hold(u,Z0A,Z0B,.9);if(Math.hypot(p[0]-c[0],p[1]-c[1],p[2]-c[2])>=er)return Math.max(0,Math.min(2,u));}
   return Math.max(0,Math.min(2,tau+dir*.4));
 }
+function c4Mean(pts){const c=[0,0,0];pts.forEach(p=>{c[0]+=p[0];c[1]+=p[1];c[2]+=p[2]});const n=Math.max(1,pts.length);return [c[0]/n,c[1]/n,c[2]/n]}
+function c4Sample(pts,u){const n=pts.length-1,x=Math.max(0,Math.min(1,u))*n,i=Math.min(n-1,Math.floor(x)),f=x-i,a=pts[i],b=pts[i+1]||a;return [a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f,a[2]+(b[2]-a[2])*f]}
+function c4Orbit(){
+  const raw=[];for(let i=0;i<=C4G_N;i++)raw.push(c4Hold(i/C4G_N,Z0A,Z0B,1));
+  const before=c4Mean(raw),beforeDist=Math.hypot(before[0],before[1],before[2]);
+  let pts=raw.map(p=>[p[0]-before[0],p[1]-before[1],p[2]-before[2]]);
+  let len=0;for(let i=1;i<pts.length;i++)len+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1],pts[i][2]-pts[i-1][2]);
+  let maxR=0;pts.forEach(p=>{maxR=Math.max(maxR,Math.hypot(p[0],p[1],p[2]))});
+  const bodyR=C4O.R*(MCG.scale||1);
+  const want=Math.max(2,len>1e-6?2.5*bodyR/len:2);
+  const room=Math.max(1e-4,(MCG.wall||.94)*.92-bodyR*.2);
+  const k=maxR>1e-9?Math.min(want,room/maxR):1;
+  if(k!==1)pts=pts.map(p=>[p[0]*k,p[1]*k,p[2]*k]);
+  const after=c4Mean(pts);
+  window.__UM_C4ORBIT={beforeDist:+beforeDist.toFixed(5),afterDist:+Math.hypot(after[0],after[1],after[2]).toFixed(6),k:+k.toFixed(4),mode:C4G_MODE,singularity:[0,0,0],centroid:after.map(x=>+x.toFixed(6))};
+  return {pts,at:u=>c4Sample(pts,u)};
+}
+function c4Mode(orbit,tau){const obj=orbit.at(tau),pivot=C4G_MODE==='B'?orbit.pts[0]:obj;return {obj,pts:orbit.pts.map(p=>[obj[0]+p[0]-pivot[0],obj[1]+p[1]-pivot[1],obj[2]+p[2]-pivot[2]])}}
+function c4Px(px){const h=Math.max(1,renderer.domElement.clientHeight||1),fov=camera.fov*Math.PI/360;return px*2*Math.tan(fov)/h}
 function c4GhostFrame(tau){
   const microOn=!!(MICRO.visible&&S.layers.c4gh);
   const zD=Math.hypot(Z0B[0]-Z0A[0],Z0B[1]-Z0A[1],Z0B[2]-Z0A[2]);
   const has=zD>1e-4;
-  const predictive=has&&(S.ghost||S.mode==='fourier')&&(S.thr>0||S.mode==='fourier');
-  c4gPast.visible=c4gFwd.visible=false;
+  SING.visible=!!G.c4.visible;
+  const ps=c4Px(8),ph=c4Px(16);SING.children[1].scale.set(ps,ps,1);SING.children[0].scale.set(ph,ph,1);
+  c4gPast.visible=c4gFwd.visible=c4gDots.visible=c4gEnds.visible=false;
   if(microOn&&has){
-    const t0=Math.max(0,Math.min(1,+tau||0));
-    const u0=c4ClearOf(t0,-1),u1=c4ClearOf(t0,1);
-    if(u0>1e-3){const n=Math.max(2,Math.round(C4G_N*u0)),past=[];
-      for(let i=0;i<=n;i++)past.push(c4Hold(u0*i/n,Z0A,Z0B,.9));
-      c4gPast.material.opacity=.34;c4Write(c4gPast,past,(i,n)=>.16+.22*i/n);}
-    if(predictive){const fwd=[];c4gFwd.material.opacity=.62;
-      for(let i=0;i<=C4G_F;i++)fwd.push(c4Hold(u1+(2-u1)*i/C4G_F,Z0A,Z0B,.9));
-      c4Write(c4gFwd,fwd,(i,n)=>.28+.72*i/n);}
-    else if(u1<1-1e-3){const n=Math.max(2,Math.round(C4G_N*(1-u1))),rest=[];c4gFwd.material.opacity=.34;
-      for(let i=0;i<=n;i++)rest.push(c4Hold(u1+(1-u1)*i/n,Z0A,Z0B,.9));
-      c4Write(c4gFwd,rest,i=>.18+.2*(u1+(1-u1)*i/Math.max(1,n)));}
+    const orbit=c4Orbit(),drawn=c4Mode(orbit,Math.max(0,Math.min(1,+tau||0)));
+    const t0=Math.max(0,Math.min(1,+tau||0)),n=drawn.pts.length-1,i0=Math.max(1,Math.round(t0*n));
+    const past=drawn.pts.slice(0,i0+1),fwd=drawn.pts.slice(i0);
+    if(past.length>1){c4gPast.material.opacity=.72;c4Write(c4gPast,past,(i,m)=>.5+.4*i/Math.max(1,m));}
+    if(fwd.length>1){c4gFwd.material.opacity=.9;c4Write(c4gFwd,fwd,(i,m)=>.5+.4*i/Math.max(1,m));}
+    const D=c4gDots.geometry.attributes.position.array;
+    for(let k=0;k<5;k++){const p=c4Sample(drawn.pts,(k+1)/6);D[k*3]=p[0];D[k*3+1]=p[1];D[k*3+2]=p[2];}
+    c4gDots.geometry.attributes.position.needsUpdate=true;c4gDots.visible=true;
+    const E=c4gEnds.geometry.attributes.position.array,a=drawn.pts[0],b=drawn.pts[drawn.pts.length-1];
+    E[0]=a[0];E[1]=a[1];E[2]=a[2];E[3]=b[0];E[4]=b[1];E[5]=b[2];
+    c4gEnds.geometry.attributes.position.needsUpdate=true;c4gEnds.visible=true;
+    const dc=c4Mean(drawn.pts);window.__UM_C4ORBIT.drawnDist=+Math.hypot(dc[0],dc[1],dc[2]).toFixed(6);
+    window.__UM_C4ORBIT.obj=drawn.obj.map(x=>+x.toFixed(5));
   }
-  C4GH.visible=c4gPast.visible||c4gFwd.visible;
-  if(window.__C4LIVE){const live=c4Hold(Math.max(0,Math.min(1,+tau||0)),Z0A,Z0B,1);
-    window.__C4LIVE.ghost={on:C4GH.visible?1:0,drift:+zD.toFixed(5),fwd:c4gFwd.visible&&predictive?1:0,sens:+MCG.sens.toFixed(4),path:'Z0',live:live.map(x=>+x.toFixed(5))};}
+  C4GH.visible=!!(microOn&&has&&(c4gPast.visible||c4gFwd.visible));
+  if(window.__C4LIVE)window.__C4LIVE.ghost={on:C4GH.visible?1:0,drift:+zD.toFixed(5),mode:C4G_MODE,path:'Z0-centré',singularite:[0,0,0]};
 }
 const C3=[],C3O=[];
 let C3DIAG=null; /* rev. 23.12: the dashed diagonal Ω–Σ–α is a line between objects: its own layer, off on opening */
@@ -1456,7 +1494,7 @@ function ghostFrame(c){
   const on=S.ghost,u=GHOST.pts.material.uniforms,v=GHOST.trl.material.uniforms;
   GHOST.pts.visible=false;GHOST.trl.visible=on&&S.layers.gpaths;REP.group.visible=on&&S.layers.ghost;
   if(!on)return;
-  {const U=REP.U;U.uCur.value=c;U.uT0.value=S.T0;U.uTau.value=S.gtau;U.uSize.value=1/S.exp;U.uGain.value=N1>150?.6:Math.min(.55,.5*Math.sqrt(101/N1));U.uSel.value=S.sel&&S.sel.kind===1?S.sel.idx:-1;U.uAll.value=0}
+  {const U=REP.U;U.uCur.value=c;U.uT0.value=S.T0;U.uTau.value=S.gtau;U.uSize.value=(S.volAll||1)*(S.gAll||1);U.uGain.value=N1>150?.6:Math.min(.55,.5*Math.sqrt(101/N1));U.uSel.value=S.sel&&S.sel.kind===1?S.sel.idx:-1;U.uAll.value=0}
   u.uCur.value=c;u.uT0.value=S.T0;u.uTau.value=S.gtau;u.uD.value=(GHOST.ruler?GHOST.ruler.dg:.01)*S.exp;u.uPx.value=1.8*Math.min(2,window.devicePixelRatio||1); /* display floor: the ruler's diameter is below one pixel at the home view */
   u.uScale.value=renderer.domElement.height/(2*Math.tan(camera.fov*Math.PI/360));
   u.uGain.value=Math.min(.8,.6*Math.sqrt(101/N1));
@@ -1698,7 +1736,7 @@ function c4Frame(tau){
   const onM=!!(S.layers.micro&&S.layers.c4);
   MCG=mcMotionGain(C4O.R*Math.max(1,LV.stretch[LV.stretch.length-1]));
   let mp=[0,0,0];
-  if(onM){const raw=mFold(w3v(X,Y,Z));mp=[raw[0]*MCG.sens,raw[1]*MCG.sens,raw[2]*MCG.sens];}
+  if(onM){const orbit=c4Orbit();mp=orbit.at(tau);}
   core.position.set(mp[0],mp[1],mp[2]);core.scale.setScalar(onM?MCG.scale:1);C4O.a=onM?Math.atan2(mp[0],-mp[2]):0;
   const attr=c4AttrAt(tau),body=MCG.er*(onM?MCG.scale:1),rad=Math.hypot(mp[0],mp[2]);
   const st=attr?Math.max(1,attr.stretch)/Math.max(LV.stretch[LV.stretch.length-1],1e-6):1;
@@ -1941,16 +1979,22 @@ function scheduleSpacing(lazy){ /* while the knob turns, the spacing is recomput
   if(lazy){if(!spT)spT=setTimeout(()=>{spT=null;spacingTakes();dirty=true},140);return}
   if(spT){clearTimeout(spT);spT=null}spacingTakes();
 }
+S.volScope='all';S.volAll=1;S.volC2=1;S.gScope='all';S.gAll=1;S.gC2=1;
+function applyMeshVol(){
+  WORLD.scale.setScalar(1);
+  const a=S.volAll,c=S.volAll*S.volC2;
+  O1.forEach(o=>{o.root.scale.setScalar(a);if(o.hit)o.hit.scale.setScalar(1)});
+  O2.forEach(o=>{o.root.scale.setScalar(c);if(o.hit)o.hit.scale.setScalar(1)});
+  C3.forEach(g=>g.scale.setScalar(a));core.scale.setScalar(a);
+  if(typeof REP!=='undefined'&&REP.U)REP.U.uSize.value=a*S.gAll;
+  window.__umVol={all:+a.toFixed(4),c2:+c.toFixed(4),scope:S.volScope};
+}
 function setExp(E,fromSlider){
-  E=Math.max(.05,Math.min(1000,+E||1));const k=E/S.exp;S.exp=E;window.__umExp=E;
-  WORLD.scale.setScalar(E);
-  const hs=Math.max(1,Math.sqrt(E)); /* the click area grows a little with the field so objects stay easy to pick */
-  O1.forEach(o=>{o.root.scale.setScalar(1/E);o.hit.scale.setScalar(hs)});O2.forEach(o=>{o.root.scale.setScalar(1/E);o.hit.scale.setScalar(hs)});
-  C3.forEach(g=>g.scale.setScalar(1/E));core.scale.setScalar(1/E);
-  if(k!==1){tween=null;controls.target.multiplyScalar(k);camera.position.multiplyScalar(k)}
-  scene.fog.near=10*E;scene.fog.far=24*E;controls.maxDistance=20*Math.max(1,E);camera.far=Math.max(100,60*E);camera.updateProjectionMatrix();
-  scheduleSpacing(fromSlider);
-  try{localStorage.setItem('um.volume',String(E))}catch(e){}
+  E=Math.max(.05,Math.min(1000,+E||1));
+  if(S.volScope==='c2')S.volC2=E;else S.volAll=E;
+  S.exp=E;window.__umExp=S.volAll;
+  applyMeshVol();
+  try{localStorage.setItem('um.volume',String(S.volAll))}catch(e){}
   if(!fromSlider)$('vol').value=Math.round(Math.max(-200,Math.min(400,Math.log2(E)*100)));
   $('volNum').value=E>=10?E.toFixed(1):E.toFixed(2);
   dirty=true;
@@ -1996,7 +2040,8 @@ LAY.forEach(([k])=>$('ly-'+k).addEventListener('change',e=>{S.layers[k]=e.target
 function drawLegend(){
   let h=[4,3,2,1,0].map(z=>`<span><span class="sw" style="background:${ZCOL[z]}"></span>${ZN[z]} ${esc(ATTR[3].levels[z])}</span>`).join('')+`<span>· taille : Classe 1 = 0,1 · Classe 2 = 0,2 · Classe 3 = 0,3 · objet central (Classe 4) = quatre fois la Classe 1, sans enveloppe</span>`;
   if(S.layers.micro)h+=`<span class="brk"></span><span>objet central dans le microcosme : il parcourt la progression Z0 transposée (T₀ → T₁) ; forme, couleur, étirement et angles suivent le collapse</span>`;
-  if(S.layers.c4gh)h+=`<span class="brk"></span><span>fantôme de trajectoire de l'objet central : dans le microcosme seulement, sous l'objet et le fil Z0, sur la même progression ; passé fidèle et très effacé ; lancer (Fantôme ou Fourier) doux → ferme ; caché sans dérive</span>`;
+  if(S.layers.c4gh)h+=`<span class="brk"></span><span>fantôme de trajectoire : chemin Z0 recentré sur la singularité ; mode ${C4G_MODE==='B'?'B, le chemin part de l\'objet vers T₁':'A, le chemin passe par l\'objet'} ; caché sans dérive</span>`;
+  if(S.layers.c4)h+=`<span class="brk"></span><span>singularité : point sombre, liseré clair, au centre exact du système</span>`;
   if(S.ghost)h+=`<span class="brk"></span><span>fantômes : copies de l'objet${N1>150?', déployées pour le titre ou le cardinal choisi':''} ; secteurs :</span>`+CARDS.filter(c=>c.ty==='sec').map(c=>`<span><span class="gl" style="background:${secCol(c.name)}"></span>${esc(c.name)}</span>`).join('')+`<span>· à la taille du canon, sans symbole ; lancés : creux · horloge : ${esc((GCLKL[S.gclk]||'').toLowerCase())}, un fantôme par médiane cumulée du titre ; elle règle seulement l'espacement${GHOST.ruler?` · règle du système : bord à bord (×1) au plus serré → ×${GHOST.ruler.max.toFixed(0)} au plus large · ${GHOST.ruler.n.toLocaleString('fr-CA')} fantômes, dont ${GHOST.ruler.out.toLocaleString('fr-CA')} creux : sur la paroi, hors bornes, hors règle`:''}</span>`;
   if(HK)h+=HKLEG;
   $('legend').innerHTML=h;
@@ -2116,13 +2161,13 @@ function ghostTip(i,d){const j=i*F+d,t=TK[i];if(!PRES[j]||!(RVOL[j]>0))return ''
 let tween=null;
 function flyTo(p,t,ms){tween={p0:camera.position.clone(),t0:controls.target.clone(),p1:p.clone(),t1:t.clone(),s:performance.now(),ms:ms||700}}
 function enterFocus(ref){
-  S.focus=ref;S.plan=false;const o=(ref.kind===1?O1:O2)[ref.idx];const p=o.root.position.clone().multiplyScalar(S.exp);
+  S.focus=ref;S.plan=false;const o=(ref.kind===1?O1:O2)[ref.idx];const p=o.root.position.clone();
   const out=new THREE.Vector3(p.x,0,p.z).normalize();const dist=ref.kind===1?1.3:2.1;
   flyTo(p.clone().add(out.multiplyScalar(dist)).add(new THREE.Vector3(0,dist*.55,0)),p);
   banner('Mode Focus · '+(ref.kind===1?TK[ref.idx].s:CARDS[ref.idx].name)+' · la caméra suit l\'objet');dirty=true;
 }
-function enterPlan(){S.focus=null;S.plan=true;flyTo(new THREE.Vector3(0,10.5*S.exp,.01),new THREE.Vector3(0,0,0));banner('Mode Plan · cadran vu d\'en haut, midi en haut')}
-function exitModes(){S.focus=null;S.plan=false;$('banner').style.display='none';flyTo(HOME.p.clone().multiplyScalar(S.exp),HOME.t.clone().multiplyScalar(S.exp));dirty=true}
+function enterPlan(){S.focus=null;S.plan=true;flyTo(new THREE.Vector3(0,10.5,.01),new THREE.Vector3(0,0,0));banner('Mode Plan · cadran vu d\'en haut, midi en haut')}
+function exitModes(){S.focus=null;S.plan=false;$('banner').style.display='none';flyTo(HOME.p.clone(),HOME.t.clone());dirty=true}
 function banner(t){$('bannerTxt').textContent=t;$('banner').style.display='flex'}
 $('bannerExit').addEventListener('click',exitModes);
 addEventListener('keydown',e=>{const typing=/INPUT|SELECT|TEXTAREA/.test(e.target.tagName);if(!typing&&(e.key==='+'||e.key==='=')){e.preventDefault();setExp(S.exp*1.25)}if(!typing&&(e.key==='-'||e.key==='_')){e.preventDefault();setExp(S.exp/1.25)}if(!typing&&(e.key==='f'||e.key==='F')&&!e.metaKey&&!e.ctrlKey){e.preventDefault();setGhost(!S.ghost)}if(e.key==='Escape'&&(S.focus||S.plan))exitModes();if(e.key===' '&&e.target===document.body){e.preventDefault();$('play').click()}});
@@ -2133,7 +2178,7 @@ function statusBlock(){
   return `<ul class="status">${HK?hkStatus():''}
   <li><span class="st v">VERIFIED</span>τ = √(φ² + 5) = ${TAU.toFixed(10)} ; τ² − φ = ${(TAU*TAU-PHI).toFixed(10)}</li>
   <li><span class="st g">GOVERNANCE</span>Lecture en deux prises : T₀ et T₁, chacune un état constitué complet, jointes par une seule transition cycloïdale par axe (G-1, G-3), sans les séances intermédiaires.</li>
-  <li><span class="st g">GOVERNANCE</span>Conteneurs actifs : α en (+1, +1, +1), la tête du serpent, en haut, à l'intérieur, à 11 h 59 ; Ω en (−1, −1, −1), la queue, en bas, à l'extérieur, à 12 h 01 ; Σ en (0, 0, 0), le ventre, à 6 h. Z : +1 à l'intérieur, −1 à l'extérieur. Chaque conteneur actif manifeste les attributs physiques et angulaires du collapse de ses contenus. Les objets de Classe 1 sont solides. Volume (END GAME F3) : un bouton dilate ou contracte tout l'environnement, sans limite ; les positions s'écartent ou se rapprochent, les tailles restent au canon. Espacement selon le canon des tailles : 0,1 · 0,2 · 0,3 · 0,4, grille calibrée pour 1 234 objets, aucun chevauchement. Pièges λ⁻ (champ φ⁻) et λ⁺ (champ φ⁺) en place, non activés, prêts à être conditionnés pour recevoir leur cible. +1 à 11 h 59, −1 à 12 h 01. Quatre classes ; cinq zones, quatre bornes 20 / 40 / 60 / 80, fixées à l'ouverture de la session ; chaîne H → V → T par prise ; saturation = 10ᵉ résultat, le collapse (G-4 ; nom fixé par Éric le 6 nov.) ; tout cardinal est Classe 2 (G-5).</li>
+  <li><span class="st g">GOVERNANCE</span>Conteneurs actifs : α en (+1, +1, +1), la tête du serpent, en haut, à l'intérieur, à 11 h 59 ; Ω en (−1, −1, −1), la queue, en bas, à l'extérieur, à 12 h 01 ; Σ en (0, 0, 0), le ventre, à 6 h. Z : +1 à l'intérieur, −1 à l'extérieur. Chaque conteneur actif manifeste les attributs physiques et angulaires du collapse de ses contenus. Les objets de Classe 1 sont solides. Volume (END GAME F3) : un bouton dilate ou contracte tout l'environnement, sans limite ; les positions s'écartent ou se rapprochent, les tailles restent au canon. Espacement selon le canon des tailles : 0,1 · 0,2 · 0,3 · 0,4, grille calibrée pour 1 234 objets, aucun chevauchement. Pièges λ⁻ (champ φ⁻, entre Ω et Σ) et λ⁺ (champ φ⁺, entre Σ et α) actifs, un λ par champ, même appartenance que α, Σ et Ω. D'autres λ peuvent s'ajouter au champ. +1 à 11 h 59, −1 à 12 h 01. Quatre classes ; cinq zones, quatre bornes 20 / 40 / 60 / 80, fixées à l'ouverture de la session ; chaîne H → V → T par prise ; saturation = 10ᵉ résultat, le collapse (G-4 ; nom fixé par Éric le 6 nov.) ; tout cardinal est Classe 2 (G-5).</li>
   <li><span class="st g">GOVERNANCE</span>Ordre fixe des dix attributs (Éric, 6 nov.) : X, Y, Z ; forme, étirement-écrasement, couleur ; avant-arrière, rotation, centre-extérieur (les trois moments triangulaires, sur X, Y, Z) ; saturation. Chaque case porte son icône : sept icônes Fleur de vie (UM Investor Deck v11, diapo 10) et trois dessins d'Éric (étirement-écrasement, avant-arrière, centre-extérieur), tels quels.</li>
   <li><span class="st g">GOVERNANCE</span>Objet central (Éric, 10 nov., 22 h 51 et 23 h 17 ; YB1 v20.21, « in the core, everywhere ») : la Classe 4 est un seul objet. Sa position dans l'espace n'est pas établie : il se tient dans son espace réservé, le centre creux de la chambre (rayon &lt; 1, où aucun objet de Classe 1, 2 ou 3 ne va), et ne fait que réagir. Son corps manifeste le collapse des attributs physiques et angulaires de tout le système, sur le même ensemble que Z0 (un seul ensemble, une seule moyenne). Il n'a pas d'enveloppe : ce corps est l'objet central, quatre fois la taille d'un objet de Classe 1, dessiné par-dessus tout (Éric, 11 nov., 5 h 32) ; il porte Z-ZERO. Le système est contenu dans sa borne ; les objets de Classe 2 y portent leur propre jeu de tensions. Les vecteurs or partent de Z0(τ), la moyenne de tout (marqueur or sur le fil), pas de lui. Rien ne le chevauche. Un seul chemin dans le cœur du moteur : toutes les ancres et tous les étages futurs le portent.</li>
   <li><span class="st g">GOVERNANCE</span>Vue d'ouverture (Éric, 11 nov., 13 h 38) : seulement les objets et l'environnement, aucune ligne entre les objets. Vecteurs depuis Z0(τ), traînées des cardinaux, liens club ↔ club, traînée du transfert (LNH) et diagonale Ω–Σ–α attendent dans Couches ; les liens de la chaîne n'apparaissent qu'au choix d'un objet. Tous les liens de la page restent.</li>
@@ -2222,11 +2267,11 @@ function renderFiche(){
     for(let i=0;i<N1;i++){const a=i*F+S.T0,b=i*F+S.T1;if(PRES[a]&&PRES[b]){const za=zoneOf(V[a*10+k]),zb=zoneOf(V[b*10+k]);M[za][zb]++;if(za!==zb)migr++}}
     const mx=Math.max(1,...M.flat());
     h=`<div class="cls">Classe 4 · système contenu et borné</div><h3>${esc(SYS.name)}</h3>
-    <div class="meta">${HK?hkMeta4():GC?`${N1} ${UN} · `+Object.keys(CTYPE).map(ty=>CARDS.filter(c=>c.ty===ty).length+' '+CTYPE[ty].plural).join(' · '):`${N1} titres · ${CARDS.filter(c=>c.ty==='sec').length} secteurs · ${CARDS.filter(c=>c.ty==='cty').length} pays · ${CARDS.filter(c=>c.ty==='ind').length} industries`} · 3 conteneurs actifs (Ω, Σ, α) · 2 pièges λ en attente</div>
+    <div class="meta">${HK?hkMeta4():GC?`${N1} ${UN} · `+Object.keys(CTYPE).map(ty=>CARDS.filter(c=>c.ty===ty).length+' '+CTYPE[ty].plural).join(' · '):`${N1} titres · ${CARDS.filter(c=>c.ty==='sec').length} secteurs · ${CARDS.filter(c=>c.ty==='cty').length} pays · ${CARDS.filter(c=>c.ty==='ind').length} industries`} · 5 conteneurs actifs (Ω, λ⁻, Σ, λ⁺, α) · singularité au centre du système</div>
     <dl class="kv"><dt>Z-ZERO(T₀) · ${DATA.dates[S.T0]}</dt><dd>${f8(ZZ[S.T0])}</dd><dt>Z-ZERO(T₁) · ${DATA.dates[S.T1]}</dt><dd>${f8(ZZ[S.T1])}</dd>
     <dt>ΔZ</dt><dd class="big">${(ZZ[S.T1]-ZZ[S.T0]>=0?'+':'')+f8(ZZ[S.T1]-ZZ[S.T0])}</dd></dl>
     <dl class="kv"><dt>Z0(T₀) · fil</dt><dd>${z0txt(Z0A)}</dd><dt>Z0(T₁) · fil</dt><dd>${z0txt(Z0B)}</dd></dl>
-    <p class="note">L'objet central se tient dans son espace réservé, au centre creux de la chambre ; sa position dans l'espace n'est pas établie. Il porte Z-ZERO, sortie scalaire de la chaîne. Le fil Z0 (or pointillé, marqueur or à l'instant) est le repère des mouvements et l'ancre des vecteurs : trois choses distinctes. Pousser et tirer : dans Couches, « Z0 compte la Classe 2 », « Z0 compte la Classe 3 » et les niveaux de Classe 2 changent l'ensemble ; le corps de l'objet central, le fil, les positions, les fantômes et les lancers se recalculent aussitôt.</p>
+    <p class="note">singularité : au centre exact du système, un point sombre à liseré clair, où l'on plonge vers l'infini. Le fantôme de trajectoire est le chemin Z0 recentré sur elle. L'objet central se tient dans son espace réservé, au centre creux de la chambre ; sa position dans l'espace n'est pas établie. Il porte Z-ZERO, sortie scalaire de la chaîne. Le fil Z0 (or pointillé, marqueur or à l'instant) est le repère des mouvements et l'ancre des vecteurs : trois choses distinctes. Pousser et tirer : dans Couches, « Z0 compte la Classe 2 », « Z0 compte la Classe 3 » et les niveaux de Classe 2 changent l'ensemble ; le corps de l'objet central, le fil, les positions, les fantômes et les lancers se recalculent aussitôt.</p>
     ${c4Block()}
     ${S.ghost&&S.thr?thrBlock4():''}${HK?hkBlock4():''}
     <h2 style="margin-top:12px">Bibliothèque de Classe 4 <span>${esc(SYS.silo)} · ${LIB.filter(x=>x.data&&x.silo===SYS.silo).length} / ${LIB.filter(x=>x.silo===SYS.silo).length}</span></h2>
@@ -2250,7 +2295,7 @@ function renderFiche(){
       <div class="rows">${attrRows(c3v(z,0),c3v(z,1),null,null,[3,4,5,6,7,8])}</div>`
       :`<div class="cls">Classe 3 · piège <span style="text-transform:none">λ</span> · non activé</div><h3>${C3SYM[z]} · champ ${ZN[z]}</h3><div class="meta">En attente en (X, Y, Z) = ${c3xyz(z)} · rayon 0,3 · T₀ ${DATA.dates[S.T0]} → T₁ ${DATA.dates[S.T1]}</div><p class="note">Prêt à être conditionné pour recevoir sa cible. L'activation est un acte humain : tant qu'il n'est pas activé, le champ ${ZN[z]} reste ouvert et les ${UN} qui y passent ne sont pas contenus.</p>`)+`
     <p class="note">Nombre de ${UN} dans la zone ${ZN[z]}, attribut par attribut, de T₀ à T₁ :</p><div class="rows">${rows}</div>
-    <h2 style="margin-top:10px">${C3ON[z]?(HK?'Joueurs contenus à T₁':'Titres contenus à T₁'):(HK?'Joueurs dans le champ ouvert à T₁':'Titres dans le champ ouvert à T₁')} <span>${mem.length}</span></h2><p class="note">${HK?'Un joueur':'Un titre'} appartient au conteneur de la zone où tombe la moyenne de ses X, Y et Z : sa projection sur la diagonale (PROPOSED).</p><div class="members">${mem.map(i=>`<button type="button" data-sel="1:${i}">${esc(TK[i].s)}</button>`).join('')}</div>`;
+    <h2 style="margin-top:10px">${C3ON[z]?(HK?'Joueurs contenus à T₁':'Titres contenus à T₁'):(HK?'Joueurs dans le champ ouvert à T₁':'Titres dans le champ ouvert à T₁')} <span>${mem.length}</span>${mem.length<3?' <span class="um-gap-badge" style="display:inline-block;background:#e0533f;color:#fff;font:700 10px/1.2 system-ui,sans-serif;padding:1px 5px;border-radius:3px">LACUNE / GAP</span>':''}</h2><p class="note">${HK?'Un joueur':'Un titre'} appartient au conteneur de la zone où tombe la moyenne de ses X, Y et Z : sa projection sur la diagonale (PROPOSED).</p><div class="members">${mem.map(i=>`<button type="button" data-sel="1:${i}">${esc(TK[i].s)}</button>`).join('')}</div>`;
   } else if(s.kind===1&&HK){
     h=hkFiche1(s);
   } else if(s.kind===1&&GC){
@@ -2374,7 +2419,7 @@ function tick(now){
   ghostFrame(gCur());
   z0Frame(S.ghost?tauOf(gCur()):t);applyC4(t,dt);vecFrame(S.ghost?tauOf(gCur()):t);microFrame();
   if(S.ghost&&S.thr){const dI=Math.min(S.T1,Math.floor(gCur()));if(dI!==THR.d)buildThrowFrame(dI);
-    const U=THRREP.U;U.uSize.value=1/S.exp;U.uAll.value=1;U.uGain.value=.35; /* rev. 23.17: the secondary layer stays much softer */U.uSel.value=S.sel&&S.sel.kind===1?S.sel.idx:-1;
+    const U=THRREP.U;U.uSize.value=(S.volAll||1)*(S.gAll||1);U.uAll.value=1;U.uGain.value=.35; /* rev. 23.17: the secondary layer stays much softer */U.uSel.value=S.sel&&S.sel.kind===1?S.sel.idx:-1;
     THRREP.group.visible=S.layers.ghost;THR.pts.visible=false;}
   else{THR.pts.visible=false;THRREP.group.visible=false;THR.err.visible=false;THR.land.visible=false;if(THR.d!==-1&&(!S.ghost||!S.thr))THR.d=-1}
   applyTrails();applyLinks();applyXfer();applyPTrail();

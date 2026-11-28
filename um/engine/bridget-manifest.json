@@ -49,23 +49,23 @@
   "files": [
     {
       "path": "um/engine/engine.js",
-      "sha256": "729d7e163e3024887c3b0009e5b2117f382023d52434bd9caa759ba5a7529672"
+      "sha256": "dc032b8219f2de3249ee76760347d715ef6deaa88cfdac30234003fc5bb4fe17"
     },
     {
       "path": "um/engine/manifestation-engine.html",
-      "sha256": "5ce0ae5ca672cee719a472d5786e6d33bdf25db2919da0b082eee2a5f6a13f99"
+      "sha256": "b573bfd94b80974debdb05c68e22381b62bd95ec98dc6fda9b5386e9df2d0947"
     },
     {
       "path": "um/engine/bridget-demo.js",
-      "sha256": "511e06fb3726415a9a39c3eac3b30bfd0ceb30d4f4bc5440ee222005925e9ab7"
+      "sha256": "9f2aa7ebf53b65b844c1847ac416db3ec84db4e18f0e432308c796b2d96cc81d"
     },
     {
       "path": "um/engine/rules.json",
-      "sha256": "09ae5433b229f76c54b988de3a019cab52b7496248cae84b5212d9764ab3ccdb"
+      "sha256": "54ba9d4265a9b8fb2f4a69ef54449054f048edd5734b2aaadfe652d36a4bb0c4"
     },
     {
       "path": "um/engine/README.md",
-      "sha256": "32bf53c277a85b33cdde69add27d5cf531a9b4a3060148fddbb5d997e610c3d3"
+      "sha256": "0f09d1812b60d4da9265d534c39116d5cf1325300ec327dd2dafd20883a4bf35"
     },
     {
       "path": "um/bridget/index.html",
@@ -77,7 +77,7 @@
     },
     {
       "path": "um/bridget/index.json",
-      "sha256": "2bb96613aff53e778c91154e84a628e6f1f99a37f6c234044c937314fad560c7"
+      "sha256": "8b39cf0ad6c8030580f16d8b594a6db6f078baa1e304baa810f2eef1f9933cad"
     },
     {
       "path": "um/engine/sante-coupes.js",
