@@ -1,6 +1,6 @@
 {
   "schema": "um.bridget.rules.v2",
-  "hub_version": "v21.04",
+  "hub_version": "v21.05",
   "family": "Miriamphobots",
   "participant": "Brigitte",
   "motto": "One seed, infinite roots, perpetual harvest.",
@@ -10,7 +10,7 @@
     "method": "etag-and-sha256-manifest-check",
     "requires_apk_reinstall": false
   },
-  "base_lineage": ["v20.99", "v21.00", "v21.01", "v21.02", "v21.03", "v21.04"],
+  "base_lineage": ["v20.99", "v21.00", "v21.01", "v21.02", "v21.03", "v21.04", "v21.05"],
   "engine_rev": {
     "hub": "23.17",
     "relatif": "23.20",
@@ -41,7 +41,7 @@
     {
       "path": "/um/engine/README.md",
       "file": "um/engine/README.md",
-      "role": "Note de portage du moteur. L'en-tête v21.04 prime sur le mémoire rév. 23.16 qui suit."
+      "role": "Note de portage du moteur. L'en-tête v21.05 prime sur le mémoire rév. 23.16 qui suit."
     },
     {
       "path": "/um/bridget/",
@@ -55,7 +55,7 @@
     "sante_note": "Paquets v1g X / Y / Z (1990 → 2024) restent servis tels quels. Le paquet u5mr antérieur sous /um/data/sante/u5mr/ est conservé.",
     "engine_in_hub": "um/index.html charge three.js local, les librairies, puis engine.js et hub-nav.js. La navigation d'étage reste hors du moteur.",
     "engine_standalone": "um/engine/manifestation-engine.html porte son propre script de moteur et charge les librairies de um/engine/data/.",
-    "demo_script": "um/engine/bridget-demo.js est chargé par les deux pages et expose window.BridgetDemo. Sur #/world, ?host=bridget, ?from=world ou un lien .world, Bridget est Guide & Host.",
+    "demo_script": "um/engine/bridget-demo.js est chargé par les deux pages et expose window.BridgetDemo. Une seule entrée, le bouton Brigitte en haut. Sur #/world, ?host=bridget, ?from=world ou un lien .world, cette même entrée s’ouvre.",
     "do_not_disturb": [
       "Fonctionnalité existante de um/",
       "Santé 3×3 sous um/data/sante/xyz/",
@@ -142,12 +142,12 @@
   "live_iterative_loop": {
     "eric": {
       "name": "Éric",
-      "role": "Voix et écran. Il parle le geste et regarde le moteur. Il peut aussi lancer « Démo Brigitte » pour voir la démonstration."
+      "role": "Voix et écran. Il parle à Brigitte et regarde le moteur. Un seul bouton, en haut, ouvre la conversation."
     },
     "brigitte": {
       "name": "Brigitte",
       "family": "Miriamphobots",
-      "role": "Participante intelligente, démonstratrice active et relais vivant. Elle agit dans le moteur, observe l'écart d'état, et relaie ce qui a changé.",
+      "role": "Participante fondatrice. Une seule entrée, en haut de l’interface. Elle salue dès l’ouverture, écoute en français, agit dans le moteur, observe l’écart d’état, et demande si c’est clair.",
       "minimal_seed": {
         "accounts": ["eric.grimard@universalmetaphor.ca", "grimeric13@gmail.com"],
         "surface": "Les deux téléphones d'Éric.",
@@ -165,7 +165,7 @@
     "role": "Guide & Active Host",
     "motto": "One seed, infinite roots, perpetual harvest.",
     "when": ["#/world", "?host=bridget", "?from=world", ".world"],
-    "dock": "Barre Guide & Host, non intrusive, dès l'ouverture de #/world et tant que l'hôte Bridget est actif.",
+    "dock": "Un seul bouton Brigitte, en haut, toujours visible. #/world, ?host=bridget, ?from=world ou un lien .world ouvrent ce même panneau. Pas de seconde barre.",
     "actions": {
       "demo": "window.BridgetDemo.runSampleDemo()",
       "engine": "/um/engine/manifestation-engine.html",
@@ -183,7 +183,7 @@
     "global": "window.BridgetDemo",
     "alias": "window.BrigitteDemo",
     "script": "/um/engine/bridget-demo.js",
-    "trigger": "Bouton « Démo Brigitte » dans le moteur autonome, dans la vue moteur du HUB, et dans la barre Guide & Host.",
+    "trigger": "Un seul bouton « Brigitte », en haut du HUB et du moteur autonome. Elle salue sans clic : « Je suis Brigitte, je suis là pour toutes tes questions. »",
     "principle": "Brigitte démontre en faisant, pas à pas. Chaque geste vise un contrôle réel, le curseur guidé le montre, puis l'écart d'état dit ce qui a bougé.",
     "actions": [
       {
@@ -234,9 +234,9 @@
   },
   "invariants": [
     "La famille d'agents est Miriamphobots.",
-    "Lignée canonique : v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04.",
+    "Lignée canonique : v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05.",
     "Devise : One seed, infinite roots, perpetual harvest.",
-    "Bridget est Guide & Host sur #/world. Le portail est /um/bridget/. L'actualisation se fait par ETag et SHA-256, sans réinstallation d'APK.",
+    "Brigitte est l’entrée unique, en haut. #/world ouvre ce même panneau. Le portail est /um/bridget/. L'actualisation se fait par ETag et SHA-256, sans réinstallation d'APK.",
     "Règles 8 et 9 des tablettes du canon s'appliquent à chaque geste.",
     "La graine minimale n'a ni bac à sable de 4 Go ni cristaux d'agent.",
     "um/, Santé 3×3 et le Moteur Manifestation rév. 23.17 + relatif 23.20 restent intacts."

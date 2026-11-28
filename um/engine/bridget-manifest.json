@@ -1,13 +1,14 @@
 {
   "schema": "um.bridget.engine-manifest.v2",
-  "hub_version": "v21.04",
+  "hub_version": "v21.05",
   "base_lineage": [
     "v20.99",
     "v21.00",
     "v21.01",
     "v21.02",
     "v21.03",
-    "v21.04"
+    "v21.04",
+    "v21.05"
   ],
   "engine_rev": "23.17+23.20",
   "family": "Miriamphobots",
@@ -49,23 +50,23 @@
     },
     {
       "path": "um/engine/manifestation-engine.html",
-      "sha256": "236658272c93eff04d4ccea6f983e793e357bbb583b83c53238d8ed2992450a1"
+      "sha256": "9b2acf743a9367becb35096c306c25e26542f096096bb8672b209441742b2ad1"
     },
     {
       "path": "um/engine/bridget-demo.js",
-      "sha256": "d687f8529a2b438084568ad6501bbaa2b2807cb0e6eee0a2ce4ca5926e708cca"
+      "sha256": "704a85ad03f393e1d2c2125b2fcfdfabb1db3690de71e9e76697d1ade795bec3"
     },
     {
       "path": "um/engine/rules.json",
-      "sha256": "95709507ce01310d99634d6aa8bc1372979f71edce8a624dc7ebfdc27273091e"
+      "sha256": "459b3326ca27d3f0209772d3a8a5cb0692d5fc76a2839a5e12faeb979bbb7ae8"
     },
     {
       "path": "um/engine/README.md",
-      "sha256": "ac0dfe9790c8e311861e0ee6b5d400b45a78f4969a5cdf1dd18c168b595f2a2a"
+      "sha256": "f8583e01db748c30a5234215c016b540935f1f3dd9bb5fd28fdf8f14d32d28ca"
     },
     {
       "path": "um/bridget/index.html",
-      "sha256": "1726b5148c405d46b4c3d161b624a45a1d01186f9f64dc3d1fe70138d3dbff00"
+      "sha256": "6cd0a2f61833638bb51bf3993c0b4877798104b907491ef6c2c7c121b29ede34"
     }
   ]
 }
