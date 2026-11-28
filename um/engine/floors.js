@@ -252,7 +252,9 @@
   addFloor({id:'art', name:'Art', level:'silo', parent:'world', children:music?['music']:[], n:1});
   const fbs=LIB.filter(x=>x.fbParent&&x.data); /* v20.85 SPORT 02: football floors, parent chain from the data */
   addFloor({id:'sports', name:'Sports', level:'silo', parent:'world', children:(nhl?['nhl']:[]).concat(sys('football')?['football']:[]), n:1});
-  addFloor({id:'health', name:'Santé', level:'silo', parent:'world', children:[], n:0}); /* v20.80 placeholder */
+  const santeKids=['sante-villes','sante-provinces'].filter(id=>sys(id)&&sys(id).data);
+  addFloor({id:'health', name:'Santé', level:'silo', parent:'world', children:santeKids.slice(), n:santeKids.length}); /* v21.06 : deux coupes Classe 2 sous Santé */
+  santeKids.forEach(id=>{ const s=sys(id); addFloor({id:id, name:s.name, level:'index', parent:'health', children:[], n:(s.data.t&&s.data.t.length)||0, source:id}); });
   if(music) addFloor({id:'music', name:music.name, level:'index', parent:'art', children:[], n:music.data.t.length, source:'music'});
   if(nhl) addFloor({id:'nhl', name:nhl.name, level:'index', parent:'sports', children:[], n:nhl.data.t.length, source:'nhl'});
   fbs.forEach(s=>addFloor({id:s.id, name:s.name, level:'index', parent:s.fbParent, children:fbs.filter(c=>c.fbParent===s.id).map(c=>c.id), n:s.data.t.length, source:s.id}));

@@ -1,12 +1,15 @@
-/* Brigitte — single entry, Guide & Host, Hub v21.05 (Miriamphobots).
+/* Brigitte — single entry, Guide & Host, Hub v21.06 (Miriamphobots).
    Loaded by um/index.html and um/engine/manifestation-engine.html.
    Does not modify the Manifestation Engine. Listeners that must survive a
    system switch pass their own AbortSignal, because the engine ties every
    other listener to the current boot.
    #/world, ?host=bridget, ?from=world, or a .world arrival opens this same entry.
-   Motto: One seed, infinite roots, perpetual harvest. */
+   Motto: One seed, infinite roots, perpetual harvest.
+   v21.06 : les questions passent par Bridget.createEngine (um/bridget/bridget-hub.js)
+   et l'index du panneau de gauche. La voix, le salut et la couche d'action de v21.05
+   restent. escalate reste éteint. Aucun appel hors du site. */
 (function () {
-  if (window.BridgetDemo && window.BridgetDemo.version === 'v21.05') return;
+  if (window.BridgetDemo && window.BridgetDemo.version === 'v21.06') return;
 
   var pace = { move: 480, pulse: 180, step: 240 };
   var generation = 0;
@@ -397,7 +400,7 @@
     var zz = document.getElementById('zzNow');
     var app = document.querySelector('.app');
     return {
-      hub: meta && meta.content || 'v21.05',
+      hub: meta && meta.content || 'v21.06',
       version: meta && meta.content || null,
       engineRev: sub ? sub.textContent : null,
       page: location.pathname + location.hash,
@@ -546,7 +549,7 @@
   }
 
   var api = {
-    version: 'v21.05',
+    version: 'v21.06',
     family: 'Miriamphobots',
     moveCursor: moveCursor,
     clickButton: clickButton,
@@ -578,6 +581,7 @@
   var manifestTimer = 0;
   var greeted = false;
   var mode = 'do';
+  var docEngine = null;
   var panelEl = null;
   var logEl = null;
   var choiceEl = null;
@@ -592,8 +596,8 @@
     passages: [],
     motto: api.motto,
     family: 'Miriamphobots',
-    hub_version: 'v21.05',
-    lineage: 'v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05'
+    hub_version: 'v21.06',
+    lineage: 'v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06'
   };
   var GREETING = 'Je suis Brigitte, je suis là pour toutes tes questions.';
   var CLEAR_Q = "Est-ce que c'est clair pour toi ?";
@@ -778,6 +782,7 @@
       var b = document.createElement('button');
       b.type = 'button';
       b.textContent = item.label;
+      if (item.id) b.id = item.id;
       b.onclick = function (ev) {
         if (ev) { ev.preventDefault(); ev.stopPropagation(); }
         hideChoice();
@@ -1033,7 +1038,9 @@
       dax: ['dax', 'dax 40'],
       cac40: ['cac', 'cac 40', 'cac40'],
       sx5e: ['euro stoxx', 'eurostoxx', 'sx5e', 'stoxx 50'],
-      world: ['world', 'monde', 'accueil du hub']
+      world: ['world', 'monde', 'accueil du hub'],
+      'sante-villes': ['villes du monde', 'les villes du monde', 'sante villes', 'wup 2025', 'wup'],
+      'sante-provinces': ['provinces du canada', 'les provinces du canada', 'provinces canada', 'esperance de vie', 'statcan']
     };
     (known[id] || []).forEach(function (a) { list.push(a); });
     var fname = fold(name);
@@ -1419,6 +1426,112 @@
     return kb.lineage;
   }
 
+  function bridgetIndexUrl() {
+    var path = location.pathname || '';
+    if (/\/engine\//.test(path)) return '../bridget/index.json';
+    if (/\/bridget\//.test(path)) return 'index.json';
+    return 'bridget/index.json';
+  }
+
+  function loadDocEngine() {
+    if (!window.Bridget || !window.Bridget.load) return;
+    window.Bridget.load(bridgetIndexUrl()).then(function (engine) {
+      docEngine = engine;
+    }).catch(function () { docEngine = null; });
+  }
+
+  function preferPanel(result) {
+    if (!result || !result.answered || !result.passages || !result.passages.length) return result;
+    var top = result.passages[0];
+    var left = null;
+    result.passages.forEach(function (p) {
+      var s = p.section || '';
+      var panel = s.indexOf('attr:') === 0 || s === 'gauss' || s === 'volume' || s === 'fiche' || s === 'attributs';
+      if (panel && !left) left = p;
+    });
+    if (left && top && left !== top && left.score >= top.score * 0.8) {
+      result.passages = [left].concat(result.passages.filter(function (p) { return p !== left; }));
+    }
+    return result;
+  }
+
+  function showFromDoc(hit, before) {
+    var section = hit.section || '';
+    if (section.indexOf('system:') === 0) {
+      var id = section.slice(7);
+      var sys = null;
+      listSystems().forEach(function (s) { if (s.id === id) sys = s; });
+      if (sys) return showSystem(sys, before);
+    }
+    if (section.indexOf('attr:') === 0) {
+      var k = parseInt(section.slice(5), 10);
+      lastTarget = '#rack';
+      return perform([{
+        action: 'fn',
+        label: 'Je te montre ' + (hit.title || 'cette tuile') + '.',
+        run: function () {
+          var app = document.querySelector('.app');
+          if (app && app.classList.contains('noL')) {
+            var tg = document.getElementById('tgL');
+            if (tg) tg.click();
+          }
+          var tiles = document.querySelectorAll('#rack .tile');
+          var tile = tiles[k];
+          if (tile) {
+            var open = app && app.classList.contains('gOpen') && tile.getAttribute('aria-expanded') === 'true';
+            if (!open) tile.click();
+          }
+          return moveCursor(tile || document.getElementById('gauss'));
+        }
+      }], before);
+    }
+    var selector = hit.selector || '#gauss';
+    lastTarget = selector;
+    return perform([{
+      action: 'openWindow',
+      selector: selector,
+      label: 'Je te montre ' + (hit.title || 'cette section') + '.'
+    }], before);
+  }
+
+  function offerMontre(hit) {
+    showChoice([{
+      id: 'bridget-montre',
+      label: 'Montre-moi',
+      run: function () {
+        showFromDoc(hit, snapshotState()).then(function (res) {
+          if (res && res.executed && !res.stopped) finishClear();
+        });
+      }
+    }]);
+  }
+
+  function answerWithIndex(q) {
+    if (docEngine) {
+      var found = preferPanel(docEngine.ask(q));
+      if (found && found.answered && found.passages.length) {
+        var p = found.passages[0];
+        var body = String(p.text || '').replace(/\s+/g, ' ').trim();
+        if (body.length > 420) body = body.slice(0, 417) + '…';
+        var cite = p.title || 'la documentation';
+        say(body + ' Source : ' + cite + '.');
+        if (p.section || p.selector) offerMontre(p);
+        return Promise.resolve({ ok: true, executed: false });
+      }
+    }
+    var local = answerQuestion(q);
+    if (local && local.indexOf('Je ne trouve pas de réponse précise') === 0 && !docEngine) {
+      say('Je lis encore la documentation du panneau de gauche.');
+      return Promise.resolve({ ok: true, executed: false });
+    }
+    if (local && local.indexOf('Je ne trouve pas de réponse précise') === 0) {
+      say('Je n’ai pas cette réponse dans la documentation du Hub.');
+      return Promise.resolve({ ok: true, executed: false });
+    }
+    say(local);
+    return Promise.resolve({ ok: true, executed: false });
+  }
+
   function answerQuestion(q) {
     var rules = kb.rules || {};
     var tablets = rules.canon_tablets || {};
@@ -1547,8 +1660,7 @@
     if (sys && /montre|affiche|ouvre|va |passe |selectionne/.test(q)) return showSystem(sys, before);
 
     if (mode === 'question' || looksLikeQuestion(q)) {
-      say(answerQuestion(q));
-      return Promise.resolve({ ok: true, executed: false });
+      return answerWithIndex(q);
     }
     if (sys) return showSystem(sys, before);
     var near = bestTarget(stripLead(q));
@@ -1585,7 +1697,7 @@
   function setMode(next) {
     mode = next;
     openPanel();
-    if (next === 'question') { say('Pose ta question. Je réponds avec les règles, le manifeste et les libellés du moteur.'); return; }
+    if (next === 'question') { say('Pose ta question. Je réponds depuis la documentation du panneau de gauche.'); return; }
     if (next === 'guide') { runGuide(); return; }
     if (next === 'do') { say('Dis-moi quoi faire. Par exemple : montre-moi le DJIA, ou ouvre la fenêtre gaussienne.'); return; }
     if (next === 'find') { say('Dis-moi quoi trouver. Par exemple : le seuil.'); return; }
@@ -1676,6 +1788,7 @@
       say(GREETING);
     }
     loadKnowledge();
+    loadDocEngine();
     checkManifest();
     if (manifestTimer) clearInterval(manifestTimer);
     manifestTimer = setInterval(checkManifest, 30000);
