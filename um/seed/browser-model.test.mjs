@@ -70,7 +70,7 @@ const loaded = await page.evaluate(async () => {
     hook: hook,
     hasCreate: !!(api && api.createModelHook && api.httpProvider),
     caps: desc ? desc.capabilities : [],
-    gone: !document.getElementById('mFourier') && !document.getElementById('session') && !document.getElementById('tgL') && !document.getElementById('hub-nav') && !!document.getElementById('hub-up')
+    gone: !document.getElementById('mFourier') && !document.getElementById('session') && !document.getElementById('hub-nav') && !!document.getElementById('hub-up') && !!document.getElementById('tgL') && !!document.getElementById('km')
   };
 });
 await page.click('#model-test');

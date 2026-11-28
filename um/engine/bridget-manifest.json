@@ -1,7 +1,7 @@
 {
   "schema": "um.bridget.engine-manifest.v2",
-  "hub_version": "v21.09",
-  "next_free": "v21.10",
+  "hub_version": "v21.10",
+  "next_free": "v21.11",
   "base_lineage": [
     "v20.99",
     "v21.00",
@@ -13,7 +13,8 @@
     "v21.06",
     "v21.07",
     "v21.08",
-    "v21.09"
+    "v21.09",
+    "v21.10"
   ],
   "engine_rev": "23.17+23.20",
   "family": "Miriamphobots",
@@ -51,7 +52,7 @@
   "files": [
     {
       "path": "um/engine/engine.js",
-      "sha256": "f67b8f48f3d93325e4b405ea7a020d75e465160d39fea0b0075e6f8f89301ff6"
+      "sha256": "fd57c68158e39accb5cd41b207c4fb2a0343a5517cd244ed9627685a3f0909b8"
     },
     {
       "path": "um/engine/manifestation-engine.html",
@@ -63,11 +64,11 @@
     },
     {
       "path": "um/engine/rules.json",
-      "sha256": "8d550bbcd18f9aaa9a398c32e7e1a96e725c22ac598c1e2197052e45ef481cf9"
+      "sha256": "745e15285e565c5a94538f52e8bec436a88123c90d1f2f34c675e7fbb7c1efee"
     },
     {
       "path": "um/engine/README.md",
-      "sha256": "2de80a4827d9982770d66bf9be41bfff08e466de4a8ebc25eace18ed251de52a"
+      "sha256": "4ee0be15066dd175f2a0bf3521e588254749e94e99e87c37443e4c3165eaeb95"
     },
     {
       "path": "um/bridget/index.html",
@@ -79,7 +80,7 @@
     },
     {
       "path": "um/bridget/index.json",
-      "sha256": "ff487829f8b0fc8ebdcdb71870610d07b8227c7ef4772e9938a469b0f5e8158b"
+      "sha256": "5dafbc472b3717b18b500e29f9bf82540446072d3d6fb48187217c0f8a66221b"
     },
     {
       "path": "um/engine/sante-coupes.js",
