@@ -850,7 +850,16 @@
   let q='';
   function composer(){
     const p=probe(); const d=document.createElement('div'); d.id='um-mine-comp';
-    const objs=p?p.visible.filter(v=>v.kind===1||v.kind===2).map(v=>({kind:v.kind,idx:v.idx,name:v.name,sys:p.sys})):null;
+    let objs=p?p.visible.filter(v=>v.kind===1||v.kind===2).map(v=>({kind:v.kind,idx:v.idx,name:v.name,sys:p.sys})):null;
+    if(objs&&!objs.length&&window.__umAggregates){
+      try{
+        const a=__umAggregates();
+        const extra=[];
+        (a.c1Items||[]).forEach(t=>extra.push({kind:1,idx:t.idx,name:t.name,sys:p.sys}));
+        (a.c2||[]).forEach(c=>extra.push({kind:2,idx:c.idx,name:c.name,sys:p.sys}));
+        if(extra.length) objs=extra;
+      }catch(e){}
+    }
     let list;
     if(!objs) list='<span class="inc">Liste du moteur non lisible (__umProbe absent) [INCOMPLET]</span>';
     else if(!objs.length) list='<span class="inc">Aucun objet de Classe 1 ou 2 affiché à ce niveau ('+esc(sysName(p.sys))+') — ouvrez un système ou une zone ; la sélection est gardée d\u2019un niveau à l\u2019autre. [INCOMPLET]</span>';

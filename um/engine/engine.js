@@ -2762,6 +2762,7 @@ window.__umSelect=select; /* hook for the soul (CLAVIS) bridge and for tests */
 window.__umAggregates=function(){
   return {
     c1:N1,
+    c1Items:TK.map((t,i)=>({idx:i,name:t.s})),
     c4:SYS&&SYS.name||'',
     c3:(typeof C3SYM!=='undefined'?C3SYM.slice():[]),
     c2:CARDS.map((c,i)=>({idx:i,name:c.name,ty:c.ty}))

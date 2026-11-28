@@ -1,7 +1,7 @@
 {
   "schema": "um.bridget.engine-manifest.v2",
-  "hub_version": "v21.10",
-  "next_free": "v21.11",
+  "hub_version": "v21.11",
+  "next_free": "v21.12",
   "base_lineage": [
     "v20.99",
     "v21.00",
@@ -14,7 +14,8 @@
     "v21.07",
     "v21.08",
     "v21.09",
-    "v21.10"
+    "v21.10",
+    "v21.11"
   ],
   "engine_rev": "23.17+23.20",
   "family": "Miriamphobots",
@@ -52,7 +53,7 @@
   "files": [
     {
       "path": "um/engine/engine.js",
-      "sha256": "4924ee273466583e17aca5261924eb95c301cc9f9c7c989294ec98c941bf3d57"
+      "sha256": "58ddc90d218b6c680f2690cff0ab1568f00c200cc51b6c11056da5aaaf5eae9a"
     },
     {
       "path": "um/engine/manifestation-engine.html",
@@ -60,19 +61,19 @@
     },
     {
       "path": "um/engine/bridget-demo.js",
-      "sha256": "1e608fe5b677c5fe53f28b98a7b3d90a9ed7e77e419a911ebe979328cb8b59cb"
+      "sha256": "208821df75621a0f516e7ee065c82b44eee50e8b38c630606962d985724ae61c"
     },
     {
       "path": "um/engine/rules.json",
-      "sha256": "745e15285e565c5a94538f52e8bec436a88123c90d1f2f34c675e7fbb7c1efee"
+      "sha256": "03087581d75eb6103bf98179f5a0d23b1a80ba989da5857ecc9918bb5f0cb028"
     },
     {
       "path": "um/engine/README.md",
-      "sha256": "992af4599bb26ebeed27475c3bc46b4aa6bf0442a7babd73844eb6e293ba404f"
+      "sha256": "eb53c6bca6cc4363addef833a9ca0b21cf75ca5e9483813e603d288fc2339234"
     },
     {
       "path": "um/bridget/index.html",
-      "sha256": "fa5708edb1601804ac97f750bbe4abf16807e44b59751e38edb24debbba9647d"
+      "sha256": "fb963b0e7af786903dab510f8af4867a153ff7805e9cccff071ddd3553287ed2"
     },
     {
       "path": "um/bridget/bridget-hub.js",
@@ -80,7 +81,7 @@
     },
     {
       "path": "um/bridget/index.json",
-      "sha256": "07cd6abb2c388e9efd92c8e46eb2be09626715c94d217974febe8bf4dd286fb1"
+      "sha256": "c9a700bd56a690f3f5af3f4e4a40bb2c12085237751800ddca7626f302a860db"
     },
     {
       "path": "um/engine/sante-coupes.js",
