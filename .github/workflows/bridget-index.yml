@@ -27,3 +27,5 @@ jobs:
           chunks = sum(len(d.get("chunks") or []) for d in fresh["docs"])
           print(f"index.json is current: {n} documents, {chunks} passages, built {fresh.get('built')}")
           PY
+      - name: Seed adapter and Class 4 ghost
+        run: node um/seed/seed.test.js
