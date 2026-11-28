@@ -73,6 +73,8 @@ const menu = await page.evaluate(() => {
 await page.goto(base + '/um/#/sante', { waitUntil: 'domcontentloaded', timeout: 120000 });
 await page.waitForSelector('#tgL', { timeout: 30000 });
 await page.waitForFunction(() => document.getElementById('layers') && document.getElementById('fiche'), { timeout: 20000 });
+await page.waitForSelector('#um-agg input[data-agg="1"]', { timeout: 15000 });
+await page.waitForSelector('#um-mine-new', { timeout: 15000 });
 const reach = await page.evaluate(() => {
   const ids = ['tgL', 'tgR', 'left', 'rack', 'fiche', 'modele', 'legend', 'layers', 'srcText', 'um-rg-sante', 'um-gaps', 'um-rg-couches', 'um-rg-foot', 'um-more-all', 'um-u-c2', 'um-u-sys', 'hub-nav', 'copyState', 'gwBox', 'bridget-open'];
   const display = {};
@@ -93,7 +95,14 @@ const reach = await page.evaluate(() => {
   };
   return {
     display, noneHidden, folds: folds.map(d => d.id), collapsed, modeleOpen, gapW: gapBox.width,
-    orderedOut: hidden('mFourier') && hidden('mFree') && hidden('session') && hidden('km') && hidden('um-rg-door') && hidden('um-u-mine') && hidden('um-invite-first') && !document.getElementById('tgV')
+    orderedOut: hidden('mFourier') && hidden('mFree') && hidden('session') && hidden('km') && hidden('um-rg-door') && hidden('um-invite-first') && !document.getElementById('tgV'),
+    agg: (function () {
+      const box = document.getElementById('um-agg');
+      const text = box ? box.innerText : '';
+      const mine = document.getElementById('um-mine-new');
+      const mineShown = !!(mine && getComputedStyle(mine).display !== 'none');
+      return { has: !!box, c1: text.indexOf('Classe 1') >= 0, c2: text.indexOf('Classe 2') >= 0, c4: text.indexOf('Classe 4') >= 0, c3: /Classe 3/.test(text), mine: mineShown, layersC3: !!document.getElementById('ly-c3') };
+    })()
   };
 });
 await page.click('#um-rg-sante > summary');
@@ -130,5 +139,6 @@ console.log(JSON.stringify(report, null, 2));
 const menuOk = menu.labels.join('|') === 'Finance|Art|Santé|Sport' && menu.tgW === 0;
 const idsShown = reach.display && Object.values(reach.display).every(Boolean);
 const voiceOk = voice.w > 20 && voice.panelHidden && voice.line === 'unanswered' && voice.said.indexOf('en file') >= 0 && voice.said.indexOf('transmis') < 0;
-if (errors.length || !menuOk || !idsShown || !reach.orderedOut || !reach.noneHidden || !reach.collapsed || !reach.modeleOpen || reach.gapW < 1 || !oneOpen || !hook.open || !leftHidden || !leftBack || !voiceOk) process.exit(1);
+const aggOk = reach.agg && reach.agg.has && reach.agg.c1 && reach.agg.c2 && reach.agg.c4 && !reach.agg.c3 && reach.agg.mine && reach.agg.layersC3;
+if (errors.length || !menuOk || !idsShown || !reach.orderedOut || !aggOk || !reach.noneHidden || !reach.collapsed || !reach.modeleOpen || reach.gapW < 1 || !oneOpen || !hook.open || !leftHidden || !leftBack || !voiceOk) process.exit(1);
 console.log('panel access checks passed');
