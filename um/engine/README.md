@@ -1,8 +1,23 @@
-# MANIFESTATION ENGINE — Hub v21.05
+# MANIFESTATION ENGINE — Hub v21.06
 
-Canonical lineage: `v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05`.
+Canonical lineage: `v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06`. Next free number: `v21.07`.
 
-The live Hub (`/um/`, `engine.js`) is moteur v2 · rév. 23.17 + relatif 23.20. The standalone page is `/um/engine/manifestation-engine.html` (paroi du microcosme 0,94 ; the Hub engine folds the same chamber to 0,74). Both keep the central object on the transposed Z0 path, anchor `[0, 0, 0]`, and containment `skin < 1`. `engine.js` is unchanged in v21.05.
+The live Hub (`/um/`, `engine.js`) is moteur v2 · rév. 23.17 + relatif 23.20. The standalone page is `/um/engine/manifestation-engine.html` (paroi du microcosme 0,94 ; the Hub engine folds the same chamber to 0,74). Both keep the central object on the transposed Z0 path, anchor `[0, 0, 0]`, and containment `skin < 1`. `engine.js` is unchanged in v21.06 (same bytes as v21.05).
+
+## v21.06 changelog
+
+Brigitte stays the single top entry. Questions go through `um/bridget/bridget-hub.js` (`Bridget.createEngine` / `Bridget.load`) and `um/bridget/index.json`, built by `um/bridget/build-index.mjs`. The index covers the left rack, the Gaussian window, the fiche, and the two new health cuts. An answer cites its section and offers « Montre-moi », which uses the v21.05 command layer. Voice (fr-CA) stays: Éric ordered it for this Hub; Claude’s note had reserved voice for the phone. `escalate` stays off. No Drive, mail, or contacts.
+
+Two Class-2 health systems, same `LIB` path as the other systems, `engine.js` untouched:
+
+| System | Data |
+|---|---|
+| Santé — Villes du monde (WUP 2025, T₀ 1990 → T₁ 2024) | `um/data/sante/villes-wup2025/` · CSV SHA-256 `11fb42ead42163c32f54ab998cddebdd78b86162cc5aee17a64fc92b84defdf5` · 2 024 403 bytes. Class 1 in the engine is the country median (one mesh per object). All 16 768 cities stay in the CSV and `cities.json`. |
+| Santé — Provinces du Canada (StatCan 13-10-0114, espérance de vie) | `um/data/sante/provinces-canada-statcan-13-10-0114/` · CSV SHA-256 `f9c1c9163bc32ab18c01f8406ba42e7168d187b6daf944e4f6ba75bacf0f962a` · 20 205 bytes. |
+
+Visible gaps: [INCOMPLET] 4 790 cities with no reading and 5 164 with one; 15 territories not in the 196; coverage 179/196. [INCOMPLET] Î.-P.-É. and the territories absent; [À VÉRIFIER] T₁ centred on 2023 rather than 2024; coverage 9/13. `um/data/sante/xyz/` is byte-identical.
+
+Regenerate the derived files with `python3 um/tools/build-sante-coupes.py`. Regenerate the Bridget index with `node um/bridget/build-index.mjs ./um https://ericgrimard-pixel.github.io/um/ ./um/bridget/index.json`. GitHub Actions checks that `index.json` matches, and does not commit.
 
 Brigitte (Miriamphobots) is the single entry at the top of the Hub and of the standalone engine. Motto: `One seed, infinite roots, perpetual harvest.` On open she says « Je suis Brigitte, je suis là pour toutes tes questions. » `#/world`, `?host=bridget`, `?from=world` and a `.world` arrival open that same panel. She reads `rules.json`, acts through `bridget-demo.js` (`window.BridgetDemo`, alias `window.BrigitteDemo`), and is checked by `bridget-manifest.json` (ETag and SHA-256, no APK reinstall, shown inside her panel). The one-tap portal is `/um/bridget/`. The minimal seed on Éric's two phones (`eric.grimard@universalmetaphor.ca`, `grimeric13@gmail.com`) has no 4 GB sandbox and no agent crystals; those arrive only with extensions.
 

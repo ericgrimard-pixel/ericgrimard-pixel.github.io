@@ -195,7 +195,7 @@
   function parentName(f){ const p=by(f.parent); return p?p.name:''; }
   const box=document.createElement('details');
   box.id='um-gaps'; box.open=true;
-  let li=['<li><span class="um-gap-badge">LACUNE / GAP</span><b>SANTÉ / Health</b> : l’étage Santé du Hub a 0 étage enfant et 0 objet. Le treillis santé est publié ici : <a id="um-gaps-health" href="'+LAT+'">SANTÉ / Health lattice ↗</a> <span class="um-gap-tag">[À CONFIRMER]</span><ul id="um-gaps-lat"><li>Chargement des lacunes du treillis…</li></ul></li>'];
+  let li=['<li><span class="um-gap-badge">LACUNE / GAP</span><b>SANTÉ / Health</b> : deux coupes Classe 2 sont branchées (villes du monde, provinces du Canada). Leurs lacunes sont sur le système. Le treillis santé reste publié : <a id="um-gaps-health" href="'+LAT+'">SANTÉ / Health lattice ↗</a> <span class="um-gap-tag">[À CONFIRMER]</span><ul id="um-gaps-lat"><li>Chargement des lacunes du treillis…</li></ul></li>'];
   flagged.forEach(x=>{
     if(x.f.id==='health') return;
     li.push('<li><span class="um-gap-badge">LACUNE / GAP</span><button type="button" data-gap="'+esc(x.f.id)+'">'+esc(x.f.name)+'</button>'
@@ -351,7 +351,7 @@
   const R=document.getElementById('right'); if(!R) return;
   let tok=null; try{ tok=localStorage.getItem('um.hubGuestKey'); }catch(e){}
   if(!tok||!window.crypto||!crypto.subtle) return;
-  const fpReady=window.UM_ADMIN?Promise.resolve():new Promise((res,rej)=>{ const s=document.createElement('script'); s.src='/um/door/admin/fingerprints.js?v=21.05'; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
+  const fpReady=window.UM_ADMIN?Promise.resolve():new Promise((res,rej)=>{ const s=document.createElement('script'); s.src='/um/door/admin/fingerprints.js?v=21.06'; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
   fpReady.then(()=>UM_ADMIN.check(tok)).then(who=>{
     if(!who) return;
     const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -893,7 +893,7 @@
     if(!(document.getElementById('um-agent-first')&&document.getElementById('um-agent-left')&&document.getElementById('um-door-agent'))&&++tries<120) setTimeout(put,250);
   }
   if(window.UM_AGENT_SWITCH){ put(); return; }
-  const s=document.createElement('script'); s.src='/um/engine/agent-switch.js?v=21.05'; s.onload=put; document.head.appendChild(s);
+  const s=document.createElement('script'); s.src='/um/engine/agent-switch.js?v=21.06'; s.onload=put; document.head.appendChild(s);
 })();
 
 

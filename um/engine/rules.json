@@ -1,6 +1,6 @@
 {
   "schema": "um.bridget.rules.v2",
-  "hub_version": "v21.05",
+  "hub_version": "v21.06",
   "family": "Miriamphobots",
   "participant": "Brigitte",
   "motto": "One seed, infinite roots, perpetual harvest.",
@@ -10,7 +10,8 @@
     "method": "etag-and-sha256-manifest-check",
     "requires_apk_reinstall": false
   },
-  "base_lineage": ["v20.99", "v21.00", "v21.01", "v21.02", "v21.03", "v21.04", "v21.05"],
+  "base_lineage": ["v20.99", "v21.00", "v21.01", "v21.02", "v21.03", "v21.04", "v21.05", "v21.06"],
+  "next_free": "v21.07",
   "engine_rev": {
     "hub": "23.17",
     "relatif": "23.20",
@@ -41,7 +42,7 @@
     {
       "path": "/um/engine/README.md",
       "file": "um/engine/README.md",
-      "role": "Note de portage du moteur. L'en-tête v21.05 prime sur le mémoire rév. 23.16 qui suit."
+      "role": "Note de portage du moteur. L'en-tête v21.06 prime sur le mémoire rév. 23.16 qui suit."
     },
     {
       "path": "/um/bridget/",
@@ -52,10 +53,10 @@
   "hub_structure": {
     "public_root": "/um/",
     "sante_3x3": "/um/data/sante/xyz/",
-    "sante_note": "Paquets v1g X / Y / Z (1990 → 2024) restent servis tels quels. Le paquet u5mr antérieur sous /um/data/sante/u5mr/ est conservé.",
+    "sante_note": "Paquets v1g X / Y / Z (1990 → 2024) restent servis tels quels sous /um/data/sante/xyz/. Le paquet u5mr antérieur sous /um/data/sante/u5mr/ est conservé. v21.06 ajoute deux coupes Classe 2 : /um/data/sante/villes-wup2025/ et /um/data/sante/provinces-canada-statcan-13-10-0114/.",
     "engine_in_hub": "um/index.html charge three.js local, les librairies, puis engine.js et hub-nav.js. La navigation d'étage reste hors du moteur.",
     "engine_standalone": "um/engine/manifestation-engine.html porte son propre script de moteur et charge les librairies de um/engine/data/.",
-    "demo_script": "um/engine/bridget-demo.js est chargé par les deux pages et expose window.BridgetDemo. Une seule entrée, le bouton Brigitte en haut. Sur #/world, ?host=bridget, ?from=world ou un lien .world, cette même entrée s’ouvre.",
+    "demo_script": "um/engine/bridget-demo.js est chargé par les deux pages et expose window.BridgetDemo. Une seule entrée, le bouton Brigitte en haut. Sur #/world, ?host=bridget, ?from=world ou un lien .world, cette même entrée s’ouvre. Les questions lisent um/bridget/index.json (Bridget.createEngine). escalate reste éteint.",
     "do_not_disturb": [
       "Fonctionnalité existante de um/",
       "Santé 3×3 sous um/data/sante/xyz/",
@@ -234,7 +235,7 @@
   },
   "invariants": [
     "La famille d'agents est Miriamphobots.",
-    "Lignée canonique : v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05.",
+    "Lignée canonique : v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06. Prochain numéro libre : v21.07.",
     "Devise : One seed, infinite roots, perpetual harvest.",
     "Brigitte est l’entrée unique, en haut. #/world ouvre ce même panneau. Le portail est /um/bridget/. L'actualisation se fait par ETag et SHA-256, sans réinstallation d'APK.",
     "Règles 8 et 9 des tablettes du canon s'appliquent à chaque geste.",

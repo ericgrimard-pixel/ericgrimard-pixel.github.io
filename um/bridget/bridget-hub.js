@@ -1,6 +1,11 @@
 /* Bridget — module Hub. Lecture seule. Aucune clé, aucun appel réseau externe.
    Elle ne lit que index.json (la documentation publiée du Hub, même origine).
-   Elle ne répond que depuis cet index ; sinon elle le dit (Canon 04). */
+   Elle ne répond que depuis cet index ; sinon elle le dit (Canon 04).
+   Adaptation v21.06, minimale et documentée : chaque passage renvoie aussi
+   doc.section et doc.selector (chaînes vides si absents). Le panneau Brigitte
+   déjà en place s'en sert pour citer la section et proposer « Montre-moi ».
+   createEngine, load et mount gardent le même contrat. escalate reste absent
+   tant qu'on ne le passe pas. Aucun accès Drive, courrier ou contacts. */
 (function (root) {
   'use strict';
 
@@ -53,7 +58,7 @@
         answered: answered,
         score: best ? best.score : 0,
         passages: (answered ? top : []).map(function (r) {
-          return { title: r.chunk.doc.title, url: r.chunk.doc.url, text: r.chunk.text, score: r.score };
+          return { title: r.chunk.doc.title, url: r.chunk.doc.url, text: r.chunk.text, score: r.score, section: r.chunk.doc.section || '', selector: r.chunk.doc.selector || '' };
         })
       };
     }

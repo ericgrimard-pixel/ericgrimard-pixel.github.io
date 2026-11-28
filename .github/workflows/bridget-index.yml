@@ -1,0 +1,29 @@
+name: Bridget index
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Fail if um/bridget/index.json is stale
+        run: |
+          node um/bridget/build-index.mjs ./um https://ericgrimard-pixel.github.io/um/ /tmp/bridget-index.json
+          python3 - <<'PY'
+          import json
+          committed = json.load(open("um/bridget/index.json", encoding="utf-8"))
+          fresh = json.load(open("/tmp/bridget-index.json", encoding="utf-8"))
+          if committed != fresh:
+              print("index.json is stale. Regenerate it and commit the result. This check does not commit.")
+              raise SystemExit(1)
+          n = len(fresh.get("docs") or [])
+          chunks = sum(len(d.get("chunks") or []) for d in fresh["docs"])
+          print(f"index.json is current: {n} documents, {chunks} passages, built {fresh.get('built')}")
+          PY

@@ -1,0 +1,4821 @@
+{
+ "format": "sante-coupe-v21.06",
+ "system_id": "sante-villes",
+ "name": "Santé — Villes du monde (WUP 2025, T₀ 1990 → T₁ 2024)",
+ "source_file": "sante-villes-wup2025-T0-1990-T1-2024.csv",
+ "source_sha256": "11fb42ead42163c32f54ab998cddebdd78b86162cc5aee17a64fc92b84defdf5",
+ "source_bytes": 2024403,
+ "line_endings": "mixed CRLF and LF, preserved",
+ "counts": {
+  "cities": 16768,
+  "countries": 179,
+  "both": 6814,
+  "one": 5164,
+  "none": 4790
+ },
+ "coverage": {
+  "countries": 179,
+  "countries_of": 196,
+  "pct": 91.3
+ },
+ "world_bounds_k": {
+  "tail_lo": 50.627,
+  "q20": 65.16,
+  "q40": 86.257,
+  "q60": 125.924,
+  "q80": 236.555,
+  "tail_hi": 5720.656
+ },
+ "unattached_territories": [
+  "CUW",
+  "ESH",
+  "GIB",
+  "GLP",
+  "GUF",
+  "HKG",
+  "JEY",
+  "MAC",
+  "MTQ",
+  "MYT",
+  "NCL",
+  "PRI",
+  "PYF",
+  "REU",
+  "TWN"
+ ],
+ "missing_of_196": [
+  "AND",
+  "ATG",
+  "DMA",
+  "FSM",
+  "GRD",
+  "KNA",
+  "LCA",
+  "MHL",
+  "NRU",
+  "PLW",
+  "SMR",
+  "SYC",
+  "TCA",
+  "TON",
+  "TUV",
+  "VCT",
+  "VGB"
+ ],
+ "gaps": [
+  "[INCOMPLET] 4 790 villes sans aucune prise, 5 164 avec une seule",
+  "[INCOMPLET] 15 territoires non rattachés aux 196 : CUW, ESH, GIB, GLP, GUF, HKG, JEY, MAC, MTQ, MYT, NCL, PRI, PYF, REU, TWN",
+  "[INCOMPLET] 17 codes des 196 sans ville : AND, ATG, DMA, FSM, GRD, KNA, LCA, MHL, NRU, PLW, SMR, SYC, TCA, TON, TUV, VCT, VGB",
+  "[INCOMPLET] noms de pays absents : codes ISO3 seulement"
+ ],
+ "manifestation": "Classe 1 = médiane des villes par pays. Classe 2 = zones. CSV et cities.json gardent chaque ville.",
+ "countries": [
+  {
+   "iso3": "AGO",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 120,
+   "n0": 29,
+   "n1": 52,
+   "both": 23,
+   "one": 35,
+   "none": 62,
+   "median_T0": 90.153,
+   "median_T1": 118.36500000000001,
+   "bornes_pays": "74.750|90.153|158.959|324.922",
+   "fenetre_monde_T1": {
+    "1": 3,
+    "2": 15,
+    "3": 9,
+    "4": 7,
+    "5": 18
+   },
+   "fenetre_pays_T1": {
+    "1": 10,
+    "2": 8,
+    "3": 13,
+    "4": 7,
+    "5": 14
+   }
+  },
+  {
+   "iso3": "BDI",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 42,
+   "n0": 2,
+   "n1": 9,
+   "both": 2,
+   "one": 7,
+   "none": 33,
+   "median_T0": 161.952,
+   "median_T1": 111.888,
+   "bornes_pays": "66.109|105.492|128.243|193.806",
+   "fenetre_monde_T1": {
+    "1": 2,
+    "2": 1,
+    "3": 2,
+    "4": 3,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 3,
+    "2": 1,
+    "3": 2,
+    "4": 2,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "BEN",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 51,
+   "n0": 5,
+   "n1": 25,
+   "both": 5,
+   "one": 20,
+   "none": 26,
+   "median_T0": 77.275,
+   "median_T1": 72.169,
+   "bornes_pays": "62.787|69.293|105.857|182.468",
+   "fenetre_monde_T1": {
+    "1": 9,
+    "2": 4,
+    "3": 6,
+    "4": 2,
+    "5": 4
+   },
+   "fenetre_pays_T1": {
+    "1": 5,
+    "2": 6,
+    "3": 4,
+    "4": 6,
+    "5": 4
+   }
+  },
+  {
+   "iso3": "BFA",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 48,
+   "n0": 4,
+   "n1": 17,
+   "both": 4,
+   "one": 13,
+   "none": 31,
+   "median_T0": 172.25549999999998,
+   "median_T1": 91.412,
+   "bornes_pays": "67.772|82.348|127.108|178.801",
+   "fenetre_monde_T1": {
+    "1": 4,
+    "2": 3,
+    "3": 3,
+    "4": 5,
+    "5": 2
+   },
+   "fenetre_pays_T1": {
+    "1": 4,
+    "2": 3,
+    "3": 4,
+    "4": 4,
+    "5": 2
+   }
+  },
+  {
+   "iso3": "BWA",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 9,
+   "n0": 0,
+   "n1": 4,
+   "both": 0,
+   "one": 4,
+   "none": 5,
+   "median_T0": null,
+   "median_T1": 96.1975,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "2": 1,
+    "3": 2,
+    "5": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "CAF",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 18,
+   "n0": 1,
+   "n1": 5,
+   "both": 1,
+   "one": 4,
+   "none": 13,
+   "median_T0": 562.356,
+   "median_T1": 61.913,
+   "bornes_pays": "60.360|61.913|77.756|562.356",
+   "fenetre_monde_T1": {
+    "1": 3,
+    "2": 1,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "2": 1,
+    "3": 1,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "CIV",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 88,
+   "n0": 12,
+   "n1": 39,
+   "both": 12,
+   "one": 27,
+   "none": 49,
+   "median_T0": 74.12899999999999,
+   "median_T1": 91.767,
+   "bornes_pays": "65.090|80.342|111.188|198.640",
+   "fenetre_monde_T1": {
+    "1": 7,
+    "2": 10,
+    "3": 9,
+    "4": 7,
+    "5": 6
+   },
+   "fenetre_pays_T1": {
+    "1": 7,
+    "2": 7,
+    "3": 8,
+    "4": 9,
+    "5": 8
+   }
+  },
+  {
+   "iso3": "CMR",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 90,
+   "n0": 27,
+   "n1": 41,
+   "both": 27,
+   "one": 14,
+   "none": 49,
+   "median_T0": 99.259,
+   "median_T1": 116.392,
+   "bornes_pays": "66.653|97.850|118.051|222.425",
+   "fenetre_monde_T1": {
+    "1": 3,
+    "2": 8,
+    "3": 11,
+    "4": 10,
+    "5": 9
+   },
+   "fenetre_pays_T1": {
+    "1": 4,
+    "2": 11,
+    "3": 6,
+    "4": 10,
+    "5": 10
+   }
+  },
+  {
+   "iso3": "COD",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 445,
+   "n0": 64,
+   "n1": 184,
+   "both": 64,
+   "one": 120,
+   "none": 261,
+   "median_T0": 97.833,
+   "median_T1": 111.8355,
+   "bornes_pays": "70.730|92.019|134.147|237.900",
+   "fenetre_monde_T1": {
+    "1": 26,
+    "2": 41,
+    "3": 33,
+    "4": 45,
+    "5": 39
+   },
+   "fenetre_pays_T1": {
+    "1": 34,
+    "2": 36,
+    "3": 35,
+    "4": 41,
+    "5": 38
+   }
+  },
+  {
+   "iso3": "COG",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 12,
+   "n0": 3,
+   "n1": 3,
+   "both": 2,
+   "one": 2,
+   "none": 8,
+   "median_T0": 360.29,
+   "median_T1": 1622.947,
+   "bornes_pays": "269.683|360.290|1021.751|1622.947",
+   "fenetre_monde_T1": {
+    "4": 1,
+    "5": 2
+   },
+   "fenetre_pays_T1": {
+    "1": 1,
+    "4": 1,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "COM",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 2,
+   "n0": 2,
+   "n1": 2,
+   "both": 2,
+   "one": 0,
+   "none": 0,
+   "median_T0": 97.28,
+   "median_T1": 200.6285,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "4": 2
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "CPV",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 2,
+   "n0": 1,
+   "n1": 2,
+   "both": 1,
+   "one": 1,
+   "none": 0,
+   "median_T0": 82.946,
+   "median_T1": 103.7255,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "2": 1,
+    "4": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "ERI",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 13,
+   "n0": 5,
+   "n1": 9,
+   "both": 5,
+   "one": 4,
+   "none": 4,
+   "median_T0": 155.509,
+   "median_T1": 96.661,
+   "bornes_pays": "65.682|94.965|155.387|237.135",
+   "fenetre_monde_T1": {
+    "1": 1,
+    "2": 2,
+    "3": 2,
+    "4": 2,
+    "5": 2
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "2": 2,
+    "3": 2,
+    "4": 1,
+    "5": 2
+   }
+  },
+  {
+   "iso3": "ETH",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 501,
+   "n0": 74,
+   "n1": 220,
+   "both": 74,
+   "one": 146,
+   "none": 281,
+   "median_T0": 68.089,
+   "median_T1": 86.5475,
+   "bornes_pays": "62.066|72.586|91.267|140.091",
+   "fenetre_monde_T1": {
+    "1": 50,
+    "2": 59,
+    "3": 53,
+    "4": 40,
+    "5": 18
+   },
+   "fenetre_pays_T1": {
+    "1": 30,
+    "2": 48,
+    "3": 42,
+    "4": 51,
+    "5": 49
+   }
+  },
+  {
+   "iso3": "GAB",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 8,
+   "n0": 2,
+   "n1": 6,
+   "both": 2,
+   "one": 4,
+   "none": 2,
+   "median_T0": 170.1805,
+   "median_T1": 107.00550000000001,
+   "bornes_pays": "75.522|98.491|144.973|279.970",
+   "fenetre_monde_T1": {
+    "1": 1,
+    "3": 3,
+    "5": 2
+   },
+   "fenetre_pays_T1": {
+    "1": 1,
+    "2": 1,
+    "3": 2,
+    "5": 2
+   }
+  },
+  {
+   "iso3": "GHA",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 105,
+   "n0": 15,
+   "n1": 53,
+   "both": 15,
+   "one": 38,
+   "none": 52,
+   "median_T0": 89.254,
+   "median_T1": 89.21,
+   "bornes_pays": "68.396|83.851|101.966|163.505",
+   "fenetre_monde_T1": {
+    "1": 10,
+    "2": 14,
+    "3": 14,
+    "4": 7,
+    "5": 8
+   },
+   "fenetre_pays_T1": {
+    "1": 11,
+    "2": 10,
+    "3": 11,
+    "4": 10,
+    "5": 11
+   }
+  },
+  {
+   "iso3": "GIN",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 38,
+   "n0": 7,
+   "n1": 19,
+   "both": 7,
+   "one": 12,
+   "none": 19,
+   "median_T0": 77.149,
+   "median_T1": 91.237,
+   "bornes_pays": "57.676|79.083|91.237|204.795",
+   "fenetre_monde_T1": {
+    "1": 6,
+    "2": 2,
+    "3": 4,
+    "4": 3,
+    "5": 4
+   },
+   "fenetre_pays_T1": {
+    "1": 3,
+    "2": 4,
+    "3": 3,
+    "4": 5,
+    "5": 4
+   }
+  },
+  {
+   "iso3": "GMB",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 7,
+   "n0": 1,
+   "n1": 4,
+   "both": 1,
+   "one": 3,
+   "none": 3,
+   "median_T0": 275.368,
+   "median_T1": 126.23599999999999,
+   "bornes_pays": "70.718|137.120|218.540|448.037",
+   "fenetre_monde_T1": {
+    "2": 2,
+    "4": 1,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "GNB",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 4,
+   "n0": 1,
+   "n1": 3,
+   "both": 1,
+   "one": 2,
+   "none": 1,
+   "median_T0": 184.645,
+   "median_T1": 83.517,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "2": 2,
+    "5": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "GNQ",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 3,
+   "n0": 0,
+   "n1": 2,
+   "both": 0,
+   "one": 2,
+   "none": 1,
+   "median_T0": null,
+   "median_T1": 791.0915,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "5": 2
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "KEN",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 99,
+   "n0": 8,
+   "n1": 42,
+   "both": 8,
+   "one": 34,
+   "none": 57,
+   "median_T0": 114.338,
+   "median_T1": 110.72,
+   "bornes_pays": "65.565|89.417|135.715|200.363",
+   "fenetre_monde_T1": {
+    "1": 8,
+    "2": 8,
+    "3": 9,
+    "4": 11,
+    "5": 6
+   },
+   "fenetre_pays_T1": {
+    "1": 8,
+    "2": 8,
+    "3": 10,
+    "4": 9,
+    "5": 7
+   }
+  },
+  {
+   "iso3": "LBR",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 13,
+   "n0": 1,
+   "n1": 9,
+   "both": 1,
+   "one": 8,
+   "none": 4,
+   "median_T0": 1046.724,
+   "median_T1": 74.713,
+   "bornes_pays": "59.885|71.034|81.398|276.585",
+   "fenetre_monde_T1": {
+    "1": 3,
+    "2": 5,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "2": 2,
+    "3": 2,
+    "4": 2,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "LSO",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 1,
+   "n0": 1,
+   "n1": 1,
+   "both": 1,
+   "one": 0,
+   "none": 0,
+   "median_T0": 175.65,
+   "median_T1": 284.88,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "5": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "MDG",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 40,
+   "n0": 2,
+   "n1": 18,
+   "both": 2,
+   "one": 16,
+   "none": 22,
+   "median_T0": 426.3375,
+   "median_T1": 91.093,
+   "bornes_pays": "65.159|80.628|128.255|213.315",
+   "fenetre_monde_T1": {
+    "1": 4,
+    "2": 5,
+    "3": 1,
+    "4": 5,
+    "5": 3
+   },
+   "fenetre_pays_T1": {
+    "1": 4,
+    "2": 3,
+    "3": 4,
+    "4": 4,
+    "5": 3
+   }
+  },
+  {
+   "iso3": "MLI",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 47,
+   "n0": 6,
+   "n1": 15,
+   "both": 6,
+   "one": 9,
+   "none": 32,
+   "median_T0": 64.4645,
+   "median_T1": 111.816,
+   "bornes_pays": "67.870|81.989|111.816|277.598",
+   "fenetre_monde_T1": {
+    "1": 1,
+    "2": 5,
+    "3": 2,
+    "4": 2,
+    "5": 5
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "2": 3,
+    "3": 3,
+    "4": 4,
+    "5": 3
+   }
+  },
+  {
+   "iso3": "MOZ",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 90,
+   "n0": 12,
+   "n1": 37,
+   "both": 12,
+   "one": 25,
+   "none": 53,
+   "median_T0": 101.9325,
+   "median_T1": 99.803,
+   "bornes_pays": "68.510|89.270|115.010|260.639",
+   "fenetre_monde_T1": {
+    "1": 5,
+    "2": 9,
+    "3": 9,
+    "4": 5,
+    "5": 9
+   },
+   "fenetre_pays_T1": {
+    "1": 7,
+    "2": 9,
+    "3": 6,
+    "4": 7,
+    "5": 8
+   }
+  },
+  {
+   "iso3": "MRT",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 12,
+   "n0": 1,
+   "n1": 5,
+   "both": 1,
+   "one": 4,
+   "none": 7,
+   "median_T0": 388.078,
+   "median_T1": 102.766,
+   "bornes_pays": "79.345|102.766|173.756|388.078",
+   "fenetre_monde_T1": {
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "4": 1,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "2": 1,
+    "3": 1,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "MUS",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 1,
+   "n0": 1,
+   "n1": 1,
+   "both": 1,
+   "one": 0,
+   "none": 0,
+   "median_T0": 503.806,
+   "median_T1": 549.996,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "5": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "MWI",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 21,
+   "n0": 2,
+   "n1": 6,
+   "both": 2,
+   "one": 4,
+   "none": 15,
+   "median_T0": 218.2835,
+   "median_T1": 180.0125,
+   "bornes_pays": "96.003|142.796|232.537|661.763",
+   "fenetre_monde_T1": {
+    "1": 1,
+    "2": 1,
+    "4": 2,
+    "5": 2
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "3": 2,
+    "5": 2
+   }
+  },
+  {
+   "iso3": "NAM",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 6,
+   "n0": 1,
+   "n1": 4,
+   "both": 1,
+   "one": 3,
+   "none": 2,
+   "median_T0": 99.77,
+   "median_T1": 83.9255,
+   "bornes_pays": "79.924|84.056|90.656|160.057",
+   "fenetre_monde_T1": {
+    "2": 3,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "NER",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 74,
+   "n0": 12,
+   "n1": 30,
+   "both": 12,
+   "one": 18,
+   "none": 44,
+   "median_T0": 91.11949999999999,
+   "median_T1": 116.436,
+   "bornes_pays": "63.614|82.047|124.342|164.966",
+   "fenetre_monde_T1": {
+    "1": 6,
+    "2": 6,
+    "3": 4,
+    "4": 9,
+    "5": 5
+   },
+   "fenetre_pays_T1": {
+    "1": 5,
+    "2": 6,
+    "3": 5,
+    "4": 7,
+    "5": 7
+   }
+  },
+  {
+   "iso3": "NGA",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 791,
+   "n0": 190,
+   "n1": 409,
+   "both": 190,
+   "one": 219,
+   "none": 382,
+   "median_T0": 80.6875,
+   "median_T1": 111.987,
+   "bornes_pays": "65.541|84.856|122.078|228.890",
+   "fenetre_monde_T1": {
+    "1": 58,
+    "2": 84,
+    "3": 91,
+    "4": 85,
+    "5": 91
+   },
+   "fenetre_pays_T1": {
+    "1": 60,
+    "2": 80,
+    "3": 84,
+    "4": 93,
+    "5": 92
+   }
+  },
+  {
+   "iso3": "RWA",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 33,
+   "n0": 2,
+   "n1": 4,
+   "both": 2,
+   "one": 2,
+   "none": 29,
+   "median_T0": 127.23949999999999,
+   "median_T1": 241.35150000000002,
+   "bornes_pays": "81.794|152.019|172.685|330.684",
+   "fenetre_monde_T1": {
+    "2": 1,
+    "4": 1,
+    "5": 2
+   },
+   "fenetre_pays_T1": {
+    "1": 1,
+    "2": 1,
+    "4": 1,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "SDN",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 173,
+   "n0": 63,
+   "n1": 100,
+   "both": 54,
+   "one": 55,
+   "none": 64,
+   "median_T0": 91.768,
+   "median_T1": 111.8215,
+   "bornes_pays": "66.365|89.325|117.521|195.895",
+   "fenetre_monde_T1": {
+    "1": 15,
+    "2": 17,
+    "3": 26,
+    "4": 25,
+    "5": 17
+   },
+   "fenetre_pays_T1": {
+    "1": 15,
+    "2": 19,
+    "3": 22,
+    "4": 20,
+    "5": 24
+   }
+  },
+  {
+   "iso3": "SEN",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 49,
+   "n0": 12,
+   "n1": 25,
+   "both": 12,
+   "one": 13,
+   "none": 24,
+   "median_T0": 118.354,
+   "median_T1": 98.28,
+   "bornes_pays": "72.233|92.249|170.214|275.802",
+   "fenetre_monde_T1": {
+    "1": 4,
+    "2": 8,
+    "3": 1,
+    "4": 4,
+    "5": 8
+   },
+   "fenetre_pays_T1": {
+    "1": 8,
+    "2": 4,
+    "3": 2,
+    "4": 5,
+    "5": 6
+   }
+  },
+  {
+   "iso3": "SLE",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 17,
+   "n0": 5,
+   "n1": 11,
+   "both": 5,
+   "one": 6,
+   "none": 6,
+   "median_T0": 114.563,
+   "median_T1": 96.593,
+   "bornes_pays": "75.293|96.593|116.919|246.714",
+   "fenetre_monde_T1": {
+    "1": 1,
+    "2": 4,
+    "3": 1,
+    "4": 2,
+    "5": 3
+   },
+   "fenetre_pays_T1": {
+    "1": 4,
+    "2": 2,
+    "4": 3,
+    "5": 2
+   }
+  },
+  {
+   "iso3": "SOM",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 86,
+   "n0": 21,
+   "n1": 42,
+   "both": 21,
+   "one": 21,
+   "none": 44,
+   "median_T0": 96.475,
+   "median_T1": 110.788,
+   "bornes_pays": "65.380|95.897|126.134|240.205",
+   "fenetre_monde_T1": {
+    "1": 7,
+    "2": 7,
+    "3": 11,
+    "4": 7,
+    "5": 10
+   },
+   "fenetre_pays_T1": {
+    "1": 7,
+    "2": 8,
+    "3": 10,
+    "4": 7,
+    "5": 10
+   }
+  },
+  {
+   "iso3": "SSD",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 40,
+   "n0": 10,
+   "n1": 21,
+   "both": 9,
+   "one": 13,
+   "none": 18,
+   "median_T0": 78.84649999999999,
+   "median_T1": 121.882,
+   "bornes_pays": "74.017|85.779|121.882|206.738",
+   "fenetre_monde_T1": {
+    "1": 2,
+    "2": 5,
+    "3": 4,
+    "4": 5,
+    "5": 5
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "2": 5,
+    "3": 4,
+    "4": 4,
+    "5": 6
+   }
+  },
+  {
+   "iso3": "STP",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 1,
+   "n0": 1,
+   "n1": 1,
+   "both": 1,
+   "one": 0,
+   "none": 0,
+   "median_T0": 58.9,
+   "median_T1": 145.54,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "4": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "SWZ",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 3,
+   "n0": 0,
+   "n1": 0,
+   "both": 0,
+   "one": 0,
+   "none": 3,
+   "median_T0": null,
+   "median_T1": null,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {},
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "TCD",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 66,
+   "n0": 15,
+   "n1": 32,
+   "both": 15,
+   "one": 17,
+   "none": 34,
+   "median_T0": 77.098,
+   "median_T1": 130.5235,
+   "bornes_pays": "72.665|80.693|120.269|166.465",
+   "fenetre_monde_T1": {
+    "1": 3,
+    "2": 7,
+    "3": 6,
+    "4": 12,
+    "5": 4
+   },
+   "fenetre_pays_T1": {
+    "1": 4,
+    "2": 6,
+    "3": 5,
+    "4": 8,
+    "5": 9
+   }
+  },
+  {
+   "iso3": "TGO",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 33,
+   "n0": 7,
+   "n1": 17,
+   "both": 7,
+   "one": 10,
+   "none": 16,
+   "median_T0": 100.319,
+   "median_T1": 110.05,
+   "bornes_pays": "67.353|96.475|112.751|190.782",
+   "fenetre_monde_T1": {
+    "1": 3,
+    "2": 3,
+    "3": 4,
+    "4": 5,
+    "5": 2
+   },
+   "fenetre_pays_T1": {
+    "1": 3,
+    "2": 4,
+    "3": 2,
+    "4": 4,
+    "5": 4
+   }
+  },
+  {
+   "iso3": "TZA",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 142,
+   "n0": 16,
+   "n1": 38,
+   "both": 16,
+   "one": 22,
+   "none": 104,
+   "median_T0": 98.8995,
+   "median_T1": 155.4405,
+   "bornes_pays": "68.275|111.169|153.842|235.785",
+   "fenetre_monde_T1": {
+    "1": 3,
+    "2": 6,
+    "3": 7,
+    "4": 12,
+    "5": 10
+   },
+   "fenetre_pays_T1": {
+    "1": 7,
+    "2": 5,
+    "3": 7,
+    "4": 9,
+    "5": 10
+   }
+  },
+  {
+   "iso3": "UGA",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 67,
+   "n0": 4,
+   "n1": 19,
+   "both": 4,
+   "one": 15,
+   "none": 48,
+   "median_T0": 54.679,
+   "median_T1": 136.028,
+   "bornes_pays": "64.787|96.666|150.549|242.029",
+   "fenetre_monde_T1": {
+    "1": 2,
+    "2": 4,
+    "3": 3,
+    "4": 6,
+    "5": 4
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "2": 4,
+    "3": 5,
+    "4": 4,
+    "5": 4
+   }
+  },
+  {
+   "iso3": "ZAF",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 124,
+   "n0": 44,
+   "n1": 84,
+   "both": 42,
+   "one": 44,
+   "none": 38,
+   "median_T0": 93.399,
+   "median_T1": 121.1275,
+   "bornes_pays": "67.518|94.013|146.836|253.523",
+   "fenetre_monde_T1": {
+    "1": 15,
+    "2": 9,
+    "3": 19,
+    "4": 21,
+    "5": 20
+   },
+   "fenetre_pays_T1": {
+    "1": 17,
+    "2": 12,
+    "3": 19,
+    "4": 19,
+    "5": 17
+   }
+  },
+  {
+   "iso3": "ZMB",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 54,
+   "n0": 12,
+   "n1": 28,
+   "both": 12,
+   "one": 16,
+   "none": 26,
+   "median_T0": 90.054,
+   "median_T1": 115.2975,
+   "bornes_pays": "62.133|91.255|133.732|240.505",
+   "fenetre_monde_T1": {
+    "1": 6,
+    "2": 2,
+    "3": 7,
+    "4": 7,
+    "5": 6
+   },
+   "fenetre_pays_T1": {
+    "1": 4,
+    "2": 6,
+    "3": 6,
+    "4": 6,
+    "5": 6
+   }
+  },
+  {
+   "iso3": "ZWE",
+   "zone": "Africa",
+   "zone_fr": "Afrique",
+   "n": 26,
+   "n0": 6,
+   "n1": 13,
+   "both": 6,
+   "one": 7,
+   "none": 13,
+   "median_T0": 72.97200000000001,
+   "median_T1": 95.116,
+   "bornes_pays": "67.299|85.368|114.582|304.062",
+   "fenetre_monde_T1": {
+    "1": 1,
+    "2": 4,
+    "3": 3,
+    "4": 3,
+    "5": 2
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 2
+   }
+  },
+  {
+   "iso3": "ARG",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 80,
+   "n0": 46,
+   "n1": 76,
+   "both": 46,
+   "one": 30,
+   "none": 4,
+   "median_T0": 92.1455,
+   "median_T1": 90.27000000000001,
+   "bornes_pays": "60.228|77.653|114.145|271.444",
+   "fenetre_monde_T1": {
+    "1": 16,
+    "2": 20,
+    "3": 13,
+    "4": 11,
+    "5": 16
+   },
+   "fenetre_pays_T1": {
+    "1": 12,
+    "2": 15,
+    "3": 19,
+    "4": 15,
+    "5": 15
+   }
+  },
+  {
+   "iso3": "BHS",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 1,
+   "n0": 1,
+   "n1": 1,
+   "both": 1,
+   "one": 0,
+   "none": 0,
+   "median_T0": 153.314,
+   "median_T1": 248.739,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "5": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "BLZ",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 1,
+   "n0": 0,
+   "n1": 1,
+   "both": 0,
+   "one": 1,
+   "none": 0,
+   "median_T0": null,
+   "median_T1": 74.953,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "2": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "BOL",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 21,
+   "n0": 8,
+   "n1": 11,
+   "both": 8,
+   "one": 3,
+   "none": 10,
+   "median_T0": 143.45299999999997,
+   "median_T1": 242.199,
+   "bornes_pays": "97.466|137.719|275.859|768.969",
+   "fenetre_monde_T1": {
+    "2": 2,
+    "3": 2,
+    "4": 1,
+    "5": 6
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "2": 2,
+    "3": 2,
+    "4": 2,
+    "5": 3
+   }
+  },
+  {
+   "iso3": "BRA",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 384,
+   "n0": 197,
+   "n1": 350,
+   "both": 195,
+   "one": 157,
+   "none": 32,
+   "median_T0": 92.255,
+   "median_T1": 95.6325,
+   "bornes_pays": "62.439|78.735|118.516|236.199",
+   "fenetre_monde_T1": {
+    "1": 81,
+    "2": 69,
+    "3": 75,
+    "4": 55,
+    "5": 70
+   },
+   "fenetre_pays_T1": {
+    "1": 66,
+    "2": 64,
+    "3": 85,
+    "4": 65,
+    "5": 70
+   }
+  },
+  {
+   "iso3": "BRB",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 1,
+   "n0": 1,
+   "n1": 1,
+   "both": 1,
+   "one": 0,
+   "none": 0,
+   "median_T0": 126.193,
+   "median_T1": 121.346,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "3": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "CAN",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 63,
+   "n0": 30,
+   "n1": 52,
+   "both": 29,
+   "one": 24,
+   "none": 10,
+   "median_T0": 144.28199999999998,
+   "median_T1": 119.8295,
+   "bornes_pays": "81.087|107.500|185.670|348.357",
+   "fenetre_monde_T1": {
+    "1": 3,
+    "2": 10,
+    "3": 14,
+    "4": 7,
+    "5": 18
+   },
+   "fenetre_pays_T1": {
+    "1": 9,
+    "2": 13,
+    "3": 8,
+    "4": 10,
+    "5": 12
+   }
+  },
+  {
+   "iso3": "CHL",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 39,
+   "n0": 21,
+   "n1": 36,
+   "both": 21,
+   "one": 15,
+   "none": 3,
+   "median_T0": 104.301,
+   "median_T1": 125.3135,
+   "bornes_pays": "68.913|91.441|132.469|256.983",
+   "fenetre_monde_T1": {
+    "1": 8,
+    "2": 5,
+    "3": 5,
+    "4": 9,
+    "5": 9
+   },
+   "fenetre_pays_T1": {
+    "1": 8,
+    "2": 6,
+    "3": 6,
+    "4": 7,
+    "5": 9
+   }
+  },
+  {
+   "iso3": "COL",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 99,
+   "n0": 39,
+   "n1": 77,
+   "both": 38,
+   "one": 40,
+   "none": 21,
+   "median_T0": 140.382,
+   "median_T1": 118.982,
+   "bornes_pays": "67.517|109.603|186.207|335.929",
+   "fenetre_monde_T1": {
+    "1": 15,
+    "2": 12,
+    "3": 16,
+    "4": 12,
+    "5": 22
+   },
+   "fenetre_pays_T1": {
+    "1": 17,
+    "2": 14,
+    "3": 16,
+    "4": 15,
+    "5": 15
+   }
+  },
+  {
+   "iso3": "CRI",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 6,
+   "n0": 3,
+   "n1": 4,
+   "both": 3,
+   "one": 1,
+   "none": 2,
+   "median_T0": 128.48,
+   "median_T1": 120.8125,
+   "bornes_pays": "52.256|82.918|164.841|882.010",
+   "fenetre_monde_T1": {
+    "1": 2,
+    "4": 1,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 1,
+    "2": 1,
+    "4": 1,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "CUB",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 32,
+   "n0": 28,
+   "n1": 28,
+   "both": 25,
+   "one": 6,
+   "none": 1,
+   "median_T0": 101.9515,
+   "median_T1": 108.49950000000001,
+   "bornes_pays": "54.249|87.010|113.633|198.962",
+   "fenetre_monde_T1": {
+    "1": 9,
+    "2": 2,
+    "3": 7,
+    "4": 6,
+    "5": 4
+   },
+   "fenetre_pays_T1": {
+    "1": 5,
+    "2": 6,
+    "3": 5,
+    "4": 6,
+    "5": 6
+   }
+  },
+  {
+   "iso3": "DOM",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 19,
+   "n0": 12,
+   "n1": 16,
+   "both": 11,
+   "one": 6,
+   "none": 2,
+   "median_T0": 99.69999999999999,
+   "median_T1": 126.0085,
+   "bornes_pays": "67.812|93.214|124.927|207.292",
+   "fenetre_monde_T1": {
+    "1": 2,
+    "2": 3,
+    "3": 3,
+    "4": 4,
+    "5": 4
+   },
+   "fenetre_pays_T1": {
+    "1": 3,
+    "2": 3,
+    "3": 2,
+    "4": 4,
+    "5": 4
+   }
+  },
+  {
+   "iso3": "ECU",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 42,
+   "n0": 16,
+   "n1": 30,
+   "both": 16,
+   "one": 14,
+   "none": 12,
+   "median_T0": 122.834,
+   "median_T1": 123.30600000000001,
+   "bornes_pays": "65.471|99.355|161.657|257.329",
+   "fenetre_monde_T1": {
+    "1": 7,
+    "2": 5,
+    "3": 3,
+    "4": 7,
+    "5": 8
+   },
+   "fenetre_pays_T1": {
+    "1": 8,
+    "2": 6,
+    "3": 3,
+    "4": 6,
+    "5": 7
+   }
+  },
+  {
+   "iso3": "GTM",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 49,
+   "n0": 10,
+   "n1": 30,
+   "both": 10,
+   "one": 20,
+   "none": 19,
+   "median_T0": 57.419,
+   "median_T1": 85.7205,
+   "bornes_pays": "57.457|66.067|92.303|112.568",
+   "fenetre_monde_T1": {
+    "1": 10,
+    "2": 5,
+    "3": 10,
+    "4": 3,
+    "5": 2
+   },
+   "fenetre_pays_T1": {
+    "1": 3,
+    "2": 7,
+    "3": 6,
+    "4": 7,
+    "5": 7
+   }
+  },
+  {
+   "iso3": "GUY",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 2,
+   "n0": 2,
+   "n1": 2,
+   "both": 2,
+   "one": 0,
+   "none": 0,
+   "median_T0": 101.97649999999999,
+   "median_T1": 118.0685,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "3": 1,
+    "4": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "HND",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 18,
+   "n0": 5,
+   "n1": 15,
+   "both": 5,
+   "one": 10,
+   "none": 3,
+   "median_T0": 88.022,
+   "median_T1": 100.208,
+   "bornes_pays": "69.079|81.800|106.000|284.795",
+   "fenetre_monde_T1": {
+    "1": 4,
+    "2": 3,
+    "3": 3,
+    "4": 2,
+    "5": 3
+   },
+   "fenetre_pays_T1": {
+    "1": 4,
+    "2": 3,
+    "3": 2,
+    "4": 4,
+    "5": 2
+   }
+  },
+  {
+   "iso3": "HTI",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 29,
+   "n0": 4,
+   "n1": 21,
+   "both": 4,
+   "one": 17,
+   "none": 8,
+   "median_T0": 139.137,
+   "median_T1": 76.97,
+   "bornes_pays": "64.457|75.710|112.827|239.154",
+   "fenetre_monde_T1": {
+    "1": 5,
+    "2": 7,
+    "3": 2,
+    "4": 3,
+    "5": 4
+   },
+   "fenetre_pays_T1": {
+    "1": 5,
+    "2": 4,
+    "3": 5,
+    "4": 3,
+    "5": 4
+   }
+  },
+  {
+   "iso3": "JAM",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 6,
+   "n0": 5,
+   "n1": 6,
+   "both": 5,
+   "one": 1,
+   "none": 0,
+   "median_T0": 93.436,
+   "median_T1": 110.18299999999999,
+   "bornes_pays": "86.919|93.436|118.766|347.747",
+   "fenetre_monde_T1": {
+    "1": 1,
+    "2": 1,
+    "3": 2,
+    "5": 2
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "3": 2,
+    "4": 1,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "MEX",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 210,
+   "n0": 94,
+   "n1": 177,
+   "both": 94,
+   "one": 83,
+   "none": 33,
+   "median_T0": 159.747,
+   "median_T1": 120.68,
+   "bornes_pays": "67.203|100.822|177.389|411.970",
+   "fenetre_monde_T1": {
+    "1": 31,
+    "2": 27,
+    "3": 37,
+    "4": 31,
+    "5": 51
+   },
+   "fenetre_pays_T1": {
+    "1": 37,
+    "2": 35,
+    "3": 38,
+    "4": 35,
+    "5": 32
+   }
+  },
+  {
+   "iso3": "NIC",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 20,
+   "n0": 7,
+   "n1": 11,
+   "both": 7,
+   "one": 4,
+   "none": 9,
+   "median_T0": 92.444,
+   "median_T1": 103.028,
+   "bornes_pays": "79.208|94.691|104.594|147.658",
+   "fenetre_monde_T1": {
+    "1": 1,
+    "2": 2,
+    "3": 4,
+    "4": 3,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 3,
+    "3": 3,
+    "4": 2,
+    "5": 3
+   }
+  },
+  {
+   "iso3": "PAN",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 6,
+   "n0": 2,
+   "n1": 5,
+   "both": 2,
+   "one": 3,
+   "none": 1,
+   "median_T0": 293.279,
+   "median_T1": 184.281,
+   "bornes_pays": "129.680|172.322|225.364|451.035",
+   "fenetre_monde_T1": {
+    "3": 1,
+    "4": 2,
+    "5": 2
+   },
+   "fenetre_pays_T1": {
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "4": 1,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "PER",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 55,
+   "n0": 25,
+   "n1": 40,
+   "both": 25,
+   "one": 15,
+   "none": 15,
+   "median_T0": 114.673,
+   "median_T1": 127.9795,
+   "bornes_pays": "68.563|95.812|192.501|346.688",
+   "fenetre_monde_T1": {
+    "1": 4,
+    "2": 11,
+    "3": 5,
+    "4": 7,
+    "5": 13
+   },
+   "fenetre_pays_T1": {
+    "1": 8,
+    "2": 8,
+    "3": 7,
+    "4": 8,
+    "5": 9
+   }
+  },
+  {
+   "iso3": "PRY",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 11,
+   "n0": 3,
+   "n1": 9,
+   "both": 3,
+   "one": 6,
+   "none": 2,
+   "median_T0": 136.559,
+   "median_T1": 107.929,
+   "bornes_pays": "77.670|107.369|125.342|357.801",
+   "fenetre_monde_T1": {
+    "2": 2,
+    "3": 4,
+    "4": 1,
+    "5": 2
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "2": 2,
+    "3": 2,
+    "4": 1,
+    "5": 2
+   }
+  },
+  {
+   "iso3": "SLV",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 12,
+   "n0": 7,
+   "n1": 12,
+   "both": 7,
+   "one": 5,
+   "none": 0,
+   "median_T0": 110.125,
+   "median_T1": 75.1515,
+   "bornes_pays": "58.565|66.371|124.045|179.507",
+   "fenetre_monde_T1": {
+    "1": 5,
+    "2": 2,
+    "4": 4,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 3,
+    "2": 3,
+    "3": 1,
+    "4": 3,
+    "5": 2
+   }
+  },
+  {
+   "iso3": "SUR",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 1,
+   "n0": 1,
+   "n1": 1,
+   "both": 1,
+   "one": 0,
+   "none": 0,
+   "median_T0": 166.922,
+   "median_T1": 251.291,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "5": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "TTO",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 3,
+   "n0": 2,
+   "n1": 3,
+   "both": 2,
+   "one": 1,
+   "none": 0,
+   "median_T0": 297.623,
+   "median_T1": 115.487,
+   "bornes_pays": "111.684|123.317|263.806|468.599",
+   "fenetre_monde_T1": {
+    "3": 2,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 1,
+    "2": 1,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "URY",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 7,
+   "n0": 5,
+   "n1": 7,
+   "both": 5,
+   "one": 2,
+   "none": 0,
+   "median_T0": 70.785,
+   "median_T1": 94.454,
+   "bornes_pays": "71.125|85.624|94.037|103.418",
+   "fenetre_monde_T1": {
+    "2": 2,
+    "3": 4,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "2": 2,
+    "3": 1,
+    "4": 2,
+    "5": 2
+   }
+  },
+  {
+   "iso3": "USA",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 444,
+   "n0": 125,
+   "n1": 331,
+   "both": 120,
+   "one": 216,
+   "none": 108,
+   "median_T0": 106.461,
+   "median_T1": 105.24,
+   "bornes_pays": "65.386|86.331|139.185|309.600",
+   "fenetre_monde_T1": {
+    "1": 66,
+    "2": 63,
+    "3": 53,
+    "4": 67,
+    "5": 82
+   },
+   "fenetre_pays_T1": {
+    "1": 66,
+    "2": 63,
+    "3": 69,
+    "4": 73,
+    "5": 60
+   }
+  },
+  {
+   "iso3": "VEN",
+   "zone": "America",
+   "zone_fr": "Amériques",
+   "n": 75,
+   "n0": 41,
+   "n1": 69,
+   "both": 41,
+   "one": 28,
+   "none": 6,
+   "median_T0": 121.734,
+   "median_T1": 112.871,
+   "bornes_pays": "65.429|100.122|141.575|273.606",
+   "fenetre_monde_T1": {
+    "1": 11,
+    "2": 12,
+    "3": 17,
+    "4": 10,
+    "5": 19
+   },
+   "fenetre_pays_T1": {
+    "1": 11,
+    "2": 17,
+    "3": 15,
+    "4": 11,
+    "5": 15
+   }
+  },
+  {
+   "iso3": "AFG",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 198,
+   "n0": 13,
+   "n1": 73,
+   "both": 12,
+   "one": 62,
+   "none": 124,
+   "median_T0": 67.636,
+   "median_T1": 107.777,
+   "bornes_pays": "63.619|94.087|115.494|187.100",
+   "fenetre_monde_T1": {
+    "1": 13,
+    "2": 14,
+    "3": 20,
+    "4": 19,
+    "5": 7
+   },
+   "fenetre_pays_T1": {
+    "1": 12,
+    "2": 16,
+    "3": 16,
+    "4": 15,
+    "5": 14
+   }
+  },
+  {
+   "iso3": "BGD",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 371,
+   "n0": 139,
+   "n1": 212,
+   "both": 124,
+   "one": 103,
+   "none": 144,
+   "median_T0": 100.104,
+   "median_T1": 124.4435,
+   "bornes_pays": "66.665|92.891|151.737|246.140",
+   "fenetre_monde_T1": {
+    "1": 26,
+    "2": 37,
+    "3": 44,
+    "4": 55,
+    "5": 50
+   },
+   "fenetre_pays_T1": {
+    "1": 32,
+    "2": 45,
+    "3": 45,
+    "4": 47,
+    "5": 43
+   }
+  },
+  {
+   "iso3": "BRN",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 2,
+   "n0": 0,
+   "n1": 2,
+   "both": 0,
+   "one": 2,
+   "none": 0,
+   "median_T0": null,
+   "median_T1": 67.252,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "1": 1,
+    "2": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "BTN",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 2,
+   "n0": 1,
+   "n1": 2,
+   "both": 1,
+   "one": 1,
+   "none": 0,
+   "median_T0": 75.677,
+   "median_T1": 70.1365,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "1": 1,
+    "2": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "CHN",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 2460,
+   "n0": 1843,
+   "n1": 2064,
+   "both": 1607,
+   "one": 693,
+   "none": 160,
+   "median_T0": 96.166,
+   "median_T1": 106.9045,
+   "bornes_pays": "65.223|86.760|120.799|206.009",
+   "fenetre_monde_T1": {
+    "1": 386,
+    "2": 374,
+    "3": 436,
+    "4": 436,
+    "5": 432
+   },
+   "fenetre_pays_T1": {
+    "1": 389,
+    "2": 380,
+    "3": 392,
+    "4": 396,
+    "5": 507
+   }
+  },
+  {
+   "iso3": "IDN",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 467,
+   "n0": 252,
+   "n1": 370,
+   "both": 247,
+   "one": 128,
+   "none": 92,
+   "median_T0": 103.72200000000001,
+   "median_T1": 115.14099999999999,
+   "bornes_pays": "69.720|92.324|138.007|265.492",
+   "fenetre_monde_T1": {
+    "1": 55,
+    "2": 71,
+    "3": 76,
+    "4": 84,
+    "5": 84
+   },
+   "fenetre_pays_T1": {
+    "1": 66,
+    "2": 70,
+    "3": 84,
+    "4": 74,
+    "5": 76
+   }
+  },
+  {
+   "iso3": "IND",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 2748,
+   "n0": 1166,
+   "n1": 1925,
+   "both": 1118,
+   "one": 855,
+   "none": 775,
+   "median_T0": 93.41,
+   "median_T1": 106.747,
+   "bornes_pays": "64.187|86.057|124.235|231.327",
+   "fenetre_monde_T1": {
+    "1": 362,
+    "2": 366,
+    "3": 400,
+    "4": 398,
+    "5": 399
+   },
+   "fenetre_pays_T1": {
+    "1": 344,
+    "2": 380,
+    "3": 391,
+    "4": 406,
+    "5": 404
+   }
+  },
+  {
+   "iso3": "JPN",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 182,
+   "n0": 153,
+   "n1": 137,
+   "both": 128,
+   "one": 34,
+   "none": 20,
+   "median_T0": 108.153,
+   "median_T1": 122.524,
+   "bornes_pays": "68.717|93.893|146.596|302.016",
+   "fenetre_monde_T1": {
+    "1": 21,
+    "2": 25,
+    "3": 25,
+    "4": 31,
+    "5": 35
+   },
+   "fenetre_pays_T1": {
+    "1": 27,
+    "2": 25,
+    "3": 28,
+    "4": 29,
+    "5": 28
+   }
+  },
+  {
+   "iso3": "KAZ",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 54,
+   "n0": 25,
+   "n1": 31,
+   "both": 22,
+   "one": 12,
+   "none": 20,
+   "median_T0": 174.985,
+   "median_T1": 166.408,
+   "bornes_pays": "69.555|137.408|193.671|287.706",
+   "fenetre_monde_T1": {
+    "1": 4,
+    "2": 5,
+    "3": 2,
+    "4": 10,
+    "5": 10
+   },
+   "fenetre_pays_T1": {
+    "1": 7,
+    "2": 5,
+    "3": 8,
+    "4": 4,
+    "5": 7
+   }
+  },
+  {
+   "iso3": "KGZ",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 23,
+   "n0": 4,
+   "n1": 6,
+   "both": 4,
+   "one": 2,
+   "none": 17,
+   "median_T0": 203.64000000000001,
+   "median_T1": 107.8785,
+   "bornes_pays": "67.362|86.804|214.989|539.132",
+   "fenetre_monde_T1": {
+    "2": 2,
+    "3": 2,
+    "5": 2
+   },
+   "fenetre_pays_T1": {
+    "2": 2,
+    "3": 2,
+    "4": 1,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "KHM",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 20,
+   "n0": 2,
+   "n1": 10,
+   "both": 2,
+   "one": 8,
+   "none": 10,
+   "median_T0": 230.6585,
+   "median_T1": 115.6165,
+   "bornes_pays": "76.634|98.103|150.566|309.441",
+   "fenetre_monde_T1": {
+    "1": 2,
+    "2": 1,
+    "3": 2,
+    "4": 3,
+    "5": 2
+   },
+   "fenetre_pays_T1": {
+    "1": 3,
+    "2": 1,
+    "3": 2,
+    "4": 2,
+    "5": 2
+   }
+  },
+  {
+   "iso3": "KOR",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 65,
+   "n0": 39,
+   "n1": 48,
+   "both": 34,
+   "one": 19,
+   "none": 12,
+   "median_T0": 144.434,
+   "median_T1": 138.235,
+   "bornes_pays": "72.732|105.255|178.388|441.231",
+   "fenetre_monde_T1": {
+    "1": 10,
+    "2": 7,
+    "3": 5,
+    "4": 11,
+    "5": 15
+   },
+   "fenetre_pays_T1": {
+    "1": 13,
+    "2": 9,
+    "3": 9,
+    "4": 8,
+    "5": 9
+   }
+  },
+  {
+   "iso3": "LAO",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 5,
+   "n0": 1,
+   "n1": 3,
+   "both": 1,
+   "one": 2,
+   "none": 2,
+   "median_T0": 189.749,
+   "median_T1": 99.171,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "2": 1,
+    "3": 1,
+    "4": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "LKA",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 30,
+   "n0": 12,
+   "n1": 22,
+   "both": 10,
+   "one": 14,
+   "none": 6,
+   "median_T0": 87.7105,
+   "median_T1": 91.041,
+   "bornes_pays": "59.194|75.813|100.780|180.959",
+   "fenetre_monde_T1": {
+    "1": 6,
+    "2": 4,
+    "3": 5,
+    "4": 3,
+    "5": 4
+   },
+   "fenetre_pays_T1": {
+    "1": 4,
+    "2": 5,
+    "3": 4,
+    "4": 4,
+    "5": 5
+   }
+  },
+  {
+   "iso3": "MDV",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 1,
+   "n0": 1,
+   "n1": 1,
+   "both": 1,
+   "one": 0,
+   "none": 0,
+   "median_T0": 62.08,
+   "median_T1": 233.236,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "4": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "MMR",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 145,
+   "n0": 97,
+   "n1": 123,
+   "both": 90,
+   "one": 40,
+   "none": 15,
+   "median_T0": 79.641,
+   "median_T1": 88.825,
+   "bornes_pays": "63.137|75.017|96.609|149.882",
+   "fenetre_monde_T1": {
+    "1": 28,
+    "2": 32,
+    "3": 26,
+    "4": 26,
+    "5": 11
+   },
+   "fenetre_pays_T1": {
+    "1": 23,
+    "2": 26,
+    "3": 18,
+    "4": 28,
+    "5": 28
+   }
+  },
+  {
+   "iso3": "MNG",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 5,
+   "n0": 1,
+   "n1": 2,
+   "both": 1,
+   "one": 1,
+   "none": 3,
+   "median_T0": 430.045,
+   "median_T1": 829.239,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "3": 1,
+    "5": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "MYS",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 60,
+   "n0": 25,
+   "n1": 41,
+   "both": 25,
+   "one": 16,
+   "none": 19,
+   "median_T0": 144.47,
+   "median_T1": 162.372,
+   "bornes_pays": "81.747|130.544|193.260|395.165",
+   "fenetre_monde_T1": {
+    "1": 6,
+    "2": 5,
+    "3": 5,
+    "4": 9,
+    "5": 16
+   },
+   "fenetre_pays_T1": {
+    "1": 9,
+    "2": 8,
+    "3": 6,
+    "4": 8,
+    "5": 10
+   }
+  },
+  {
+   "iso3": "NPL",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 36,
+   "n0": 13,
+   "n1": 18,
+   "both": 12,
+   "one": 7,
+   "none": 17,
+   "median_T0": 73.517,
+   "median_T1": 118.16,
+   "bornes_pays": "57.498|73.517|116.744|161.081",
+   "fenetre_monde_T1": {
+    "1": 3,
+    "2": 3,
+    "3": 5,
+    "4": 4,
+    "5": 3
+   },
+   "fenetre_pays_T1": {
+    "1": 3,
+    "2": 3,
+    "3": 3,
+    "4": 5,
+    "5": 4
+   }
+  },
+  {
+   "iso3": "PAK",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 508,
+   "n0": 151,
+   "n1": 291,
+   "both": 150,
+   "one": 142,
+   "none": 216,
+   "median_T0": 102.15,
+   "median_T1": 128.4,
+   "bornes_pays": "70.826|94.050|143.991|255.994",
+   "fenetre_monde_T1": {
+    "1": 37,
+    "2": 52,
+    "3": 55,
+    "4": 75,
+    "5": 72
+   },
+   "fenetre_pays_T1": {
+    "1": 50,
+    "2": 56,
+    "3": 55,
+    "4": 64,
+    "5": 66
+   }
+  },
+  {
+   "iso3": "PHL",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 162,
+   "n0": 51,
+   "n1": 105,
+   "both": 37,
+   "one": 82,
+   "none": 43,
+   "median_T0": 110.812,
+   "median_T1": 118.49,
+   "bornes_pays": "71.361|93.900|137.417|268.412",
+   "fenetre_monde_T1": {
+    "1": 10,
+    "2": 25,
+    "3": 23,
+    "4": 25,
+    "5": 22
+   },
+   "fenetre_pays_T1": {
+    "1": 17,
+    "2": 23,
+    "3": 23,
+    "4": 21,
+    "5": 21
+   }
+  },
+  {
+   "iso3": "PRK",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 117,
+   "n0": 87,
+   "n1": 103,
+   "both": 84,
+   "one": 22,
+   "none": 11,
+   "median_T0": 88.162,
+   "median_T1": 94.918,
+   "bornes_pays": "62.405|77.469|101.886|143.113",
+   "fenetre_monde_T1": {
+    "1": 23,
+    "2": 22,
+    "3": 29,
+    "4": 16,
+    "5": 13
+   },
+   "fenetre_pays_T1": {
+    "1": 18,
+    "2": 20,
+    "3": 20,
+    "4": 25,
+    "5": 20
+   }
+  },
+  {
+   "iso3": "SGP",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 2,
+   "n0": 2,
+   "n1": 2,
+   "both": 2,
+   "one": 0,
+   "none": 0,
+   "median_T0": 1508.3854999999999,
+   "median_T1": 2897.6275,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "5": 2
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "THA",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 82,
+   "n0": 27,
+   "n1": 53,
+   "both": 17,
+   "one": 46,
+   "none": 19,
+   "median_T0": 74.829,
+   "median_T1": 98.29,
+   "bornes_pays": "62.591|77.693|99.182|156.658",
+   "fenetre_monde_T1": {
+    "1": 7,
+    "2": 16,
+    "3": 9,
+    "4": 14,
+    "5": 7
+   },
+   "fenetre_pays_T1": {
+    "1": 6,
+    "2": 12,
+    "3": 9,
+    "4": 11,
+    "5": 15
+   }
+  },
+  {
+   "iso3": "TJK",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 39,
+   "n0": 6,
+   "n1": 21,
+   "both": 6,
+   "one": 15,
+   "none": 18,
+   "median_T0": 68.76400000000001,
+   "median_T1": 76.92,
+   "bornes_pays": "62.769|70.359|84.229|131.070",
+   "fenetre_monde_T1": {
+    "1": 5,
+    "2": 8,
+    "3": 4,
+    "4": 3,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 4,
+    "2": 4,
+    "3": 4,
+    "4": 5,
+    "5": 4
+   }
+  },
+  {
+   "iso3": "TKM",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 16,
+   "n0": 4,
+   "n1": 10,
+   "both": 4,
+   "one": 6,
+   "none": 6,
+   "median_T0": 137.94,
+   "median_T1": 90.364,
+   "bornes_pays": "74.588|99.298|148.291|256.512",
+   "fenetre_monde_T1": {
+    "1": 3,
+    "2": 2,
+    "3": 1,
+    "4": 1,
+    "5": 3
+   },
+   "fenetre_pays_T1": {
+    "1": 3,
+    "2": 3,
+    "4": 2,
+    "5": 2
+   }
+  },
+  {
+   "iso3": "TLS",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 1,
+   "n0": 1,
+   "n1": 1,
+   "both": 1,
+   "one": 0,
+   "none": 0,
+   "median_T0": 117.504,
+   "median_T1": 342.395,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "5": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "UZB",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 122,
+   "n0": 26,
+   "n1": 68,
+   "both": 26,
+   "one": 42,
+   "none": 54,
+   "median_T0": 108.224,
+   "median_T1": 98.5735,
+   "bornes_pays": "63.151|85.171|123.835|242.323",
+   "fenetre_monde_T1": {
+    "1": 13,
+    "2": 14,
+    "3": 17,
+    "4": 10,
+    "5": 14
+   },
+   "fenetre_pays_T1": {
+    "1": 12,
+    "2": 14,
+    "3": 16,
+    "4": 13,
+    "5": 13
+   }
+  },
+  {
+   "iso3": "VNM",
+   "zone": "East",
+   "zone_fr": "Est",
+   "n": 178,
+   "n0": 78,
+   "n1": 133,
+   "both": 65,
+   "one": 81,
+   "none": 32,
+   "median_T0": 88.06700000000001,
+   "median_T1": 102.101,
+   "bornes_pays": "66.926|84.145|114.754|204.795",
+   "fenetre_monde_T1": {
+    "1": 20,
+    "2": 35,
+    "3": 27,
+    "4": 28,
+    "5": 23
+   },
+   "fenetre_pays_T1": {
+    "1": 24,
+    "2": 29,
+    "3": 24,
+    "4": 27,
+    "5": 29
+   }
+  },
+  {
+   "iso3": "ALB",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 8,
+   "n0": 6,
+   "n1": 6,
+   "both": 6,
+   "one": 0,
+   "none": 2,
+   "median_T0": 72.52250000000001,
+   "median_T1": 79.5175,
+   "bornes_pays": "62.528|75.924|79.434|120.231",
+   "fenetre_monde_T1": {
+    "1": 1,
+    "2": 3,
+    "4": 1,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "4": 1,
+    "5": 2
+   }
+  },
+  {
+   "iso3": "ARM",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 3,
+   "n0": 3,
+   "n1": 3,
+   "both": 3,
+   "one": 0,
+   "none": 0,
+   "median_T0": 122.386,
+   "median_T1": 93.231,
+   "bornes_pays": "59.800|93.231|122.386|1083.702",
+   "fenetre_monde_T1": {
+    "1": 1,
+    "3": 1,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 1,
+    "2": 1,
+    "4": 1
+   }
+  },
+  {
+   "iso3": "AUT",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 8,
+   "n0": 6,
+   "n1": 7,
+   "both": 6,
+   "one": 1,
+   "none": 1,
+   "median_T0": 168.17000000000002,
+   "median_T1": 143.843,
+   "bornes_pays": "92.970|136.829|215.180|273.510",
+   "fenetre_monde_T1": {
+    "1": 1,
+    "2": 1,
+    "4": 2,
+    "5": 3
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "3": 2,
+    "4": 1,
+    "5": 2
+   }
+  },
+  {
+   "iso3": "AZE",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 26,
+   "n0": 8,
+   "n1": 20,
+   "both": 8,
+   "one": 12,
+   "none": 6,
+   "median_T0": 92.017,
+   "median_T1": 68.503,
+   "bornes_pays": "56.351|67.934|95.068|193.521",
+   "fenetre_monde_T1": {
+    "1": 8,
+    "2": 4,
+    "3": 3,
+    "4": 2,
+    "5": 3
+   },
+   "fenetre_pays_T1": {
+    "1": 5,
+    "2": 4,
+    "3": 4,
+    "4": 4,
+    "5": 3
+   }
+  },
+  {
+   "iso3": "BEL",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 16,
+   "n0": 13,
+   "n1": 15,
+   "both": 13,
+   "one": 2,
+   "none": 1,
+   "median_T0": 75.16,
+   "median_T1": 76.931,
+   "bornes_pays": "62.754|73.780|81.898|289.923",
+   "fenetre_monde_T1": {
+    "1": 5,
+    "2": 4,
+    "3": 1,
+    "4": 2,
+    "5": 3
+   },
+   "fenetre_pays_T1": {
+    "1": 3,
+    "2": 2,
+    "3": 4,
+    "4": 3,
+    "5": 3
+   }
+  },
+  {
+   "iso3": "BGR",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 18,
+   "n0": 16,
+   "n1": 9,
+   "both": 9,
+   "one": 7,
+   "none": 2,
+   "median_T0": 86.7995,
+   "median_T1": 89.688,
+   "bornes_pays": "62.404|79.718|102.397|270.493",
+   "fenetre_monde_T1": {
+    "1": 3,
+    "2": 1,
+    "3": 2,
+    "5": 3
+   },
+   "fenetre_pays_T1": {
+    "1": 3,
+    "3": 2,
+    "4": 1,
+    "5": 3
+   }
+  },
+  {
+   "iso3": "BIH",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 9,
+   "n0": 7,
+   "n1": 4,
+   "both": 4,
+   "one": 3,
+   "none": 2,
+   "median_T0": 71.598,
+   "median_T1": 83.054,
+   "bornes_pays": "57.734|66.592|80.391|193.872",
+   "fenetre_monde_T1": {
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 1,
+    "2": 1,
+    "4": 1,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "BLR",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 17,
+   "n0": 16,
+   "n1": 15,
+   "both": 14,
+   "one": 3,
+   "none": 0,
+   "median_T0": 184.76850000000002,
+   "median_T1": 179.62,
+   "bornes_pays": "85.533|125.789|226.567|371.023",
+   "fenetre_monde_T1": {
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 3,
+    "5": 6
+   },
+   "fenetre_pays_T1": {
+    "1": 3,
+    "2": 3,
+    "3": 3,
+    "4": 2,
+    "5": 4
+   }
+  },
+  {
+   "iso3": "CHE",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 21,
+   "n0": 9,
+   "n1": 17,
+   "both": 9,
+   "one": 8,
+   "none": 4,
+   "median_T0": 202.179,
+   "median_T1": 74.439,
+   "bornes_pays": "67.538|74.439|147.602|295.020",
+   "fenetre_monde_T1": {
+    "1": 2,
+    "2": 7,
+    "3": 2,
+    "4": 2,
+    "5": 4
+   },
+   "fenetre_pays_T1": {
+    "1": 4,
+    "2": 5,
+    "3": 3,
+    "4": 2,
+    "5": 3
+   }
+  },
+  {
+   "iso3": "CYP",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 4,
+   "n0": 2,
+   "n1": 4,
+   "both": 2,
+   "one": 2,
+   "none": 0,
+   "median_T0": 143.787,
+   "median_T1": 141.988,
+   "bornes_pays": "77.580|100.967|186.607|206.396",
+   "fenetre_monde_T1": {
+    "1": 1,
+    "2": 1,
+    "4": 1,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "4": 1,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "CZE",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 17,
+   "n0": 17,
+   "n1": 12,
+   "both": 12,
+   "one": 5,
+   "none": 0,
+   "median_T0": 78.065,
+   "median_T1": 82.029,
+   "bornes_pays": "60.651|73.030|82.121|149.085",
+   "fenetre_monde_T1": {
+    "1": 3,
+    "2": 5,
+    "4": 2,
+    "5": 2
+   },
+   "fenetre_pays_T1": {
+    "1": 1,
+    "2": 4,
+    "3": 1,
+    "4": 4,
+    "5": 2
+   }
+  },
+  {
+   "iso3": "DEU",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 114,
+   "n0": 98,
+   "n1": 100,
+   "both": 87,
+   "one": 24,
+   "none": 3,
+   "median_T0": 101.18299999999999,
+   "median_T1": 108.67150000000001,
+   "bornes_pays": "62.060|81.636|134.510|261.721",
+   "fenetre_monde_T1": {
+    "1": 23,
+    "2": 20,
+    "3": 15,
+    "4": 18,
+    "5": 24
+   },
+   "fenetre_pays_T1": {
+    "1": 17,
+    "2": 22,
+    "3": 20,
+    "4": 20,
+    "5": 21
+   }
+  },
+  {
+   "iso3": "DNK",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 5,
+   "n0": 4,
+   "n1": 5,
+   "both": 4,
+   "one": 1,
+   "none": 0,
+   "median_T0": 121.365,
+   "median_T1": 127.292,
+   "bornes_pays": "83.274|105.305|151.948|496.974",
+   "fenetre_monde_T1": {
+    "2": 1,
+    "3": 1,
+    "4": 2,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "4": 1,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "ESP",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 90,
+   "n0": 68,
+   "n1": 84,
+   "both": 64,
+   "one": 24,
+   "none": 2,
+   "median_T0": 111.654,
+   "median_T1": 128.1465,
+   "bornes_pays": "66.819|94.254|148.006|262.303",
+   "fenetre_monde_T1": {
+    "1": 15,
+    "2": 14,
+    "3": 11,
+    "4": 23,
+    "5": 21
+   },
+   "fenetre_pays_T1": {
+    "1": 19,
+    "2": 16,
+    "3": 15,
+    "4": 17,
+    "5": 17
+   }
+  },
+  {
+   "iso3": "EST",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 5,
+   "n0": 3,
+   "n1": 2,
+   "both": 2,
+   "one": 1,
+   "none": 2,
+   "median_T0": 100.209,
+   "median_T1": 259.8505,
+   "bornes_pays": "77.599|92.859|235.272|439.826",
+   "fenetre_monde_T1": {
+    "2": 1,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "2": 1,
+    "4": 1
+   }
+  },
+  {
+   "iso3": "FIN",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 6,
+   "n0": 6,
+   "n1": 6,
+   "both": 6,
+   "one": 0,
+   "none": 0,
+   "median_T0": 69.34049999999999,
+   "median_T1": 93.8695,
+   "bornes_pays": "59.257|68.196|93.749|143.083",
+   "fenetre_monde_T1": {
+    "1": 2,
+    "2": 1,
+    "3": 1,
+    "4": 1,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "3": 1,
+    "4": 1,
+    "5": 2
+   }
+  },
+  {
+   "iso3": "FRA",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 92,
+   "n0": 76,
+   "n1": 70,
+   "both": 64,
+   "one": 18,
+   "none": 10,
+   "median_T0": 97.04400000000001,
+   "median_T1": 115.1325,
+   "bornes_pays": "65.879|86.982|154.229|218.029",
+   "fenetre_monde_T1": {
+    "1": 10,
+    "2": 14,
+    "3": 13,
+    "4": 19,
+    "5": 14
+   },
+   "fenetre_pays_T1": {
+    "1": 12,
+    "2": 13,
+    "3": 17,
+    "4": 12,
+    "5": 16
+   }
+  },
+  {
+   "iso3": "GBR",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 166,
+   "n0": 121,
+   "n1": 143,
+   "both": 120,
+   "one": 24,
+   "none": 22,
+   "median_T0": 93.889,
+   "median_T1": 108.325,
+   "bornes_pays": "67.361|86.970|118.343|223.976",
+   "fenetre_monde_T1": {
+    "1": 23,
+    "2": 34,
+    "3": 30,
+    "4": 27,
+    "5": 29
+   },
+   "fenetre_pays_T1": {
+    "1": 28,
+    "2": 29,
+    "3": 27,
+    "4": 30,
+    "5": 29
+   }
+  },
+  {
+   "iso3": "GEO",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 11,
+   "n0": 9,
+   "n1": 4,
+   "both": 4,
+   "one": 5,
+   "none": 2,
+   "median_T0": 76.567,
+   "median_T1": 149.84550000000002,
+   "bornes_pays": "60.053|79.706|142.338|236.025",
+   "fenetre_monde_T1": {
+    "2": 1,
+    "4": 2,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "3": 2,
+    "4": 1,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "GRC",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 12,
+   "n0": 8,
+   "n1": 8,
+   "both": 8,
+   "one": 0,
+   "none": 4,
+   "median_T0": 118.23599999999999,
+   "median_T1": 136.773,
+   "bornes_pays": "90.435|112.454|151.752|728.543",
+   "fenetre_monde_T1": {
+    "2": 1,
+    "3": 3,
+    "4": 2,
+    "5": 2
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "2": 1,
+    "3": 2,
+    "4": 1,
+    "5": 2
+   }
+  },
+  {
+   "iso3": "HRV",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 6,
+   "n0": 6,
+   "n1": 5,
+   "both": 5,
+   "one": 1,
+   "none": 0,
+   "median_T0": 131.70350000000002,
+   "median_T1": 119.493,
+   "bornes_pays": "69.728|101.702|161.705|218.149",
+   "fenetre_monde_T1": {
+    "2": 2,
+    "3": 1,
+    "4": 1,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "4": 1,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "HUN",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 19,
+   "n0": 18,
+   "n1": 13,
+   "both": 12,
+   "one": 7,
+   "none": 0,
+   "median_T0": 72.49000000000001,
+   "median_T1": 77.538,
+   "bornes_pays": "57.812|71.846|79.131|130.583",
+   "fenetre_monde_T1": {
+    "1": 3,
+    "2": 5,
+    "3": 3,
+    "4": 1,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "2": 3,
+    "3": 3,
+    "4": 3,
+    "5": 2
+   }
+  },
+  {
+   "iso3": "IRL",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 7,
+   "n0": 4,
+   "n1": 5,
+   "both": 3,
+   "one": 3,
+   "none": 1,
+   "median_T0": 106.8275,
+   "median_T1": 107.778,
+   "bornes_pays": "73.944|86.012|128.023|429.287",
+   "fenetre_monde_T1": {
+    "2": 2,
+    "3": 1,
+    "4": 1,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "4": 1,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "ISL",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 1,
+   "n0": 1,
+   "n1": 1,
+   "both": 1,
+   "one": 0,
+   "none": 0,
+   "median_T0": 94.473,
+   "median_T1": 213.656,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "4": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "ITA",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 104,
+   "n0": 86,
+   "n1": 95,
+   "both": 79,
+   "one": 23,
+   "none": 2,
+   "median_T0": 84.561,
+   "median_T1": 90.254,
+   "bornes_pays": "59.078|79.528|97.374|181.906",
+   "fenetre_monde_T1": {
+    "1": 27,
+    "2": 16,
+    "3": 23,
+    "4": 16,
+    "5": 13
+   },
+   "fenetre_pays_T1": {
+    "1": 21,
+    "2": 14,
+    "3": 21,
+    "4": 21,
+    "5": 18
+   }
+  },
+  {
+   "iso3": "LTU",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 6,
+   "n0": 6,
+   "n1": 5,
+   "both": 5,
+   "one": 1,
+   "none": 0,
+   "median_T0": 151.927,
+   "median_T1": 113.905,
+   "bornes_pays": "81.522|113.905|180.797|336.220",
+   "fenetre_monde_T1": {
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "5": 2
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "2": 1,
+    "4": 2
+   }
+  },
+  {
+   "iso3": "LUX",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 2,
+   "n0": 1,
+   "n1": 1,
+   "both": 1,
+   "one": 0,
+   "none": 1,
+   "median_T0": 67.591,
+   "median_T1": 153.486,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "4": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "LVA",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 3,
+   "n0": 3,
+   "n1": 3,
+   "both": 3,
+   "one": 0,
+   "none": 0,
+   "median_T0": 106.568,
+   "median_T1": 57.879,
+   "bornes_pays": "57.879|100.237|106.568|550.544",
+   "fenetre_monde_T1": {
+    "1": 2,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "4": 1
+   }
+  },
+  {
+   "iso3": "MCO",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 1,
+   "n0": 0,
+   "n1": 1,
+   "both": 0,
+   "one": 1,
+   "none": 0,
+   "median_T0": null,
+   "median_T1": 56.924,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "1": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "MDA",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 5,
+   "n0": 4,
+   "n1": 5,
+   "both": 4,
+   "one": 1,
+   "none": 0,
+   "median_T0": 195.4135,
+   "median_T1": 61.337,
+   "bornes_pays": "60.541|93.067|145.261|313.837",
+   "fenetre_monde_T1": {
+    "1": 3,
+    "2": 1,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "2": 2,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "MKD",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 5,
+   "n0": 5,
+   "n1": 4,
+   "both": 4,
+   "one": 1,
+   "none": 0,
+   "median_T0": 67.116,
+   "median_T1": 59.789,
+   "bornes_pays": "57.103|60.788|66.139|183.304",
+   "fenetre_monde_T1": {
+    "1": 3,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "MLT",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 1,
+   "n0": 1,
+   "n1": 1,
+   "both": 1,
+   "one": 0,
+   "none": 0,
+   "median_T0": 247.894,
+   "median_T1": 370.0,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "5": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "MNE",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 4,
+   "n0": 3,
+   "n1": 1,
+   "both": 1,
+   "one": 2,
+   "none": 1,
+   "median_T0": 66.971,
+   "median_T1": 149.264,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "4": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "NLD",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 49,
+   "n0": 33,
+   "n1": 42,
+   "both": 33,
+   "one": 9,
+   "none": 7,
+   "median_T0": 106.993,
+   "median_T1": 131.8745,
+   "bornes_pays": "68.577|91.082|136.647|214.193",
+   "fenetre_monde_T1": {
+    "1": 7,
+    "2": 8,
+    "3": 4,
+    "4": 16,
+    "5": 7
+   },
+   "fenetre_pays_T1": {
+    "1": 8,
+    "2": 8,
+    "3": 8,
+    "4": 11,
+    "5": 7
+   }
+  },
+  {
+   "iso3": "NOR",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 9,
+   "n0": 4,
+   "n1": 6,
+   "both": 4,
+   "one": 2,
+   "none": 3,
+   "median_T0": 90.8905,
+   "median_T1": 133.074,
+   "bornes_pays": "72.327|93.443|132.250|261.522",
+   "fenetre_monde_T1": {
+    "1": 2,
+    "4": 3,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "3": 1,
+    "4": 2,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "POL",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 68,
+   "n0": 60,
+   "n1": 60,
+   "both": 52,
+   "one": 16,
+   "none": 0,
+   "median_T0": 83.5375,
+   "median_T1": 75.0455,
+   "bornes_pays": "57.678|67.084|96.935|228.892",
+   "fenetre_monde_T1": {
+    "1": 23,
+    "2": 10,
+    "3": 6,
+    "4": 9,
+    "5": 12
+   },
+   "fenetre_pays_T1": {
+    "1": 14,
+    "2": 10,
+    "3": 13,
+    "4": 11,
+    "5": 12
+   }
+  },
+  {
+   "iso3": "PRT",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 10,
+   "n0": 10,
+   "n1": 9,
+   "both": 9,
+   "one": 1,
+   "none": 0,
+   "median_T0": 92.0075,
+   "median_T1": 133.315,
+   "bornes_pays": "73.272|98.049|130.897|462.392",
+   "fenetre_monde_T1": {
+    "1": 1,
+    "3": 3,
+    "4": 3,
+    "5": 2
+   },
+   "fenetre_pays_T1": {
+    "1": 1,
+    "2": 2,
+    "3": 1,
+    "4": 3,
+    "5": 2
+   }
+  },
+  {
+   "iso3": "ROU",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 43,
+   "n0": 42,
+   "n1": 29,
+   "both": 29,
+   "one": 13,
+   "none": 1,
+   "median_T0": 96.9085,
+   "median_T1": 126.488,
+   "bornes_pays": "69.820|86.540|132.321|238.659",
+   "fenetre_monde_T1": {
+    "1": 4,
+    "2": 6,
+    "3": 4,
+    "4": 9,
+    "5": 6
+   },
+   "fenetre_pays_T1": {
+    "1": 6,
+    "2": 4,
+    "3": 7,
+    "4": 6,
+    "5": 6
+   }
+  },
+  {
+   "iso3": "RUS",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 310,
+   "n0": 277,
+   "n1": 254,
+   "both": 233,
+   "one": 65,
+   "none": 12,
+   "median_T0": 102.47,
+   "median_T1": 104.452,
+   "bornes_pays": "63.874|85.370|137.137|297.489",
+   "fenetre_monde_T1": {
+    "1": 56,
+    "2": 46,
+    "3": 40,
+    "4": 49,
+    "5": 63
+   },
+   "fenetre_pays_T1": {
+    "1": 50,
+    "2": 51,
+    "3": 53,
+    "4": 52,
+    "5": 48
+   }
+  },
+  {
+   "iso3": "SRB",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 20,
+   "n0": 17,
+   "n1": 13,
+   "both": 12,
+   "one": 6,
+   "none": 2,
+   "median_T0": 68.198,
+   "median_T1": 70.328,
+   "bornes_pays": "59.684|64.353|74.743|137.403",
+   "fenetre_monde_T1": {
+    "1": 5,
+    "2": 4,
+    "4": 2,
+    "5": 2
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "2": 3,
+    "3": 2,
+    "4": 3,
+    "5": 3
+   }
+  },
+  {
+   "iso3": "SVK",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 8,
+   "n0": 7,
+   "n1": 7,
+   "both": 7,
+   "one": 0,
+   "none": 1,
+   "median_T0": 70.247,
+   "median_T1": 64.94,
+   "bornes_pays": "62.485|66.285|74.641|213.104",
+   "fenetre_monde_T1": {
+    "1": 4,
+    "2": 1,
+    "4": 1,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 3,
+    "2": 1,
+    "4": 2,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "SVN",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 2,
+   "n0": 2,
+   "n1": 2,
+   "both": 2,
+   "one": 0,
+   "none": 0,
+   "median_T0": 151.755,
+   "median_T1": 164.0665,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "2": 1,
+    "5": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "SWE",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 20,
+   "n0": 11,
+   "n1": 15,
+   "both": 10,
+   "one": 6,
+   "none": 4,
+   "median_T0": 69.869,
+   "median_T1": 94.897,
+   "bornes_pays": "65.750|80.887|94.897|200.659",
+   "fenetre_monde_T1": {
+    "1": 2,
+    "2": 4,
+    "3": 4,
+    "4": 2,
+    "5": 3
+   },
+   "fenetre_pays_T1": {
+    "1": 3,
+    "2": 1,
+    "3": 4,
+    "4": 4,
+    "5": 3
+   }
+  },
+  {
+   "iso3": "TUR",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 198,
+   "n0": 111,
+   "n1": 172,
+   "both": 98,
+   "one": 87,
+   "none": 13,
+   "median_T0": 84.285,
+   "median_T1": 116.287,
+   "bornes_pays": "64.824|86.774|122.792|203.503",
+   "fenetre_monde_T1": {
+    "1": 26,
+    "2": 30,
+    "3": 41,
+    "4": 41,
+    "5": 34
+   },
+   "fenetre_pays_T1": {
+    "1": 25,
+    "2": 32,
+    "3": 35,
+    "4": 41,
+    "5": 39
+   }
+  },
+  {
+   "iso3": "UKR",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 112,
+   "n0": 110,
+   "n1": 79,
+   "both": 79,
+   "one": 31,
+   "none": 2,
+   "median_T0": 102.95,
+   "median_T1": 95.056,
+   "bornes_pays": "64.453|85.130|128.578|261.991",
+   "fenetre_monde_T1": {
+    "1": 16,
+    "2": 18,
+    "3": 11,
+    "4": 14,
+    "5": 20
+   },
+   "fenetre_pays_T1": {
+    "1": 15,
+    "2": 19,
+    "3": 11,
+    "4": 20,
+    "5": 14
+   }
+  },
+  {
+   "iso3": "XKX",
+   "zone": "Europe",
+   "zone_fr": "Europe",
+   "n": 8,
+   "n0": 8,
+   "n1": 6,
+   "both": 6,
+   "one": 2,
+   "none": 0,
+   "median_T0": 86.4205,
+   "median_T1": 67.622,
+   "bornes_pays": "61.205|70.861|89.127|126.687",
+   "fenetre_monde_T1": {
+    "1": 2,
+    "2": 2,
+    "3": 1,
+    "4": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 1,
+    "2": 3,
+    "4": 1,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "ARE",
+   "zone": "Middle_East",
+   "zone_fr": "Moyen-Orient",
+   "n": 21,
+   "n0": 3,
+   "n1": 14,
+   "both": 3,
+   "one": 11,
+   "none": 7,
+   "median_T0": 219.031,
+   "median_T1": 94.836,
+   "bornes_pays": "67.915|93.487|161.907|519.498",
+   "fenetre_monde_T1": {
+    "1": 1,
+    "2": 5,
+    "3": 3,
+    "4": 1,
+    "5": 4
+   },
+   "fenetre_pays_T1": {
+    "1": 4,
+    "2": 3,
+    "3": 2,
+    "4": 2,
+    "5": 3
+   }
+  },
+  {
+   "iso3": "BHR",
+   "zone": "Middle_East",
+   "zone_fr": "Moyen-Orient",
+   "n": 1,
+   "n0": 1,
+   "n1": 1,
+   "both": 1,
+   "one": 0,
+   "none": 0,
+   "median_T0": 279.121,
+   "median_T1": 1496.409,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "5": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "DJI",
+   "zone": "Middle_East",
+   "zone_fr": "Moyen-Orient",
+   "n": 5,
+   "n0": 1,
+   "n1": 4,
+   "both": 1,
+   "one": 3,
+   "none": 1,
+   "median_T0": 350.716,
+   "median_T1": 75.5625,
+   "bornes_pays": "61.401|78.058|193.112|426.670",
+   "fenetre_monde_T1": {
+    "1": 2,
+    "3": 1,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "DZA",
+   "zone": "Middle_East",
+   "zone_fr": "Moyen-Orient",
+   "n": 142,
+   "n0": 42,
+   "n1": 105,
+   "both": 42,
+   "one": 63,
+   "none": 37,
+   "median_T0": 90.72399999999999,
+   "median_T1": 114.64,
+   "bornes_pays": "67.184|87.017|125.003|198.790",
+   "fenetre_monde_T1": {
+    "1": 22,
+    "2": 17,
+    "3": 18,
+    "4": 29,
+    "5": 19
+   },
+   "fenetre_pays_T1": {
+    "1": 23,
+    "2": 16,
+    "3": 18,
+    "4": 22,
+    "5": 26
+   }
+  },
+  {
+   "iso3": "EGY",
+   "zone": "Middle_East",
+   "zone_fr": "Moyen-Orient",
+   "n": 340,
+   "n0": 89,
+   "n1": 186,
+   "both": 86,
+   "one": 103,
+   "none": 151,
+   "median_T0": 93.118,
+   "median_T1": 122.3835,
+   "bornes_pays": "68.955|91.356|147.384|321.036",
+   "fenetre_monde_T1": {
+    "1": 24,
+    "2": 34,
+    "3": 37,
+    "4": 34,
+    "5": 57
+   },
+   "fenetre_pays_T1": {
+    "1": 29,
+    "2": 38,
+    "3": 39,
+    "4": 38,
+    "5": 42
+   }
+  },
+  {
+   "iso3": "IRN",
+   "zone": "Middle_East",
+   "zone_fr": "Moyen-Orient",
+   "n": 259,
+   "n0": 128,
+   "n1": 201,
+   "both": 110,
+   "one": 109,
+   "none": 40,
+   "median_T0": 93.8775,
+   "median_T1": 103.86,
+   "bornes_pays": "66.340|90.071|123.639|218.604",
+   "fenetre_monde_T1": {
+    "1": 35,
+    "2": 37,
+    "3": 49,
+    "4": 40,
+    "5": 40
+   },
+   "fenetre_pays_T1": {
+    "1": 37,
+    "2": 38,
+    "3": 44,
+    "4": 38,
+    "5": 44
+   }
+  },
+  {
+   "iso3": "IRQ",
+   "zone": "Middle_East",
+   "zone_fr": "Moyen-Orient",
+   "n": 140,
+   "n0": 27,
+   "n1": 77,
+   "both": 27,
+   "one": 50,
+   "none": 63,
+   "median_T0": 196.167,
+   "median_T1": 125.592,
+   "bornes_pays": "73.450|110.003|185.033|457.858",
+   "fenetre_monde_T1": {
+    "1": 5,
+    "2": 15,
+    "3": 19,
+    "4": 16,
+    "5": 22
+   },
+   "fenetre_pays_T1": {
+    "1": 14,
+    "2": 18,
+    "3": 17,
+    "4": 11,
+    "5": 17
+   }
+  },
+  {
+   "iso3": "ISR",
+   "zone": "Middle_East",
+   "zone_fr": "Moyen-Orient",
+   "n": 38,
+   "n0": 10,
+   "n1": 20,
+   "both": 10,
+   "one": 10,
+   "none": 18,
+   "median_T0": 109.707,
+   "median_T1": 108.8695,
+   "bornes_pays": "63.825|85.165|194.573|290.922",
+   "fenetre_monde_T1": {
+    "1": 5,
+    "2": 4,
+    "3": 2,
+    "4": 1,
+    "5": 8
+   },
+   "fenetre_pays_T1": {
+    "1": 4,
+    "2": 5,
+    "3": 2,
+    "4": 6,
+    "5": 3
+   }
+  },
+  {
+   "iso3": "JOR",
+   "zone": "Middle_East",
+   "zone_fr": "Moyen-Orient",
+   "n": 25,
+   "n0": 2,
+   "n1": 13,
+   "both": 2,
+   "one": 11,
+   "none": 12,
+   "median_T0": 969.5455000000001,
+   "median_T1": 112.196,
+   "bornes_pays": "74.152|107.573|136.106|317.193",
+   "fenetre_monde_T1": {
+    "1": 2,
+    "2": 3,
+    "3": 3,
+    "4": 3,
+    "5": 2
+   },
+   "fenetre_pays_T1": {
+    "1": 3,
+    "2": 3,
+    "3": 3,
+    "4": 2,
+    "5": 2
+   }
+  },
+  {
+   "iso3": "KWT",
+   "zone": "Middle_East",
+   "zone_fr": "Moyen-Orient",
+   "n": 5,
+   "n0": 1,
+   "n1": 2,
+   "both": 1,
+   "one": 1,
+   "none": 3,
+   "median_T0": 1400.421,
+   "median_T1": 2176.9055,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "4": 1,
+    "5": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "LBN",
+   "zone": "Middle_East",
+   "zone_fr": "Moyen-Orient",
+   "n": 9,
+   "n0": 3,
+   "n1": 9,
+   "both": 3,
+   "one": 6,
+   "none": 0,
+   "median_T0": 252.42,
+   "median_T1": 114.743,
+   "bornes_pays": "84.846|115.270|187.671|351.308",
+   "fenetre_monde_T1": {
+    "2": 3,
+    "3": 3,
+    "4": 1,
+    "5": 2
+   },
+   "fenetre_pays_T1": {
+    "1": 3,
+    "2": 2,
+    "3": 1,
+    "4": 1,
+    "5": 2
+   }
+  },
+  {
+   "iso3": "LBY",
+   "zone": "Middle_East",
+   "zone_fr": "Moyen-Orient",
+   "n": 15,
+   "n0": 10,
+   "n1": 14,
+   "both": 10,
+   "one": 4,
+   "none": 1,
+   "median_T0": 67.853,
+   "median_T1": 117.52600000000001,
+   "bornes_pays": "62.749|81.546|114.616|243.667",
+   "fenetre_monde_T1": {
+    "1": 3,
+    "3": 7,
+    "4": 1,
+    "5": 3
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "2": 1,
+    "3": 3,
+    "4": 5,
+    "5": 3
+   }
+  },
+  {
+   "iso3": "MAR",
+   "zone": "Middle_East",
+   "zone_fr": "Moyen-Orient",
+   "n": 77,
+   "n0": 45,
+   "n1": 70,
+   "both": 45,
+   "one": 25,
+   "none": 7,
+   "median_T0": 95.572,
+   "median_T1": 100.662,
+   "bornes_pays": "65.505|77.392|119.376|229.747",
+   "fenetre_monde_T1": {
+    "1": 15,
+    "2": 17,
+    "3": 13,
+    "4": 12,
+    "5": 13
+   },
+   "fenetre_pays_T1": {
+    "1": 15,
+    "2": 12,
+    "3": 15,
+    "4": 15,
+    "5": 13
+   }
+  },
+  {
+   "iso3": "OMN",
+   "zone": "Middle_East",
+   "zone_fr": "Moyen-Orient",
+   "n": 16,
+   "n0": 2,
+   "n1": 8,
+   "both": 2,
+   "one": 6,
+   "none": 8,
+   "median_T0": 80.31700000000001,
+   "median_T1": 115.879,
+   "bornes_pays": "82.724|93.752|111.763|335.631",
+   "fenetre_monde_T1": {
+    "1": 1,
+    "2": 1,
+    "3": 2,
+    "4": 1,
+    "5": 3
+   },
+   "fenetre_pays_T1": {
+    "1": 1,
+    "2": 1,
+    "3": 2,
+    "4": 2,
+    "5": 2
+   }
+  },
+  {
+   "iso3": "PSE",
+   "zone": "Middle_East",
+   "zone_fr": "Moyen-Orient",
+   "n": 16,
+   "n0": 6,
+   "n1": 11,
+   "both": 6,
+   "one": 5,
+   "none": 5,
+   "median_T0": 156.536,
+   "median_T1": 202.481,
+   "bornes_pays": "65.464|102.138|267.136|394.843",
+   "fenetre_monde_T1": {
+    "1": 4,
+    "3": 1,
+    "4": 1,
+    "5": 5
+   },
+   "fenetre_pays_T1": {
+    "1": 4,
+    "2": 1,
+    "3": 1,
+    "4": 1,
+    "5": 4
+   }
+  },
+  {
+   "iso3": "QAT",
+   "zone": "Middle_East",
+   "zone_fr": "Moyen-Orient",
+   "n": 6,
+   "n0": 1,
+   "n1": 4,
+   "both": 1,
+   "one": 3,
+   "none": 2,
+   "median_T0": 94.561,
+   "median_T1": 93.40899999999999,
+   "bornes_pays": "77.055|87.826|100.374|517.530",
+   "fenetre_monde_T1": {
+    "2": 2,
+    "3": 1,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 1,
+    "2": 1,
+    "4": 1,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "SAU",
+   "zone": "Middle_East",
+   "zone_fr": "Moyen-Orient",
+   "n": 60,
+   "n0": 15,
+   "n1": 37,
+   "both": 15,
+   "one": 22,
+   "none": 23,
+   "median_T0": 103.517,
+   "median_T1": 157.033,
+   "bornes_pays": "70.227|103.462|193.135|464.102",
+   "fenetre_monde_T1": {
+    "1": 4,
+    "2": 5,
+    "3": 8,
+    "4": 8,
+    "5": 12
+   },
+   "fenetre_pays_T1": {
+    "1": 7,
+    "2": 7,
+    "3": 8,
+    "4": 6,
+    "5": 9
+   }
+  },
+  {
+   "iso3": "SYR",
+   "zone": "Middle_East",
+   "zone_fr": "Moyen-Orient",
+   "n": 72,
+   "n0": 17,
+   "n1": 29,
+   "both": 17,
+   "one": 12,
+   "none": 43,
+   "median_T0": 95.616,
+   "median_T1": 92.491,
+   "bornes_pays": "63.005|76.994|118.678|252.587",
+   "fenetre_monde_T1": {
+    "1": 3,
+    "2": 10,
+    "3": 6,
+    "4": 3,
+    "5": 7
+   },
+   "fenetre_pays_T1": {
+    "1": 3,
+    "2": 8,
+    "3": 5,
+    "4": 7,
+    "5": 6
+   }
+  },
+  {
+   "iso3": "TUN",
+   "zone": "Middle_East",
+   "zone_fr": "Moyen-Orient",
+   "n": 26,
+   "n0": 10,
+   "n1": 23,
+   "both": 10,
+   "one": 13,
+   "none": 3,
+   "median_T0": 83.803,
+   "median_T1": 80.166,
+   "bornes_pays": "59.168|75.771|90.444|169.663",
+   "fenetre_monde_T1": {
+    "1": 8,
+    "2": 5,
+    "3": 2,
+    "4": 5,
+    "5": 3
+   },
+   "fenetre_pays_T1": {
+    "1": 5,
+    "2": 5,
+    "3": 3,
+    "4": 5,
+    "5": 5
+   }
+  },
+  {
+   "iso3": "YEM",
+   "zone": "Middle_East",
+   "zone_fr": "Moyen-Orient",
+   "n": 191,
+   "n0": 20,
+   "n1": 95,
+   "both": 20,
+   "one": 75,
+   "none": 96,
+   "median_T0": 75.3095,
+   "median_T1": 97.373,
+   "bornes_pays": "61.035|78.641|111.540|159.044",
+   "fenetre_monde_T1": {
+    "1": 21,
+    "2": 18,
+    "3": 21,
+    "4": 25,
+    "5": 10
+   },
+   "fenetre_pays_T1": {
+    "1": 16,
+    "2": 19,
+    "3": 21,
+    "4": 20,
+    "5": 19
+   }
+  },
+  {
+   "iso3": "AUS",
+   "zone": "South_Pacific",
+   "zone_fr": "Pacifique Sud",
+   "n": 44,
+   "n0": 9,
+   "n1": 25,
+   "both": 9,
+   "one": 16,
+   "none": 19,
+   "median_T0": 359.09,
+   "median_T1": 88.364,
+   "bornes_pays": "74.248|87.036|118.097|755.239",
+   "fenetre_monde_T1": {
+    "1": 3,
+    "2": 7,
+    "3": 7,
+    "4": 1,
+    "5": 7
+   },
+   "fenetre_pays_T1": {
+    "1": 5,
+    "2": 6,
+    "3": 5,
+    "4": 4,
+    "5": 5
+   }
+  },
+  {
+   "iso3": "FJI",
+   "zone": "South_Pacific",
+   "zone_fr": "Pacifique Sud",
+   "n": 2,
+   "n0": 1,
+   "n1": 2,
+   "both": 1,
+   "one": 1,
+   "none": 0,
+   "median_T0": 101.257,
+   "median_T1": 139.754,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "1": 1,
+    "4": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "KIR",
+   "zone": "South_Pacific",
+   "zone_fr": "Pacifique Sud",
+   "n": 1,
+   "n0": 0,
+   "n1": 0,
+   "both": 0,
+   "one": 0,
+   "none": 1,
+   "median_T0": null,
+   "median_T1": null,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {},
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "NZL",
+   "zone": "South_Pacific",
+   "zone_fr": "Pacifique Sud",
+   "n": 11,
+   "n0": 3,
+   "n1": 10,
+   "both": 3,
+   "one": 7,
+   "none": 1,
+   "median_T0": 185.686,
+   "median_T1": 150.69799999999998,
+   "bornes_pays": "70.124|135.118|169.300|267.911",
+   "fenetre_monde_T1": {
+    "1": 3,
+    "2": 1,
+    "4": 3,
+    "5": 3
+   },
+   "fenetre_pays_T1": {
+    "1": 3,
+    "2": 1,
+    "3": 3,
+    "4": 1,
+    "5": 2
+   }
+  },
+  {
+   "iso3": "PNG",
+   "zone": "South_Pacific",
+   "zone_fr": "Pacifique Sud",
+   "n": 22,
+   "n0": 2,
+   "n1": 9,
+   "both": 2,
+   "one": 7,
+   "none": 13,
+   "median_T0": 113.356,
+   "median_T1": 93.288,
+   "bornes_pays": "71.584|92.041|104.356|129.771",
+   "fenetre_monde_T1": {
+    "1": 2,
+    "2": 1,
+    "3": 4,
+    "4": 1,
+    "5": 1
+   },
+   "fenetre_pays_T1": {
+    "1": 2,
+    "2": 2,
+    "3": 2,
+    "4": 2,
+    "5": 1
+   }
+  },
+  {
+   "iso3": "SLB",
+   "zone": "South_Pacific",
+   "zone_fr": "Pacifique Sud",
+   "n": 1,
+   "n0": 0,
+   "n1": 1,
+   "both": 0,
+   "one": 1,
+   "none": 0,
+   "median_T0": null,
+   "median_T1": 129.648,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {
+    "4": 1
+   },
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "VUT",
+   "zone": "South_Pacific",
+   "zone_fr": "Pacifique Sud",
+   "n": 1,
+   "n0": 0,
+   "n1": 0,
+   "both": 0,
+   "one": 0,
+   "none": 1,
+   "median_T0": null,
+   "median_T1": null,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {},
+   "fenetre_pays_T1": {}
+  },
+  {
+   "iso3": "WSM",
+   "zone": "South_Pacific",
+   "zone_fr": "Pacifique Sud",
+   "n": 1,
+   "n0": 0,
+   "n1": 0,
+   "both": 0,
+   "one": 0,
+   "none": 1,
+   "median_T0": null,
+   "median_T1": null,
+   "bornes_pays": "",
+   "fenetre_monde_T1": {},
+   "fenetre_pays_T1": {}
+  }
+ ],
+ "bridget": {
+  "title": "Santé — Villes du monde (WUP 2025)",
+  "section": "system:sante-villes",
+  "selector": "#sys",
+  "passages": [
+   "Santé — Villes du monde (WUP 2025, fichier 21, population en milliers, T₀ 1990 → T₁ 2024). 16768 villes, 179 des 196 pays. 6814 villes aux deux prises, 5164 avec une seule, 4790 sans aucune prise. Couverture 179/196 pays (91,3 %). Villes avec au moins une prise : 11978/16768 (71,4 %). Villes aux deux prises : 6814/16768 (40,6 %). [INCOMPLET] 4 790 villes sans aucune prise, 5 164 avec une seule. Elles sont gardées, les cellules vides ne sont pas inventées. [INCOMPLET] 15 territoires non rattachés aux 196 : CUW, ESH, GIB, GLP, GUF, HKG, JEY, MAC, MTQ, MYT, NCL, PRI, PYF, REU, TWN. [INCOMPLET] 17 codes des 196 sans aucune ville dans cette coupe : AND, ATG, DMA, FSM, GRD, KNA, LCA, MHL, NRU, PLW, SMR, SYC, TCA, TON, TUV, VCT, VGB. [INCOMPLET] noms de pays absents de la coupe : codes ISO3 seulement. Fenêtres monde (quantiles q20 / q40 / q60 / q80), milliers : 65,2 / 86,3 / 125,9 / 236,6. Queues monde : 50,627 et 5720,656. Fenêtres pays : un bassin par pays, bornes seulement si le pays a au moins 5 valeurs. Dans le moteur, un point de Classe 1 est la médiane des villes du pays (milliers), pas chaque ville : le moteur pose un maillage par objet de Classe 1. Le CSV original et cities.json gardent les 16 768 villes. Classe 2 : les 6 zones. Source UN DESA WUP 2025 F21, SHA-256 11fb42ead42163c32f54ab998cddebdd78b86162cc5aee17a64fc92b84defdf5.",
+   "Pays AGO, zone Afrique. 120 villes, 23 aux deux prises, 35 avec une seule, 62 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 90,2 → 118,4. Fenêtres pays, bornes q20 q40 q60 q80 : 74.750|90.153|158.959|324.922.",
+   "Pays BDI, zone Afrique. 42 villes, 2 aux deux prises, 7 avec une seule, 33 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 162,0 → 111,9. Fenêtres pays, bornes q20 q40 q60 q80 : 66.109|105.492|128.243|193.806.",
+   "Pays BEN, zone Afrique. 51 villes, 5 aux deux prises, 20 avec une seule, 26 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 77,3 → 72,2. Fenêtres pays, bornes q20 q40 q60 q80 : 62.787|69.293|105.857|182.468.",
+   "Pays BFA, zone Afrique. 48 villes, 4 aux deux prises, 13 avec une seule, 31 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 172,3 → 91,4. Fenêtres pays, bornes q20 q40 q60 q80 : 67.772|82.348|127.108|178.801.",
+   "Pays BWA, zone Afrique. 9 villes, 0 aux deux prises, 4 avec une seule, 5 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : — → 96,2. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays CAF, zone Afrique. 18 villes, 1 aux deux prises, 4 avec une seule, 13 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 562,4 → 61,9. Fenêtres pays, bornes q20 q40 q60 q80 : 60.360|61.913|77.756|562.356.",
+   "Pays CIV, zone Afrique. 88 villes, 12 aux deux prises, 27 avec une seule, 49 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 74,1 → 91,8. Fenêtres pays, bornes q20 q40 q60 q80 : 65.090|80.342|111.188|198.640.",
+   "Pays CMR, zone Afrique. 90 villes, 27 aux deux prises, 14 avec une seule, 49 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 99,3 → 116,4. Fenêtres pays, bornes q20 q40 q60 q80 : 66.653|97.850|118.051|222.425.",
+   "Pays COD, zone Afrique. 445 villes, 64 aux deux prises, 120 avec une seule, 261 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 97,8 → 111,8. Fenêtres pays, bornes q20 q40 q60 q80 : 70.730|92.019|134.147|237.900.",
+   "Pays COG, zone Afrique. 12 villes, 2 aux deux prises, 2 avec une seule, 8 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 360,3 → 1622,9. Fenêtres pays, bornes q20 q40 q60 q80 : 269.683|360.290|1021.751|1622.947.",
+   "Pays COM, zone Afrique. 2 villes, 2 aux deux prises, 0 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 97,3 → 200,6. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays CPV, zone Afrique. 2 villes, 1 aux deux prises, 1 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 82,9 → 103,7. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays ERI, zone Afrique. 13 villes, 5 aux deux prises, 4 avec une seule, 4 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 155,5 → 96,7. Fenêtres pays, bornes q20 q40 q60 q80 : 65.682|94.965|155.387|237.135.",
+   "Pays ETH, zone Afrique. 501 villes, 74 aux deux prises, 146 avec une seule, 281 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 68,1 → 86,5. Fenêtres pays, bornes q20 q40 q60 q80 : 62.066|72.586|91.267|140.091.",
+   "Pays GAB, zone Afrique. 8 villes, 2 aux deux prises, 4 avec une seule, 2 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 170,2 → 107,0. Fenêtres pays, bornes q20 q40 q60 q80 : 75.522|98.491|144.973|279.970.",
+   "Pays GHA, zone Afrique. 105 villes, 15 aux deux prises, 38 avec une seule, 52 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 89,3 → 89,2. Fenêtres pays, bornes q20 q40 q60 q80 : 68.396|83.851|101.966|163.505.",
+   "Pays GIN, zone Afrique. 38 villes, 7 aux deux prises, 12 avec une seule, 19 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 77,1 → 91,2. Fenêtres pays, bornes q20 q40 q60 q80 : 57.676|79.083|91.237|204.795.",
+   "Pays GMB, zone Afrique. 7 villes, 1 aux deux prises, 3 avec une seule, 3 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 275,4 → 126,2. Fenêtres pays, bornes q20 q40 q60 q80 : 70.718|137.120|218.540|448.037.",
+   "Pays GNB, zone Afrique. 4 villes, 1 aux deux prises, 2 avec une seule, 1 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 184,6 → 83,5. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays GNQ, zone Afrique. 3 villes, 0 aux deux prises, 2 avec une seule, 1 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : — → 791,1. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays KEN, zone Afrique. 99 villes, 8 aux deux prises, 34 avec une seule, 57 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 114,3 → 110,7. Fenêtres pays, bornes q20 q40 q60 q80 : 65.565|89.417|135.715|200.363.",
+   "Pays LBR, zone Afrique. 13 villes, 1 aux deux prises, 8 avec une seule, 4 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 1046,7 → 74,7. Fenêtres pays, bornes q20 q40 q60 q80 : 59.885|71.034|81.398|276.585.",
+   "Pays LSO, zone Afrique. 1 villes, 1 aux deux prises, 0 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 175,7 → 284,9. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays MDG, zone Afrique. 40 villes, 2 aux deux prises, 16 avec une seule, 22 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 426,3 → 91,1. Fenêtres pays, bornes q20 q40 q60 q80 : 65.159|80.628|128.255|213.315.",
+   "Pays MLI, zone Afrique. 47 villes, 6 aux deux prises, 9 avec une seule, 32 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 64,5 → 111,8. Fenêtres pays, bornes q20 q40 q60 q80 : 67.870|81.989|111.816|277.598.",
+   "Pays MOZ, zone Afrique. 90 villes, 12 aux deux prises, 25 avec une seule, 53 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 101,9 → 99,8. Fenêtres pays, bornes q20 q40 q60 q80 : 68.510|89.270|115.010|260.639.",
+   "Pays MRT, zone Afrique. 12 villes, 1 aux deux prises, 4 avec une seule, 7 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 388,1 → 102,8. Fenêtres pays, bornes q20 q40 q60 q80 : 79.345|102.766|173.756|388.078.",
+   "Pays MUS, zone Afrique. 1 villes, 1 aux deux prises, 0 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 503,8 → 550,0. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays MWI, zone Afrique. 21 villes, 2 aux deux prises, 4 avec une seule, 15 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 218,3 → 180,0. Fenêtres pays, bornes q20 q40 q60 q80 : 96.003|142.796|232.537|661.763.",
+   "Pays NAM, zone Afrique. 6 villes, 1 aux deux prises, 3 avec une seule, 2 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 99,8 → 83,9. Fenêtres pays, bornes q20 q40 q60 q80 : 79.924|84.056|90.656|160.057.",
+   "Pays NER, zone Afrique. 74 villes, 12 aux deux prises, 18 avec une seule, 44 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 91,1 → 116,4. Fenêtres pays, bornes q20 q40 q60 q80 : 63.614|82.047|124.342|164.966.",
+   "Pays NGA, zone Afrique. 791 villes, 190 aux deux prises, 219 avec une seule, 382 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 80,7 → 112,0. Fenêtres pays, bornes q20 q40 q60 q80 : 65.541|84.856|122.078|228.890.",
+   "Pays RWA, zone Afrique. 33 villes, 2 aux deux prises, 2 avec une seule, 29 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 127,2 → 241,4. Fenêtres pays, bornes q20 q40 q60 q80 : 81.794|152.019|172.685|330.684.",
+   "Pays SDN, zone Afrique. 173 villes, 54 aux deux prises, 55 avec une seule, 64 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 91,8 → 111,8. Fenêtres pays, bornes q20 q40 q60 q80 : 66.365|89.325|117.521|195.895.",
+   "Pays SEN, zone Afrique. 49 villes, 12 aux deux prises, 13 avec une seule, 24 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 118,4 → 98,3. Fenêtres pays, bornes q20 q40 q60 q80 : 72.233|92.249|170.214|275.802.",
+   "Pays SLE, zone Afrique. 17 villes, 5 aux deux prises, 6 avec une seule, 6 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 114,6 → 96,6. Fenêtres pays, bornes q20 q40 q60 q80 : 75.293|96.593|116.919|246.714.",
+   "Pays SOM, zone Afrique. 86 villes, 21 aux deux prises, 21 avec une seule, 44 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 96,5 → 110,8. Fenêtres pays, bornes q20 q40 q60 q80 : 65.380|95.897|126.134|240.205.",
+   "Pays SSD, zone Afrique. 40 villes, 9 aux deux prises, 13 avec une seule, 18 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 78,8 → 121,9. Fenêtres pays, bornes q20 q40 q60 q80 : 74.017|85.779|121.882|206.738.",
+   "Pays STP, zone Afrique. 1 villes, 1 aux deux prises, 0 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 58,9 → 145,5. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays SWZ, zone Afrique. 3 villes, 0 aux deux prises, 0 avec une seule, 3 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : — → —. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays TCD, zone Afrique. 66 villes, 15 aux deux prises, 17 avec une seule, 34 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 77,1 → 130,5. Fenêtres pays, bornes q20 q40 q60 q80 : 72.665|80.693|120.269|166.465.",
+   "Pays TGO, zone Afrique. 33 villes, 7 aux deux prises, 10 avec une seule, 16 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 100,3 → 110,0. Fenêtres pays, bornes q20 q40 q60 q80 : 67.353|96.475|112.751|190.782.",
+   "Pays TZA, zone Afrique. 142 villes, 16 aux deux prises, 22 avec une seule, 104 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 98,9 → 155,4. Fenêtres pays, bornes q20 q40 q60 q80 : 68.275|111.169|153.842|235.785.",
+   "Pays UGA, zone Afrique. 67 villes, 4 aux deux prises, 15 avec une seule, 48 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 54,7 → 136,0. Fenêtres pays, bornes q20 q40 q60 q80 : 64.787|96.666|150.549|242.029.",
+   "Pays ZAF, zone Afrique. 124 villes, 42 aux deux prises, 44 avec une seule, 38 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 93,4 → 121,1. Fenêtres pays, bornes q20 q40 q60 q80 : 67.518|94.013|146.836|253.523.",
+   "Pays ZMB, zone Afrique. 54 villes, 12 aux deux prises, 16 avec une seule, 26 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 90,1 → 115,3. Fenêtres pays, bornes q20 q40 q60 q80 : 62.133|91.255|133.732|240.505.",
+   "Pays ZWE, zone Afrique. 26 villes, 6 aux deux prises, 7 avec une seule, 13 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 73,0 → 95,1. Fenêtres pays, bornes q20 q40 q60 q80 : 67.299|85.368|114.582|304.062.",
+   "Pays ARG, zone Amériques. 80 villes, 46 aux deux prises, 30 avec une seule, 4 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 92,1 → 90,3. Fenêtres pays, bornes q20 q40 q60 q80 : 60.228|77.653|114.145|271.444.",
+   "Pays BHS, zone Amériques. 1 villes, 1 aux deux prises, 0 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 153,3 → 248,7. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays BLZ, zone Amériques. 1 villes, 0 aux deux prises, 1 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : — → 75,0. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays BOL, zone Amériques. 21 villes, 8 aux deux prises, 3 avec une seule, 10 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 143,5 → 242,2. Fenêtres pays, bornes q20 q40 q60 q80 : 97.466|137.719|275.859|768.969.",
+   "Pays BRA, zone Amériques. 384 villes, 195 aux deux prises, 157 avec une seule, 32 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 92,3 → 95,6. Fenêtres pays, bornes q20 q40 q60 q80 : 62.439|78.735|118.516|236.199.",
+   "Pays BRB, zone Amériques. 1 villes, 1 aux deux prises, 0 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 126,2 → 121,3. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays CAN, zone Amériques. 63 villes, 29 aux deux prises, 24 avec une seule, 10 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 144,3 → 119,8. Fenêtres pays, bornes q20 q40 q60 q80 : 81.087|107.500|185.670|348.357.",
+   "Pays CHL, zone Amériques. 39 villes, 21 aux deux prises, 15 avec une seule, 3 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 104,3 → 125,3. Fenêtres pays, bornes q20 q40 q60 q80 : 68.913|91.441|132.469|256.983.",
+   "Pays COL, zone Amériques. 99 villes, 38 aux deux prises, 40 avec une seule, 21 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 140,4 → 119,0. Fenêtres pays, bornes q20 q40 q60 q80 : 67.517|109.603|186.207|335.929.",
+   "Pays CRI, zone Amériques. 6 villes, 3 aux deux prises, 1 avec une seule, 2 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 128,5 → 120,8. Fenêtres pays, bornes q20 q40 q60 q80 : 52.256|82.918|164.841|882.010.",
+   "Pays CUB, zone Amériques. 32 villes, 25 aux deux prises, 6 avec une seule, 1 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 102,0 → 108,5. Fenêtres pays, bornes q20 q40 q60 q80 : 54.249|87.010|113.633|198.962.",
+   "Pays DOM, zone Amériques. 19 villes, 11 aux deux prises, 6 avec une seule, 2 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 99,7 → 126,0. Fenêtres pays, bornes q20 q40 q60 q80 : 67.812|93.214|124.927|207.292.",
+   "Pays ECU, zone Amériques. 42 villes, 16 aux deux prises, 14 avec une seule, 12 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 122,8 → 123,3. Fenêtres pays, bornes q20 q40 q60 q80 : 65.471|99.355|161.657|257.329.",
+   "Pays GTM, zone Amériques. 49 villes, 10 aux deux prises, 20 avec une seule, 19 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 57,4 → 85,7. Fenêtres pays, bornes q20 q40 q60 q80 : 57.457|66.067|92.303|112.568.",
+   "Pays GUY, zone Amériques. 2 villes, 2 aux deux prises, 0 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 102,0 → 118,1. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays HND, zone Amériques. 18 villes, 5 aux deux prises, 10 avec une seule, 3 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 88,0 → 100,2. Fenêtres pays, bornes q20 q40 q60 q80 : 69.079|81.800|106.000|284.795.",
+   "Pays HTI, zone Amériques. 29 villes, 4 aux deux prises, 17 avec une seule, 8 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 139,1 → 77,0. Fenêtres pays, bornes q20 q40 q60 q80 : 64.457|75.710|112.827|239.154.",
+   "Pays JAM, zone Amériques. 6 villes, 5 aux deux prises, 1 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 93,4 → 110,2. Fenêtres pays, bornes q20 q40 q60 q80 : 86.919|93.436|118.766|347.747.",
+   "Pays MEX, zone Amériques. 210 villes, 94 aux deux prises, 83 avec une seule, 33 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 159,7 → 120,7. Fenêtres pays, bornes q20 q40 q60 q80 : 67.203|100.822|177.389|411.970.",
+   "Pays NIC, zone Amériques. 20 villes, 7 aux deux prises, 4 avec une seule, 9 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 92,4 → 103,0. Fenêtres pays, bornes q20 q40 q60 q80 : 79.208|94.691|104.594|147.658.",
+   "Pays PAN, zone Amériques. 6 villes, 2 aux deux prises, 3 avec une seule, 1 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 293,3 → 184,3. Fenêtres pays, bornes q20 q40 q60 q80 : 129.680|172.322|225.364|451.035.",
+   "Pays PER, zone Amériques. 55 villes, 25 aux deux prises, 15 avec une seule, 15 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 114,7 → 128,0. Fenêtres pays, bornes q20 q40 q60 q80 : 68.563|95.812|192.501|346.688.",
+   "Pays PRY, zone Amériques. 11 villes, 3 aux deux prises, 6 avec une seule, 2 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 136,6 → 107,9. Fenêtres pays, bornes q20 q40 q60 q80 : 77.670|107.369|125.342|357.801.",
+   "Pays SLV, zone Amériques. 12 villes, 7 aux deux prises, 5 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 110,1 → 75,2. Fenêtres pays, bornes q20 q40 q60 q80 : 58.565|66.371|124.045|179.507.",
+   "Pays SUR, zone Amériques. 1 villes, 1 aux deux prises, 0 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 166,9 → 251,3. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays TTO, zone Amériques. 3 villes, 2 aux deux prises, 1 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 297,6 → 115,5. Fenêtres pays, bornes q20 q40 q60 q80 : 111.684|123.317|263.806|468.599.",
+   "Pays URY, zone Amériques. 7 villes, 5 aux deux prises, 2 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 70,8 → 94,5. Fenêtres pays, bornes q20 q40 q60 q80 : 71.125|85.624|94.037|103.418.",
+   "Pays USA, zone Amériques. 444 villes, 120 aux deux prises, 216 avec une seule, 108 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 106,5 → 105,2. Fenêtres pays, bornes q20 q40 q60 q80 : 65.386|86.331|139.185|309.600.",
+   "Pays VEN, zone Amériques. 75 villes, 41 aux deux prises, 28 avec une seule, 6 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 121,7 → 112,9. Fenêtres pays, bornes q20 q40 q60 q80 : 65.429|100.122|141.575|273.606.",
+   "Pays AFG, zone Est. 198 villes, 12 aux deux prises, 62 avec une seule, 124 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 67,6 → 107,8. Fenêtres pays, bornes q20 q40 q60 q80 : 63.619|94.087|115.494|187.100.",
+   "Pays BGD, zone Est. 371 villes, 124 aux deux prises, 103 avec une seule, 144 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 100,1 → 124,4. Fenêtres pays, bornes q20 q40 q60 q80 : 66.665|92.891|151.737|246.140.",
+   "Pays BRN, zone Est. 2 villes, 0 aux deux prises, 2 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : — → 67,3. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays BTN, zone Est. 2 villes, 1 aux deux prises, 1 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 75,7 → 70,1. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays CHN, zone Est. 2460 villes, 1607 aux deux prises, 693 avec une seule, 160 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 96,2 → 106,9. Fenêtres pays, bornes q20 q40 q60 q80 : 65.223|86.760|120.799|206.009.",
+   "Pays IDN, zone Est. 467 villes, 247 aux deux prises, 128 avec une seule, 92 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 103,7 → 115,1. Fenêtres pays, bornes q20 q40 q60 q80 : 69.720|92.324|138.007|265.492.",
+   "Pays IND, zone Est. 2748 villes, 1118 aux deux prises, 855 avec une seule, 775 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 93,4 → 106,7. Fenêtres pays, bornes q20 q40 q60 q80 : 64.187|86.057|124.235|231.327.",
+   "Pays JPN, zone Est. 182 villes, 128 aux deux prises, 34 avec une seule, 20 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 108,2 → 122,5. Fenêtres pays, bornes q20 q40 q60 q80 : 68.717|93.893|146.596|302.016.",
+   "Pays KAZ, zone Est. 54 villes, 22 aux deux prises, 12 avec une seule, 20 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 175,0 → 166,4. Fenêtres pays, bornes q20 q40 q60 q80 : 69.555|137.408|193.671|287.706.",
+   "Pays KGZ, zone Est. 23 villes, 4 aux deux prises, 2 avec une seule, 17 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 203,6 → 107,9. Fenêtres pays, bornes q20 q40 q60 q80 : 67.362|86.804|214.989|539.132.",
+   "Pays KHM, zone Est. 20 villes, 2 aux deux prises, 8 avec une seule, 10 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 230,7 → 115,6. Fenêtres pays, bornes q20 q40 q60 q80 : 76.634|98.103|150.566|309.441.",
+   "Pays KOR, zone Est. 65 villes, 34 aux deux prises, 19 avec une seule, 12 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 144,4 → 138,2. Fenêtres pays, bornes q20 q40 q60 q80 : 72.732|105.255|178.388|441.231.",
+   "Pays LAO, zone Est. 5 villes, 1 aux deux prises, 2 avec une seule, 2 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 189,7 → 99,2. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays LKA, zone Est. 30 villes, 10 aux deux prises, 14 avec une seule, 6 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 87,7 → 91,0. Fenêtres pays, bornes q20 q40 q60 q80 : 59.194|75.813|100.780|180.959.",
+   "Pays MDV, zone Est. 1 villes, 1 aux deux prises, 0 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 62,1 → 233,2. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays MMR, zone Est. 145 villes, 90 aux deux prises, 40 avec une seule, 15 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 79,6 → 88,8. Fenêtres pays, bornes q20 q40 q60 q80 : 63.137|75.017|96.609|149.882.",
+   "Pays MNG, zone Est. 5 villes, 1 aux deux prises, 1 avec une seule, 3 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 430,0 → 829,2. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays MYS, zone Est. 60 villes, 25 aux deux prises, 16 avec une seule, 19 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 144,5 → 162,4. Fenêtres pays, bornes q20 q40 q60 q80 : 81.747|130.544|193.260|395.165.",
+   "Pays NPL, zone Est. 36 villes, 12 aux deux prises, 7 avec une seule, 17 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 73,5 → 118,2. Fenêtres pays, bornes q20 q40 q60 q80 : 57.498|73.517|116.744|161.081.",
+   "Pays PAK, zone Est. 508 villes, 150 aux deux prises, 142 avec une seule, 216 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 102,2 → 128,4. Fenêtres pays, bornes q20 q40 q60 q80 : 70.826|94.050|143.991|255.994.",
+   "Pays PHL, zone Est. 162 villes, 37 aux deux prises, 82 avec une seule, 43 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 110,8 → 118,5. Fenêtres pays, bornes q20 q40 q60 q80 : 71.361|93.900|137.417|268.412.",
+   "Pays PRK, zone Est. 117 villes, 84 aux deux prises, 22 avec une seule, 11 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 88,2 → 94,9. Fenêtres pays, bornes q20 q40 q60 q80 : 62.405|77.469|101.886|143.113.",
+   "Pays SGP, zone Est. 2 villes, 2 aux deux prises, 0 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 1508,4 → 2897,6. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays THA, zone Est. 82 villes, 17 aux deux prises, 46 avec une seule, 19 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 74,8 → 98,3. Fenêtres pays, bornes q20 q40 q60 q80 : 62.591|77.693|99.182|156.658.",
+   "Pays TJK, zone Est. 39 villes, 6 aux deux prises, 15 avec une seule, 18 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 68,8 → 76,9. Fenêtres pays, bornes q20 q40 q60 q80 : 62.769|70.359|84.229|131.070.",
+   "Pays TKM, zone Est. 16 villes, 4 aux deux prises, 6 avec une seule, 6 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 137,9 → 90,4. Fenêtres pays, bornes q20 q40 q60 q80 : 74.588|99.298|148.291|256.512.",
+   "Pays TLS, zone Est. 1 villes, 1 aux deux prises, 0 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 117,5 → 342,4. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays UZB, zone Est. 122 villes, 26 aux deux prises, 42 avec une seule, 54 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 108,2 → 98,6. Fenêtres pays, bornes q20 q40 q60 q80 : 63.151|85.171|123.835|242.323.",
+   "Pays VNM, zone Est. 178 villes, 65 aux deux prises, 81 avec une seule, 32 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 88,1 → 102,1. Fenêtres pays, bornes q20 q40 q60 q80 : 66.926|84.145|114.754|204.795.",
+   "Pays ALB, zone Europe. 8 villes, 6 aux deux prises, 0 avec une seule, 2 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 72,5 → 79,5. Fenêtres pays, bornes q20 q40 q60 q80 : 62.528|75.924|79.434|120.231.",
+   "Pays ARM, zone Europe. 3 villes, 3 aux deux prises, 0 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 122,4 → 93,2. Fenêtres pays, bornes q20 q40 q60 q80 : 59.800|93.231|122.386|1083.702.",
+   "Pays AUT, zone Europe. 8 villes, 6 aux deux prises, 1 avec une seule, 1 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 168,2 → 143,8. Fenêtres pays, bornes q20 q40 q60 q80 : 92.970|136.829|215.180|273.510.",
+   "Pays AZE, zone Europe. 26 villes, 8 aux deux prises, 12 avec une seule, 6 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 92,0 → 68,5. Fenêtres pays, bornes q20 q40 q60 q80 : 56.351|67.934|95.068|193.521.",
+   "Pays BEL, zone Europe. 16 villes, 13 aux deux prises, 2 avec une seule, 1 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 75,2 → 76,9. Fenêtres pays, bornes q20 q40 q60 q80 : 62.754|73.780|81.898|289.923.",
+   "Pays BGR, zone Europe. 18 villes, 9 aux deux prises, 7 avec une seule, 2 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 86,8 → 89,7. Fenêtres pays, bornes q20 q40 q60 q80 : 62.404|79.718|102.397|270.493.",
+   "Pays BIH, zone Europe. 9 villes, 4 aux deux prises, 3 avec une seule, 2 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 71,6 → 83,1. Fenêtres pays, bornes q20 q40 q60 q80 : 57.734|66.592|80.391|193.872.",
+   "Pays BLR, zone Europe. 17 villes, 14 aux deux prises, 3 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 184,8 → 179,6. Fenêtres pays, bornes q20 q40 q60 q80 : 85.533|125.789|226.567|371.023.",
+   "Pays CHE, zone Europe. 21 villes, 9 aux deux prises, 8 avec une seule, 4 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 202,2 → 74,4. Fenêtres pays, bornes q20 q40 q60 q80 : 67.538|74.439|147.602|295.020.",
+   "Pays CYP, zone Europe. 4 villes, 2 aux deux prises, 2 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 143,8 → 142,0. Fenêtres pays, bornes q20 q40 q60 q80 : 77.580|100.967|186.607|206.396.",
+   "Pays CZE, zone Europe. 17 villes, 12 aux deux prises, 5 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 78,1 → 82,0. Fenêtres pays, bornes q20 q40 q60 q80 : 60.651|73.030|82.121|149.085.",
+   "Pays DEU, zone Europe. 114 villes, 87 aux deux prises, 24 avec une seule, 3 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 101,2 → 108,7. Fenêtres pays, bornes q20 q40 q60 q80 : 62.060|81.636|134.510|261.721.",
+   "Pays DNK, zone Europe. 5 villes, 4 aux deux prises, 1 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 121,4 → 127,3. Fenêtres pays, bornes q20 q40 q60 q80 : 83.274|105.305|151.948|496.974.",
+   "Pays ESP, zone Europe. 90 villes, 64 aux deux prises, 24 avec une seule, 2 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 111,7 → 128,1. Fenêtres pays, bornes q20 q40 q60 q80 : 66.819|94.254|148.006|262.303.",
+   "Pays EST, zone Europe. 5 villes, 2 aux deux prises, 1 avec une seule, 2 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 100,2 → 259,9. Fenêtres pays, bornes q20 q40 q60 q80 : 77.599|92.859|235.272|439.826.",
+   "Pays FIN, zone Europe. 6 villes, 6 aux deux prises, 0 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 69,3 → 93,9. Fenêtres pays, bornes q20 q40 q60 q80 : 59.257|68.196|93.749|143.083.",
+   "Pays FRA, zone Europe. 92 villes, 64 aux deux prises, 18 avec une seule, 10 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 97,0 → 115,1. Fenêtres pays, bornes q20 q40 q60 q80 : 65.879|86.982|154.229|218.029.",
+   "Pays GBR, zone Europe. 166 villes, 120 aux deux prises, 24 avec une seule, 22 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 93,9 → 108,3. Fenêtres pays, bornes q20 q40 q60 q80 : 67.361|86.970|118.343|223.976.",
+   "Pays GEO, zone Europe. 11 villes, 4 aux deux prises, 5 avec une seule, 2 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 76,6 → 149,8. Fenêtres pays, bornes q20 q40 q60 q80 : 60.053|79.706|142.338|236.025.",
+   "Pays GRC, zone Europe. 12 villes, 8 aux deux prises, 0 avec une seule, 4 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 118,2 → 136,8. Fenêtres pays, bornes q20 q40 q60 q80 : 90.435|112.454|151.752|728.543.",
+   "Pays HRV, zone Europe. 6 villes, 5 aux deux prises, 1 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 131,7 → 119,5. Fenêtres pays, bornes q20 q40 q60 q80 : 69.728|101.702|161.705|218.149.",
+   "Pays HUN, zone Europe. 19 villes, 12 aux deux prises, 7 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 72,5 → 77,5. Fenêtres pays, bornes q20 q40 q60 q80 : 57.812|71.846|79.131|130.583.",
+   "Pays IRL, zone Europe. 7 villes, 3 aux deux prises, 3 avec une seule, 1 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 106,8 → 107,8. Fenêtres pays, bornes q20 q40 q60 q80 : 73.944|86.012|128.023|429.287.",
+   "Pays ISL, zone Europe. 1 villes, 1 aux deux prises, 0 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 94,5 → 213,7. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays ITA, zone Europe. 104 villes, 79 aux deux prises, 23 avec une seule, 2 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 84,6 → 90,3. Fenêtres pays, bornes q20 q40 q60 q80 : 59.078|79.528|97.374|181.906.",
+   "Pays LTU, zone Europe. 6 villes, 5 aux deux prises, 1 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 151,9 → 113,9. Fenêtres pays, bornes q20 q40 q60 q80 : 81.522|113.905|180.797|336.220.",
+   "Pays LUX, zone Europe. 2 villes, 1 aux deux prises, 0 avec une seule, 1 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 67,6 → 153,5. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays LVA, zone Europe. 3 villes, 3 aux deux prises, 0 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 106,6 → 57,9. Fenêtres pays, bornes q20 q40 q60 q80 : 57.879|100.237|106.568|550.544.",
+   "Pays MCO, zone Europe. 1 villes, 0 aux deux prises, 1 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : — → 56,9. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays MDA, zone Europe. 5 villes, 4 aux deux prises, 1 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 195,4 → 61,3. Fenêtres pays, bornes q20 q40 q60 q80 : 60.541|93.067|145.261|313.837.",
+   "Pays MKD, zone Europe. 5 villes, 4 aux deux prises, 1 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 67,1 → 59,8. Fenêtres pays, bornes q20 q40 q60 q80 : 57.103|60.788|66.139|183.304.",
+   "Pays MLT, zone Europe. 1 villes, 1 aux deux prises, 0 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 247,9 → 370,0. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays MNE, zone Europe. 4 villes, 1 aux deux prises, 2 avec une seule, 1 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 67,0 → 149,3. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays NLD, zone Europe. 49 villes, 33 aux deux prises, 9 avec une seule, 7 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 107,0 → 131,9. Fenêtres pays, bornes q20 q40 q60 q80 : 68.577|91.082|136.647|214.193.",
+   "Pays NOR, zone Europe. 9 villes, 4 aux deux prises, 2 avec une seule, 3 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 90,9 → 133,1. Fenêtres pays, bornes q20 q40 q60 q80 : 72.327|93.443|132.250|261.522.",
+   "Pays POL, zone Europe. 68 villes, 52 aux deux prises, 16 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 83,5 → 75,0. Fenêtres pays, bornes q20 q40 q60 q80 : 57.678|67.084|96.935|228.892.",
+   "Pays PRT, zone Europe. 10 villes, 9 aux deux prises, 1 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 92,0 → 133,3. Fenêtres pays, bornes q20 q40 q60 q80 : 73.272|98.049|130.897|462.392.",
+   "Pays ROU, zone Europe. 43 villes, 29 aux deux prises, 13 avec une seule, 1 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 96,9 → 126,5. Fenêtres pays, bornes q20 q40 q60 q80 : 69.820|86.540|132.321|238.659.",
+   "Pays RUS, zone Europe. 310 villes, 233 aux deux prises, 65 avec une seule, 12 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 102,5 → 104,5. Fenêtres pays, bornes q20 q40 q60 q80 : 63.874|85.370|137.137|297.489.",
+   "Pays SRB, zone Europe. 20 villes, 12 aux deux prises, 6 avec une seule, 2 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 68,2 → 70,3. Fenêtres pays, bornes q20 q40 q60 q80 : 59.684|64.353|74.743|137.403.",
+   "Pays SVK, zone Europe. 8 villes, 7 aux deux prises, 0 avec une seule, 1 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 70,2 → 64,9. Fenêtres pays, bornes q20 q40 q60 q80 : 62.485|66.285|74.641|213.104.",
+   "Pays SVN, zone Europe. 2 villes, 2 aux deux prises, 0 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 151,8 → 164,1. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays SWE, zone Europe. 20 villes, 10 aux deux prises, 6 avec une seule, 4 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 69,9 → 94,9. Fenêtres pays, bornes q20 q40 q60 q80 : 65.750|80.887|94.897|200.659.",
+   "Pays TUR, zone Europe. 198 villes, 98 aux deux prises, 87 avec une seule, 13 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 84,3 → 116,3. Fenêtres pays, bornes q20 q40 q60 q80 : 64.824|86.774|122.792|203.503.",
+   "Pays UKR, zone Europe. 112 villes, 79 aux deux prises, 31 avec une seule, 2 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 103,0 → 95,1. Fenêtres pays, bornes q20 q40 q60 q80 : 64.453|85.130|128.578|261.991.",
+   "Pays XKX, zone Europe. 8 villes, 6 aux deux prises, 2 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 86,4 → 67,6. Fenêtres pays, bornes q20 q40 q60 q80 : 61.205|70.861|89.127|126.687.",
+   "Pays ARE, zone Moyen-Orient. 21 villes, 3 aux deux prises, 11 avec une seule, 7 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 219,0 → 94,8. Fenêtres pays, bornes q20 q40 q60 q80 : 67.915|93.487|161.907|519.498.",
+   "Pays BHR, zone Moyen-Orient. 1 villes, 1 aux deux prises, 0 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 279,1 → 1496,4. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays DJI, zone Moyen-Orient. 5 villes, 1 aux deux prises, 3 avec une seule, 1 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 350,7 → 75,6. Fenêtres pays, bornes q20 q40 q60 q80 : 61.401|78.058|193.112|426.670.",
+   "Pays DZA, zone Moyen-Orient. 142 villes, 42 aux deux prises, 63 avec une seule, 37 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 90,7 → 114,6. Fenêtres pays, bornes q20 q40 q60 q80 : 67.184|87.017|125.003|198.790.",
+   "Pays EGY, zone Moyen-Orient. 340 villes, 86 aux deux prises, 103 avec une seule, 151 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 93,1 → 122,4. Fenêtres pays, bornes q20 q40 q60 q80 : 68.955|91.356|147.384|321.036.",
+   "Pays IRN, zone Moyen-Orient. 259 villes, 110 aux deux prises, 109 avec une seule, 40 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 93,9 → 103,9. Fenêtres pays, bornes q20 q40 q60 q80 : 66.340|90.071|123.639|218.604.",
+   "Pays IRQ, zone Moyen-Orient. 140 villes, 27 aux deux prises, 50 avec une seule, 63 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 196,2 → 125,6. Fenêtres pays, bornes q20 q40 q60 q80 : 73.450|110.003|185.033|457.858.",
+   "Pays ISR, zone Moyen-Orient. 38 villes, 10 aux deux prises, 10 avec une seule, 18 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 109,7 → 108,9. Fenêtres pays, bornes q20 q40 q60 q80 : 63.825|85.165|194.573|290.922.",
+   "Pays JOR, zone Moyen-Orient. 25 villes, 2 aux deux prises, 11 avec une seule, 12 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 969,5 → 112,2. Fenêtres pays, bornes q20 q40 q60 q80 : 74.152|107.573|136.106|317.193.",
+   "Pays KWT, zone Moyen-Orient. 5 villes, 1 aux deux prises, 1 avec une seule, 3 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 1400,4 → 2176,9. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays LBN, zone Moyen-Orient. 9 villes, 3 aux deux prises, 6 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 252,4 → 114,7. Fenêtres pays, bornes q20 q40 q60 q80 : 84.846|115.270|187.671|351.308.",
+   "Pays LBY, zone Moyen-Orient. 15 villes, 10 aux deux prises, 4 avec une seule, 1 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 67,9 → 117,5. Fenêtres pays, bornes q20 q40 q60 q80 : 62.749|81.546|114.616|243.667.",
+   "Pays MAR, zone Moyen-Orient. 77 villes, 45 aux deux prises, 25 avec une seule, 7 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 95,6 → 100,7. Fenêtres pays, bornes q20 q40 q60 q80 : 65.505|77.392|119.376|229.747.",
+   "Pays OMN, zone Moyen-Orient. 16 villes, 2 aux deux prises, 6 avec une seule, 8 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 80,3 → 115,9. Fenêtres pays, bornes q20 q40 q60 q80 : 82.724|93.752|111.763|335.631.",
+   "Pays PSE, zone Moyen-Orient. 16 villes, 6 aux deux prises, 5 avec une seule, 5 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 156,5 → 202,5. Fenêtres pays, bornes q20 q40 q60 q80 : 65.464|102.138|267.136|394.843.",
+   "Pays QAT, zone Moyen-Orient. 6 villes, 1 aux deux prises, 3 avec une seule, 2 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 94,6 → 93,4. Fenêtres pays, bornes q20 q40 q60 q80 : 77.055|87.826|100.374|517.530.",
+   "Pays SAU, zone Moyen-Orient. 60 villes, 15 aux deux prises, 22 avec une seule, 23 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 103,5 → 157,0. Fenêtres pays, bornes q20 q40 q60 q80 : 70.227|103.462|193.135|464.102.",
+   "Pays SYR, zone Moyen-Orient. 72 villes, 17 aux deux prises, 12 avec une seule, 43 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 95,6 → 92,5. Fenêtres pays, bornes q20 q40 q60 q80 : 63.005|76.994|118.678|252.587.",
+   "Pays TUN, zone Moyen-Orient. 26 villes, 10 aux deux prises, 13 avec une seule, 3 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 83,8 → 80,2. Fenêtres pays, bornes q20 q40 q60 q80 : 59.168|75.771|90.444|169.663.",
+   "Pays YEM, zone Moyen-Orient. 191 villes, 20 aux deux prises, 75 avec une seule, 96 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 75,3 → 97,4. Fenêtres pays, bornes q20 q40 q60 q80 : 61.035|78.641|111.540|159.044.",
+   "Pays AUS, zone Pacifique Sud. 44 villes, 9 aux deux prises, 16 avec une seule, 19 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 359,1 → 88,4. Fenêtres pays, bornes q20 q40 q60 q80 : 74.248|87.036|118.097|755.239.",
+   "Pays FJI, zone Pacifique Sud. 2 villes, 1 aux deux prises, 1 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 101,3 → 139,8. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays KIR, zone Pacifique Sud. 1 villes, 0 aux deux prises, 0 avec une seule, 1 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : — → —. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays NZL, zone Pacifique Sud. 11 villes, 3 aux deux prises, 7 avec une seule, 1 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 185,7 → 150,7. Fenêtres pays, bornes q20 q40 q60 q80 : 70.124|135.118|169.300|267.911.",
+   "Pays PNG, zone Pacifique Sud. 22 villes, 2 aux deux prises, 7 avec une seule, 13 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : 113,4 → 93,3. Fenêtres pays, bornes q20 q40 q60 q80 : 71.584|92.041|104.356|129.771.",
+   "Pays SLB, zone Pacifique Sud. 1 villes, 0 aux deux prises, 1 avec une seule, 0 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : — → 129,6. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays VUT, zone Pacifique Sud. 1 villes, 0 aux deux prises, 0 avec une seule, 1 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : — → —. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET].",
+   "Pays WSM, zone Pacifique Sud. 1 villes, 0 aux deux prises, 0 avec une seule, 1 sans prise. Médiane des populations urbaines (milliers) T₀ 1990 → T₁ 2024 : — → —. Fenêtres pays, bornes q20 q40 q60 q80 : [INCOMPLET]."
+  ]
+ }
+}
