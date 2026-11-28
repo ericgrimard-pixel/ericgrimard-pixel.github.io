@@ -1,6 +1,10 @@
-# MANIFESTATION ENGINE — Hub v21.10
+# MANIFESTATION ENGINE — Hub v21.11
 
-Canonical lineage: `v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06 -> v21.07 -> v21.08 -> v21.09 -> v21.10`. Next free number: `v21.11`.
+Canonical lineage: `v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06 -> v21.07 -> v21.08 -> v21.09 -> v21.10 -> v21.11`. Next free number: `v21.12`.
+
+## Ce qui est nouveau en v21.11 (à démontrer)
+
+1. « ＋ Créer » au bas de la rangée Classe 2, comme en v20.91.1. On choisit des objets réels de Classe 1 et de Classe 2, on nomme, on enregistre. La création reste sous « Mes créations · Classe 2 », avec ✦, après rechargement.
 
 ## Ce qui est nouveau en v21.10 (à démontrer)
 
