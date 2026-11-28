@@ -800,7 +800,8 @@ function mcMotionGain(er){
 /* Trajectory ghost of the central object. Same T₀→T₁ fold as the object (c4Hold), then re-centred
    on the system centre so the path orbits the singularité. Hidden when the layer is off or drift ≤ 1e-4.
    C4G_MODE 'A': the path passes through the object. 'B': it starts on the object and runs toward T₁. */
-let C4G_MODE='A';
+let C4G_MODE='B';
+let c4GhostState=null;
 const C4GH=new THREE.Group();MICRO.add(C4GH);C4GH.visible=false;C4GH.renderOrder=9;
 const C4G_N=48,C4G_F=16,C4GOLD=[1,224/255,138/255];
 function c4gLine(){
@@ -1042,24 +1043,25 @@ function c4GhostFrame(tau,orbit){
   else c4gZ.visible=false;
   let drawn=null;
   if(microOn&&has){
-    drawn=c4Mode(orbit,Math.max(0,Math.min(1,+tau||0)));
-    const t0=Math.max(0,Math.min(1,+tau||0)),n=drawn.pts.length-1,i0=Math.max(1,Math.round(t0*n));
-    const past=drawn.pts.slice(0,i0+1),fwd=drawn.pts.slice(i0);
-    if(past.length>1){c4gPast.material.opacity=.72;c4Write(c4gPast,past,(i,m)=>.5+.4*i/Math.max(1,m));}
-    if(fwd.length>1){c4gFwd.material.opacity=.9;c4Write(c4gFwd,fwd,(i,m)=>.5+.4*i/Math.max(1,m));}
+    const obj=orbit.at(Math.max(0,Math.min(1,+tau||0)));
+    const step=(window.UM_C4_GHOST||{c4GhostStep:function(p,s){return {obj:s.obj.slice(),line:[s.obj.slice()].concat(s.path.slice(1).map(function(x){return x.slice()})),markers:[s.path[0].slice(),s.path[s.path.length-1].slice()],moved:!p,sideLine:false,startsAtObject:true}}}).c4GhostStep(c4GhostState,{obj:obj,path:orbit.pts});
+    c4GhostState=step;drawn={obj:step.obj,pts:step.line};
+    c4gPast.visible=false;
+    if(step.line.length>1){c4gFwd.material.opacity=.9;c4Write(c4gFwd,step.line,(i,m)=>.5+.4*i/Math.max(1,m));}
     const D=c4gDots.geometry.attributes.position.array;
-    for(let k=0;k<5;k++){const p=c4Sample(drawn.pts,(k+1)/6);D[k*3]=p[0];D[k*3+1]=p[1];D[k*3+2]=p[2];}
+    for(let k=0;k<5;k++){const p=c4Sample(step.line,k/4);D[k*3]=p[0];D[k*3+1]=p[1];D[k*3+2]=p[2];}
     c4gDots.geometry.attributes.position.needsUpdate=true;c4gDots.visible=true;
-    const E=c4gEnds.geometry.attributes.position.array,a=drawn.pts[0],b=drawn.pts[drawn.pts.length-1];
+    const E=c4gEnds.geometry.attributes.position.array,a=step.markers[0],b=step.markers[1];
     E[0]=a[0];E[1]=a[1];E[2]=a[2];E[3]=b[0];E[4]=b[1];E[5]=b[2];
     c4gEnds.geometry.attributes.position.needsUpdate=true;c4gEnds.visible=true;
-    const dc=c4Mean(drawn.pts);
-    window.__UM_C4ORBIT.drawnDist=+Math.hypot(dc[0],dc[1],dc[2]).toFixed(6);
-    window.__UM_C4ORBIT.obj=drawn.obj.map(x=>+x.toFixed(5));
+    window.__UM_C4ORBIT.obj=step.obj.map(x=>+x.toFixed(5));
+    window.__UM_C4ORBIT.sideLine=step.sideLine?1:0;
+    window.__UM_C4ORBIT.moved=step.moved?1:0;
+    window.__UM_C4ORBIT.mode='B';
   }
-  C4GH.visible=!!(microOn&&has&&(c4gPast.visible||c4gFwd.visible));
+  C4GH.visible=!!(microOn&&has&&c4gFwd.visible);
   if(window.__C4LIVE){const live=(drawn?drawn.obj:orbit.at(Math.max(0,Math.min(1,+tau||0))));
-    window.__C4LIVE.ghost={on:C4GH.visible?1:0,drift:+(has?zD:0).toFixed(5),fwd:c4gFwd.visible?1:0,sens:+MCG.sens.toFixed(4),path:'Z0-centré',mode:C4G_MODE,singularite:[0,0,0],live:live.map(x=>+x.toFixed(5))};
+    window.__C4LIVE.ghost={on:C4GH.visible?1:0,drift:+(has?zD:0).toFixed(5),fwd:c4gFwd.visible?1:0,sens:+MCG.sens.toFixed(4),path:'Z0-centré',mode:'B',singularite:[0,0,0],live:live.map(x=>+x.toFixed(5)),sideLine:0};
     window.__C4LIVE.z0pos=live.map(x=>+x.toFixed(5));}
 }
 function relBlock(){
