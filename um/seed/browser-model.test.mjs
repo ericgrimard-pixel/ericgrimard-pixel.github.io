@@ -70,7 +70,7 @@ const loaded = await page.evaluate(async () => {
     hook: hook,
     hasCreate: !!(api && api.createModelHook && api.httpProvider),
     caps: desc ? desc.capabilities : [],
-    gone: !!(document.getElementById('hub-nav') && document.getElementById('hub-up') && document.getElementById('tgL') && document.getElementById('tgR') && document.getElementById('km') && document.getElementById('sys').closest('header'))
+    gone: !!(document.getElementById('hub-nav') && document.getElementById('hub-up') && document.getElementById('tgL') && document.getElementById('tgR') && document.getElementById('sys').closest('header') && !document.getElementById('km'))
   };
 });
 await page.$eval('#model-test', el => { el.scrollIntoView({ block: 'center' }); el.click(); });

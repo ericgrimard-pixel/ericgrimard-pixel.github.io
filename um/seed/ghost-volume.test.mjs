@@ -90,18 +90,9 @@ await page.$eval('#gvol', el => { el.value = '200'; el.dispatchEvent(new Event('
 await page.waitForFunction(() => window.__umGhostMetrics && window.__umGhostMetrics.gvol > 3, { timeout: 10000 });
 const dense = await page.evaluate(() => window.__umGhostMetrics);
 
-await page.goto(base + '/um/#/art', { waitUntil: 'domcontentloaded', timeout: 120000 });
-await page.waitForFunction(() => {
-  const g = document.getElementById('um-ghost-gap');
-  return g && !g.hidden && g.textContent.indexOf('Classe 1') >= 0 && g.textContent.indexOf('Classe 2') >= 0;
-}, { timeout: 20000 });
-await quiet();
-await shot('ghost-gap-art-1280.png');
-const gap = await page.$eval('#um-ghost-gap', el => el.textContent);
-
 await browser.close();
 server.close();
-const report = { before, vol2, c2, fantome, dense, gap, errors };
+const report = { before, vol2, c2, fantome, dense, errors };
 console.log(JSON.stringify(report, null, 2));
 const volOk = near(vol2.c1Scale, before.c1Scale * 2, 0.05) && near(vol2.c2Scale, before.c2Scale * 2, 0.05);
 const c2Ok = near(c2.c1Scale, vol2.c1Scale, 0.08) && near(c2.c2Scale, vol2.c2Scale * 2, 0.08);

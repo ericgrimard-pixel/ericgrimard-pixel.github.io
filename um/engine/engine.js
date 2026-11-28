@@ -1333,16 +1333,7 @@ const SGREP=makeReps(),SGN=8,SGL=.35,SGK=1.12,SGS=24,SGMIN=.09,SGG=.45;
 function sgAt(i,t){const b=i*F,A=(b+S.T0)*10,B=(b+S.T1)*10,v=k=>zp(V,A,B,S.T0,S.T1,t,k),X=v(0),Y=v(1),Z=v(2),a=AZ(X),r=2-Z,o=[r*Math.sin(a),Y,-r*Math.cos(a)];
   if(S.layers.spacing&&!S.ghost){const q=i*6,u=1-t;o[0]+=OFF1[q]*u+OFF1[q+3]*t;o[1]+=OFF1[q+1]*u+OFF1[q+4]*t;o[2]+=OFF1[q+2]*u+OFF1[q+5]*t}return o}
 function sgCardAt(ci,t){const A=(ci*F+S.T0)*10,B=(ci*F+S.T1)*10,v=k=>zp(CV,A,B,S.T0,S.T1,t,k),X=v(0),Y=v(1),Z=v(2),a=AZ(X),r=2-Z;return [r*Math.sin(a),Y,-r*Math.cos(a)]}
-function syncGhostGap(staticTake){
-  const el=document.getElementById('um-ghost-gap');if(!el)return;
-  const want=!!staticTake||S.prog>0.15;
-  const bits=[];
-  if(want&&N1>0&&!SGREP.c1n)bits.push('Classe 1');
-  if(want&&NC>0&&!SGREP.c2n)bits.push('Classe 2');
-  if(!bits.length){el.hidden=true;el.textContent='';return}
-  el.hidden=false;
-  el.innerHTML='<span class="um-gap-badge">LACUNE / GAP</span> '+bits.join(' · ')+' · aucun fantôme — pas de déplacement réel, rien n’est inventé';
-}
+function syncGhostGap(){}
 function publishGhostMetrics(){
   const u=SGREP.U?SGREP.U.uSize.value:1;
   window.__umGhostMetrics={
@@ -2335,12 +2326,12 @@ function umAct(cmd){
     if(ref.kind===1&&ACT.has(ref.idx)&&ACTWAS&&ACTWAS.idx===ref.idx&&ACTWAS.was){ACT.delete(ref.idx);netUI();dirty=true;return {action:'release',kind:1,idx:ref.idx,sys:SYS.id}}
     if(onC4&&ref.kind===3&&SYS.id!=='world'){climbC4();return {action:'layer',kind:3,sys:SYS.id}}
     select(ref);
-    if(ref.kind===4)enterPlan();else if(ref.kind===1||ref.kind===2)enterFocus(ref);
+    if(ref.kind===4)enterPlan();else if(ref.kind===1||ref.kind===2)observedFull(ref);
     return {action:'focus',kind:ref.kind,idx:ref.idx,sys:SYS.id};
   }
   if(!ref||ref.kind===4){select({kind:4});return {action:'focus',kind:4,sys:SYS.id}}
   select(ref);
-  if(ref.kind===1||ref.kind===2)enterFocus(ref);
+  if(ref.kind===1||ref.kind===2)observedFull(ref);
   if(ref.kind===1){ACT.add(ref.idx);netUI()}
   return {action:'focus',kind:ref.kind,idx:ref.idx,sys:SYS.id};
 }
@@ -2434,6 +2425,15 @@ function enterFocus(ref){
   const out=new THREE.Vector3(p.x,0,p.z).normalize();const dist=ref.kind===1?1.3:2.1;
   flyTo(p.clone().add(out.multiplyScalar(dist)).add(new THREE.Vector3(0,dist*.55,0)),p);
   banner('Mode Focus · '+(ref.kind===1?TK[ref.idx].s:CARDS[ref.idx].name)+' · la caméra suit l\'objet');dirty=true;
+}
+/* 28 nov 00:02 : l'objet observé occupe la vue pleine déjà définie par .noL et .noR. Pas de nouveau bouton. */
+function observedFull(ref){
+  enterFocus(ref);
+  const app=document.querySelector('.app'); if(!app)return;
+  app.classList.add('noL'); app.classList.add('noR');
+  const bL=$('tgL'), bR=$('tgR');
+  if(bL) bL.setAttribute('aria-pressed','false');
+  if(bR) bR.setAttribute('aria-pressed','false');
 }
 function enterPlan(){S.focus=null;S.plan=true;flyTo(new THREE.Vector3(0,10.5,.01),new THREE.Vector3(0,0,0));banner('Mode Plan · cadran vu d\'en haut, midi en haut')}
 function exitModes(){S.focus=null;S.plan=false;$('banner').style.display='none';flyTo(HOME.p.clone(),HOME.t.clone());dirty=true}

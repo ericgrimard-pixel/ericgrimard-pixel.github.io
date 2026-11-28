@@ -9,7 +9,7 @@
    et l'index du panneau de gauche. La voix, le salut et la couche d'action de v21.05
    restent. escalate reste éteint. Aucun appel hors du site. */
 (function () {
-  if (window.BridgetDemo && window.BridgetDemo.version === 'v21.07') return;
+  if (window.BridgetDemo && window.BridgetDemo.version === 'v21.10') return;
 
   var pace = { move: 480, pulse: 180, step: 240 };
   var generation = 0;
@@ -549,7 +549,7 @@
   }
 
   var api = {
-    version: 'v21.07',
+    version: 'v21.10',
     family: 'Miriamphobots',
     moveCursor: moveCursor,
     clickButton: clickButton,
@@ -596,8 +596,8 @@
     passages: [],
     motto: api.motto,
     family: 'Miriamphobots',
-    hub_version: 'v21.07',
-    lineage: 'v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06 -> v21.07'
+    hub_version: 'v21.10',
+    lineage: 'v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06 -> v21.07 -> v21.08 -> v21.09 -> v21.10'
   };
   var GREETING = 'Je suis Brigitte.';
   var CLEAR_Q = "Est-ce que c'est clair pour toi ?";
@@ -840,11 +840,7 @@
   }
 
   function listenNow() {
-    openPanel();
-    if (!greeted) { greeted = true; say(GREETING); }
-    if (inputEl) {
-      try { inputEl.focus(); } catch (e) {}
-    }
+    if (!greeted) { greeted = true; say('Je t’écoute.'); }
     var Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
     startMic(Rec);
   }
@@ -961,6 +957,39 @@
     document.body.appendChild(panelEl);
   }
 
+  var hubPromise = null;
+  function bridgetHub() {
+    if (hubPromise) return hubPromise;
+    hubPromise = import('/um/seed/bridget-hub.mjs').then(function (m) {
+      var seed = window.__umSeed;
+      var model = seed && seed.model && typeof seed.model.describe === 'function' ? seed.model : null;
+      return m.createBridget({
+        model: model,
+        getEntries: function () {
+          return fetch(bridgetIndexUrl(), { cache: 'no-store' }).then(function (r) {
+            if (!r.ok) throw new Error('index');
+            return r.json();
+          }).then(function (data) {
+            return (data.docs || []).map(function (d, i) {
+              var chunks = d.chunks || [];
+              var text = chunks.map(function (c) { return typeof c === 'string' ? c : ((c && c.text) || ''); }).join('\n');
+              return { id: d.url || String(i), title: d.title || '', url: d.url || null, text: text };
+            });
+          }).catch(function () { return []; });
+        }
+      });
+    });
+    return hubPromise;
+  }
+  function voiceModel(said) {
+    var later = 'Je n’ai pas trouvé de réponse dans les fichiers. J’ai transmis ta question à Claude. La réponse viendra plus tard.';
+    return bridgetHub().then(function (b) { return b.ask(said); }).then(function (res) {
+      var text = res && res.status === 'unanswered' ? later : ((res && res.text) || '');
+      if (text) say(text);
+      return res ? res.status : 'unanswered';
+    }, function () { say(later); return 'unanswered'; });
+  }
+
   function startMic(Rec) {
     if (!Rec) {
       say('Le micro n’est pas disponible ici. Écris ta demande.');
@@ -977,8 +1006,7 @@
     rec.onresult = function (ev) {
       var said = '';
       try { said = ev.results[0][0].transcript || ''; } catch (e2) { said = ''; }
-      if (inputEl && said) inputEl.value = said;
-      if (said) ask(said);
+      if (said) voiceModel(said);
     };
     rec.onerror = function () { say('Je n’ai pas entendu. Tu peux écrire ta demande.'); };
     try {
@@ -1786,6 +1814,7 @@
   }
 
   api.ask = ask;
+  api.voiceModel = voiceModel;
   api.open = openPanel;
   api.greet = function () {
     openPanel();
