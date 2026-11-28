@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="um-build" content="v21.06">
+<meta name="um-build" content="v21.07">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta name="theme-color" content="#05080d">
 <meta name="color-scheme" content="dark">
 <meta name="application-name" content="Bridget">
@@ -34,6 +35,7 @@ h1{font:400 2rem/1.15 Georgia,serif;margin:.2rem 0 .6rem}
 #sha-status[data-state="bad"],#sha-status[data-state="error"]{color:#ffb4a6}
 #sha-status[data-state="wait"],#hub-version[data-state="update"]{color:#ffcf8a}
 #refresh-hub[hidden]{display:none}
+#sha-list{display:none}
 a.btn,button{display:flex;align-items:center;justify-content:center;width:100%;min-height:3rem;margin:.75rem 0 0;padding:.75rem 1rem;font:600 1.0625rem/1.3 system-ui,sans-serif;text-align:center;text-decoration:none;color:#05080d;background:#e8c872;border:2px solid #fff;border-radius:10px;cursor:pointer}
 button.ghost{background:transparent;color:#e8c872}
 a:focus-visible,button:focus-visible{outline:3px solid #a6dcff;outline-offset:2px}
@@ -56,7 +58,7 @@ li{margin:.2rem 0;overflow-wrap:anywhere}
   </header>
 
   <section class="panel" aria-label="Version du HUB">
-    <p id="hub-version" role="status" aria-live="polite" data-state="wait">HUB v21.06 · vérification</p>
+    <p id="hub-version" role="status" aria-live="polite" data-state="wait">HUB v21.07 · vérification</p>
     <p id="refresh-note">Contrôle ETag et SHA-256 du manifeste. Aucune réinstallation d’APK.</p>
     <p id="sha-status" role="status" aria-live="polite" data-state="wait">SHA-256 · vérification…</p>
     <ul id="sha-list"></ul>
@@ -64,21 +66,12 @@ li{margin:.2rem 0;overflow-wrap:anywhere}
   </section>
 
   <h2>Une touche</h2>
-  <p class="note">Sur le HUB, un seul bouton : Brigitte, en haut. Cette page ouvre ce même bouton.</p>
-  <a class="btn world" id="open-world" href="../index.html#/world?host=bridget">Ouvrir le HUB #/world · Brigitte</a>
-  <a class="btn" id="open-engine" href="../engine/manifestation-engine.html?demo=ready">Ouvrir le Moteur autonome</a>
-  <button type="button" class="ghost" id="btn-rules">Inspecter rules.json</button>
-  <pre id="rules-view" hidden></pre>
-  <button type="button" class="ghost" id="btn-manifest">Inspecter bridget-manifest.json</button>
-  <pre id="manifest-view" hidden></pre>
-
-  <h2>Graine minimale</h2>
-  <p class="note" id="seed-note">Accessible aux deux téléphones d’Éric, <a href="mailto:eric.grimard@universalmetaphor.ca">eric.grimard@universalmetaphor.ca</a> et <a href="mailto:grimeric13@gmail.com">grimeric13@gmail.com</a>. La graine minimale n’a pas de bac à sable de 4 Go et pas de cristaux d’agent. Ceux-ci n’arrivent qu’avec des extensions.</p>
-  <a class="btn" id="seed-link" href="https://drive.google.com/file/d/19wzqeus-_oJweHWvDFmOr-2VjlgU0KLo/view" target="_blank" rel="noopener">Graine minimale sur Drive</a>
+  <p class="note">Un bouton. Brigitte écoute.</p>
+  <a class="btn world" id="open-world" href="../index.html#/world?host=bridget">Brigitte</a>
 </main>
 <script>
 (function () {
-  var pageVersion = (document.querySelector('meta[name="um-build"]') || {}).content || 'v21.06';
+  var pageVersion = (document.querySelector('meta[name="um-build"]') || {}).content || 'v21.07';
   var seenEtag = '';
   var seenHash = '';
   var verEl = document.getElementById('hub-version');
@@ -192,13 +185,7 @@ li{margin:.2rem 0;overflow-wrap:anywhere}
       pre.textContent = 'Lecture impossible pour le moment.';
     });
   }
-  refreshBtn.addEventListener('click', function () { location.reload(); });
-  document.getElementById('btn-rules').addEventListener('click', function () {
-    showJson(rulesUrl().href, document.getElementById('rules-view'));
-  });
-  document.getElementById('btn-manifest').addEventListener('click', function () {
-    showJson(manifestUrl().href, document.getElementById('manifest-view'));
-  });
+  if (refreshBtn) refreshBtn.addEventListener('click', function () { location.reload(); });
   check();
   setInterval(function () { check(); }, 30000);
   document.addEventListener('visibilitychange', function () {
