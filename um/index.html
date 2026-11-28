@@ -2,8 +2,8 @@
 <html lang="fr"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="um-build" content="v21.08">
-<!-- um-deploy: v21.08 · lineage v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06 -> v21.07 -> v21.08 -->
+<meta name="um-build" content="v21.09">
+<!-- um-deploy: v21.09 · lineage v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06 -> v21.07 -> v21.08 -> v21.09 -->
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -286,7 +286,11 @@ canvas.vbars{width:100%;height:70px;display:block;margin-top:6px}
 #vol-scope-panel header{display:flex;justify-content:space-between;gap:8px;align-items:center}
 #vol-scope-panel button{font:700 12px/1.2 system-ui,sans-serif;color:#05080d;background:#e8c872;border:0;border-radius:6px;padding:4px 8px}
 #vol-scope-panel label{display:flex;gap:6px;align-items:center;margin:3px 0}
-#right>section.panel:not(.fiche):not(.src){display:none!important}
+#right>section.panel:not(.fiche):not(.src):not(#modele){display:none!important}
+#modele{font:600 13px/1.4 system-ui,sans-serif}
+#modele label{display:flex;flex-direction:column;gap:2px;margin:6px 0}
+#modele input,#modele select{font:600 13px/1.3 system-ui,sans-serif;background:#10141c;color:#fff;border:1px solid #334;border-radius:6px;padding:4px 6px}
+#modele .note{color:#c5d4e4;font-weight:500}
 
 </style>
 </head>
@@ -311,12 +315,6 @@ canvas.vbars{width:100%;height:70px;display:block;margin-top:6px}
       <select id="dur" aria-label="Durée de la transition"><option value="10">T₀ → T₁ en 10 s</option><option value="30">en 30 s</option><option value="60" selected>en 1 min</option></select>
     </div>
     <div class="modes">
-      <div class="seg" role="group" aria-label="Mode">
-        <button id="mFourier" type="button" aria-pressed="true">Fourier · 3 entrées</button>
-        <button id="mFree" type="button" aria-pressed="false">Libre</button>
-      </div>
-      <label class="chk" title="La saturation, 10ᵉ attribut, est le collapse de tous les résultats (G-4)"><input id="km" type="checkbox" checked> Kobayashi Maru</label>
-      <button id="session" type="button" aria-pressed="false">Ouvrir la session</button>
       <button id="ghost" type="button" aria-pressed="false">Fantôme</button>
       <label class="take" id="gwBox" hidden>Horloge <select id="gclk" aria-label="Colonne qui règle l'espacement des fantômes"><option value="vol">volume du jour</option><option value="tv">valeur échangée du jour</option><option value="aret">|rendement du jour|</option><option value="vol20">volatilité 20 séances</option><option value="sess">séance · témoin</option></select></label>
       <label class="take" id="gvBox" hidden title="Volume du fantôme : densité et clarté de l'écho. Distinct du Volume du système, qui n'agit pas sur le fantôme.">Volume du fantôme <input id="gvol" type="range" min="-200" max="200" step="1" value="0" aria-label="Volume du fantôme, de ×0,25 à ×4" style="width:90px;accent-color:#b388ff"><b id="gvolN" style="font:500 11px var(--f-mono);color:var(--fg);min-width:38px">×1</b></label>
@@ -326,9 +324,6 @@ canvas.vbars{width:100%;height:70px;display:block;margin-top:6px}
       <span class="vol" title="Volume : les positions restent fixes. Seuls les maillages des objets et des fantômes grossissent ou rétrécissent autour de leur point. Le facteur multiplie la taille du canon et de la hiérarchie."><b>Volume</b><span id="vol-scope" role="group" aria-label="Portée du volume"><button id="vol-scope-all" type="button" aria-pressed="true">Tous</button><button id="vol-scope-c2" type="button" aria-pressed="false">Classe 2</button><button id="vol-scope-pick" type="button" aria-pressed="false">Choix</button></span><button id="volMinus" type="button" aria-label="Contracter">−</button><input id="vol" type="range" min="-200" max="400" step="1" value="0" aria-label="Volume de l'environnement"><button id="volPlus" type="button" aria-label="Dilater">+</button><input id="volNum" type="number" min="0.05" step="0.05" value="1" aria-label="Facteur de volume"><b id="volScopeFactor">×1</b><button id="gvolMinus" type="button" aria-label="Réduire les fantômes">Fantôme −</button><button id="gvolPlus" type="button" aria-label="Grossir les fantômes">Fantôme +</button><b id="gvolScopeFactor">×1</b></span>
     </div>
     <div class="readouts">
-      <button id="tgL" type="button" aria-pressed="true" title="Masquer ou afficher le panneau des attributs (touche [)">◧ Attributs</button>
-      <button id="tgR" type="button" aria-pressed="true" title="Masquer ou afficher la fiche (touche ])">Fiche ◨</button>
-      <button id="tgV" type="button" aria-pressed="false" title="Vue pleine : la métaphore seule, puis retour (touche \)">Vue pleine</button>
       <span class="ro">Z-ZERO <b id="zzNow">—</b></span>
       <span class="gep" title="Contrainte non négociable : le résidu reste visible. Source : OPEN">Résidu GEP 99 % · visible</span>
     </div>
@@ -358,6 +353,25 @@ canvas.vbars{width:100%;height:70px;display:block;margin-top:6px}
   <aside id="right">
     <div class="rclose"><button id="rX" type="button" title="Masquer la fiche (touche ]) · Fiche ◨ la rappelle" aria-label="Masquer la fiche">×</button></div>
     <section class="panel fiche" id="fiche"></section>
+    <section class="panel" id="modele">
+      <h2>Modèle</h2>
+      <p id="model-hook-status">Crochet modèle : non chargé</p>
+      <p id="model-status">Modèle : aucun (repli)</p>
+      <label>Fournisseur
+        <select id="model-preset" aria-label="Fournisseur du modèle">
+          <option value="aucun">aucun</option>
+          <option value="ollama">Ollama local</option>
+          <option value="openai">compatible OpenAI</option>
+          <option value="http">HTTP générique</option>
+        </select>
+      </label>
+      <label>Adresse <input id="model-url" type="url" autocomplete="off" aria-label="Adresse du modèle"></label>
+      <label>Nom du modèle <input id="model-name" type="text" autocomplete="off" aria-label="Nom du modèle"></label>
+      <label>Clé API (facultative) <input id="model-key" type="password" autocomplete="off" aria-label="Clé API"></label>
+      <p><button type="button" id="model-save">Enregistrer</button> <button type="button" id="model-test">Tester</button></p>
+      <p id="model-reply"></p>
+      <p class="note">Une page GitHub Pages en https qui appelle un Ollama local en http peut être bloquée (CORS ou contenu mixte). Sur la machine d'Ollama : OLLAMA_ORIGINS=https://ericgrimard-pixel.github.io puis redémarrer Ollama.</p>
+    </section>
     <section class="panel">
       <h2>Légende</h2>
       <div id="legend"></div>
@@ -433,11 +447,12 @@ canvas.vbars{width:100%;height:70px;display:block;margin-top:6px}
 <script src="engine/bloom.js?v=21.07"></script>
 <script src="engine/loader-v2.js?v=21.07"></script>
 <script src="engine/sante-hub.js?v=21.07"></script>
-<script src="seed/seed-adapter.js?v=21.08"></script>
-<script src="seed/c4-ghost-motion.js?v=21.08"></script>
-<script src="engine/engine.js?v=21.08"></script>
+<script src="seed/seed-adapter.js?v=21.09"></script>
+<script src="seed/c4-ghost-motion.js?v=21.09"></script>
+<script src="seed/model-panel.js?v=21.09"></script>
+<script src="engine/engine.js?v=21.09"></script>
 <script src="engine/sante-coupes.js?v=21.07"></script>
-<script src="engine/hub-nav.js?v=21.07"></script>
+<script src="engine/hub-nav.js?v=21.09"></script>
 <script src="bridget/bridget-hub.js?v=21.07"></script>
 <script src="engine/bridget-demo.js?v=21.07"></script>
 </body></html>

@@ -39,4 +39,6 @@ Le chemin Z0 est le même pli T₀ → T₁, recentré sur la singularité (poin
 
 Le crochet `model` est de Claude (27 nov 2026). Il ne contient ni adresse ni secret. L'hôte injecte le fournisseur à l'activation. Sans fournisseur, `describe()` ne déclare pas `model`.
 
-Les tests : `node um/seed/seed.test.js`.
+Dans le navigateur, `seed-adapter.js` charge `model-hook.mjs` par `import()`. `UMSeed.ready` se résout quand le crochet est là. Le bloc Modèle du hub (v21.09) garde l'adresse, le nom et la clé dans `localStorage` seulement. Une page GitHub Pages en https qui appelle un Ollama local en http peut être bloquée (CORS ou contenu mixte). Sur la machine d'Ollama : `OLLAMA_ORIGINS=https://ericgrimard-pixel.github.io`, puis redémarrer Ollama.
+
+Les tests : `node um/seed/seed.test.js` et `node um/seed/browser-model.test.mjs`.

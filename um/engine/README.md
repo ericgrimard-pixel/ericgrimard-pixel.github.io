@@ -1,6 +1,12 @@
-# MANIFESTATION ENGINE — Hub v21.08
+# MANIFESTATION ENGINE — Hub v21.09
 
-Canonical lineage: `v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06 -> v21.07 -> v21.08`. Next free number: `v21.09`.
+Canonical lineage: `v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06 -> v21.07 -> v21.08 -> v21.09`. Next free number: `v21.10`.
+
+## Ce qui est nouveau en v21.09 (à démontrer)
+
+1. Crochet modèle chargé. Ouvrir https://ericgrimard-pixel.github.io/um/ . Dans le panneau de droite, bloc Modèle, la ligne doit dire « Crochet modèle : chargé ».
+2. Réglage du modèle. Dans ce même bloc, le menu est « aucun ». Cliquer Tester. La réponse visible est le texte « [aucun modèle] … ». Pour un modèle réel : choisir Ollama local, compatible OpenAI ou HTTP générique, remplir l'adresse, Enregistrer, puis Tester. La réponse ou l'erreur typée s'affiche. La clé API reste dans le navigateur (localStorage), masquée, jamais écrite dans le dépôt. Une page GitHub Pages en https qui appelle un Ollama local en http peut être bloquée par CORS ou le contenu mixte. Sur la machine d'Ollama : `OLLAMA_ORIGINS=https://ericgrimard-pixel.github.io`, puis redémarrer Ollama.
+3. Barre sans onglets. La bande Fourier / Libre, Kobayashi, Ouvrir la session, et les boutons Attributs / Fiche / Vue pleine ne sont plus dans la page. Restent Brigitte, le sélecteur, les tuiles, lecture, T₀, le curseur, T₁, la durée, Fantôme, Volume avec Tous / Classe 2 / Choix, Fantôme − / +, Z-ZERO, le résidu, les badges de lacune, et le bloc Modèle.
 
 ## v21.08
 

@@ -2116,22 +2116,21 @@ const gm=$('gvolMinus'),gp=$('gvolPlus');if(gm)gm.addEventListener('click',()=>b
 const sysSel=$('sys');if(sysSel)sysSel.addEventListener('change',()=>{S.gOn={};S.gPick={}});
 paintScope();
 function setMode(m){if(S.session||(TWO&&m==='fourier'))return;S.mode=m;rebuild();syncControls();drawGauss();renderFiche()}
-$('mFourier').addEventListener('click',()=>setMode('fourier'));
-$('mFree').addEventListener('click',()=>setMode('free'));
-$('km').addEventListener('change',e=>{if(S.session)return;S.km=e.target.checked;if(!S.km&&S.assign[9]==='km')S.assign[9]=HK?'pim':GC?(DATA.kmAlt||DATA.cols[0]):'ret1';if(S.km)S.assign[9]='km';S.cut[9].auto=true;rebuild();syncControls();drawGauss();renderFiche()});
-$('session').addEventListener('click',()=>{
+const mF=$('mFourier'),mFr=$('mFree'),kmEl=$('km'),sess=$('session');
+if(mF)mF.addEventListener('click',()=>setMode('fourier'));
+if(mFr)mFr.addEventListener('click',()=>setMode('free'));
+if(kmEl)kmEl.addEventListener('change',e=>{if(S.session)return;S.km=e.target.checked;if(!S.km&&S.assign[9]==='km')S.assign[9]=HK?'pim':GC?(DATA.kmAlt||DATA.cols[0]):'ret1';if(S.km)S.assign[9]='km';S.cut[9].auto=true;rebuild();syncControls();drawGauss();renderFiche()});
+if(sess)sess.addEventListener('click',()=>{
   if(S.session){S.session=null}
   else{S.session={ouverte:new Date().toISOString(),mode:S.mode,kobayashi:S.km||S.mode==='fourier',attributs:ATTR.map((A,k)=>({k:k+1,nom:A.name,ligne:eff(k),bornes:S.cut[k].c.slice(),queues:[S.cut[k].lo,S.cut[k].hi]}))};S.records.push(S.session)}
   syncControls();drawGauss();renderFiche();
 });
 function syncControls(){
-  $('mFourier').setAttribute('aria-pressed',S.mode==='fourier');$('mFree').setAttribute('aria-pressed',S.mode==='free');
-  $('mFourier').disabled=!!S.session||TWO;$('mFree').disabled=!!S.session;
-  $('mFourier').title=TWO?(HK?"Le mode Fourier demande les matchs qui précèdent chaque prise ; ce système n'a que T₀ et T₁, deux saisons.":GC?(GCSNAP?"Le mode Fourier demande une suite de prises ; ce système n'a qu'un instantané (T₀ = T₁).":"Le mode Fourier demande les matchs qui précèdent chaque prise ; ce système n'a que T₀ et T₁, deux saisons."):"Le mode Fourier demande les séances qui précèdent chaque prise ; ce système n'a que T₀ et T₁."):'';
-  $('selT0').disabled=$('selT1').disabled=!!S.session;
-  $('km').checked=S.km||S.mode==='fourier';$('km').disabled=!!S.session||S.mode==='fourier';
-  const sb=$('session');sb.setAttribute('aria-pressed',!!S.session);
-  sb.textContent=S.session?'Session ouverte · '+S.session.ouverte.slice(11,16)+' UTC · clore':'Ouvrir la session';
+  if(mF){mF.setAttribute('aria-pressed',S.mode==='fourier');mF.disabled=!!S.session||TWO;mF.title=TWO?'Ce système n\'a que deux prises.':'';}
+  if(mFr){mFr.setAttribute('aria-pressed',S.mode==='free');mFr.disabled=!!S.session;}
+  if($('selT0'))$('selT0').disabled=!!S.session;if($('selT1'))$('selT1').disabled=!!S.session;
+  if(kmEl){kmEl.checked=S.km||S.mode==='fourier';kmEl.disabled=!!S.session||S.mode==='fourier';}
+  if(sess){sess.setAttribute('aria-pressed',!!S.session);sess.textContent=S.session?'Session ouverte':'Ouvrir la session';}
   refreshRack();
 }
 
@@ -2161,10 +2160,13 @@ drawLegend();
 /* Ghost controls */
 const gBtn=$('ghost');
 function syncGhostUI(){
-  gBtn.setAttribute('aria-pressed',(TWO?S.sghost:S.ghost)?'true':'false');gBtn.disabled=TWO&&GCSNAP;
-  gBtn.title=TWO&&!GCSNAP?'Fantôme court : environ 8 copies proches derrière chaque objet, direction générale de T₀ vers T₁, même règle de condensation pour tous ; ce système n\'a que T₀ et T₁ (touche F)':TWO?(HK?"Le fantôme demande la saison match par match ; ce système n'a que T₀ et T₁, deux saisons.":GC?"Le fantôme demande une suite de prises ; ce système n'a qu'un instantané (T₀ = T₁).":"Le fantôme demande toutes les séances ; ce système n'a que T₀ et T₁."):'Fantôme : chaque titre laisse ses fantômes de T₀ à T₁ ; la colonne d\'horloge en règle seulement l\'espacement (touche F)';
-  $('gwBox').hidden=$('gtauBox').hidden=$('thrBox').hidden=$('gContact').hidden=$('gvBox').hidden=!S.ghost;$('gvol').value=String(Math.round(Math.log2(S.gvol)*100));$('gvolN').textContent='×'+fmtGV(S.gvol);$('gclk').value=S.gclk;$('gtau').value=String(S.gtau);$('thr').value=String(S.thr);$('thrW').value=S.thrW;
-  $('sub').textContent='le corps · Universal Metaphor · moteur v2 · rév. 23.17 + relatif 23.20 · '+(S.ghost?'fantôme · horloge : '+(GCLKL[S.gclk]||'').toLowerCase()+(S.thr?' · lancer '+S.thr+' séances':''):(HK||(GC&&!GCSNAP)?'deux prises · deux saisons':GC?'un instantané · T₀ = T₁':'deux prises'));
+  if(gBtn){gBtn.setAttribute('aria-pressed',(TWO?S.sghost:S.ghost)?'true':'false');gBtn.disabled=TWO&&GCSNAP;}
+  if(gBtn)gBtn.title=TWO&&!GCSNAP?'Fantôme court : environ 8 copies proches derrière chaque objet, direction générale de T₀ vers T₁, même règle de condensation pour tous ; ce système n\'a que T₀ et T₁ (touche F)':TWO?(HK?"Le fantôme demande la saison match par match ; ce système n'a que T₀ et T₁, deux saisons.":GC?"Le fantôme demande une suite de prises ; ce système n'a qu'un instantané (T₀ = T₁).":"Le fantôme demande toutes les séances ; ce système n'a que T₀ et T₁."):'Fantôme : chaque titre laisse ses fantômes de T₀ à T₁ ; la colonne d\'horloge en règle seulement l\'espacement (touche F)';
+  ['gwBox','gtauBox','thrBox','gContact','gvBox'].forEach(id=>{const el=$(id);if(el)el.hidden=!S.ghost});
+  if($('gvol'))$('gvol').value=String(Math.round(Math.log2(S.gvol)*100));
+  if($('gvolN'))$('gvolN').textContent='×'+fmtGV(S.gvol);
+  if($('gclk'))$('gclk').value=S.gclk;if($('gtau'))$('gtau').value=String(S.gtau);if($('thr'))$('thr').value=String(S.thr);if($('thrW'))$('thrW').value=S.thrW;
+  if($('sub'))$('sub').textContent='le corps · Universal Metaphor · moteur v2 · rév. 23.17 + relatif 23.20 · '+(S.ghost?'fantôme · horloge : '+(GCLKL[S.gclk]||'').toLowerCase()+(S.thr?' · lancer '+S.thr+' séances':''):(HK||(GC&&!GCSNAP)?'deux prises · deux saisons':GC?'un instantané · T₀ = T₁':'deux prises'));
   drawLegend();
 }
 function setGhost(on){
@@ -2173,14 +2175,15 @@ function setGhost(on){
   if(S.ghost)ensureTL();
   rebuild();syncGhostUI();drawGauss();renderFiche();
 }
-gBtn.addEventListener('click',()=>setGhost(!S.ghost));
-$('gclk').addEventListener('change',e=>{S.gclk=e.target.value;window.__umGclk=S.gclk;buildGhost();syncGhostUI();renderFiche();dirty=true});
-$('gtau').addEventListener('change',e=>{S.gtau=+e.target.value;window.__umGtau=S.gtau;dirty=true});
-$('gvol').addEventListener('input',e=>{$('gvolN').textContent='×'+fmtGV(Math.pow(2,+e.target.value/100))});
-$('gvol').addEventListener('change',e=>{S.gvol=Math.pow(2,+e.target.value/100);window.__umGvol=S.gvol;buildGhost();renderFiche();dirty=true});
-$('gContact').addEventListener('click',()=>{if(GHOST.ruler&&GHOST.ruler.dg>0)setExp(Math.min(1000,Math.max(.05,2*.1*DENS/GHOST.ruler.dg)))});
-$('thr').addEventListener('change',e=>{S.thr=+e.target.value;window.__umThr=S.thr;buildThrowWin();THR.d=-1;syncGhostUI();dirty=true});
-$('thrW').addEventListener('change',e=>{S.thrW=e.target.value;window.__umThrW=S.thrW;buildThrowWin();THR.d=-1;dirty=true});
+if(gBtn)gBtn.addEventListener('click',()=>setGhost(!S.ghost));
+function onEl(id,ev,fn){const el=$(id);if(el)el.addEventListener(ev,fn)}
+onEl('gclk','change',e=>{S.gclk=e.target.value;window.__umGclk=S.gclk;buildGhost();syncGhostUI();renderFiche();dirty=true});
+onEl('gtau','change',e=>{S.gtau=+e.target.value;window.__umGtau=S.gtau;dirty=true});
+onEl('gvol','input',e=>{if($('gvolN'))$('gvolN').textContent='×'+fmtGV(Math.pow(2,+e.target.value/100))});
+onEl('gvol','change',e=>{S.gvol=Math.pow(2,+e.target.value/100);window.__umGvol=S.gvol;buildGhost();renderFiche();dirty=true});
+onEl('gContact','click',()=>{if(GHOST.ruler&&GHOST.ruler.dg>0)setExp(Math.min(1000,Math.max(.05,2*.1*DENS/GHOST.ruler.dg)))});
+onEl('thr','change',e=>{S.thr=+e.target.value;window.__umThr=S.thr;buildThrowWin();THR.d=-1;syncGhostUI();dirty=true});
+onEl('thrW','change',e=>{S.thrW=e.target.value;window.__umThrW=S.thrW;buildThrowWin();THR.d=-1;dirty=true});
 
 /* ---------------- Picking: hover, click, double-click ---------------- */
 const ray=new THREE.Raycaster(),mouse=new THREE.Vector2(),tip=$('tip');
@@ -2638,7 +2641,7 @@ function copyState(){
     classe2:CARDS.map((c,ci)=>{const a=vals({kind:2,idx:ci},S.T0),b=vals({kind:2,idx:ci},S.T1);return {type:c.ty,nom:c.name,membres:c.members.length,T0:a?a.map(x=>+x.toFixed(4)):null,T1:b?b.map(x=>+x.toFixed(4)):null}})};
   const txt=JSON.stringify(out,null,1);
   const show=()=>{$('dumpBox').innerHTML='<textarea class="dump" readonly></textarea>';const ta=$('dumpBox').firstChild;ta.value=txt;ta.focus();ta.select()};
-  try{navigator.clipboard.writeText(txt).then(()=>{$('copyState').textContent='Copié'},show)}catch(e){show()}
+  try{navigator.clipboard.writeText(txt).then(()=>{const b=$('copyState');if(b)b.textContent='Copié'},show)}catch(e){show()}
 }
 
 /* ---------------- Main loop ---------------- */
@@ -2724,21 +2727,23 @@ window.__umRingAt=function(kind, idx){
 /* Side panels (Éric, 9 Nov.): either side can be cleared for a full view of the metaphor and brought back. */
 (function(){
   const app=document.querySelector('.app');
-  const set=(c,on)=>{app.classList.toggle(c,!on);$o(c==='noL'?'tgL':'tgR').setAttribute('aria-pressed',on?'true':'false');try{localStorage.setItem('um.'+c,on?'1':'0')}catch(e){}};
+  const btn=id=>document.getElementById(id);
+  const set=(c,on)=>{if(!app)return;app.classList.toggle(c,!on);const b=btn(c==='noL'?'tgL':'tgR');if(b)b.setAttribute('aria-pressed',on?'true':'false');try{localStorage.setItem('um.'+c,on?'1':'0')}catch(e){}};
   const get=c=>{try{return localStorage.getItem('um.'+c)!=='0'}catch(e){return true}};
-  const syncV=()=>$o('tgV').setAttribute('aria-pressed',app.classList.contains('noL')&&app.classList.contains('noR')?'true':'false');
-  set('noL',get('noL'));set('noR',get('noR'));syncV();
+  const syncV=()=>{const b=btn('tgV');if(b&&app)b.setAttribute('aria-pressed',app.classList.contains('noL')&&app.classList.contains('noR')?'true':'false')};
+  if(app){set('noL',get('noL'));set('noR',get('noR'));syncV()}
   let back={l:true,r:true};
-  $o('tgV').addEventListener('click',()=>{const l=!app.classList.contains('noL'),r=!app.classList.contains('noR');
+  const tgV=btn('tgV'),tgL=btn('tgL'),tgR=btn('tgR');
+  if(tgV)tgV.addEventListener('click',()=>{const l=!app.classList.contains('noL'),r=!app.classList.contains('noR');
     if(l||r){back={l,r};set('noL',false);set('noR',false)}else{set('noL',back.l||!back.r);set('noR',back.r||!back.l)}syncV()});
-  [$o('tgL'),$o('tgR')].forEach(b=>b.addEventListener('click',()=>setTimeout(syncV,0)));
-  $o('tgL').addEventListener('click',()=>set('noL',app.classList.contains('noL')));
-  $o('tgR').addEventListener('click',()=>set('noR',app.classList.contains('noR')));
-  $o('rX').addEventListener('click',()=>{if(!app.classList.contains('noR'))$o('tgR').click()}); /* rev. 23.14: erase the reading card */
-  const fold=()=>{app.classList.remove('gOpen');document.querySelectorAll('#rack .tile').forEach(b=>b.setAttribute('aria-expanded','false'))};
-  $o('gClose').addEventListener('click',fold);
-  addEventListener('keydown',e=>{if(e.key==='Escape'&&app.classList.contains('gOpen'))fold()});
-  addEventListener('keydown',e=>{if(/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)||e.metaKey||e.ctrlKey)return;if(e.key==='['){e.preventDefault();$o('tgL').click()}if(e.key===']'){e.preventDefault();$o('tgR').click()}if(e.key==='\\'){e.preventDefault();$o('tgV').click()}});
+  [tgL,tgR].forEach(b=>{if(b)b.addEventListener('click',()=>setTimeout(syncV,0))});
+  if(tgL)tgL.addEventListener('click',()=>set('noL',app.classList.contains('noL')));
+  if(tgR)tgR.addEventListener('click',()=>set('noR',app.classList.contains('noR')));
+  const rX=btn('rX');if(rX&&tgR)rX.addEventListener('click',()=>{if(!app.classList.contains('noR'))tgR.click()});
+  const fold=()=>{if(app)app.classList.remove('gOpen');document.querySelectorAll('#rack .tile').forEach(b=>b.setAttribute('aria-expanded','false'))};
+  const gClose=btn('gClose');if(gClose)gClose.addEventListener('click',fold);
+  addEventListener('keydown',e=>{if(e.key==='Escape'&&app&&app.classList.contains('gOpen'))fold()});
+  addEventListener('keydown',e=>{if(/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)||e.metaKey||e.ctrlKey)return;if(e.key==='['&&tgL){e.preventDefault();tgL.click()}if(e.key===']'&&tgR){e.preventDefault();tgR.click()}if(e.key==='\\'&&tgV){e.preventDefault();tgV.click()}});
 })();
 /* Library selector and #hash routing (#ndx100, #sp500y, #djia, #sp500, #ibov, #n225, #hsi, #asx200, #sti, #ftse100, #dax, #cac40, #sx5e, #tasi, #nhl), one group per silo */
 (function(){

@@ -5,8 +5,26 @@
   var api = factory();
   if (typeof module === 'object' && module.exports) module.exports = api;
   root.UM_SEED = api;
+  root.UMSeed = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   var HOOKS = ['storage', 'model', 'transport', 'sync', 'keys', 'lifecycle'];
+  var modelUrl = (typeof document !== 'undefined' && document.currentScript && document.currentScript.src)
+    ? new URL('model-hook.mjs', document.currentScript.src).href
+    : null;
+  var modelApi = null;
+  var modelReady = new Promise(function (resolve) {
+    if (typeof require === 'function') {
+      try {
+        var sync = require('./model-hook.mjs');
+        if (sync && sync.createModelHook) { modelApi = sync; resolve(sync); return; }
+      } catch (e) {}
+    }
+    if (modelUrl) {
+      import(modelUrl).then(function (m) { modelApi = m; resolve(m); }, function () { resolve(null); });
+      return;
+    }
+    resolve(null);
+  });
 
   function createSeed() {
     var mem = new Map();
@@ -23,18 +41,13 @@
     function enabled(name) {
       return declared().indexOf(name) >= 0 && host && host[name];
     }
-    /* Claude's model hook (um/seed/model-hook.mjs). CommonJS bridge: do not edit that file. */
-    function modelModule() {
-      if (typeof require !== 'function') return null;
-      try { return require('./model-hook.mjs'); } catch (e) { return null; }
-    }
+    /* Claude's model hook. Node uses require(); the browser uses import() of model-hook.mjs. */
     function hostProvider(adapter) {
       var p = adapter && adapter.provider;
       return p && typeof p.generate === 'function' ? p : undefined;
     }
     function bindModel(adapter) {
-      var api = modelModule();
-      var model = api ? api.createModelHook({ provider: hostProvider(adapter) }) : null;
+      var model = modelApi ? modelApi.createModelHook({ provider: hostProvider(adapter) }) : null;
       if (adapter && typeof adapter === 'object') adapter.model = model;
       return model;
     }
@@ -126,9 +139,12 @@
       },
       model: {
         generate: function (prompt, opts) {
-          var hook = modelHook || bindModel(host);
-          if (!hook) return Promise.resolve('[aucun modèle] Aucun fournisseur de modèle n\'est branché sur cet hôte.');
-          return hook.generate(prompt, opts);
+          return modelReady.then(function (api) {
+            if (api) modelApi = api;
+            if (!modelHook) modelHook = bindModel(host);
+            if (!modelHook) return '[aucun modèle] Aucun fournisseur de modèle n\'est branché sur cet hôte.';
+            return modelHook.generate(prompt, opts);
+          });
         }
       },
       transport: {
@@ -205,6 +221,7 @@
     HOOKS: HOOKS,
     createSeed: createSeed,
     createNullHost: createNullHost,
-    createDemoHost: createDemoHost
+    createDemoHost: createDemoHost,
+    ready: modelReady
   };
 });
