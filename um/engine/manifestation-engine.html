@@ -1,4 +1,4 @@
-<!doctype html><html><head><link rel="icon" href="data:,"><meta charset=utf8><meta name="um-build" content="v21.04"><!-- um-deploy: v21.04 · lineage v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 --><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><link rel="icon" href="data:,"><meta charset=utf8><meta name="um-build" content="v21.05"><!-- um-deploy: v21.05 · lineage v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 --><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>UNIVERSAL METAPHOR</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,6 +36,8 @@ header{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:8px 1
 .transport,.modes,.readouts{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .transport{flex:1 1 380px;min-width:0}
 button,select{font:inherit;color:var(--fg);background:var(--raise);border:1px solid var(--line-2);border-radius:3px;padding:4px 8px;cursor:pointer}
+#bridget-open{flex:0 0 auto;align-self:center;font:700 1.5rem/1.15 system-ui,sans-serif;min-height:56px;padding:12px 22px;color:#05080d;background:#e8c872;border:3px solid #fff;border-radius:12px;letter-spacing:.01em}
+#bridget-open:hover,#bridget-open:focus-visible{background:#f3dfa0;border-color:#a6dcff}
 button:hover:not(:disabled),select:hover:not(:disabled){border-color:var(--accent)}
 button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 button:disabled,select:disabled{opacity:.45;cursor:not-allowed}
@@ -214,6 +216,7 @@ canvas.vbars{width:100%;height:70px;display:block;margin-top:6px}
 
 <div class="app">
   <header>
+    <button id="bridget-open" type="button" aria-expanded="false" aria-controls="bridget-panel">Brigitte</button>
     <div class="brand">
       <h1>Manifestation</h1>
       <span class="sub" id="sub">le corps · Universal Metaphor · moteur v2 · rév. 23.20 · deux prises</span>
@@ -247,7 +250,6 @@ canvas.vbars{width:100%;height:70px;display:block;margin-top:6px}
       <button id="tgL" type="button" aria-pressed="true" title="Masquer ou afficher le panneau des attributs (touche [)">◧ Attributs</button>
       <button id="tgR" type="button" aria-pressed="true" title="Masquer ou afficher la fiche (touche ])">Fiche ◨</button>
       <button id="tgV" type="button" aria-pressed="false" title="Vue pleine : la métaphore seule, puis retour (touche \)">Vue pleine</button>
-      <button id="bridgetDemo" type="button" title="Démonstration guidée : Brigitte agit dans le moteur, pas à pas">Démo Brigitte</button>
       <span class="ro">Z-ZERO <b id="zzNow">—</b></span>
       <span class="gep" title="Contrainte non négociable : le résidu reste visible. Source : OPEN">Résidu GEP 99 % · visible</span>
     </div>
@@ -2428,6 +2430,6 @@ window.__umSelect=select; /* hook for the soul (CLAVIS) bridge and for tests */
   switchSys(first.id);
 })();
 </script>
-<script src="bridget-demo.js?v=21.04"></script>
+<script src="bridget-demo.js?v=21.05"></script>
 
 </body></html>

@@ -351,7 +351,7 @@
   const R=document.getElementById('right'); if(!R) return;
   let tok=null; try{ tok=localStorage.getItem('um.hubGuestKey'); }catch(e){}
   if(!tok||!window.crypto||!crypto.subtle) return;
-  const fpReady=window.UM_ADMIN?Promise.resolve():new Promise((res,rej)=>{ const s=document.createElement('script'); s.src='/um/door/admin/fingerprints.js?v=21.03'; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
+  const fpReady=window.UM_ADMIN?Promise.resolve():new Promise((res,rej)=>{ const s=document.createElement('script'); s.src='/um/door/admin/fingerprints.js?v=21.05'; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
   fpReady.then(()=>UM_ADMIN.check(tok)).then(who=>{
     if(!who) return;
     const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -801,15 +801,11 @@
 })();
 
 
-/* v20.93 — 23 nov 2026 (Toronto) : lien un-clic « TURN IT ON — PDF » (aucun emplacement
-   « livre blanc / white paper » n'existait dans hub-nav.js ni um/door/ ; le lien est
-   placé dans le groupe Porte · démo, sans retirer aucun lien existant, et aussi en
-   lien toujours visible du pied pour un vrai un-clic) ; entrée « Santé · paquet réel »
-   dans Porte · démo, qui ouvre le pôle Santé (switchSys('health')) et le panneau réel
-   (UM_SANTE_LOADER.show). Rien n'est retiré. Écouteurs en propriété onclick, pour
-   échapper au signal BOOT.ac du moteur. */
+/* v21.05 — les accès documents (PDF, livres blancs) ont quitté le HUB.
+   Il reste l'entrée « Santé · paquet réel », qui ouvre le pôle Santé
+   (switchSys('health')) et le panneau réel (UM_SANTE_LOADER.show).
+   Écouteurs en propriété onclick, pour échapper au signal BOOT.ac du moteur. */
 (function(){
-  const PDF='https://drive.google.com/file/d/1TVyS9q9Pt88BS8aoKTCYGbYGn28FWHYp/view';
   function openSanteReel(e){
     if(e) e.preventDefault();
     try{ if(typeof switchSys==='function') switchSys('health'); }catch(err){}
@@ -821,13 +817,11 @@
     const door=document.getElementById('um-rg-door');
     const body=door&&door.querySelector('.um-rg-body');
     if(!foot||!body){ if(++tries<80) setTimeout(put,250); return; }
-    if(!document.getElementById('um-door-turniton')){
-      body.insertAdjacentHTML('beforeend',
-        '<a id="um-door-turniton" href="'+PDF+'" target="_blank" rel="noopener">TURN IT ON \u2014 PDF \u2197</a>'
-        +'<a id="um-door-sante-real" href="#sante-paquet-reel">Sant\u00e9 \u00b7 paquet r\u00e9el</a>');
+    if(!document.getElementById('um-door-sante-real')){
+      body.insertAdjacentHTML('beforeend','<a id="um-door-sante-real" href="#sante-paquet-reel">Sant\u00e9 \u00b7 paquet r\u00e9el</a>');
       document.getElementById('um-door-sante-real').onclick=openSanteReel;
     }
-    if(!document.getElementById('um-turniton')){
+    if(!document.getElementById('um-rg-docs-quick')){
       if(!document.getElementById('um-v2093-docs-css')){
         const css=document.createElement('style'); css.id='um-v2093-docs-css';
         css.textContent='#um-rg-docs-quick{display:flex;flex-wrap:wrap;gap:4px;flex:1 1 100%;align-items:center}'
@@ -836,8 +830,7 @@
         document.head.appendChild(css);
       }
       const q=document.createElement('div'); q.id='um-rg-docs-quick';
-      q.innerHTML='<a id="um-turniton" href="'+PDF+'" target="_blank" rel="noopener">TURN IT ON \u2014 PDF \u2197</a>'
-        +'<a id="um-sante-paquet-reel" href="#sante-paquet-reel">Sant\u00e9 \u00b7 paquet r\u00e9el</a>';
+      q.innerHTML='<a id="um-sante-paquet-reel" href="#sante-paquet-reel">Sant\u00e9 \u00b7 paquet r\u00e9el</a>';
       if(door.nextSibling) foot.insertBefore(q, door.nextSibling); else foot.appendChild(q);
       document.getElementById('um-sante-paquet-reel').onclick=openSanteReel;
     }
@@ -882,41 +875,9 @@
 })();
 
 
-/* v20.99 — 25 nov 2026 (Toronto) : remplacement des liens, demandé aux passages 44–47.
-   « TURN IT ON — PDF » 1K1rSEdu… (22 nov) → 1TVyS9q9… (v2, 24 nov).
-   Board Paper (EN) 1sU9TOau… (23 nov, original) → 1Xv-SpOG… (v2).
-   White Paper (EN) v2 1i9zpDXC… (23 nov) → 1TVyS9q9… (même fichier v2 que le PDF, 24 nov).
-   Rien n'est retiré. */
-/* v20.96 — 23 nov 2026 (Toronto) : (1) liens un-clic vers les deux éditions anglaises de
-   TURN IT ON (passages 42 et 43), placés AVANT « TURN IT ON — PDF » dans Porte · démo et au
-   pied ; rien n'est retiré. L'édition anglaise de YB1 est liée dans sa v2 corrigée
-   (terminologie « Entropy Reducing Mechanism », note 1nNWhJw3…) ; l'original reste intact
-   dans ÉCHANGE. (2) Entrée « Agent » à côté de ✉ Invitation, derrière l'INTERRUPTEUR UNIQUE
-   /um/engine/agent-switch.js (on:false) : tant qu'il est OFF, rien n'est affiché ni lié. */
-(function(){
-  const BP='https://drive.google.com/file/d/1Xv-SpOGl5q6UUL9W12KLGbk3nVpOv7V5/view';
-  const WP='https://drive.google.com/file/d/1TVyS9q9Pt88BS8aoKTCYGbYGn28FWHYp/view';
-  const BPT='Turn It On \u2014 Object Navigation \u2014 Board Paper (English) \u2014 v2, Entropy Reducing Mechanism \u2014 2026-11-23';
-  const WPT='TURN IT ON \u2014 Object Navigation \u2014 Executive White Paper \u2014 v2, Entropy Reducing Mechanism \u2014 2026-11-24';
-  function links(p){
-    return '<a id="'+p+'bp-en" href="'+BP+'" target="_blank" rel="noopener" title="'+BPT+'">TURN IT ON \u2014 Board Paper (EN) \u2197</a>'
-      +'<a id="'+p+'wp-en" href="'+WP+'" target="_blank" rel="noopener" title="'+WPT+'">TURN IT ON \u2014 White Paper (EN) v2 \u2197</a>';
-  }
-  let tries=0;
-  function put(){
-    const dPdf=document.getElementById('um-door-turniton');
-    const qPdf=document.getElementById('um-turniton');
-    if(dPdf&&!document.getElementById('um-door-bp-en')) dPdf.insertAdjacentHTML('beforebegin',links('um-door-'));
-    if(qPdf&&!document.getElementById('um-bp-en')) qPdf.insertAdjacentHTML('beforebegin',links('um-'));
-    if(!document.getElementById('um-v2096-css')){
-      const css=document.createElement('style'); css.id='um-v2096-css';
-      css.textContent='#um-bp-en,#um-wp-en,#um-door-bp-en,#um-door-wp-en{border-color:#e8c872!important;color:#f3dfa0!important}';
-      document.head.appendChild(css);
-    }
-    if(!(document.getElementById('um-door-bp-en')&&document.getElementById('um-bp-en'))&&++tries<120) setTimeout(put,250);
-  }
-  put();
-})();
+/* v20.96 — entrée « Agent » à côté de ✉ Invitation, derrière l'INTERRUPTEUR UNIQUE
+   /um/engine/agent-switch.js (on:false) : tant qu'il est OFF, rien n'est affiché ni lié.
+   v21.05 retire les liens vers les éditions document (Board Paper, White Paper). */
 (function(){
   function on(){ const S=window.UM_AGENT_SWITCH; return !!(S&&S.on===true&&typeof S.entry==='string'); }
   let tries=0;
@@ -932,13 +893,12 @@
     if(!(document.getElementById('um-agent-first')&&document.getElementById('um-agent-left')&&document.getElementById('um-door-agent'))&&++tries<120) setTimeout(put,250);
   }
   if(window.UM_AGENT_SWITCH){ put(); return; }
-  const s=document.createElement('script'); s.src='/um/engine/agent-switch.js?v=21.03'; s.onload=put; document.head.appendChild(s);
+  const s=document.createElement('script'); s.src='/um/engine/agent-switch.js?v=21.05'; s.onload=put; document.head.appendChild(s);
 })();
 
 
-/* v20.99 — 25 nov 2026 (Toronto) : lien un-clic « Dernière version » (APK Bridget,
-   TURN IT ON v2, Board Paper v2, Manifestation, kit spark). Page tenue à jour :
-   /um/derniere-version.html. Rien n'est retiré. */
+/* v21.05 — lien un-clic « Dernière version » (HUB, moteur, Santé, Brigitte, graine APK).
+   Page tenue à jour : /um/derniere-version.html. Les documents n'y sont plus. */
 (function(){
   const HREF='/um/derniere-version.html';
   const LABEL='Derni\u00e8re version';

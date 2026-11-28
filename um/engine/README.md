@@ -1,10 +1,32 @@
-# MANIFESTATION ENGINE — Hub v21.04
+# MANIFESTATION ENGINE — Hub v21.05
 
-Canonical lineage: `v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04`.
+Canonical lineage: `v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05`.
 
-The live Hub (`/um/`, `engine.js`) is moteur v2 · rév. 23.17 + relatif 23.20. The standalone page is `/um/engine/manifestation-engine.html` (paroi du microcosme 0,94 ; the Hub engine folds the same chamber to 0,74). Both keep the central object on the transposed Z0 path, anchor `[0, 0, 0]`, and containment `skin < 1`.
+The live Hub (`/um/`, `engine.js`) is moteur v2 · rév. 23.17 + relatif 23.20. The standalone page is `/um/engine/manifestation-engine.html` (paroi du microcosme 0,94 ; the Hub engine folds the same chamber to 0,74). Both keep the central object on the transposed Z0 path, anchor `[0, 0, 0]`, and containment `skin < 1`. `engine.js` is unchanged in v21.05.
 
-Brigitte (Miriamphobots) is Guide & Active Host on `#/world` and an intelligent participant in that engine. Motto: `One seed, infinite roots, perpetual harvest.` She reads `rules.json`, demonstrates through `bridget-demo.js` (`window.BridgetDemo`, alias `window.BrigitteDemo`), and is checked by `bridget-manifest.json` (ETag and SHA-256, no APK reinstall). The one-tap portal is `/um/bridget/`. The minimal seed on Éric's two phones (`eric.grimard@universalmetaphor.ca`, `grimeric13@gmail.com`) has no 4 GB sandbox and no agent crystals; those arrive only with extensions.
+Brigitte (Miriamphobots) is the single entry at the top of the Hub and of the standalone engine. Motto: `One seed, infinite roots, perpetual harvest.` On open she says « Je suis Brigitte, je suis là pour toutes tes questions. » `#/world`, `?host=bridget`, `?from=world` and a `.world` arrival open that same panel. She reads `rules.json`, acts through `bridget-demo.js` (`window.BridgetDemo`, alias `window.BrigitteDemo`), and is checked by `bridget-manifest.json` (ETag and SHA-256, no APK reinstall, shown inside her panel). The one-tap portal is `/um/bridget/`. The minimal seed on Éric's two phones (`eric.grimard@universalmetaphor.ca`, `grimeric13@gmail.com`) has no 4 GB sandbox and no agent crystals; those arrive only with extensions.
+
+## v21.05 changelog
+
+Document access points removed from the Hub UI. The files themselves stay in the repo. `um/data/` is untouched.
+
+| File | Element / label | Target |
+|---|---|---|
+| `um/engine/hub-nav.js` | `#um-door-turniton` — TURN IT ON — PDF ↗ | `https://drive.google.com/file/d/1TVyS9q9Pt88BS8aoKTCYGbYGn28FWHYp/view` |
+| `um/engine/hub-nav.js` | `#um-turniton` — TURN IT ON — PDF ↗ | `https://drive.google.com/file/d/1TVyS9q9Pt88BS8aoKTCYGbYGn28FWHYp/view` |
+| `um/engine/hub-nav.js` | `#um-door-bp-en` — TURN IT ON — Board Paper (EN) ↗ | `https://drive.google.com/file/d/1Xv-SpOGl5q6UUL9W12KLGbk3nVpOv7V5/view` |
+| `um/engine/hub-nav.js` | `#um-door-wp-en` — TURN IT ON — White Paper (EN) v2 ↗ | `https://drive.google.com/file/d/1TVyS9q9Pt88BS8aoKTCYGbYGn28FWHYp/view` |
+| `um/engine/hub-nav.js` | `#um-bp-en` — TURN IT ON — Board Paper (EN) ↗ | `https://drive.google.com/file/d/1Xv-SpOGl5q6UUL9W12KLGbk3nVpOv7V5/view` |
+| `um/engine/hub-nav.js` | `#um-wp-en` — TURN IT ON — White Paper (EN) v2 ↗ | `https://drive.google.com/file/d/1TVyS9q9Pt88BS8aoKTCYGbYGn28FWHYp/view` |
+| `um/derniere-version.html` | card — TURN IT ON — Executive White Paper — v2 | `https://drive.google.com/file/d/1TVyS9q9Pt88BS8aoKTCYGbYGn28FWHYp/view` |
+| `um/derniere-version.html` | card — Board Paper (English) — v2 | `https://drive.google.com/file/d/1Xv-SpOGl5q6UUL9W12KLGbk3nVpOv7V5/view` |
+| `um/derniere-version.html` | card — Dossier du kit d’allumage mobile | `https://drive.google.com/drive/folders/16GFRMOAuK05lgdfcVMk3T-eS4RVU8o_a` |
+| `um/derniere-version.html` | card — origin-kit-allumage-mobile-2026-11-24.zip | `https://drive.google.com/file/d/1le0v8SKByZthHxW0TYl_EAh-yzWb2A0F/view` |
+| `um/derniere-version.html` | card — Origin Tesseract — Mobile Spark v3 | `https://drive.google.com/file/d/1AgxckBv0EwzGnVUFplWBABMIDYDNi1-_/view` |
+
+Kept: the Drive link `bridget-seed-0.1.0.apk` (`https://drive.google.com/file/d/19wzqeus-_oJweHWvDFmOr-2VjlgU0KLo/view`) on `/um/bridget/` and on `um/derniere-version.html`. It is the installable seed app, not a document.
+
+Brigitte: one top button, greeting on open, one panel (transcript, text input, mic in fr-CA when the browser has it, four mode chips). Local French commands drive `window.BridgetDemo` and `window.__umSelect` / `#sys` / `switchSys` / panel toggles / Gaussian window / play / hash. Each executed step is said, shown with the cursor, then compared before/after. She asks « Est-ce que c'est clair pour toi ? » with Oui / Réexplique. Stop and Escape interrupt. `prefers-reduced-motion` skips the cursor animation. ETag and SHA-256 stay inside the panel.
 
 The notes below are the original rev. 23.16 handoff. They stay. The running code has moved forward with the lineage; 23.16 is not the live revision.
 

@@ -2,8 +2,8 @@
 <html lang="fr"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="um-build" content="v21.04">
-<!-- um-deploy: v21.04 -->
+<meta name="um-build" content="v21.05">
+<!-- um-deploy: v21.05 -->
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -31,7 +31,7 @@
   }
 })();
 </script>
-<!-- v21.04 — Bridget Guide & Host: lift ?host=bridget / ?from=world out of the hash before the engine rewrites #/world. -->
+<!-- v21.05 — Bridget Guide & Host: lift ?host=bridget / ?from=world out of the hash before the engine rewrites #/world. The same single Brigitte entry opens. -->
 <script>
 (function(){
   function blank(s){return new URLSearchParams(s.charAt(0)==='?'?s.slice(1):s)}
@@ -96,6 +96,8 @@ header{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:8px 1
 .transport,.modes,.readouts{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .transport{flex:1 1 380px;min-width:0}
 button,select{font:inherit;color:var(--fg);background:var(--raise);border:1px solid var(--line-2);border-radius:3px;padding:4px 8px;cursor:pointer}
+#bridget-open{flex:0 0 auto;align-self:center;font:700 1.5rem/1.15 system-ui,sans-serif;min-height:56px;padding:12px 22px;color:#05080d;background:#e8c872;border:3px solid #fff;border-radius:12px;letter-spacing:.01em}
+#bridget-open:hover,#bridget-open:focus-visible{background:#f3dfa0;border-color:#a6dcff}
 button:hover:not(:disabled),select:hover:not(:disabled){border-color:var(--accent)}
 button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 button:disabled,select:disabled{opacity:.45;cursor:not-allowed}
@@ -276,6 +278,7 @@ canvas.vbars{width:100%;height:70px;display:block;margin-top:6px}
 <body>
 <div class="app">
   <header>
+    <button id="bridget-open" type="button" aria-expanded="false" aria-controls="bridget-panel">Brigitte</button>
     <div class="brand">
       <img class="brand-thumb" src="preview-mark.svg" width="40" height="40" alt="Universal Metaphor">
       <h1>Manifestation</h1>
@@ -310,7 +313,6 @@ canvas.vbars{width:100%;height:70px;display:block;margin-top:6px}
       <button id="tgL" type="button" aria-pressed="true" title="Masquer ou afficher le panneau des attributs (touche [)">◧ Attributs</button>
       <button id="tgR" type="button" aria-pressed="true" title="Masquer ou afficher la fiche (touche ])">Fiche ◨</button>
       <button id="tgV" type="button" aria-pressed="false" title="Vue pleine : la métaphore seule, puis retour (touche \)">Vue pleine</button>
-      <button id="bridgetDemo" type="button" title="Démonstration guidée : Brigitte agit dans le moteur, pas à pas">Démo Brigitte</button>
       <span class="ro">Z-ZERO <b id="zzNow">—</b></span>
       <span class="gep" title="Contrainte non négociable : le résidu reste visible. Source : OPEN">Résidu GEP 99 % · visible</span>
     </div>
@@ -357,63 +359,63 @@ canvas.vbars{width:100%;height:70px;display:block;margin-top:6px}
 </div>
 
 
-<script src="engine/vendor/three.min.js?v=21.04"></script>
-<script src="engine/vendor/OrbitControls.js?v=21.04"></script>
-<script src="engine/lib.js?v=21.04"></script>
-<script src="engine/markets.js?v=21.04"></script>
-<script src="engine/markets-intl.js?v=21.04"></script>
-<script src="engine/data/lib-jse40.js?v=21.04"></script>
-<script src="engine/data/lib-wig20.js?v=21.04"></script>
-<script src="engine/data/lib-set50.js?v=21.04"></script>
-<script src="engine/data/lib-nzx50.js?v=21.04"></script>
-<script src="engine/data/lib-colcap.js?v=21.04"></script>
-<script src="engine/data/lib-merval.js?v=21.04"></script>
-<script src="engine/data/lib-tw50.js?v=21.04"></script>
-<script src="engine/data/lib-ta35.js?v=21.04"></script>
-<script src="engine/data/lib-qe.js?v=21.04"></script>
-<script src="engine/data/lib-egx30.js?v=21.04"></script>
-<script src="engine/data/lib-bist30.js?v=21.04"></script>
-<script src="engine/data/lib-ipsa.js?v=21.04"></script>
-<script src="engine/data/lib-klci.js?v=21.04"></script>
-<script src="engine/data/lib-bel20.js?v=21.04"></script>
-<script src="engine/data/lib-obx.js?v=21.04"></script>
-<script src="engine/data/lib-atx.js?v=21.04"></script>
-<script src="engine/data/lib-omxc25.js?v=21.04"></script>
-<script src="engine/data/lib-omxh25.js?v=21.04"></script>
-<script src="engine/data/lib-psi.js?v=21.04"></script>
-<script src="engine/data/lib-iseq20.js?v=21.04"></script>
-<script src="engine/data/lib-lq45.js?v=21.04"></script>
-<script src="engine/data/lib-vn30.js?v=21.04"></script>
-<script src="engine/data/lib-ibrx50.js?v=21.04"></script>
-<script src="engine/data/lib-smll.js?v=21.04"></script>
-<script src="engine/data/lib-ifnc.js?v=21.04"></script>
-<script src="engine/data/lib-imob.js?v=21.04"></script>
-<script src="engine/data/lib-idiv.js?v=21.04"></script>
-<script src="engine/data/lib-icon.js?v=21.04"></script>
-<script src="engine/data/lib-mlcx.js?v=21.04"></script>
-<script src="engine/data/lib-sp100.js?v=21.04"></script>
-<script src="engine/data/lib-djcomp.js?v=21.04"></script>
-<script src="engine/data/lib-tasi-mat.js?v=21.04"></script>
-<script src="engine/data/lib-tasi-fin.js?v=21.04"></script>
-<script src="engine/data/lib-tasi-ind.js?v=21.04"></script>
-<script src="engine/data/lib-tasi-re.js?v=21.04"></script>
-<script src="engine/data/lib-tasi-cyc.js?v=21.04"></script>
-<script src="engine/data/lib-spx-tech.js?v=21.04"></script>
-<script src="engine/data/lib-spx-ind.js?v=21.04"></script>
-<script src="engine/data/lib-spx-fin.js?v=21.04"></script>
-<script src="engine/data/lib-spx-hlth.js?v=21.04"></script>
-<script src="engine/data/lib-spx-cyc.js?v=21.04"></script>
-<script src="engine/data/lib-n225-ind.js?v=21.04"></script>
-<script src="engine/data/lib-n225-cyc.js?v=21.04"></script>
-<script src="engine/data/lib-n225-tech.js?v=21.04"></script>
-<script src="engine/world.js?v=21.04"></script>
-<script src="engine/silos.js?v=21.04"></script>
-<script src="engine/data/sante-u5mr.js?v=21.04"></script>
-<script src="engine/floors.js?v=21.04"></script>
-<script src="engine/bloom.js?v=21.04"></script>
-<script src="engine/loader-v2.js?v=21.04"></script>
-<script src="engine/sante-hub.js?v=21.04"></script>
-<script src="engine/engine.js?v=21.04"></script>
-<script src="engine/hub-nav.js?v=21.04"></script>
-<script src="engine/bridget-demo.js?v=21.04"></script>
+<script src="engine/vendor/three.min.js?v=21.05"></script>
+<script src="engine/vendor/OrbitControls.js?v=21.05"></script>
+<script src="engine/lib.js?v=21.05"></script>
+<script src="engine/markets.js?v=21.05"></script>
+<script src="engine/markets-intl.js?v=21.05"></script>
+<script src="engine/data/lib-jse40.js?v=21.05"></script>
+<script src="engine/data/lib-wig20.js?v=21.05"></script>
+<script src="engine/data/lib-set50.js?v=21.05"></script>
+<script src="engine/data/lib-nzx50.js?v=21.05"></script>
+<script src="engine/data/lib-colcap.js?v=21.05"></script>
+<script src="engine/data/lib-merval.js?v=21.05"></script>
+<script src="engine/data/lib-tw50.js?v=21.05"></script>
+<script src="engine/data/lib-ta35.js?v=21.05"></script>
+<script src="engine/data/lib-qe.js?v=21.05"></script>
+<script src="engine/data/lib-egx30.js?v=21.05"></script>
+<script src="engine/data/lib-bist30.js?v=21.05"></script>
+<script src="engine/data/lib-ipsa.js?v=21.05"></script>
+<script src="engine/data/lib-klci.js?v=21.05"></script>
+<script src="engine/data/lib-bel20.js?v=21.05"></script>
+<script src="engine/data/lib-obx.js?v=21.05"></script>
+<script src="engine/data/lib-atx.js?v=21.05"></script>
+<script src="engine/data/lib-omxc25.js?v=21.05"></script>
+<script src="engine/data/lib-omxh25.js?v=21.05"></script>
+<script src="engine/data/lib-psi.js?v=21.05"></script>
+<script src="engine/data/lib-iseq20.js?v=21.05"></script>
+<script src="engine/data/lib-lq45.js?v=21.05"></script>
+<script src="engine/data/lib-vn30.js?v=21.05"></script>
+<script src="engine/data/lib-ibrx50.js?v=21.05"></script>
+<script src="engine/data/lib-smll.js?v=21.05"></script>
+<script src="engine/data/lib-ifnc.js?v=21.05"></script>
+<script src="engine/data/lib-imob.js?v=21.05"></script>
+<script src="engine/data/lib-idiv.js?v=21.05"></script>
+<script src="engine/data/lib-icon.js?v=21.05"></script>
+<script src="engine/data/lib-mlcx.js?v=21.05"></script>
+<script src="engine/data/lib-sp100.js?v=21.05"></script>
+<script src="engine/data/lib-djcomp.js?v=21.05"></script>
+<script src="engine/data/lib-tasi-mat.js?v=21.05"></script>
+<script src="engine/data/lib-tasi-fin.js?v=21.05"></script>
+<script src="engine/data/lib-tasi-ind.js?v=21.05"></script>
+<script src="engine/data/lib-tasi-re.js?v=21.05"></script>
+<script src="engine/data/lib-tasi-cyc.js?v=21.05"></script>
+<script src="engine/data/lib-spx-tech.js?v=21.05"></script>
+<script src="engine/data/lib-spx-ind.js?v=21.05"></script>
+<script src="engine/data/lib-spx-fin.js?v=21.05"></script>
+<script src="engine/data/lib-spx-hlth.js?v=21.05"></script>
+<script src="engine/data/lib-spx-cyc.js?v=21.05"></script>
+<script src="engine/data/lib-n225-ind.js?v=21.05"></script>
+<script src="engine/data/lib-n225-cyc.js?v=21.05"></script>
+<script src="engine/data/lib-n225-tech.js?v=21.05"></script>
+<script src="engine/world.js?v=21.05"></script>
+<script src="engine/silos.js?v=21.05"></script>
+<script src="engine/data/sante-u5mr.js?v=21.05"></script>
+<script src="engine/floors.js?v=21.05"></script>
+<script src="engine/bloom.js?v=21.05"></script>
+<script src="engine/loader-v2.js?v=21.05"></script>
+<script src="engine/sante-hub.js?v=21.05"></script>
+<script src="engine/engine.js?v=21.05"></script>
+<script src="engine/hub-nav.js?v=21.05"></script>
+<script src="engine/bridget-demo.js?v=21.05"></script>
 </body></html>
