@@ -982,12 +982,18 @@
     return hubPromise;
   }
   function voiceModel(said) {
-    var later = 'Je n’ai pas trouvé de réponse dans les fichiers. J’ai transmis ta question à Claude. La réponse viendra plus tard.';
+    var queued = 'Je n’ai pas trouvé de réponse dans les fichiers. Ta question est en file. Claude répondra plus tard.';
+    var nowhere = 'Je n’ai pas de réponse pour l’instant. Cette page ne peut pas joindre Claude.';
     return bridgetHub().then(function (b) { return b.ask(said); }).then(function (res) {
-      var text = res && res.status === 'unanswered' ? later : ((res && res.text) || '');
+      if (res && res.status === 'unanswered') {
+        var rec = res.escalation;
+        say(rec && rec.id ? queued : nowhere);
+        return 'unanswered';
+      }
+      var text = (res && res.text) || '';
       if (text) say(text);
       return res ? res.status : 'unanswered';
-    }, function () { say(later); return 'unanswered'; });
+    }, function () { say(nowhere); return 'unanswered'; });
   }
 
   function startMic(Rec) {

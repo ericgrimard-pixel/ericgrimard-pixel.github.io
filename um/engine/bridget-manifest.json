@@ -60,7 +60,7 @@
     },
     {
       "path": "um/engine/bridget-demo.js",
-      "sha256": "2ad3d170a8058f26366aea5d4f198e31db1956abb9f407c6525848f0be41d3d9"
+      "sha256": "1e608fe5b677c5fe53f28b98a7b3d90a9ed7e77e419a911ebe979328cb8b59cb"
     },
     {
       "path": "um/engine/rules.json",
@@ -80,7 +80,7 @@
     },
     {
       "path": "um/bridget/index.json",
-      "sha256": "02138b86375d24b8c2797630cd1a3d2f62ae5fea43effeef45251b5f46d74e88"
+      "sha256": "07cd6abb2c388e9efd92c8e46eb2be09626715c94d217974febe8bf4dd286fb1"
     },
     {
       "path": "um/engine/sante-coupes.js",

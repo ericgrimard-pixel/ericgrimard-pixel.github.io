@@ -115,17 +115,22 @@ for (const key of ['finance', 'art', 'sante', 'sport']) {
 await page.goto(base + '/um/#/finance', { waitUntil: 'domcontentloaded', timeout: 120000 });
 await page.waitForFunction(() => {
   const b = document.querySelector('#um-universes [data-universe="finance"]');
-  return b && b.getAttribute('aria-current') === 'true' && !document.body.classList.contains('um-menu');
+  const names = [...document.querySelectorAll('#hub-nav [data-down]')].map(el => el.textContent.trim());
+  const want = ['Amérique du Nord', 'Europe', 'Asie-Pacifique', 'Moyen-Orient et Afrique', 'Amérique latine'];
+  return b && b.getAttribute('aria-current') === 'true' && !document.body.classList.contains('um-menu') && want.every(n => names.indexOf(n) >= 0);
 }, { timeout: 60000 });
+const fields = await page.evaluate(() => [...document.querySelectorAll('#hub-nav [data-down]')].map(el => el.textContent.trim()));
 
 await browser.close();
 server.close();
-const report = { menu, opened, errors };
+const report = { menu, opened, fields, errors };
 console.log(JSON.stringify(report, null, 2));
 const orderOk = menu.labels.join('|') === 'Finance|Art|Santé|Sport';
 const clean = menu.outside.length === 0 && !menu.canvas;
 const each = opened.length === 4 && opened.every(o => o.sides === 0 && o.objects === 0 && o.canvas);
 const hashes = { finance: '#/finance', art: '#/art', sante: '#/sante', sport: '#/sport' };
 const hashOk = opened.every(o => o.hash === hashes[o.key]);
-if (errors.length || !orderOk || !clean || !each || !hashOk || opened.some(o => o.gap)) process.exit(1);
+const five = ['Amérique du Nord', 'Europe', 'Asie-Pacifique', 'Moyen-Orient et Afrique', 'Amérique latine'];
+const fieldsOk = five.every(n => fields.indexOf(n) >= 0);
+if (errors.length || !orderOk || !clean || !each || !hashOk || !fieldsOk || opened.some(o => o.gap)) process.exit(1);
 console.log('universe menu checks passed');

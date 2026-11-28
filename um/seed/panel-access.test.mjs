@@ -129,6 +129,6 @@ const report = { menu, reach, oneOpen, hook, leftHidden, leftBack, voice, errors
 console.log(JSON.stringify(report, null, 2));
 const menuOk = menu.labels.join('|') === 'Finance|Art|Santé|Sport' && menu.tgW === 0;
 const idsShown = reach.display && Object.values(reach.display).every(Boolean);
-const voiceOk = voice.w > 20 && voice.panelHidden && (voice.line === 'extractive' || voice.line === 'unanswered' || voice.line === 'answered') && voice.said.length > 10;
+const voiceOk = voice.w > 20 && voice.panelHidden && voice.line === 'unanswered' && voice.said.indexOf('en file') >= 0 && voice.said.indexOf('transmis') < 0;
 if (errors.length || !menuOk || !idsShown || !reach.orderedOut || !reach.noneHidden || !reach.collapsed || !reach.modeleOpen || reach.gapW < 1 || !oneOpen || !hook.open || !leftHidden || !leftBack || !voiceOk) process.exit(1);
 console.log('panel access checks passed');
