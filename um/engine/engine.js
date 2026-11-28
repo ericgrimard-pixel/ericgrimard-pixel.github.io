@@ -1332,44 +1332,90 @@ const SGREP=makeReps(),SGN=8,SGL=.35,SGK=1.12,SGS=24,SGMIN=.09,SGG=.45;
    that opened at T₀ kept drawing at most one copy per shape (the cause of the trail missing on LNH and n225). */
 function sgAt(i,t){const b=i*F,A=(b+S.T0)*10,B=(b+S.T1)*10,v=k=>zp(V,A,B,S.T0,S.T1,t,k),X=v(0),Y=v(1),Z=v(2),a=AZ(X),r=2-Z,o=[r*Math.sin(a),Y,-r*Math.cos(a)];
   if(S.layers.spacing&&!S.ghost){const q=i*6,u=1-t;o[0]+=OFF1[q]*u+OFF1[q+3]*t;o[1]+=OFF1[q+1]*u+OFF1[q+4]*t;o[2]+=OFF1[q+2]*u+OFF1[q+5]*t}return o}
+function sgCardAt(ci,t){const A=(ci*F+S.T0)*10,B=(ci*F+S.T1)*10,v=k=>zp(CV,A,B,S.T0,S.T1,t,k),X=v(0),Y=v(1),Z=v(2),a=AZ(X),r=2-Z;return [r*Math.sin(a),Y,-r*Math.cos(a)]}
+function syncGhostGap(staticTake){
+  const el=document.getElementById('um-ghost-gap');if(!el)return;
+  const want=!!staticTake||S.prog>0.15;
+  const bits=[];
+  if(want&&N1>0&&!SGREP.c1n)bits.push('Classe 1');
+  if(want&&NC>0&&!SGREP.c2n)bits.push('Classe 2');
+  if(!bits.length){el.hidden=true;el.textContent='';return}
+  el.hidden=false;
+  el.innerHTML='<span class="um-gap-badge">LACUNE / GAP</span> '+bits.join(' · ')+' · aucun fantôme — pas de déplacement réel, rien n’est inventé';
+}
+function publishGhostMetrics(){
+  const u=SGREP.U?SGREP.U.uSize.value:1;
+  window.__umGhostMetrics={
+    uSize:+u.toFixed(6),volAll:+(S.volAll||1).toFixed(6),volC2:+(S.volC2||1).toFixed(6),
+    gAll:+(S.gAll||1).toFixed(6),gC2:+(S.gC2||1).toFixed(6),gvol:+(S.gvol||1).toFixed(6),
+    c1n:SGREP.c1n|0,c2n:SGREP.c2n|0,
+    c1Scale:+((SGREP.c1A||0)*u).toFixed(6),c2Scale:+((SGREP.c2A||0)*u).toFixed(6),
+    gapC1:!!(document.getElementById('um-ghost-gap')&&!document.getElementById('um-ghost-gap').hidden&&/Classe 1/.test(document.getElementById('um-ghost-gap').textContent)),
+    gapC2:!!(document.getElementById('um-ghost-gap')&&!document.getElementById('um-ghost-gap').hidden&&/Classe 2/.test(document.getElementById('um-ghost-gap').textContent))
+  };
+}
 function buildShortGhost(){
   S.sgp=S.prog;
-  if(!TWO||!S.sghost||S.T0===S.T1){SGREP.fill(EMPTYL);return}
+  const clear=()=>{SGREP.c1n=0;SGREP.c2n=0;SGREP.c1A=0;SGREP.c2A=0;SGREP.fill(EMPTYL)};
+  if(!TWO||!S.sghost||S.T0===S.T1){clear();syncGhostGap(S.T0===S.T1);publishGhostMetrics();return}
   const L=[],d0=S.T0,d1=S.T1,HUBW=SYS.id==='world',BL=HUBW?(window.UM_BLOOM|0):0,P=S.prog;
-  if(P<=0){SGREP.fill(EMPTYL);return}
+  const nCopy=Math.max(1,Math.min(24,Math.round(SGN*(S.gvol||1))));
+  const gv=Math.min(1.8,Math.sqrt(S.gvol||1));
+  function drop(kind,idx,at,jA,jB,objScale){
+    const a=at(0),b=at(1),D=Math.hypot(b[0]-a[0],b[1]-a[1],b[2]-a[2]);if(D<1e-4||P<=0)return 0;
+    const step=Math.max(SGL*D/nCopy,SGMIN/Math.max(objScale,1e-4));let prev=at(P),acc=0,k=1,tp=P,n=0;const dt=P/SGS;
+    for(let s2=1;s2<=SGS&&k<=nCopy;s2++){const t=Math.max(0,P-dt*s2),c=at(t),seg=Math.hypot(c[0]-prev[0],c[1]-prev[1],c[2]-prev[2]);
+      while(k<=nCopy&&acc+seg>=step*k){const w=seg>0?(step*k-acc)/seg:0,tk=tp+(t-tp)*w;
+        L.push({kind,idx,A:jA,B:jB,u:tk,x:prev[0]+(c[0]-prev[0])*w,y:prev[1]+(c[1]-prev[1])*w,z:prev[2]+(c[2]-prev[2])*w,day:P-SGL*k/nCopy});k++;n++}
+      acc+=seg;prev=c;tp=t}
+    return n;
+  }
+  if(P<=0){clear();syncGhostGap(false);publishGhostMetrics();return}
+  let c1n=0,c2n=0;
   for(let i=0;i<N1;i++){const j0=i*F+d0,j1=i*F+d1;if(!PRES[j0]||!PRES[j1])continue;if(HUBW&&((TK[i]&&TK[i].bloom)||0)>BL)continue;
     if(HUBW&&TK[i]&&TK[i].floor&&window.UM_CARDINAL&&UM_CARDINAL[TK[i].floor])continue;
-    const a=sgAt(i,0),b=sgAt(i,1),D=Math.hypot(b[0]-a[0],b[1]-a[1],b[2]-a[2]);if(D<1e-4)continue;
-    /* walk back along the path from the current point, dropping a copy every SGL·D/SGN of travelled length */
-    const step=Math.max(SGL*D/SGN,SGMIN/S.exp);let prev=sgAt(i,P),acc=0,k=1,tp=P;const dt=P/SGS;
-    for(let s2=1;s2<=SGS&&k<=SGN;s2++){const t=Math.max(0,P-dt*s2),c=sgAt(i,t),seg=Math.hypot(c[0]-prev[0],c[1]-prev[1],c[2]-prev[2]);
-      while(k<=SGN&&acc+seg>=step*k){const w=seg>0?(step*k-acc)/seg:0,tk=tp+(t-tp)*w;
-        L.push(i,j0*10,j1*10,tk,prev[0]+(c[0]-prev[0])*w,prev[1]+(c[1]-prev[1])*w,prev[2]+(c[2]-prev[2])*w,P-SGL*k/SGN);k++}
-      acc+=seg;prev=c;tp=t}}
+    c1n+=drop(1,i,t=>sgAt(i,t),j0*10,j1*10,S.volAll||1)}
+  for(let ci=0;ci<NC;ci++){const j0=ci*F+d0,j1=ci*F+d1;if(!CP[j0]||!CP[j1])continue;
+    c2n+=drop(2,ci,t=>sgCardAt(ci,t),j0*10,j1*10,(S.volAll||1)*(S.volC2||1))}
+  SGREP.c1n=c1n;SGREP.c2n=c2n;
   const q=new THREE.Quaternion(),e=new THREE.Euler();
-  SGREP.fill({n:L.length/8,
-    zone:k=>zoneOf(V[(L[k*8+3]<.5?L[k*8+1]:L[k*8+2])+3]),
-    get:(k,o)=>{const m=k*8,A=L[m+1],B=L[m+2],u=L[m+3],Lz=(arr,kk)=>CY(arr[zoneOf(V[A+kk])],arr[zoneOf(V[B+kk])],u);
-      e.set(Lz(LV.pitch,6),Math.PI/2-AZ(CY(V[A],V[B],u)),-Lz(LV.roll,8),'YXZ');q.setFromEuler(e);
-      const ca=satRGB(zoneOf(V[A+5]),LV.sat[zoneOf(V[A+9])]),cb=satRGB(zoneOf(V[B+5]),LV.sat[zoneOf(V[B+9])]);
-      o.pos[0]=L[m+4];o.pos[1]=L[m+5];o.pos[2]=L[m+6];o.q[0]=q.x;o.q[1]=q.y;o.q[2]=q.z;o.q[3]=q.w;o.s=Lz(LV.stretch,4);
-      o.col[0]=CY(ca[0],cb[0],u);o.col[1]=CY(ca[1],cb[1],u);o.col[2]=CY(ca[2],cb[2],u);o.day=L[m+7];o.tk=L[m];o.out=0;o.org=P-SGL-.02;o.vol=1}});
+  let c1A=0,c2A=0;
+  SGREP.fill({n:L.length,
+    zone:k=>{const r=L[k],src=r.kind===2?CV:V,A=r.u<.5?r.A:r.B;return zoneOf(src[A+3])},
+    get:(k,o)=>{const r=L[k],src=r.kind===2?CV:V,Lz=(arr,kk)=>CY(arr[zoneOf(src[r.A+kk])],arr[zoneOf(src[r.B+kk])],r.u);
+      e.set(Lz(LV.pitch,6),Math.PI/2-AZ(CY(src[r.A],src[r.B],r.u)),-Lz(LV.roll,8),'YXZ');q.setFromEuler(e);
+      const ca=satRGB(zoneOf(src[r.A+5]),LV.sat[zoneOf(src[r.A+9])]),cb=satRGB(zoneOf(src[r.B+5]),LV.sat[zoneOf(src[r.B+9])]);
+      o.pos[0]=r.x;o.pos[1]=r.y;o.pos[2]=r.z;o.q[0]=q.x;o.q[1]=q.y;o.q[2]=q.z;o.q[3]=q.w;o.s=Lz(LV.stretch,4);
+      o.col[0]=CY(ca[0],cb[0],r.u);o.col[1]=CY(ca[1],cb[1],r.u);o.col[2]=CY(ca[2],cb[2],r.u);o.day=r.day;o.tk=r.idx;o.out=0;o.org=P-SGL-.02;
+      o.vol=gv;o.sc=ghostMeshAScale(r.kind,r.idx);
+      if(r.kind===2){if(!c2A)c2A=o.sc}else if(!c1A)c1A=o.sc}});
+  SGREP.c1A=c1A;SGREP.c2A=c2A;
+  syncGhostGap(false);publishGhostMetrics();
 }
 function sgFrame(){
   if(TWO&&S.sghost&&Math.abs(S.prog-(S.sgp==null?-1:S.sgp))>.004)buildShortGhost(); /* v20.84: the trail follows the run and the slider */
   const on=TWO&&!!S.sghost&&SGREP.n>0&&S.layers.c1!==false;SGREP.group.visible=on;if(!on)return;
   const U=SGREP.U;U.uCur.value=S.prog;U.uT0.value=0;U.uTau.value=0;U.uSize.value=S.volAll*S.gAll;U.uGain.value=SGK*SGG;U.uSel.value=S.sel&&S.sel.kind===1?S.sel.idx:-1;U.uAll.value=0;
+  publishGhostMetrics();
 }
 /* Large systems: the copies unfold for the chosen stock, or for the members of the chosen Class 2 object. */
 function repAllow(){if(N1<=150)return null;const s=S.sel;return new Set(s&&s.kind===1?[s.idx]:s&&s.kind===2?CARDS[s.idx].members:[])}
-function ghostMul(i){
-  const base=S.gAll||1;
+/* Ghost size factor, same scopes as the objects. Classe 2 keeps the extra gC2 on every Class 1
+   replica (each Class 1 sits in a Class 2). Choix uses the checked card. Tous uses gAll. */
+function ghostFactor(kind,idx){
+  if(S.gScope==='c2')return S.gC2||1;
   if(S.gScope==='pick'){
-    for(let ci=0;ci<CARDS.length;ci++){if(S.gOn[ci]&&CARDS[ci].mset&&CARDS[ci].mset.has(i))return (S.gPick[ci]||1)/base}
-    return 1;
+    if(kind===2&&S.gOn[idx])return S.gPick[idx]||1;
+    if(kind===1){for(let ci=0;ci<CARDS.length;ci++){if(S.gOn[ci]&&CARDS[ci].mset&&CARDS[ci].mset.has(idx))return S.gPick[ci]||1}}
   }
-  if(S.gScope==='c2')return (S.gC2||1)/base;
-  return 1;
+  return S.gAll||1;
+}
+function ghostMul(i){return ghostFactor(1,i)/(S.gAll||1)}
+/* Class 2 copies are twice a Class 1 (canon 0.2 vs 0.1) and carry volC2, like the Class 2 object. */
+function ghostMeshAScale(kind,idx){
+  const base=S.gAll||1,g=ghostFactor(kind,idx);
+  if(kind===2)return 2*(S.volC2||1)*g/base;
+  return g/base;
 }
 function buildReplicas(){
   const rp=GHOST.rep;if(!rp||!S.ghost){REP.fill(EMPTYL);return}
@@ -2037,13 +2083,16 @@ function applyMeshVol(){
   const gs=a*S.gAll;
   if(typeof REP!=='undefined'&&REP.U)REP.U.uSize.value=gs;
   if(typeof SGREP!=='undefined'&&SGREP.U)SGREP.U.uSize.value=gs;
+  if(typeof publishGhostMetrics==='function')publishGhostMetrics();
   window.__umVol={all:+a.toFixed(4),c2:+c.toFixed(4),gAll:+S.gAll.toFixed(4),gC2:+S.gC2.toFixed(4),scope:S.volScope,gScope:S.gScope};
 }
 function setExp(E,fromSlider){
   E=Math.max(.05,Math.min(1000,+E||1));
-  if(S.volScope==='c2')S.volC2=E;else S.volAll=E;
+  const c2=S.volScope==='c2';
+  if(c2)S.volC2=E;else S.volAll=E;
   S.exp=E;window.__umExp=S.volAll;
   applyMeshVol();
+  if(c2&&TWO&&S.sghost)buildShortGhost();
   try{localStorage.setItem('um.volume',String(S.volAll))}catch(e){}
   if(!fromSlider)$('vol').value=Math.round(Math.max(-200,Math.min(400,Math.log2(E)*100)));
   $('volNum').value=E>=10?E.toFixed(1):E.toFixed(2);
@@ -2075,7 +2124,7 @@ function bumpGhost(dir){
   if(S.gScope==='c2')S.gC2=Math.max(.05,Math.min(1000,S.gC2*f));
   else if(S.gScope==='pick'){Object.keys(S.gOn).forEach(ci=>{if(S.gOn[ci])S.gPick[ci]=Math.max(.05,Math.min(1000,(S.gPick[ci]||1)*f))})}
   else S.gAll=Math.max(.05,Math.min(1000,S.gAll*f));
-  applyMeshVol();if(S.ghost)buildReplicas();paintScope();dirty=true;
+  applyMeshVol();if(TWO&&S.sghost)buildShortGhost();else if(S.ghost)buildReplicas();paintScope();dirty=true;
 }
 function openChoix(){
   let p=$('vol-scope-panel');
@@ -2161,7 +2210,7 @@ function onEl(id,ev,fn){const el=$(id);if(el)el.addEventListener(ev,fn)}
 onEl('gclk','change',e=>{S.gclk=e.target.value;window.__umGclk=S.gclk;buildGhost();syncGhostUI();renderFiche();dirty=true});
 onEl('gtau','change',e=>{S.gtau=+e.target.value;window.__umGtau=S.gtau;dirty=true});
 onEl('gvol','input',e=>{if($('gvolN'))$('gvolN').textContent='×'+fmtGV(Math.pow(2,+e.target.value/100))});
-onEl('gvol','change',e=>{S.gvol=Math.pow(2,+e.target.value/100);window.__umGvol=S.gvol;buildGhost();renderFiche();dirty=true});
+onEl('gvol','change',e=>{S.gvol=Math.pow(2,+e.target.value/100);window.__umGvol=S.gvol;buildGhost();if(TWO&&S.sghost)buildShortGhost();renderFiche();dirty=true});
 onEl('gContact','click',()=>{if(GHOST.ruler&&GHOST.ruler.dg>0)setExp(Math.min(1000,Math.max(.05,2*.1*DENS/GHOST.ruler.dg)))});
 onEl('thr','change',e=>{S.thr=+e.target.value;window.__umThr=S.thr;buildThrowWin();THR.d=-1;syncGhostUI();dirty=true});
 onEl('thrW','change',e=>{S.thrW=e.target.value;window.__umThrW=S.thrW;buildThrowWin();THR.d=-1;dirty=true});

@@ -1,6 +1,12 @@
-# MANIFESTATION ENGINE — Hub v21.09
+# MANIFESTATION ENGINE — Hub v21.10
 
-Canonical lineage: `v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06 -> v21.07 -> v21.08 -> v21.09`. Next free number: `v21.10`.
+Canonical lineage: `v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06 -> v21.07 -> v21.08 -> v21.09 -> v21.10`. Next free number: `v21.11`.
+
+## Ce qui est nouveau en v21.10 (à démontrer)
+
+1. Volume sur les fantômes de Classe 1 et de Classe 2. Ouvrir `/um/#/sante`. Avancer le curseur vers le milieu pour que les objets aient bougé. Les copies derrière les objets de Classe 1 et de Classe 2 grossissent avec Volume (Tous, puis Classe 2), comme les objets de cette portée. Fantôme + les grossit encore, sans changer les objets. Le curseur « Volume du fantôme » (`#gvol`) change le nombre de copies et leur clarté.
+2. Lacune visible. Ouvrir `/um/#/art`. T₀ = T₁, aucun déplacement réel. Le badge « LACUNE / GAP · Classe 1 · Classe 2 · aucun fantôme » est visible. Rien n'est inventé.
+3. Attributs et panneau droit. Dans un univers, « ◧ Attributs » (`#tgL`, touche `[`) montre ou cache la colonne de gauche. « Fiche ◨ » (`#tgR`, touche `]`) montre ou cache la fiche. La case Kobayashi Maru (`#km`) est de retour. Le panneau de droite garde la fiche, le bloc Modèle, les couches, les lacunes, la légende et la source : ce sont des sections repliables, plus des blocs masqués.
 
 ## Ce qui est nouveau en v21.09 (à démontrer)
 
