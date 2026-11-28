@@ -461,7 +461,7 @@ const S={
   gclk:window.__umGclk||'vol',gtau:window.__umGtau!=null?window.__umGtau:0,
   layers:{c1:true,sec:true,cty:true,ind:false,genre:true,key:false,mode:false,expl:false,tsig:false,conf:true,assoc:true,league:true,lvl:false,mv:false,div:true,club:true,nat:true,pos:true,drnd:false,dyr:false,age:false,hand:false,xfer:false,ptrail:false,c3:true,c4:true,bounds:true,trails:false,ghost:true,gpaths:false,tlabels:true,links:true,labels:true,spacing:true,z0:false,z0c2:true,z0c3:true,c4v:false,c3d:false,micro:true,c4gh:true}, /* rev. 23.12 (Éric, 11 Nov., 13 h 38): on opening, no line between the objects; each one is a layer to switch on. Rev. 23.13: the LNH transfer trail too. Rev. 23.19: the central object's trajectory ghost is a layer, silent when no drift applies. */
   thr:window.__umThr!=null?window.__umThr:10,thrW:window.__umThrW||'tv',
-  gvol:window.__umGvol||1,gvolI:{}, /* Volume du fantôme (Grok spec, 9 Nov.): density, not mesh size */
+  gvol:window.__umGvol||1,gvolI:{},gvolK:{1:1,2:1,4:1},gHostK:{1:true,2:true,4:true}, /* #gvol stays the master. gvolK is the per-class density. */
   volScope:'all',volAll:1,volC2:1,gScope:'all',gAll:1,gC2:1,gPick:{},gOn:{},zoneThr:{0:0,1:0,2:0}
 };
 const eff=k=>{
@@ -1348,25 +1348,30 @@ function publishGhostMetrics(){
 function buildShortGhost(){
   S.sgp=S.prog;
   const clear=()=>{SGREP.c1n=0;SGREP.c2n=0;SGREP.c1A=0;SGREP.c2A=0;SGREP.fill(EMPTYL)};
-  if(!TWO||!S.sghost||S.T0===S.T1){clear();syncGhostGap(S.T0===S.T1);publishGhostMetrics();return}
+  const aggGhost=!!(window.__umAgg&&__umAgg.any&&__umAgg.any('ghost'));
+  if(!TWO||S.T0===S.T1||(!S.sghost&&!aggGhost)){clear();syncGhostGap(S.T0===S.T1);publishGhostMetrics();return}
   const L=[],d0=S.T0,d1=S.T1,HUBW=SYS.id==='world',BL=HUBW?(window.UM_BLOOM|0):0,P=S.prog;
-  const nCopy=Math.max(1,Math.min(24,Math.round(SGN*(S.gvol||1))));
-  const gv=Math.min(1.8,Math.sqrt(S.gvol||1));
+  const dens=k=>(S.gvol||1)*((S.gvolK&&S.gvolK[k])||1);
+  const copies=k=>Math.max(1,Math.min(24,Math.round(SGN*dens(k))));
+  const clarity=k=>Math.min(1.8,Math.sqrt(dens(k)));
   function drop(kind,idx,at,jA,jB,objScale){
+    const nCopy=copies(kind),gv=clarity(kind);
     const a=at(0),b=at(1),D=Math.hypot(b[0]-a[0],b[1]-a[1],b[2]-a[2]);if(D<1e-4||P<=0)return 0;
     const step=Math.max(SGL*D/nCopy,SGMIN/Math.max(objScale,1e-4));let prev=at(P),acc=0,k=1,tp=P,n=0;const dt=P/SGS;
     for(let s2=1;s2<=SGS&&k<=nCopy;s2++){const t=Math.max(0,P-dt*s2),c=at(t),seg=Math.hypot(c[0]-prev[0],c[1]-prev[1],c[2]-prev[2]);
       while(k<=nCopy&&acc+seg>=step*k){const w=seg>0?(step*k-acc)/seg:0,tk=tp+(t-tp)*w;
-        L.push({kind,idx,A:jA,B:jB,u:tk,x:prev[0]+(c[0]-prev[0])*w,y:prev[1]+(c[1]-prev[1])*w,z:prev[2]+(c[2]-prev[2])*w,day:P-SGL*k/nCopy});k++;n++}
+        L.push({kind,idx,A:jA,B:jB,u:tk,x:prev[0]+(c[0]-prev[0])*w,y:prev[1]+(c[1]-prev[1])*w,z:prev[2]+(c[2]-prev[2])*w,day:P-SGL*k/nCopy,vol:gv});k++;n++}
       acc+=seg;prev=c;tp=t}
     return n;
   }
   if(P<=0){clear();syncGhostGap(false);publishGhostMetrics();return}
   let c1n=0,c2n=0;
-  for(let i=0;i<N1;i++){const j0=i*F+d0,j1=i*F+d1;if(!PRES[j0]||!PRES[j1])continue;if(HUBW&&((TK[i]&&TK[i].bloom)||0)>BL)continue;
+  const aggOf=(k,i)=>{try{return (window.__umAgg&&__umAgg.of)?__umAgg.of(k,i):'on'}catch(e){return 'on'}};
+  const hostOn=k=>!(S.gHostK)||S.gHostK[k]!==false;
+  for(let i=0;i<N1;i++){const j0=i*F+d0,j1=i*F+d1;if(!PRES[j0]||!PRES[j1])continue;const st=aggOf(1,i);if(st==='off'||(st!=='ghost'&&!(S.sghost&&hostOn(1))))continue;if(HUBW&&((TK[i]&&TK[i].bloom)||0)>BL)continue;
     if(HUBW&&TK[i]&&TK[i].floor&&window.UM_CARDINAL&&UM_CARDINAL[TK[i].floor])continue;
     c1n+=drop(1,i,t=>sgAt(i,t),j0*10,j1*10,S.volAll||1)}
-  for(let ci=0;ci<NC;ci++){const j0=ci*F+d0,j1=ci*F+d1;if(!CP[j0]||!CP[j1])continue;
+  for(let ci=0;ci<NC;ci++){const j0=ci*F+d0,j1=ci*F+d1;if(!CP[j0]||!CP[j1])continue;const st=aggOf(2,ci);if(st==='off'||(st!=='ghost'&&!(S.sghost&&hostOn(2))))continue;
     c2n+=drop(2,ci,t=>sgCardAt(ci,t),j0*10,j1*10,(S.volAll||1)*(S.volC2||1))}
   SGREP.c1n=c1n;SGREP.c2n=c2n;
   const q=new THREE.Quaternion(),e=new THREE.Euler();
@@ -1378,14 +1383,14 @@ function buildShortGhost(){
       const ca=satRGB(zoneOf(src[r.A+5]),LV.sat[zoneOf(src[r.A+9])]),cb=satRGB(zoneOf(src[r.B+5]),LV.sat[zoneOf(src[r.B+9])]);
       o.pos[0]=r.x;o.pos[1]=r.y;o.pos[2]=r.z;o.q[0]=q.x;o.q[1]=q.y;o.q[2]=q.z;o.q[3]=q.w;o.s=Lz(LV.stretch,4);
       o.col[0]=CY(ca[0],cb[0],r.u);o.col[1]=CY(ca[1],cb[1],r.u);o.col[2]=CY(ca[2],cb[2],r.u);o.day=r.day;o.tk=r.idx;o.out=0;o.org=P-SGL-.02;
-      o.vol=gv;o.sc=ghostMeshAScale(r.kind,r.idx);
+      o.vol=r.vol!=null?r.vol:clarity(r.kind);o.sc=ghostMeshAScale(r.kind,r.idx);
       if(r.kind===2){if(!c2A)c2A=o.sc}else if(!c1A)c1A=o.sc}});
   SGREP.c1A=c1A;SGREP.c2A=c2A;
   syncGhostGap(false);publishGhostMetrics();
 }
 function sgFrame(){
   if(TWO&&S.sghost&&Math.abs(S.prog-(S.sgp==null?-1:S.sgp))>.004)buildShortGhost(); /* v20.84: the trail follows the run and the slider */
-  const on=TWO&&!!S.sghost&&SGREP.n>0&&S.layers.c1!==false;SGREP.group.visible=on;if(!on)return;
+  const on=TWO&&SGREP.n>0&&(!!S.sghost||!!(window.__umAgg&&__umAgg.any&&__umAgg.any('ghost')))&&S.layers.c1!==false;SGREP.group.visible=on;if(!on)return;
   const U=SGREP.U;U.uCur.value=S.prog;U.uT0.value=0;U.uTau.value=0;U.uSize.value=S.volAll*S.gAll;U.uGain.value=SGK*SGG;U.uSel.value=S.sel&&S.sel.kind===1?S.sel.idx:-1;U.uAll.value=0;
   publishGhostMetrics();
 }
@@ -1765,6 +1770,8 @@ function applyObj(o,d0,d1,t,dt){
   const isC=o.kind===2,P=isC?CP:PRES,VV=isC?CV:V,b=o.idx*F;
   const p0=P[b+d0],p1=P[b+d1];
   if(!(p0||p1)||!layerOn(o)){o.root.visible=false;o.cur=null;return}
+  const aggSt=window.__umAgg&&__umAgg.of?__umAgg.of(o.kind,o.idx):'on';
+  if(aggSt==='off'||aggSt==='ghost'){o.root.visible=false;o.cur=null;return}
   let bk=1;
   if(SYS.id==='world'&&isC) bk=bloomK(cardBloom(o.idx));
   else if(SYS.id==='world'&&TK[o.idx]&&TK[o.idx].bloom) bk=bloomK(TK[o.idx].bloom);
@@ -1826,6 +1833,8 @@ function c4Frame(tau){
 }
 function applyC4(t,dt){
   const o=C4O,n0=C4N[0],n1=C4N[1];
+  const c4st=window.__umAgg&&__umAgg.of?__umAgg.of(4,0):'on';
+  if(c4st==='off'||c4st==='ghost'){o.body.visible=false;syncRings(o,0);return}
   if(!n0&&!n1){o.body.visible=false;syncRings(o,0);return}o.body.visible=true;
   const A=(n0?0:1)*10,B=(n1?1:0)*10;
   const za=k=>zoneOf(C4V[A+k]),zb=k=>zoneOf(C4V[B+k]),zd=k=>t<.5?za(k):zb(k);
@@ -2184,7 +2193,8 @@ function syncGhostUI(){
   if(gBtn){gBtn.setAttribute('aria-pressed',(TWO?S.sghost:S.ghost)?'true':'false');gBtn.disabled=TWO&&GCSNAP;}
   if(gBtn)gBtn.title=TWO&&!GCSNAP?'Fantôme court : environ 8 copies proches derrière chaque objet, direction générale de T₀ vers T₁, même règle de condensation pour tous ; ce système n\'a que T₀ et T₁ (touche F)':TWO?(HK?"Le fantôme demande la saison match par match ; ce système n'a que T₀ et T₁, deux saisons.":GC?"Le fantôme demande une suite de prises ; ce système n'a qu'un instantané (T₀ = T₁).":"Le fantôme demande toutes les séances ; ce système n'a que T₀ et T₁."):'Fantôme : chaque titre laisse ses fantômes de T₀ à T₁ ; la colonne d\'horloge en règle seulement l\'espacement (touche F)';
   const ghostOn=TWO?!!S.sghost:!!S.ghost;
-  ['gwBox','gtauBox','thrBox','gContact','gvBox'].forEach(id=>{const el=$(id);if(el)el.hidden=!ghostOn});
+  const aggGhost=!!(window.__umAgg&&__umAgg.any&&__umAgg.any('ghost'));
+  ['gwBox','gtauBox','thrBox','gContact','gvBox'].forEach(id=>{const el=$(id);if(el)el.hidden=!(ghostOn||aggGhost)});
   if($('gvol'))$('gvol').value=String(Math.round(Math.log2(S.gvol)*100));
   if($('gvolN'))$('gvolN').textContent='×'+fmtGV(S.gvol);
   if($('gclk'))$('gclk').value=S.gclk;if($('gtau'))$('gtau').value=String(S.gtau);if($('thr'))$('thr').value=String(S.thr);if($('thrW'))$('thrW').value=S.thrW;
@@ -2749,6 +2759,20 @@ addEventListener('resize',()=>{drawGauss();renderFiche()});
 BOOT.destroy=()=>{alive=false;S.playing=false;BOOT.ac.abort();ro.disconnect();try{renderer.dispose();renderer.forceContextLoss()}catch(e){}renderer.domElement.remove();$('tip').style.display='none';$('banner').style.display='none'};
 if(keep&&keep.tk){const i=TK.findIndex(t=>t.s===keep.tk);if(i>=0)select({kind:1,idx:i})}
 window.__umSelect=select; /* hook for the soul (CLAVIS) bridge and for tests */
+window.__umAggregates=function(){
+  return {
+    c1:N1,
+    c4:SYS&&SYS.name||'',
+    c3:(typeof C3SYM!=='undefined'?C3SYM.slice():[]),
+    c2:CARDS.map((c,i)=>({idx:i,name:c.name,ty:c.ty}))
+  };
+};
+window.__umAggRefresh=function(){dirty=true;if(TWO)buildShortGhost();};
+window.__umGhostClass={
+  get:function(){return {on:{1:S.gHostK[1]!==false,2:S.gHostK[2]!==false,4:S.gHostK[4]!==false},vol:{1:S.gvolK[1]||1,2:S.gvolK[2]||1,4:S.gvolK[4]||1},master:S.gvol};},
+  setOn:function(k,v){S.gHostK[k]=!!v;if(k===4)S.layers.c4gh=!!v;buildShortGhost();syncGhostUI();dirty=true;},
+  setVol:function(k,v){S.gvolK[k]=Math.max(.05,Math.min(16,v));buildShortGhost();dirty=true;}
+};
 window.__umProbe=function(){
   const vis=[];
   const pack=(o,name,floor)=>{

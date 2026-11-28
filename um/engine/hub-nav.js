@@ -658,6 +658,118 @@
   }
 })();
 
+/* 28 nov 9:19 — agrégats au-dessus des couches déjà là. Classe 3 exclue de cette liste (bornes). Trois états : visible, fantôme, masqué. */
+(function(){
+  const st=new Map();
+  const NEXT={on:'ghost',ghost:'off',off:'on'};
+  const WORD={on:'visible',ghost:'fantôme',off:'masqué'};
+  let mines=[];
+  function loadMines(){ try{ const a=JSON.parse(localStorage.getItem('um.myClass2.v1')||'[]'); mines=Array.isArray(a)?a:[]; }catch(e){ mines=[]; } return mines; }
+  function of(kind,idx){
+    if(kind===2&&st.has('2:'+idx)) return st.get('2:'+idx);
+    if(kind===1||kind===2){
+      for(let i=0;i<mines.length;i++){
+        const m=mines[i], s=st.get('mine:'+m.id);
+        if(!s||!m.parts) continue;
+        if(m.parts.some(p=>p.kind===kind&&p.idx===idx)) return s;
+      }
+    }
+    if(st.has(String(kind))) return st.get(String(kind));
+    return 'on';
+  }
+  window.__umAgg={
+    of:of,
+    any:function(s){ for(const v of st.values()) if(v===s) return true; return false; }
+  };
+  const css=document.createElement('style'); css.id='um-agg-css';
+    css.textContent='#um-agg{display:flex;flex-wrap:wrap;gap:4px 8px;padding:6px 9px;max-height:46vh;overflow:auto;border-bottom:1px solid #2a3340}'
+    +'#um-agg .um-u-h{flex:1 1 100%;font:700 11px/1.3 system-ui,sans-serif;letter-spacing:.04em;text-transform:uppercase;color:#e8c872}'
+    +'#um-agg label{font:600 12px/1.3 system-ui,sans-serif}'
+    +'#um-agg .um-gset{flex:1 1 100%;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}'
+    +'#um-agg input:indeterminate{accent-color:#b388ff}';
+  document.head.appendChild(css);
+  function paint(input,state,label){
+    input.indeterminate=state==='ghost';
+    input.checked=state!=='off';
+    input.setAttribute('aria-checked',state==='ghost'?'mixed':state==='on'?'true':'false');
+    input.setAttribute('aria-label',label+', '+WORD[state]);
+  }
+  function stateOf(key){
+    if(st.has(key)) return st.get(key);
+    if(key.indexOf('2:')===0 && st.has('2')) return st.get('2');
+    return 'on';
+  }
+  function cycle(key){
+    const n=NEXT[stateOf(key)];
+    if(n==='on') st.delete(key); else st.set(key,n);
+    loadMines();
+    if(window.__umAggRefresh) window.__umAggRefresh();
+    const gv=document.getElementById('gvBox');
+    if(gv&&window.__umAgg.any('ghost')) gv.hidden=false;
+    render();
+  }
+  function row(parent,key,label){
+    const lab=document.createElement('label'); lab.className='chk';
+    const input=document.createElement('input'); input.type='checkbox'; input.dataset.agg=key;
+    paint(input,stateOf(key),label);
+    input.addEventListener('click',function(e){ e.preventDefault(); cycle(key); });
+    lab.appendChild(input);
+    lab.appendChild(document.createTextNode(' '+label));
+    if(key.indexOf('2:')===0||key==='1'||key==='4'){
+      lab.draggable=true;
+      lab.addEventListener('dragstart',function(e){
+        const kind=key==='1'?1:key==='4'?4:2;
+        const idx=key.indexOf('2:')===0?+key.slice(2):0;
+        e.dataTransfer.setData('text/plain',JSON.stringify({kind:kind,idx:idx,name:label}));
+        e.dataTransfer.effectAllowed='copy';
+      });
+    }
+    parent.appendChild(lab);
+  }
+  let sig='';
+  function render(){
+    const host=document.getElementById('um-rg-couches');
+    if(!host||typeof window.__umAggregates!=='function') return;
+    let data; try{ data=__umAggregates(); }catch(e){ return; }
+    let box=document.getElementById('um-agg');
+    if(!box){ box=document.createElement('div'); box.id='um-agg'; box.setAttribute('aria-label','Agrégats, trois états : visible, fantôme, masqué'); }
+    const summary=host.querySelector('summary');
+    if(box.parentNode!==host||(summary&&summary.nextSibling!==box)) host.insertBefore(box,summary?summary.nextSibling:host.firstChild);
+    box.textContent='';
+    const h=document.createElement('span'); h.className='um-u-h'; h.textContent='Agrégats · visible / fantôme / masqué'; box.appendChild(h);
+    const gset=document.createElement('div'); gset.className='um-gset';
+    const gc=window.__umGhostClass?__umGhostClass.get():{on:{1:true,2:true,4:true},vol:{1:1,2:1,4:1}};
+    [1,2,4].forEach(function(k){
+      const lab=document.createElement('label'); lab.className='chk';
+      const input=document.createElement('input'); input.type='checkbox'; input.id='um-g'+k; input.checked=gc.on[k]!==false;
+      input.setAttribute('aria-label','Fantôme Classe '+k);
+      input.addEventListener('change',function(){ if(window.__umGhostClass) __umGhostClass.setOn(k,input.checked); });
+      lab.appendChild(input); lab.appendChild(document.createTextNode(' Fantôme Classe '+k));
+      const range=document.createElement('input'); range.type='range'; range.id='um-gvol'+k; range.min='-200'; range.max='200'; range.step='1';
+      range.value=String(Math.round(Math.log(gc.vol[k]||1)/Math.LN2*100));
+      range.setAttribute('aria-label','Volume du fantôme, Classe '+k+', maître dans la barre');
+      const b=document.createElement('b'); b.id='um-gvol'+k+'n'; b.textContent='×'+(gc.vol[k]||1).toFixed(2);
+      range.addEventListener('input',function(){ b.textContent='×'+Math.pow(2,+range.value/100).toFixed(2); });
+      range.addEventListener('change',function(){ if(window.__umGhostClass) __umGhostClass.setVol(k,Math.pow(2,+range.value/100)); });
+      gset.appendChild(lab); gset.appendChild(range); gset.appendChild(b);
+    });
+    box.appendChild(gset);
+    row(box,'1','Classe 1');
+    row(box,'2','Classe 2');
+    (data.c2||[]).forEach(function(c){ row(box,'2:'+c.idx,'Classe 2 · '+c.name); });
+    row(box,'4','Classe 4 · '+(data.c4||'objet central'));
+    loadMines().forEach(function(c){ if(c&&c.id&&c.name) row(box,'mine:'+c.id,'Agrégat · '+c.name); });
+  }
+  function tick(){
+    if(typeof window.__umAggregates!=='function') return;
+    let data; try{ data=__umAggregates(); }catch(e){ return; }
+    const s=(data.c2||[]).map(function(c){ return c.idx+':'+c.name; }).join('|')+'|'+(localStorage.getItem('um.myClass2.v1')||'');
+    if(s!==sig){ sig=s; render(); }
+  }
+  setInterval(tick,800);
+  tick();
+})();
+
 /* v20.91.1 — Éric, 22 nov 2026 13:59 (Toronto, voix) : « ＋ Créer / Create » au bas de la rangée « Classe 2 · objets ».
    Le compositeur liste les objets RÉELS du moteur au niveau affiché (window.__umProbe().visible : Classe 1 et Classe 2,
    avec leur indice moteur) ; rien n'est inventé. On nomme une Classe 2 à soi, rangée dans le sous-groupe visible
@@ -667,7 +779,7 @@
    l'utilisateur ont un « × » ; les objets du moteur ne sont jamais retirés. Bloc autonome : #um-u-mine, placé juste
    sous #um-u-c2 dans #um-rg-couches. loader-v2 ne doit pas l'écraser. */
 (function(){
-  return; /* 27 nov 22:37 : « Créer » retiré de l'écran. Conflit avec le 22 nov « Créer Classe 2 » — Éric tranche. */
+  /* 28 nov 9:19 : Éric rétablit la création d'agrégat (v20.91.1, 5b78f91). Pas de glisser-déposer dans l'historique : le compositeur coche les objets. */
   const $=id=>document.getElementById(id);
   const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const KEY='um.myClass2.v1';
@@ -713,6 +825,15 @@
         if(e.target.closest('.nm')){ if(e.detail>=2) fiche(id); else pick(id); }
       },KEEP);
       r.addEventListener('dblclick',e=>{ const it=e.target.closest('.um-mine-item .nm'); if(it) fiche(it.parentNode.dataset.id); },KEEP);
+      r.addEventListener('dragover',e=>{ e.preventDefault(); if(e.dataTransfer) e.dataTransfer.dropEffect='copy'; },KEEP);
+      r.addEventListener('drop',e=>{
+        e.preventDefault();
+        let o; try{ o=JSON.parse(e.dataTransfer.getData('text/plain')); }catch(err){ return; }
+        if(!o||o.kind==null) return;
+        const p=probe(); const sys=p?p.sys:'';
+        sel.set(o.kind+':'+sys+':'+o.idx,{kind:o.kind,idx:o.idx,name:o.name,sys:sys});
+        open=true; render();
+      },KEEP);
     }
     if(c2.nextSibling!==r) c2.parentNode.insertBefore(r,c2.nextSibling);
     return r;

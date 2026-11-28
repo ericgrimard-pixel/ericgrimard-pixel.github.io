@@ -52,7 +52,7 @@
   "files": [
     {
       "path": "um/engine/engine.js",
-      "sha256": "55f937f4830112c712455264003f0f58cc91c6b188659e4bc2d15d7f5a2af3e2"
+      "sha256": "4924ee273466583e17aca5261924eb95c301cc9f9c7c989294ec98c941bf3d57"
     },
     {
       "path": "um/engine/manifestation-engine.html",
