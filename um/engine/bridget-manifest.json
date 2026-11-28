@@ -66,7 +66,7 @@
     },
     {
       "path": "um/engine/README.md",
-      "sha256": "ea7590b33f463a1b12371b3838a4f1a2966aeddc7c8693bbcc3a4dc74e82046e"
+      "sha256": "40e63356b1c0df6a3856d2760e9f26d7b14c5e5746edd9147d5b112f4b53596e"
     },
     {
       "path": "um/bridget/index.html",
@@ -78,7 +78,7 @@
     },
     {
       "path": "um/bridget/index.json",
-      "sha256": "1eef972bcc5af5c7ce8b98685853d09d4f2e15926a176c4424f2d300cb8ac7b7"
+      "sha256": "35d9d754a628a3b41da3f5669ccfa59ae4e4e8af81e3c670743e08d7c3f6ee7e"
     },
     {
       "path": "um/engine/sante-coupes.js",
