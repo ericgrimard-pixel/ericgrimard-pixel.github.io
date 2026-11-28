@@ -12,8 +12,11 @@
     +'#hub-up button:disabled{opacity:.85}'
     +'#hub-up .hint{margin:0;font:11px/1.35 ui-monospace,monospace;color:#c5d4e4;text-shadow:0 1px 2px #000}';
   document.head.appendChild(css);
-  /* v21.09 : the Class 2 button strip is not part of the bar. The climb button (#hub-up) stays. */
-  const nav=null;
+  const nav=document.createElement('nav');
+  nav.id='hub-nav';
+  nav.setAttribute('aria-label','Navigation du Hub');
+  const header=document.querySelector('header');
+  if(header) header.appendChild(nav);
   const stage=document.getElementById('stage');
   const bar=document.createElement('div');
   bar.id='hub-up';
@@ -294,7 +297,7 @@
       if(sCou&&sCou.parentNode!==dC) dC.appendChild(sCou);
       dC.firstChild.textContent=couchesTitle();
       /* 2. Santé · lacunes : lien du treillis + index des lacunes (replié sur une ligne) */
-      const dS=wrap('um-rg-sante','Santé · lacunes',true,R);
+      const dS=wrap('um-rg-sante','Santé · lacunes',false,R);
       let body=dS.querySelector('.um-rg-body');
       if(!body){ body=document.createElement('div'); body.className='um-rg-body'; dS.appendChild(body); }
       let a=document.getElementById('hub-health-link');
@@ -305,7 +308,7 @@
         const sm=g.querySelector('summary');
         if(sm&&!sm.querySelector('.um-gap-badge')) sm.insertAdjacentHTML('afterbegin','<span class="um-gap-badge">LACUNE / GAP</span>'); }
       /* 3. Fiche (lecture vivante) */
-      const dF=wrap('um-rg-fiche','Fiche · lecture',true,R);
+      const dF=wrap('um-rg-fiche','Fiche · lecture',false,R);
       if(sFiche&&sFiche.parentNode!==dF) dF.appendChild(sFiche);
       /* 4. pied collant : ▸ Autres / More (replié), puis les boutons des sous-groupes, toujours visibles */
       let foot=document.getElementById('um-rg-foot');
@@ -330,7 +333,7 @@
       if(bt.parentNode!==foot||bt.previousElementSibling!==dM) foot.appendChild(bt);
       /* ordre final : Guest (administrateurs seulement) tout en haut, puis l'ordre v20.86 */
       const want=[rclose,document.getElementById('um-rg-guest'),dC,dS,dF,foot].filter(Boolean);
-      const have=[...R.children];
+      const have=[...R.children].filter(n=>want.indexOf(n)>=0);
       if(want.some((n,k)=>have[k]!==n)) want.forEach(n=>R.appendChild(n)); /* ne réordonne que si l'ordre a changé (pas de boucle) */
     } finally { busy=false; }
   }
@@ -425,7 +428,6 @@
            ['/um/door/systems/a912f92cb325-finance-synthetique/','Moteur Manifestation \u2014 copie gelée (DÉMO Finance)']];
   let tries=0;
   function put(){
-    return; /* v21.07 : Porte · démo retirée de l'affichage */
     const foot=document.getElementById('um-rg-foot');
     if(!foot){ if(++tries<40) setTimeout(put,250); return; }
     if(document.getElementById('um-rg-door')) return;
@@ -534,8 +536,6 @@
   }
   let tries=0;
   function unify(){
-    /* v21.07 : le sélecteur reste dans la barre. Pas de liens d'invitation ni de déplacement. */
-    return;
     const dC=$('um-rg-couches'), nav=$('hub-nav'), lay=$('layers');
     if(!dC||!nav||!lay){ if(++tries<60) setTimeout(unify,250); return; }
     const sCou=lay.closest('section');
@@ -545,9 +545,7 @@
     const rC2=row('um-u-c2','Classe 2 · objets — un clic : sélection · deux clics : plonger',dC,rChk);
     const rSys=row('um-u-sys','Pôles · zones · systèmes',dC,rC2);
     if(!$('um-invite-first')){ const a=document.createElement('a'); a.id='um-invite-first'; a.className='um-u-a'; a.href=INVITE; a.target='_blank'; a.rel='noopener'; a.textContent='✉ Invitation ↗'; a.title='Parcours de l\u2019invité v2 (démo) — aussi : carte /um/door/card/'; rSys.insertBefore(a,rSys.children[1]||null); }
-    const sys=$('sys'); const sysL=sys&&sys.closest('label');
-    if(sysL&&sysL.parentNode!==rSys) rSys.appendChild(sysL);              /* barre du haut → panneau */
-    const hb=$('hubHome'); if(hb&&hb.parentNode!==rSys) rSys.appendChild(hb);
+    /* v21.10 : #sys et #hubHome restent dans la barre (v21.07/v21.09). */
     if(nav.parentNode!==rSys) rSys.appendChild(nav);                      /* v20.90 : sous les cases → rangée pôles */
     /* Santé · lacunes replié sur une ligne (reste dans le panneau) */
     const dS=$('um-rg-sante'); if(dS&&!dS.dataset.u91){ dS.open=false; dS.dataset.u91='1'; }
@@ -573,16 +571,18 @@
     const h=r.firstChild; r.innerHTML=''; r.appendChild(h);
     if(!list.length){ r.insertAdjacentHTML('beforeend','<span class="um-u-empty">Aucun objet de Classe 2 visible à ce niveau ('+list.length+') — les pôles et les zones sont juste dessous. <span class="inc">[INCOMPLET]</span></span>'); return; }
     list.forEach(v=>{ const b=document.createElement('button'); b.type='button'; b.dataset.c2=v.idx; b.dataset.floor=v.floor||''; b.textContent=v.name+(v.floor?' ↧':'');
-      b.setAttribute('aria-pressed',v.idx===(p.sel&&p.sel.kind===2?p.sel.idx:-1)?'true':'false'); b.title='Un clic : sélection · deux clics : plonger'+(v.floor?' (étage '+v.floor+')':' (pas d\u2019étage en dessous)'); b.addEventListener('click',act,{signal:new AbortController().signal}); r.appendChild(b); });
+      b.setAttribute('aria-pressed',v.idx===(p.sel&&p.sel.kind===2?p.sel.idx:-1)?'true':'false'); b.title='Un clic : sélection · deux clics : plonger'+(v.floor?' (étage '+v.floor+')':' (pas d\u2019étage en dessous)'); b.addEventListener('click',act); b.addEventListener('dblclick',act); r.appendChild(b); });
   }
   /* Un clic : sélection de l'objet par le crochet public du moteur (window.__umSelect = select() : carte, fiche, surbrillance).
      Deux clics : plonger, même appel que le moteur pour une Classe 2 (ascendOrEnter → switchSys(class2Floor(idx))).
      Le geste n'est pas rejoué sur le canevas : au centre d'une Classe 2, le moteur donne la priorité à la Classe 1 qu'elle
      contient (pickAt, v20.2), ce qui engagerait un autre objet. Le vol de caméra (enterFocus) n'est pas exposé : [INCOMPLET]. */
   function act(e){
-    const b=e.currentTarget; const idx=+b.dataset.c2, floor=b.dataset.floor;
-    if(e.type==='dblclick'||e.detail>=2){ if(floor) switchSys(floor); return; }
-    if(typeof window.__umSelect==='function') window.__umSelect({kind:2,idx:idx});
+    const b=e.currentTarget; const idx=+b.dataset.c2;
+    const clicks=(e.type==='dblclick'||e.detail>=2)?2:1;
+    if(window.__umAct) window.__umAct({clicks:clicks,kind:2,idx:idx});
+    else if(clicks===2){ const floor=b.dataset.floor; if(floor) switchSys(floor); }
+    else if(typeof window.__umSelect==='function') window.__umSelect({kind:2,idx:idx});
     setTimeout(c2,300);
   }
   unify();
@@ -819,7 +819,6 @@
   }
   let tries=0;
   function put(){
-    return; /* v21.07 : « Santé · paquet réel » en double du sélecteur */
     const foot=document.getElementById('um-rg-foot');
     const door=document.getElementById('um-rg-door');
     const body=door&&door.querySelector('.um-rg-body');
@@ -858,7 +857,6 @@
   const TIP='Courriel d\u2019invitation v2 \u2014 fen\u00eatre pr\u00eate \u00e0 envoyer (aper\u00e7u inerte). Ancien parcours : Porte \u00b7 d\u00e9mo';
   let tries=0;
   function put(){
-    return; /* v21.07 : aperçu courriel retiré */
     const first=document.getElementById('um-invite-first');
     const left=document.getElementById('um-invite-left');
     const door=document.getElementById('um-rg-door');
@@ -912,7 +910,6 @@
   const LABEL='Derni\u00e8re version';
   let tries=0;
   function put(){
-    return; /* v21.07 : « Dernière version » en double du contrôle dans Brigitte */
     const quick=document.getElementById('um-rg-docs-quick');
     const door=document.getElementById('um-rg-door');
     const body=door&&door.querySelector('.um-rg-body');
