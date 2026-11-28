@@ -4,7 +4,7 @@ Canonical lineage: `v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> 
 
 ## v21.07 changelog
 
-Minimal bar: the system selector, the tiles, T₀/T₁ and the volume factor stay on screen. Redundant toggles (Fourier / Libre, session, fantôme, filet, acteurs, attributs / fiche / vue pleine, plus and minus) stay in the DOM because `engine.js` binds them, and are not shown. Invitation, door, mail, duplicate “dernière version” and “Santé · paquet réel” links are not added. Gap badges stay. One Brigitte button opens listening (fr-CA mic and a focused field). « j’ai besoin de … » answers and shows the section in the same step. `escalate` stays off. `engine.js` is unchanged.
+Minimal bar: the system selector, the tiles, T₀/T₁, Fantôme, Volume − / +, the Tous / Classe 2 / Choix scope, and Fantôme − / + stay on screen. Session, Fourier / Libre, filet and acteurs stay in the DOM because `engine.js` binds them, and are not shown. Volume − / + scales only the meshes of objects and ghosts around fixed positions. The factor multiplies each object's canon size and its hierarchy size. Tous and Classe 2 keep separate factors. Fantôme − / + uses the same scopes plus Choix. Gap badges stay. One Brigitte button opens listening (fr-CA mic and a focused field). « j’ai besoin de … » answers and shows the section in the same step. `escalate` stays off. λ⁻ and λ⁺ are active containers. The Class 4 trajectory ghost is the Z0 path recentred on the singularité.
 
 ## v21.06 changelog
 
