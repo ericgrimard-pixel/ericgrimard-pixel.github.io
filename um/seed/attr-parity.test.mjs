@@ -108,6 +108,7 @@ const parity = await page.evaluate(() => {
   const orig = window.__umAct;
   window.__umAct = function (cmd) { seen.push(JSON.parse(JSON.stringify(cmd))); return orig(cmd); };
   const direct = orig({ clicks: 1, kind: parts[0], idx: parts[1] });
+  const full = document.querySelector('.app').classList.contains('noL') && document.querySelector('.app').classList.contains('noR');
   btn.click();
   btn.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
   const idn = orig({ action: 'identify', kind: parts[0], idx: parts[1] });
@@ -118,7 +119,8 @@ const parity = await page.evaluate(() => {
     direct: { action: direct.action, kind: direct.kind, idx: direct.idx },
     panel: panel.map(c => ({ clicks: c.clicks, kind: c.kind, idx: c.idx })),
     identify: idn && idn.action,
-    more: typeof more.text === 'string' && more.text.length > 0
+    more: typeof more.text === 'string' && more.text.length > 0,
+    full: full
   };
 });
 
@@ -137,7 +139,7 @@ const gaussOk = gauss.open && gauss.w > 40 && gauss.h > 40 && gauss.rows >= 5;
 const thrOk = bounds.thr === 5 && bounds.thrW === 'eq';
 const same = parity.panel && parity.panel.some(c => c.clicks === 1 && c.kind === parity.direct.kind && c.idx === parity.direct.idx)
   && parity.panel.some(c => c.clicks === 2 && c.kind === parity.direct.kind && c.idx === parity.direct.idx);
-const actOk = parity.identify === 'identify' && parity.more;
+const actOk = parity.identify === 'identify' && parity.more && parity.full;
 const volOk = brigitte.hook && String(brigitte.vol).indexOf('1.5') === 0;
 const toggleOk = reopen.btnW > 0;
 if (errors.length || !idsOk || !gaussOk || !thrOk || !same || !actOk || !volOk || !toggleOk) process.exit(1);
