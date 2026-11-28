@@ -9,7 +9,7 @@
    et l'index du panneau de gauche. La voix, le salut et la couche d'action de v21.05
    restent. escalate reste éteint. Aucun appel hors du site. */
 (function () {
-  if (window.BridgetDemo && window.BridgetDemo.version === 'v21.11') return;
+  if (window.BridgetDemo && window.BridgetDemo.version === 'v21.12') return;
 
   var pace = { move: 480, pulse: 180, step: 240 };
   var generation = 0;
@@ -549,7 +549,7 @@
   }
 
   var api = {
-    version: 'v21.11',
+    version: 'v21.12',
     family: 'Miriamphobots',
     moveCursor: moveCursor,
     clickButton: clickButton,
@@ -596,8 +596,8 @@
     passages: [],
     motto: api.motto,
     family: 'Miriamphobots',
-    hub_version: 'v21.11',
-    lineage: 'v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06 -> v21.07 -> v21.08 -> v21.09 -> v21.10 -> v21.11'
+    hub_version: 'v21.12',
+    lineage: 'v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06 -> v21.07 -> v21.08 -> v21.09 -> v21.10 -> v21.11 -> v21.12'
   };
   var GREETING = 'Je suis Brigitte.';
   var CLEAR_Q = "Est-ce que c'est clair pour toi ?";
