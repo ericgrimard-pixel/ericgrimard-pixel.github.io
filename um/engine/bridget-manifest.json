@@ -1,7 +1,7 @@
 {
   "schema": "um.bridget.engine-manifest.v2",
-  "hub_version": "v21.08",
-  "next_free": "v21.09",
+  "hub_version": "v21.09",
+  "next_free": "v21.10",
   "base_lineage": [
     "v20.99",
     "v21.00",
@@ -12,7 +12,8 @@
     "v21.05",
     "v21.06",
     "v21.07",
-    "v21.08"
+    "v21.08",
+    "v21.09"
   ],
   "engine_rev": "23.17+23.20",
   "family": "Miriamphobots",
@@ -29,7 +30,7 @@
     "grimeric13@gmail.com"
   ],
   "minimal_seed_constraints": {
-    "surface": "Éric's two phones",
+    "surface": "\u00c9ric's two phones",
     "sandbox_4gb": false,
     "agent_crystals": false,
     "note": "The 4 GB sandbox and agent crystals are not part of the minimal seed. They arrive only with extensions."
@@ -50,7 +51,7 @@
   "files": [
     {
       "path": "um/engine/engine.js",
-      "sha256": "ddf4fd89a14fd55314ba53936433d3d8ae7e4bef99c484efea981d3f4b7a0e1b"
+      "sha256": "c3a42c38983e8ac5d8e55a9d16c77b3829c47bb06a682b0804c1292f1e9b8935"
     },
     {
       "path": "um/engine/manifestation-engine.html",
@@ -62,11 +63,11 @@
     },
     {
       "path": "um/engine/rules.json",
-      "sha256": "b33c412403eeb7654d40c110489b988485ee7c3bc67ff26eb0a820ead3b1585e"
+      "sha256": "8d550bbcd18f9aaa9a398c32e7e1a96e725c22ac598c1e2197052e45ef481cf9"
     },
     {
       "path": "um/engine/README.md",
-      "sha256": "40e63356b1c0df6a3856d2760e9f26d7b14c5e5746edd9147d5b112f4b53596e"
+      "sha256": "298f3bb6ddc33f8e1233f2d443065b7e89af343fc03f5142aa74be6d891e0fa4"
     },
     {
       "path": "um/bridget/index.html",
@@ -78,7 +79,7 @@
     },
     {
       "path": "um/bridget/index.json",
-      "sha256": "35d9d754a628a3b41da3f5669ccfa59ae4e4e8af81e3c670743e08d7c3f6ee7e"
+      "sha256": "43373e284944378ebf0e80133095ece9cbd4f150797546f8119f1c2d1d8d0856"
     },
     {
       "path": "um/engine/sante-coupes.js",

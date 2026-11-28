@@ -27,5 +27,12 @@ jobs:
           chunks = sum(len(d.get("chunks") or []) for d in fresh["docs"])
           print(f"index.json is current: {n} documents, {chunks} passages, built {fresh.get('built')}")
           PY
-      - name: Seed adapter, model hook, and Class 4 ghost
-        run: node um/seed/seed.test.js
+      - uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+      - name: Puppeteer core for the headless hub check
+        run: npm install --prefix /tmp/ci-chrome puppeteer-core
+      - name: Seed adapter, model hook, Class 4 ghost, and browser load
+        run: node um/seed/seed.test.js && node um/seed/browser-model.test.mjs
+        env:
+          PUPPETEER_CORE: /tmp/ci-chrome/package.json

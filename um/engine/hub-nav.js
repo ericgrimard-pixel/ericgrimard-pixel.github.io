@@ -12,11 +12,8 @@
     +'#hub-up button:disabled{opacity:.85}'
     +'#hub-up .hint{margin:0;font:11px/1.35 ui-monospace,monospace;color:#c5d4e4;text-shadow:0 1px 2px #000}';
   document.head.appendChild(css);
-  const nav=document.createElement('nav');
-  nav.id='hub-nav';
-  nav.setAttribute('aria-label','Navigation du Hub');
-  const header=document.querySelector('header');
-  if(header) header.appendChild(nav);
+  /* v21.09 : the Class 2 button strip is not part of the bar. The climb button (#hub-up) stays. */
+  const nav=null;
   const stage=document.getElementById('stage');
   const bar=document.createElement('div');
   bar.id='hub-up';
@@ -87,12 +84,14 @@
       const c=floor(cid); if(!c) return;
       bits.push('<button type="button" class="hub-c2" data-down="'+esc(cid)+'">'+esc(shown(cid,c.name))+'</button>');
     });
-    nav.innerHTML=bits.join('');
-    const center=document.getElementById('hub-center');
-    if(center&&(parent||blooming)) center.addEventListener('click',()=>{ if(!collapseBloom()&&parent) switchSys(parent); });
-    nav.querySelectorAll('[data-down]').forEach(btn=>{
-      btn.addEventListener('click',()=>switchSys(btn.getAttribute('data-down')));
-    });
+    if(nav){
+      nav.innerHTML=bits.join('');
+      const center=document.getElementById('hub-center');
+      if(center&&(parent||blooming)) center.addEventListener('click',()=>{ if(!collapseBloom()&&parent) switchSys(parent); });
+      nav.querySelectorAll('[data-down]').forEach(btn=>{
+        btn.addEventListener('click',()=>switchSys(btn.getAttribute('data-down')));
+      });
+    }
     const parentName=parent?(floor(parent)?floor(parent).name:parent):'';
     const upLabel=blooming?(bloomNow()<=1?'↑ Finance':'↑ '+layerName(bloomNow()-1)):(parent?('↑ '+shown(parent,parentName)):name);
     const max=bloomMax();
@@ -110,7 +109,7 @@
   function mark(raw){
     const why=(window.UM_WHY&&UM_WHY[String(raw).replace(/\/(year|t0t1)$/,'')])||'Pas de série réelle pour cet étage.';
     let el=document.getElementById('hub-gap');
-    if(!el){ el=document.createElement('p'); el.id='hub-gap'; nav.appendChild(el); }
+    if(!el){ if(!nav) return; el=document.createElement('p'); el.id='hub-gap'; nav.appendChild(el); }
     el.textContent='[INCOMPLET] '+raw+' — '+why;
   }
   window.UM_RENDER_NAV=render;
