@@ -33,6 +33,6 @@ jobs:
       - name: Puppeteer core for the headless hub check
         run: npm install --prefix /tmp/ci-chrome puppeteer-core
       - name: Seed adapter, model hook, Class 4 ghost, and browser load
-        run: node um/seed/seed.test.js && node um/seed/browser-model.test.mjs && node um/seed/universe-menu.test.mjs && node um/seed/ghost-volume.test.mjs && node um/seed/panel-access.test.mjs && node um/seed/attr-parity.test.mjs
+        run: node um/seed/seed.test.js && node um/seed/test-bridget-hub.mjs && node um/seed/browser-model.test.mjs && node um/seed/universe-menu.test.mjs && node um/seed/ghost-volume.test.mjs && node um/seed/panel-access.test.mjs && node um/seed/attr-parity.test.mjs
         env:
           PUPPETEER_CORE: /tmp/ci-chrome/package.json

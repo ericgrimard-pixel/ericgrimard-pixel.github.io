@@ -422,6 +422,7 @@
    envoyé, aucune API, um/index.html ne change que par sa version. Inséré dans #um-rg-foot (pas un enfant direct de #right),
    donc l'ordre de v20.86–v20.88 et son observateur ne bougent pas. */
 (function(){
+  return; /* 27 nov 22:37 : « la porte » retirée de l'écran. */
   const L=[['/um/door/','La porte / The door'],
            ['/um/door/um-invite-demo-v2.html','Parcours de l\u2019invité v2 / Invitee journey (démo lundi)'],
            ['/um/door/15c/','Maquette 15c'],
@@ -538,25 +539,11 @@
   function unify(){
     const dC=$('um-rg-couches'), nav=$('hub-nav'), lay=$('layers');
     if(!dC||!nav||!lay){ if(++tries<60) setTimeout(unify,250); return; }
-    const sCou=lay.closest('section');
-    const rChk=row('um-u-chk','Autres cases',dC,sCou);
-    const km=$('km'); const kmL=km&&km.closest('label');
-    if(kmL&&kmL.parentNode!==rChk) rChk.appendChild(kmL);                 /* barre du haut → cases */
-    const rC2=row('um-u-c2','Classe 2 · objets — un clic : sélection · deux clics : plonger',dC,rChk);
+    const rC2=row('um-u-c2','Classe 2 · objets — un clic : sélection · deux clics : plonger',dC);
     const rSys=row('um-u-sys','Pôles · zones · systèmes',dC,rC2);
-    if(!$('um-invite-first')){ const a=document.createElement('a'); a.id='um-invite-first'; a.className='um-u-a'; a.href=INVITE; a.target='_blank'; a.rel='noopener'; a.textContent='✉ Invitation ↗'; a.title='Parcours de l\u2019invité v2 (démo) — aussi : carte /um/door/card/'; rSys.insertBefore(a,rSys.children[1]||null); }
-    /* v21.10 : #sys et #hubHome restent dans la barre (v21.07/v21.09). */
-    if(nav.parentNode!==rSys) rSys.appendChild(nav);                      /* v20.90 : sous les cases → rangée pôles */
-    /* Santé · lacunes replié sur une ligne (reste dans le panneau) */
+    /* 27 nov 22:37 : invitations retirées. #sys et #hubHome restent dans la barre (v21.07/v21.09). */
+    if(nav.parentNode!==rSys) rSys.appendChild(nav);
     const dS=$('um-rg-sante'); if(dS&&!dS.dataset.u91){ dS.open=false; dS.dataset.u91='1'; }
-    /* liens du groupe Porte · démo : invitation en tête, brouillon du formulaire */
-    const door=$('um-rg-door'); const body=door&&door.querySelector('.um-rg-body');
-    if(body&&!$('um-door-form')){
-      body.insertAdjacentHTML('afterbegin','<a id="um-door-invite" href="'+INVITE+'" target="_blank" rel="noopener">✉ Invitation — parcours de l\u2019invité v2 \u2197</a><a href="'+CARD+'" target="_blank" rel="noopener">Carte d\u2019invitation \u2197</a>');
-      body.insertAdjacentHTML('beforeend','<a id="um-door-form" href="'+FORM+'" target="_blank" rel="noopener">Formulaire d\u2019invitation — BROUILLON, inactif \u2197</a>');
-    } else if(!body&&tries<60){ tries++; setTimeout(unify,300); }
-    /* colonne de gauche : invitation en tête */
-    const leftP=document.querySelector('#left>.panel'); if(leftP&&!$('um-invite-left')){ const a=document.createElement('a'); a.id='um-invite-left'; a.href=INVITE; a.target='_blank'; a.rel='noopener'; a.textContent='✉ Invitation'; a.title='Parcours de l\u2019invité v2 (démo)'; leftP.insertBefore(a,leftP.firstChild); }
     c2();
   }
   /* Classe 2 : boutons depuis les objets visibles du moteur */
@@ -680,6 +667,7 @@
    l'utilisateur ont un « × » ; les objets du moteur ne sont jamais retirés. Bloc autonome : #um-u-mine, placé juste
    sous #um-u-c2 dans #um-rg-couches. loader-v2 ne doit pas l'écraser. */
 (function(){
+  return; /* 27 nov 22:37 : « Créer » retiré de l'écran. Conflit avec le 22 nov « Créer Classe 2 » — Éric tranche. */
   const $=id=>document.getElementById(id);
   const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const KEY='um.myClass2.v1';
@@ -812,6 +800,7 @@
    (switchSys('health')) et le panneau réel (UM_SANTE_LOADER.show).
    Écouteurs en propriété onclick, pour échapper au signal BOOT.ac du moteur. */
 (function(){
+  return; /* 27 nov 22:37 : liens superflus. Guest et liens rapides restent comme sur main. */
   function openSanteReel(e){
     if(e) e.preventDefault();
     try{ if(typeof switchSys==='function') switchSys('health'); }catch(err){}
@@ -853,6 +842,7 @@
    « ✉ Modèle courriel · aperçu » en tête de Porte · démo et au pied, à côté de TURN IT ON et
    Santé · paquet réel. Rien n'est retiré. */
 (function(){
+  return; /* 27 nov 22:37 : « les invitations » retirées de l'écran. */
   const MAIL='/um/door/invite-email-v2/';
   const TIP='Courriel d\u2019invitation v2 \u2014 fen\u00eatre pr\u00eate \u00e0 envoyer (aper\u00e7u inerte). Ancien parcours : Porte \u00b7 d\u00e9mo';
   let tries=0;
@@ -906,6 +896,7 @@
 /* v21.05 — lien un-clic « Dernière version » (HUB, moteur, Santé, Brigitte, graine APK).
    Page tenue à jour : /um/derniere-version.html. Les documents n'y sont plus. */
 (function(){
+  return; /* 27 nov 22:37 : liens superflus. Guest et liens rapides restent comme sur main. */
   const HREF='/um/derniere-version.html';
   const LABEL='Derni\u00e8re version';
   let tries=0;

@@ -52,15 +52,15 @@
   "files": [
     {
       "path": "um/engine/engine.js",
-      "sha256": "76f8840df4ca98e3e7838a09accf6e06330d700be88a7f064fd3aa113375a907"
+      "sha256": "55f937f4830112c712455264003f0f58cc91c6b188659e4bc2d15d7f5a2af3e2"
     },
     {
       "path": "um/engine/manifestation-engine.html",
-      "sha256": "7f8748d6cb71d878317f106c8a09f1c4cfb6c5c1d1e86603b0a24152533583e6"
+      "sha256": "1dfbcb17d0e9c60a6b5b2f57ffd6007b0e5c920d58a3591ba6ebb87f94de7b7f"
     },
     {
       "path": "um/engine/bridget-demo.js",
-      "sha256": "b913efa3aee201c52b439ca147739573c2091809a15ecc6296dafeda247fc830"
+      "sha256": "2ad3d170a8058f26366aea5d4f198e31db1956abb9f407c6525848f0be41d3d9"
     },
     {
       "path": "um/engine/rules.json",
@@ -68,11 +68,11 @@
     },
     {
       "path": "um/engine/README.md",
-      "sha256": "d31d3cf387d771ec3d506ce5fbff9f0e41ed28ba693fdd074fc50e21575094c0"
+      "sha256": "992af4599bb26ebeed27475c3bc46b4aa6bf0442a7babd73844eb6e293ba404f"
     },
     {
       "path": "um/bridget/index.html",
-      "sha256": "a640819f341046eff2250ec3a85ab078fcd9d52c3c218f88a911ac4f6e001e90"
+      "sha256": "fa5708edb1601804ac97f750bbe4abf16807e44b59751e38edb24debbba9647d"
     },
     {
       "path": "um/bridget/bridget-hub.js",
@@ -80,7 +80,7 @@
     },
     {
       "path": "um/bridget/index.json",
-      "sha256": "21384c56fb21f506fa8e85f0353301a6f9883b1cef2d98f6c174cc5cebe40455"
+      "sha256": "02138b86375d24b8c2797630cd1a3d2f62ae5fea43effeef45251b5f46d74e88"
     },
     {
       "path": "um/engine/sante-coupes.js",

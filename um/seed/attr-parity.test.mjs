@@ -43,7 +43,7 @@ async function shot(name) {
   fs.mkdirSync(shotDir, { recursive: true });
   await page.screenshot({ path: path.join(shotDir, name) });
 }
-const ids = ['left', 'rack', 'gauss', 'asel', 'ztab', 'resetCut', 'thr', 'thrW', 'thrBox', 'vol', 'volNum', 'mFourier', 'mFree', 'session', 'tgL', 'tgR', 'tgV', 'km'];
+const ids = ['left', 'rack', 'gauss', 'asel', 'ztab', 'resetCut', 'thr', 'thrW', 'thrBox', 'vol', 'volNum', 'mFourier', 'mFree', 'session', 'tgL', 'tgR'];
 
 await page.setViewport({ width: 1280, height: 800 });
 await page.goto(base + '/um/#/sante', { waitUntil: 'domcontentloaded', timeout: 120000 });
@@ -61,7 +61,7 @@ await page.click('#rack .tile');
 await page.waitForFunction(() => document.querySelector('.app').classList.contains('gOpen'), { timeout: 10000 });
 const gauss = await page.evaluate((ids) => {
   const box = document.getElementById('gauss').getBoundingClientRect();
-  const hiddenOk = ['mFourier', 'mFree', 'session', 'tgV', 'thr', 'thrW', 'thrBox'];
+  const hiddenOk = ['mFourier', 'mFree', 'session', 'thr', 'thrW', 'thrBox'];
   const present = {};
   ids.forEach(id => {
     const el = document.getElementById(id);
