@@ -1,4 +1,4 @@
-<!doctype html><html><head><link rel="icon" href="data:,"><meta charset=utf8><meta name="um-build" content="v21.07"><!-- um-deploy: v21.07 · lineage v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06 -> v21.07 --><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><link rel="icon" href="data:,"><meta charset=utf8><meta name="um-build" content="v21.08"><!-- um-deploy: v21.08 · lineage v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06 -> v21.07 -> v21.08 --><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>UNIVERSAL METAPHOR</title>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <style id="um-min-v2107">#mFourier,#mFree,#session,#gContact,#gwBox,#gvBox,#gtauBox,#thrBox,.modes>.seg,.modes>label.chk,#tgL,#tgR,#tgV,#umNetBar,.brand-thumb,#sub,a.soul,#copyState,#rX,#right>section.panel:not(.fiche):not(.src){display:none!important}#vol-scope{display:inline-flex;border:1px solid #334;border-radius:3px;overflow:hidden;margin:0 4px}#vol-scope button{padding:2px 8px;font:700 12px/1.2 system-ui,sans-serif;background:transparent;color:inherit;border:0}#vol-scope button[aria-pressed="true"]{background:#e8c872;color:#05080d}#volScopeFactor,#gvolScopeFactor{min-width:2.4em;color:#e8c872;font:600 12px/1 ui-monospace,monospace}#vol-scope-panel{position:fixed;z-index:70;width:min(280px,calc(100vw - 16px));max-height:46vh;overflow:auto;background:#05080d;color:#fff;border:2px solid #e8c872;border-radius:10px;padding:8px;font:600 13px/1.35 system-ui,sans-serif}#vol-scope-panel[hidden]{display:none!important}#vol-scope-panel button{font:700 12px/1.2 system-ui,sans-serif;color:#05080d;background:#e8c872;border:0;border-radius:6px;padding:4px 8px}#vol-scope-panel label{display:flex;gap:6px;align-items:center;margin:3px 0}</style>
@@ -318,6 +318,8 @@ canvas.vbars{width:100%;height:70px;display:block;margin-top:6px}
 <script src="data/lib-music.js"></script>
 <script src="data/sante-villes.js?v=21.07"></script>
 <script src="data/sante-provinces.js?v=21.07"></script>
+<script src="../seed/c4-ghost-motion.js?v=21.08"></script>
+<script src="../seed/seed-adapter.js?v=21.08"></script>
 <script>
 'use strict';
 const LIB = window.LIB;
@@ -1087,7 +1089,8 @@ function mcMotionGain(er){
   if(yWorst>yRoom)need=Math.max(need,yWorst/yRoom);
   return {scale,sens:1/need,er,wall};
 }
-let C4G_MODE='A';
+let C4G_MODE='B';
+let c4GhostState=null;
 const C4GH=new THREE.Group();MICRO.add(C4GH);C4GH.visible=false;C4GH.renderOrder=9;
 const C4G_N=48,C4G_F=16,C4GOLD=[1,224/255,138/255];
 function c4gLine(){
@@ -1175,22 +1178,22 @@ function c4GhostFrame(tau){
   const ps=c4Px(8),ph=c4Px(16);SING.children[1].scale.set(ps,ps,1);SING.children[0].scale.set(ph,ph,1);
   c4gPast.visible=c4gFwd.visible=c4gDots.visible=c4gEnds.visible=false;
   if(microOn&&has){
-    const orbit=c4Orbit(),drawn=c4Mode(orbit,Math.max(0,Math.min(1,+tau||0)));
-    const t0=Math.max(0,Math.min(1,+tau||0)),n=drawn.pts.length-1,i0=Math.max(1,Math.round(t0*n));
-    const past=drawn.pts.slice(0,i0+1),fwd=drawn.pts.slice(i0);
-    if(past.length>1){c4gPast.material.opacity=.72;c4Write(c4gPast,past,(i,m)=>.5+.4*i/Math.max(1,m));}
-    if(fwd.length>1){c4gFwd.material.opacity=.9;c4Write(c4gFwd,fwd,(i,m)=>.5+.4*i/Math.max(1,m));}
+    const orbit=c4Orbit(),obj=orbit.at(Math.max(0,Math.min(1,+tau||0)));
+    const step=(window.UM_C4_GHOST||{c4GhostStep:function(p,s){return {obj:s.obj,line:s.path,markers:[s.path[0],s.path[s.path.length-1]],moved:true,sideLine:false}}}).c4GhostStep(c4GhostState,{obj:obj,path:orbit.pts});
+    c4GhostState=step;
+    c4gPast.visible=false;
+    if(step.line.length>1){c4gFwd.material.opacity=.9;c4Write(c4gFwd,step.line,(i,m)=>.5+.4*i/Math.max(1,m));}
     const D=c4gDots.geometry.attributes.position.array;
-    for(let k=0;k<5;k++){const p=c4Sample(drawn.pts,(k+1)/6);D[k*3]=p[0];D[k*3+1]=p[1];D[k*3+2]=p[2];}
+    for(let k=0;k<5;k++){const p=c4Sample(step.line,k/4);D[k*3]=p[0];D[k*3+1]=p[1];D[k*3+2]=p[2];}
     c4gDots.geometry.attributes.position.needsUpdate=true;c4gDots.visible=true;
-    const E=c4gEnds.geometry.attributes.position.array,a=drawn.pts[0],b=drawn.pts[drawn.pts.length-1];
+    const E=c4gEnds.geometry.attributes.position.array,a=step.markers[0],b=step.markers[1];
     E[0]=a[0];E[1]=a[1];E[2]=a[2];E[3]=b[0];E[4]=b[1];E[5]=b[2];
     c4gEnds.geometry.attributes.position.needsUpdate=true;c4gEnds.visible=true;
-    const dc=c4Mean(drawn.pts);window.__UM_C4ORBIT.drawnDist=+Math.hypot(dc[0],dc[1],dc[2]).toFixed(6);
-    window.__UM_C4ORBIT.obj=drawn.obj.map(x=>+x.toFixed(5));
+    window.__UM_C4ORBIT.obj=step.obj.map(x=>+x.toFixed(5));
+    window.__UM_C4ORBIT.sideLine=0;window.__UM_C4ORBIT.mode='B';
   }
-  C4GH.visible=!!(microOn&&has&&(c4gPast.visible||c4gFwd.visible));
-  if(window.__C4LIVE)window.__C4LIVE.ghost={on:C4GH.visible?1:0,drift:+zD.toFixed(5),mode:C4G_MODE,path:'Z0-centré',singularite:[0,0,0]};
+  C4GH.visible=!!(microOn&&has&&c4gFwd.visible);
+  if(window.__C4LIVE)window.__C4LIVE.ghost={on:C4GH.visible?1:0,drift:+zD.toFixed(5),mode:'B',path:'Z0-centré',singularite:[0,0,0],sideLine:0};
 }
 const C3=[],C3O=[];
 let C3DIAG=null; /* rev. 23.12: the dashed diagonal Ω–Σ–α is a line between objects: its own layer, off on opening */
