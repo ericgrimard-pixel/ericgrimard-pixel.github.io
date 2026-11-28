@@ -13,7 +13,7 @@ seed.activate(adapter);
 | --- | --- | --- |
 | `describe()` | nom, version, capacités | hôte `null`, aucune capacité |
 | `storage` | lire, écrire, lister, effacer un document par clé | mémoire de la graine |
-| `model` | `generate(prompt, opts)` renvoie un texte ou un flux | `{ text: 'no model', stub: true }` |
+| `model` | `generate(prompt, opts)` renvoie un texte ou un flux. Crochet de Claude (`model-hook.mjs`) : `adapter.model = createModelHook({ provider })` | sans fournisseur : `[aucun modèle]` |
 | `transport` | envoyer, recevoir, courte identité de l'expéditeur | boucle locale |
 | `sync` | pousser et tirer par numéro de version | sync locale ; un conflit est rapporté et n'est jamais résolu tout seul |
 | `keys` | signer et vérifier | signature absente, marquée `unsigned` |
@@ -33,8 +33,10 @@ Le chemin Z0 est le même pli T₀ → T₁, recentré sur la singularité (poin
 
 | | |
 | --- | --- |
-| Réel | graine locale, replis, fantôme option B, singularité |
-| Bouchon | pas de vrai modèle (`no model`) |
+| Réel | graine locale, replis, crochet modèle de Claude, fantôme option B, singularité |
+| Bouchon | aucun fournisseur de modèle n'est branché (l'hôte en choisit un) : le texte est `[aucun modèle]` |
 | Manquant | pas de nœud mère ; pas de clé de signature (la clé APK d'origine est perdue) |
+
+Le crochet `model` est de Claude (27 nov 2026). Il ne contient ni adresse ni secret. L'hôte injecte le fournisseur à l'activation. Sans fournisseur, `describe()` ne déclare pas `model`.
 
 Les tests : `node um/seed/seed.test.js`.

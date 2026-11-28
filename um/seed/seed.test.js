@@ -3,18 +3,35 @@ var assert = require('assert');
 var seedApi = require('./seed-adapter.js');
 var ghost = require('./c4-ghost-motion.js');
 
-var failed = 0;
+var failed = 0, pending = 0, started = 0;
 function check(name, fn) {
-  try { fn(); console.log('ok  ' + name); }
-  catch (e) { failed += 1; console.error('FAIL ' + name + '\n  ' + e.message); }
+  started += 1;
+  function done(err) {
+    if (err) { failed += 1; console.error('FAIL ' + name + '\n  ' + (err && err.message)); }
+    else console.log('ok  ' + name);
+    pending += 1;
+    if (pending === started) finish();
+  }
+  try {
+    var r = fn();
+    if (r && typeof r.then === 'function') r.then(function () { done(); }, done);
+    else done();
+  } catch (e) { done(e); }
+}
+function finish() {
+  if (failed) process.exit(1);
+  var spawn = require('child_process').spawnSync;
+  var path = require('path');
+  var run = spawn(process.execPath, [path.join(__dirname, 'test-model-hook.mjs')], { stdio: 'inherit' });
+  process.exit(run.status || 0);
 }
 
-check('null host: every hook falls back', function () {
+check('null host: every hook falls back', async function () {
   var s = seedApi.createSeed();
   var d = s.activate(seedApi.createNullHost());
   assert.deepStrictEqual(d.capabilities, []);
-  assert.strictEqual(s.model.generate('x').text, 'no model');
-  assert.strictEqual(s.model.generate('x').stub, true);
+  var none = await s.model.generate('x');
+  assert.ok(String(none).indexOf('[aucun modèle]') === 0);
   s.storage.write('a', { n: 1 });
   assert.deepStrictEqual(s.storage.read('a'), { n: 1 });
   assert.deepStrictEqual(s.storage.list(), ['a']);
@@ -36,7 +53,7 @@ check('null host: every hook falls back', function () {
   assert.strictEqual(sig.reason, 'no key');
 });
 
-check('partial host mixes real storage with fallback model and keys', function () {
+check('partial host mixes real storage with fallback model and keys', async function () {
   var docs = new Map();
   var s = seedApi.createSeed();
   s.activate({
@@ -51,7 +68,9 @@ check('partial host mixes real storage with fallback model and keys', function (
   });
   s.storage.write('k', { v: 7 });
   assert.deepStrictEqual(s.storage.read('k'), { v: 7 });
-  assert.strictEqual(s.model.generate('p').text, 'no model');
+  var none = await s.model.generate('p');
+  assert.ok(String(none).indexOf('[aucun modèle]') === 0);
+  assert.ok(s.describe().capabilities.indexOf('model') < 0);
   assert.strictEqual(s.keys.sign('p').unsigned, true);
   assert.strictEqual(s.transport.send({}).loopback, true);
 });
@@ -109,8 +128,20 @@ check('ghost tracks motion, stays when static, starts at the object, no side lin
   assert.strictEqual(next.sideLine, false);
 });
 
-if (failed) {
-  console.error(failed + ' failed');
-  process.exit(1);
-}
-console.log('all seed and ghost tests passed');
+check('real provider is the only way describe() lists model', async function () {
+  var s = seedApi.createSeed();
+  var host = {
+    describe: function () { return { name: 'avec modèle', version: '1', capabilities: ['model'] }; },
+    provider: { name: 'faux', generate: async function () { return 'réponse réelle'; } }
+  };
+  var d = s.activate(host);
+  assert.ok(d.capabilities.indexOf('model') >= 0);
+  assert.strictEqual(host.model.describe().real, true);
+  assert.strictEqual(await s.model.generate('salut'), 'réponse réelle');
+  var bare = seedApi.createSeed();
+  var lied = bare.activate({
+    describe: function () { return { name: 'annonce', version: '1', capabilities: ['model'] }; }
+  });
+  assert.ok(lied.capabilities.indexOf('model') < 0);
+  assert.ok(String(await bare.model.generate('x')).indexOf('[aucun modèle]') === 0);
+});

@@ -4,7 +4,7 @@ Canonical lineage: `v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> 
 
 ## v21.08
 
-The ghost seed (`um/seed/`) plugs a host in with `seed.activate(adapter)`. There is no server inside the seed. A missing hook falls back to a local stand-in. The Class 4 ghost is option B: it starts on the object and runs toward T₁, with no side line, and it stays put when the object is still. The Z0 path stays centred on the singularité.
+The ghost seed (`um/seed/`) plugs a host in with `seed.activate(adapter)`. There is no server inside the seed. A missing hook falls back to a local stand-in. Claude's model hook is `adapter.model = createModelHook({ provider })`. With no provider the result is `[aucun modèle]`, and `describe()` lists `model` only when that hook is real. No provider is connected: the host chooses one. The Class 4 ghost is option B: it starts on the object and runs toward T₁, with no side line, and it stays put when the object is still. The Z0 path stays centred on the singularité.
 
 Real: local seed, fallbacks, ghost option B, singularité. Stub: no real model (`no model`). Missing: no mother node, and no signing key (the original APK key is lost).
 
