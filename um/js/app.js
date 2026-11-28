@@ -4046,6 +4046,9 @@ function mountZoneManifestation(route, preset){
   window.__DRAW_OVERRIDE=null; window.__RW_NHL_LOCK=false;
   try{ hideGalaxyPlanet(); }catch(e){}
   const built=preset||buildWorldZones();
+  /* v21.09 — WORLD_ZONE_NAMES / DATA.WZONES are not drawn as objects in the scene. */
+  if(built&&Array.isArray(built.objs)) built.objs=[];
+  if(typeof GROUPS!=='undefined'&&GROUPS.splice) GROUPS.splice(0, GROUPS.length);
   const dsId=(built&&built.meta&&built.meta.id)||'ZONES';
   if($('ds')&&built&&![...$('ds').options].some(o=>o.value===dsId)){
     const op=document.createElement('option'); op.value=dsId; op.textContent=(built.meta&&built.meta.name)||dsId; $('ds').appendChild(op);
@@ -4057,6 +4060,7 @@ function mountZoneManifestation(route, preset){
   const idxbar=$('idxbar'); if(idxbar) idxbar.style.display='none';
   stopPlay(); clearSel();
   setDS();
+  if(typeof GROUPS!=='undefined'&&GROUPS.splice) GROUPS.splice(0, GROUPS.length);
   // T0 is the first séance where every zone already has a real vol20, so World is the mean of five positions at both frames.
   if(built&&built.objs&&built.dates){
     let s0=0;

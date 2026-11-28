@@ -51,7 +51,7 @@
   "files": [
     {
       "path": "um/engine/engine.js",
-      "sha256": "c3a42c38983e8ac5d8e55a9d16c77b3829c47bb06a682b0804c1292f1e9b8935"
+      "sha256": "f67b8f48f3d93325e4b405ea7a020d75e465160d39fea0b0075e6f8f89301ff6"
     },
     {
       "path": "um/engine/manifestation-engine.html",
@@ -67,7 +67,7 @@
     },
     {
       "path": "um/engine/README.md",
-      "sha256": "298f3bb6ddc33f8e1233f2d443065b7e89af343fc03f5142aa74be6d891e0fa4"
+      "sha256": "2de80a4827d9982770d66bf9be41bfff08e466de4a8ebc25eace18ed251de52a"
     },
     {
       "path": "um/bridget/index.html",
@@ -79,7 +79,7 @@
     },
     {
       "path": "um/bridget/index.json",
-      "sha256": "43373e284944378ebf0e80133095ece9cbd4f150797546f8119f1c2d1d8d0856"
+      "sha256": "ff487829f8b0fc8ebdcdb71870610d07b8227c7ef4772e9938a469b0f5e8158b"
     },
     {
       "path": "um/engine/sante-coupes.js",
