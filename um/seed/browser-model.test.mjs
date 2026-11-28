@@ -70,10 +70,10 @@ const loaded = await page.evaluate(async () => {
     hook: hook,
     hasCreate: !!(api && api.createModelHook && api.httpProvider),
     caps: desc ? desc.capabilities : [],
-    gone: !document.getElementById('mFourier') && !document.getElementById('session') && !document.getElementById('hub-nav') && !!document.getElementById('hub-up') && !!document.getElementById('tgL') && !!document.getElementById('km')
+    gone: !!(document.getElementById('hub-nav') && document.getElementById('hub-up') && document.getElementById('tgL') && document.getElementById('tgR') && document.getElementById('km') && document.getElementById('sys').closest('header'))
   };
 });
-await page.click('#model-test');
+await page.$eval('#model-test', el => { el.scrollIntoView({ block: 'center' }); el.click(); });
 await page.waitForFunction(() => (document.getElementById('model-reply').textContent || '').indexOf('[aucun modèle]') === 0, { timeout: 15000 });
 const none = await page.$eval('#model-reply', el => el.textContent);
 const shotDir = process.env.UM_SHOT_DIR || '';
@@ -107,8 +107,8 @@ await shot('bar-390.png', await page.$('header .modes'));
 await page.setViewport({ width: 1280, height: 800 });
 await page.select('#model-preset', 'http');
 await page.$eval('#model-url', (el, url) => { el.value = url; }, base + '/fake-model');
-await page.click('#model-save');
-await page.click('#model-test');
+await page.$eval('#model-save', el => { el.scrollIntoView({ block: 'center' }); el.click(); });
+await page.$eval('#model-test', el => { el.scrollIntoView({ block: 'center' }); el.click(); });
 await page.waitForFunction(() => (document.getElementById('model-reply').textContent || '').indexOf('réponse du faux modèle') >= 0, { timeout: 15000 });
 const plugged = await page.evaluate(() => ({
   reply: document.getElementById('model-reply').textContent,

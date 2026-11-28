@@ -1277,6 +1277,27 @@
     return perform([{ action: 'clickButton', selector: '#play', label: pause ? 'Je mets en pause.' : 'Je lance la lecture.' }], before);
   }
 
+  function identifyAct(q) {
+    var cmd = { action: /replie|retour|remonte/.test(q) ? 'fold' : (/plong|deux clic|double/.test(q) ? 'plunge' : 'identify'), kind: /classe 4|systeme/.test(q) ? 4 : 2, idx: 0 };
+    if (/plus de texte/.test(q)) cmd = { action: 'more', id: 'all' };
+    var out = window.__umAct ? window.__umAct(cmd) : null;
+    say(out && out.action === 'fold' ? 'Je replie.' : out && out.action === 'plunge' ? 'Je plonge.' : 'J’identifie l’objet et j’ouvre sa fiche.');
+    return Promise.resolve(out || { ok: false });
+  }
+
+  function readMoreText(q) {
+    var id = 'all';
+    if (/fiche/.test(q)) id = 'fiche';
+    else if (/source|borne/.test(q)) id = 'srcText';
+    else if (/lacune|gap/.test(q)) id = 'um-gaps';
+    else if (/legende/.test(q)) id = 'legend';
+    else if (/couche/.test(q)) id = 'layers';
+    else if (/modele/.test(q)) id = 'modele';
+    var text = (window.__umMoreText && window.__umMoreText(id)) || '';
+    say(text ? text.slice(0, 900) : 'Cette section est vide pour l’instant.');
+    return Promise.resolve({ ok: !!text, section: id, text: text, executed: false });
+  }
+
   function doPanels(q, before) {
     if (/vue pleine/.test(q)) {
       lastTarget = '#tgV';
@@ -1650,6 +1671,8 @@
     if (/guide moi|^guide$|fais le tour|visite guidee/.test(q)) return guideSteps(before);
     if (/^(pause|mets en pause|stop lecture)$/.test(q)) return doPlay(true, before);
     if (/^(joue|lecture|play|mets en lecture|lance la lecture)$/.test(q)) return doPlay(false, before);
+    if (/plus de texte|texte du panneau|lis la fiche|lis les lacunes|ouvre le texte/.test(q)) return readMoreText(q);
+    if (/identifie|ouvre sa fiche|focus l objet|replie|plong/.test(q)) return identifyAct(q);
     if (/panneau/.test(q) && /cache|masque|ferme|affiche|montre|ouvre/.test(q)) return doPanels(q, before);
     var numMatch = q.match(/(-?\d+(?:[.,]\d+)?)/);
     if (numMatch && /seuil|volume|facteur|borne/.test(q) && /met|regle|place|mets|seuil a|volume a/.test(q)) {

@@ -73,19 +73,35 @@ const menu = await page.evaluate(() => {
 await page.goto(base + '/um/#/sante', { waitUntil: 'domcontentloaded', timeout: 120000 });
 await page.waitForSelector('#tgL', { timeout: 30000 });
 await page.waitForFunction(() => document.getElementById('layers') && document.getElementById('fiche'), { timeout: 20000 });
-const reach = await page.evaluate(shown => {
-  const ids = ['tgL', 'tgR', 'km', 'left', 'rack', 'fiche', 'modele', 'legend', 'layers', 'srcText', 'um-rg-sante', 'um-gaps', 'um-rg-couches', 'um-rg-foot'];
-  const fn = new Function('id', 'return (' + shown + ')(id)');
-  const out = {};
-  ids.forEach(id => { out[id] = fn(id); });
-  return out;
-}, shown.toString());
+const reach = await page.evaluate(() => {
+  const ids = ['tgL', 'tgR', 'km', 'left', 'rack', 'fiche', 'modele', 'legend', 'layers', 'srcText', 'um-rg-sante', 'um-gaps', 'um-rg-couches', 'um-rg-foot', 'um-more-all'];
+  const display = {};
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    display[id] = !!(el && getComputedStyle(el).display !== 'none');
+  });
+  const sections = [...document.querySelectorAll('#right section')];
+  const noneHidden = sections.every(el => getComputedStyle(el).display !== 'none');
+  const folds = [...document.querySelectorAll('#right details.um-fold')];
+  const collapsed = folds.length > 0 && folds.every(d => !d.classList.contains('um-open'));
+  const modeleOpen = !!document.querySelector('#modele') && getComputedStyle(document.getElementById('modele')).display !== 'none';
+  const gap = document.querySelector('#seed-badge .um-gap-badge');
+  const gapBox = gap ? gap.getBoundingClientRect() : { width: 0 };
+  return { display, noneHidden, folds: folds.map(d => d.id), collapsed, modeleOpen, gapW: gapBox.width };
+});
+await page.click('#um-rg-sante > summary');
+const oneOpen = await page.evaluate(() => document.getElementById('um-rg-sante').classList.contains('um-open'));
+const hook = await page.evaluate(() => {
+  const text = window.__umMoreText('fiche');
+  const open = document.getElementById('um-rg-fiche').classList.contains('um-open');
+  return { open, len: (text || '').length };
+});
 await page.click('#tgL');
 const leftHidden = await page.evaluate(() => document.querySelector('.app').classList.contains('noL'));
 await page.keyboard.press('[');
 const leftBack = await page.evaluate(() => !document.querySelector('.app').classList.contains('noL') && document.getElementById('tgL').getAttribute('aria-pressed') === 'true');
 await page.evaluate(() => {
-  document.querySelectorAll('#right details').forEach(d => { d.open = true; });
+  window.__umMoreText('all');
   const p = document.getElementById('bridget-panel'); if (p) p.hidden = true;
 });
 await shot('panel-1280.png');
@@ -95,9 +111,9 @@ await shot('panel-390.png');
 
 await browser.close();
 server.close();
-const report = { menu, reach, leftHidden, leftBack, errors };
+const report = { menu, reach, oneOpen, hook, leftHidden, leftBack, errors };
 console.log(JSON.stringify(report, null, 2));
 const menuOk = menu.labels.join('|') === 'Finance|Art|Santé|Sport' && menu.tgW === 0;
-const all = Object.values(reach).every(Boolean);
-if (errors.length || !menuOk || !all || !leftHidden || !leftBack) process.exit(1);
+const idsShown = reach.display && Object.values(reach.display).every(Boolean);
+if (errors.length || !menuOk || !idsShown || !reach.noneHidden || !reach.collapsed || !reach.modeleOpen || reach.gapW < 1 || !oneOpen || !hook.open || !leftHidden || !leftBack) process.exit(1);
 console.log('panel access checks passed');

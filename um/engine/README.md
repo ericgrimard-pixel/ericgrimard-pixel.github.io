@@ -6,7 +6,20 @@ Canonical lineage: `v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> 
 
 1. Volume sur les fantômes de Classe 1 et de Classe 2. Ouvrir `/um/#/sante`. Avancer le curseur vers le milieu pour que les objets aient bougé. Les copies derrière les objets de Classe 1 et de Classe 2 grossissent avec Volume (Tous, puis Classe 2), comme les objets de cette portée. Fantôme + les grossit encore, sans changer les objets. Le curseur « Volume du fantôme » (`#gvol`) change le nombre de copies et leur clarté.
 2. Lacune visible. Ouvrir `/um/#/art`. T₀ = T₁, aucun déplacement réel. Le badge « LACUNE / GAP · Classe 1 · Classe 2 · aucun fantôme » est visible. Rien n'est inventé.
-3. Attributs et panneau droit. Dans un univers, « ◧ Attributs » (`#tgL`, touche `[`) montre ou cache la colonne de gauche. « Fiche ◨ » (`#tgR`, touche `]`) montre ou cache la fiche. La case Kobayashi Maru (`#km`) est de retour. Le panneau de droite garde la fiche, le bloc Modèle, les couches, les lacunes, la légende et la source : ce sont des sections repliables, plus des blocs masqués.
+3. Attributs. Dans un univers, cliquer une tuile de `#rack` ouvre `#gauss` (distribution et quatre bornes déplaçables). `#thr` et `#thrW` (Lancer) suivent le bouton Fantôme. « ◧ Attributs » (`#tgL`, `[`), « Fiche ◨ » (`#tgR`, `]`) et Kobayashi (`#km`, rangée Autres cases) sont visibles. Fourier / Libre, « Ouvrir la session » et « Vue pleine » restent dans le DOM et restent masqués : Fourier / Libre est ordonné absent, session et Vue pleine attendent Éric (N1–N5). Un panneau caché dans `localStorage` se rouvre par `#tgL` et `#tgR`. Le sélecteur `#sys` reste dans la barre.
+
+## Correspondance clic panneau / scène
+
+Un seul répartiteur, `window.__umAct` dans `um/engine/engine.js`. La scène (`pointerup`, `dblclick`) et les boutons `[data-sel]` de la fiche l'appellent. Brigitte passe par le même crochet.
+
+| Geste | Scène | Panneau | Résultat |
+| --- | --- | --- | --- |
+| un clic | objet Classe 1 ou 2 | bouton `data-sel="1:…" ` ou `2:…` | focus (`select` + `enterFocus`) |
+| un clic | objet central Classe 4 | `data-sel="4:0"` | sélection de la Classe 4 |
+| double clic | Classe 2 | double clic sur le même bouton | plonger (`switchSys` de l'étage) |
+| double clic | Classe 4 | double clic sur `data-sel="4:0"` | couche suivante, ou repli |
+| ↑ / Retour | bouton `#hub-up` | `action: 'fold'` | replier |
+| Plus de texte | — | `#um-more-all` ou `action: 'more'` | ouvre la prose, Brigitte la lit |
 
 ## Ce qui est nouveau en v21.09 (à démontrer)
 

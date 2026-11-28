@@ -2192,7 +2192,8 @@ const gBtn=$('ghost');
 function syncGhostUI(){
   if(gBtn){gBtn.setAttribute('aria-pressed',(TWO?S.sghost:S.ghost)?'true':'false');gBtn.disabled=TWO&&GCSNAP;}
   if(gBtn)gBtn.title=TWO&&!GCSNAP?'Fantôme court : environ 8 copies proches derrière chaque objet, direction générale de T₀ vers T₁, même règle de condensation pour tous ; ce système n\'a que T₀ et T₁ (touche F)':TWO?(HK?"Le fantôme demande la saison match par match ; ce système n'a que T₀ et T₁, deux saisons.":GC?"Le fantôme demande une suite de prises ; ce système n'a qu'un instantané (T₀ = T₁).":"Le fantôme demande toutes les séances ; ce système n'a que T₀ et T₁."):'Fantôme : chaque titre laisse ses fantômes de T₀ à T₁ ; la colonne d\'horloge en règle seulement l\'espacement (touche F)';
-  ['gwBox','gtauBox','thrBox','gContact','gvBox'].forEach(id=>{const el=$(id);if(el)el.hidden=!S.ghost});
+  const ghostOn=TWO?!!S.sghost:!!S.ghost;
+  ['gwBox','gtauBox','thrBox','gContact','gvBox'].forEach(id=>{const el=$(id);if(el)el.hidden=!ghostOn});
   if($('gvol'))$('gvol').value=String(Math.round(Math.log2(S.gvol)*100));
   if($('gvolN'))$('gvolN').textContent='×'+fmtGV(S.gvol);
   if($('gclk'))$('gclk').value=S.gclk;if($('gtau'))$('gtau').value=String(S.gtau);if($('thr'))$('thr').value=String(S.thr);if($('thrW'))$('thrW').value=S.thrW;
@@ -2305,19 +2306,48 @@ function hitInfo(e){
 }
 /* The first click of a pair focuses and the camera starts to fly, so the pair is read where the first click landed. */
 let FIRST=null;
+function umAct(cmd){
+  cmd=cmd||{};
+  if(cmd.action==='more'){
+    const text=window.__umMoreText?window.__umMoreText(cmd.id||'all'):'';
+    return {action:'more',id:cmd.id||'all',text:text,sys:SYS.id};
+  }
+  if(cmd.action==='fold'){
+    if(SYS.id!=='world')climbC4();else goParent();
+    return {action:'fold',sys:SYS.id};
+  }
+  const clicks=cmd.clicks||(cmd.action==='plunge'||cmd.action==='layer'?2:1);
+  let ref=cmd.ref||null;
+  if(!ref&&cmd.kind!=null)ref={kind:+cmd.kind,idx:cmd.idx!=null?+cmd.idx:0,side:cmd.side||''};
+  if(cmd.action==='identify'){
+    const focused=umAct({clicks:1,ref:ref});
+    if(window.__umMoreText)window.__umMoreText('fiche');
+    return {action:'identify',kind:focused.kind,idx:focused.idx,sys:SYS.id};
+  }
+  if(clicks>=2){
+    const top=!!cmd.top,onC4=!!cmd.onC4;
+    window.__umLastPair={ref:ref&&{kind:ref.kind,idx:ref.idx,side:ref.side||''},top:top,onC4:onC4,was:ACTWAS};
+    if(top||(ref&&ref.kind===4&&!ref.side)){climbC4();return {action:'layer',kind:4,sys:SYS.id}}
+    if(!ref)return {action:'none',sys:SYS.id};
+    if(ref.side){switchSys(ref.side);return {action:'plunge',id:ref.side,kind:ref.kind,sys:SYS.id}}
+    if(ref.kind===2){const id=class2Floor(ref.idx);if(id){switchSys(id);return {action:'plunge',id:id,kind:2,idx:ref.idx,sys:SYS.id}}}
+    if(ref.kind===1){const id=TK[ref.idx]&&TK[ref.idx].floor;if(id){switchSys(id);return {action:'plunge',id:id,kind:1,idx:ref.idx,sys:SYS.id}}}
+    if(ref.kind===1&&ACT.has(ref.idx)&&ACTWAS&&ACTWAS.idx===ref.idx&&ACTWAS.was){ACT.delete(ref.idx);netUI();dirty=true;return {action:'release',kind:1,idx:ref.idx,sys:SYS.id}}
+    if(onC4&&ref.kind===3&&SYS.id!=='world'){climbC4();return {action:'layer',kind:3,sys:SYS.id}}
+    select(ref);
+    if(ref.kind===4)enterPlan();else if(ref.kind===1||ref.kind===2)enterFocus(ref);
+    return {action:'focus',kind:ref.kind,idx:ref.idx,sys:SYS.id};
+  }
+  if(!ref||ref.kind===4){select({kind:4});return {action:'focus',kind:4,sys:SYS.id}}
+  select(ref);
+  if(ref.kind===1||ref.kind===2)enterFocus(ref);
+  if(ref.kind===1){ACT.add(ref.idx);netUI()}
+  return {action:'focus',kind:ref.kind,idx:ref.idx,sys:SYS.id};
+}
+window.__umAct=function(cmd){const out=umAct(cmd);window.__umLastAct=out;return out};
 function ascendOrEnter(e){
   const H=(FIRST&&performance.now()-FIRST.t<800)?FIRST:hitInfo(e);FIRST=null;
-  const ref=H.ref,onC4=H.onC4;window.__umLastPair={ref:ref&&{kind:ref.kind,idx:ref.idx,side:ref.side||''},top:H.top,onC4,was:ACTWAS}; /* test hook */
-  if(H.top||(ref&&ref.kind===4&&!ref.side)){climbC4();return}
-  if(!ref)return;
-  if(ref.side){switchSys(ref.side);return}
-  if(ref.kind===2){const id=class2Floor(ref.idx);if(id){switchSys(id);return}}
-  /* A Class 1 door drills even when engaged (double-click = forer); an engaged actor without a floor is disengaged. */
-  if(ref.kind===1){const id=TK[ref.idx]&&TK[ref.idx].floor;if(id){switchSys(id);return}}
-  if(ref.kind===1&&ACT.has(ref.idx)&&ACTWAS&&ACTWAS.idx===ref.idx&&ACTWAS.was){ACT.delete(ref.idx);netUI();dirty=true;return} /* two clicks disengage an actor engaged before them */
-  if(onC4&&ref.kind===3&&SYS.id!=='world'){climbC4();return} /* v20.81: a Class 1 or 2 in front of the central object is focused, never climbed through */
-  select(ref);
-  if(ref.kind===4)enterPlan();else if(ref.kind===1||ref.kind===2)enterFocus(ref);
+  window.__umAct({clicks:2,ref:H.ref,top:H.top,onC4:H.onC4});
 }
 let tapMark=null,ACTWAS=null;
 renderer.domElement.addEventListener('pointerdown',e=>{downAt=[e.clientX,e.clientY]});
@@ -2327,16 +2357,10 @@ renderer.domElement.addEventListener('pointerup',e=>{
   const fresh0=!tapMark||e.timeStamp-tapMark.t>520;
   if(fresh0)FIRST=hitInfo(e);
   const ref=fresh0?FIRST.ref:pickAt(e);
-  /* v20.81: one click only focuses (casts the net, engages a Class 1 actor). Diving and climbing are two clicks. */
-  if(fresh0?FIRST.top:class4OnTop(e)){
-    select({kind:4});
-  }else if(ref&&ref.side){
-    /* a pole beside Finance: one click shows its card; two clicks open it */
-  }else if(ref){
-    if(ref.kind===1&&fresh0)ACTWAS={idx:ref.idx,was:ACT.has(ref.idx)};
-    if(fresh0){select(ref);
-    if(ref.kind===1||ref.kind===2) enterFocus(ref);
-    if(ref.kind===1){ACT.add(ref.idx);netUI();}}
+  /* v20.81: one click only focuses. The second click is the same dispatcher as a panel double-click. */
+  if(fresh0){
+    if(ref&&ref.kind===1)ACTWAS={idx:ref.idx,was:ACT.has(ref.idx)};
+    window.__umAct({clicks:1,ref:FIRST.top?{kind:4}:(ref||null),top:FIRST.top});
   }
   const now=e.timeStamp,prev=tapMark;tapMark={t:now,x:e.clientX,y:e.clientY,type:e.pointerType||'mouse'};
   if(!prev||prev.type!==tapMark.type||now-prev.t<40||now-prev.t>520)return;
@@ -2623,7 +2647,11 @@ function renderFiche(){
     gi.addEventListener('change',e=>{S.gvolI[i]=Math.pow(2,+e.target.value/100);buildGhost();renderFiche();dirty=true})}}
 
   if(S.ghost&&s.kind===1)drawVBars(s.idx);
-  fiche.querySelectorAll('[data-sel]').forEach(b=>b.addEventListener('click',()=>{const [kd,ix]=b.dataset.sel.split(':').map(Number);select(kd===4?{kind:4}:{kind:kd,idx:ix})}));
+  fiche.querySelectorAll('[data-sel]').forEach(b=>{
+    const go=clicks=>{const [kd,ix]=b.dataset.sel.split(':').map(Number);window.__umAct({clicks:clicks,kind:kd,idx:ix})};
+    b.addEventListener('click',()=>go(1));
+    b.addEventListener('dblclick',ev=>{ev.preventDefault();go(2)});
+  });
   fiche.querySelectorAll('[data-zthr]').forEach(inp=>inp.addEventListener('input',()=>{S.zoneThr[inp.dataset.zthr]=+inp.value;if(S.sel&&S.sel.kind===3)renderFiche()}));
   fiche.querySelectorAll('[data-zmem]').forEach(b=>b.addEventListener('click',()=>{const idx=+b.dataset.zmem;S.sel={kind:1,idx};setCard(S.sel);enterFocus({kind:1,idx});dirty=true;fiche.querySelectorAll('[data-zmem]').forEach(x=>x.style.outline=x===b?'2px solid #e8c872':'')}));
   const zq=fiche.querySelector('#zone-q');if(zq)zq.addEventListener('input',()=>{const q=zq.value.toLowerCase();fiche.querySelectorAll('[data-zmem]').forEach(b=>{b.style.display=b.textContent.toLowerCase().indexOf(q)>=0?'':'none'})});
@@ -2761,7 +2789,11 @@ window.__umRingAt=function(kind, idx){
   const set=(c,on)=>{if(!app)return;app.classList.toggle(c,!on);const b=btn(c==='noL'?'tgL':'tgR');if(b)b.setAttribute('aria-pressed',on?'true':'false');try{localStorage.setItem('um.'+c,on?'1':'0')}catch(e){}};
   const get=c=>{try{return localStorage.getItem('um.'+c)!=='0'}catch(e){return true}};
   const syncV=()=>{const b=btn('tgV');if(b&&app)b.setAttribute('aria-pressed',app.classList.contains('noL')&&app.classList.contains('noR')?'true':'false')};
-  if(app){set('noL',get('noL'));set('noR',get('noR'));syncV()}
+  if(app){set('noL',get('noL'));set('noR',get('noR'));syncV();
+    if(!btn('tgL'))app.classList.remove('noL');
+    if(!btn('tgR'))app.classList.remove('noR');
+    if(!btn('tgV')&&app.classList.contains('noL')&&app.classList.contains('noR')){app.classList.remove('noL');app.classList.remove('noR')}
+  }
   let back={l:true,r:true};
   const tgV=btn('tgV'),tgL=btn('tgL'),tgR=btn('tgR');
   if(tgV)tgV.addEventListener('click',()=>{const l=!app.classList.contains('noL'),r=!app.classList.contains('noR');
