@@ -38,6 +38,7 @@ function boot(SYS,keep){
 if(BOOT)BOOT.destroy();
 BOOT={ac:new AbortController(),destroy:()=>{}};
 (function(){
+window.__umAggSys=function(){return SYS.id;};
 const DATA = SYS.data;
 const HK=SYS.kind==='hockey',GC=SYS.kind==='cols',UN=HK?'joueurs':GC?(DATA.unit||'objets'):'titres'; /* GC: column system (rev. 23.15) */
 const GCSNAP=GC&&!DATA.two; /* v20.85: a column system is a single snapshot unless it declares two real takes (football) */
@@ -1351,11 +1352,15 @@ function buildShortGhost(){
   const aggGhost=!!(window.__umAgg&&__umAgg.any&&__umAgg.any('ghost'));
   if(!TWO||S.T0===S.T1||(!S.sghost&&!aggGhost)){clear();syncGhostGap(S.T0===S.T1);publishGhostMetrics();return}
   const L=[],d0=S.T0,d1=S.T1,HUBW=SYS.id==='world',BL=HUBW?(window.UM_BLOOM|0):0,P=S.prog;
-  const dens=k=>(S.gvol||1)*((S.gvolK&&S.gvolK[k])||1);
-  const copies=k=>Math.max(1,Math.min(24,Math.round(SGN*dens(k))));
-  const clarity=k=>Math.min(1.8,Math.sqrt(dens(k)));
+  function objMul(kind,idx,which){
+    try{const v=window.__umAgg&&__umAgg.vol&&__umAgg.vol(kind,idx,which);if(v)return v}catch(e){}
+    return 1;
+  }
+  function densOf(kind,idx){return (S.gvol||1)*((S.gvolK&&S.gvolK[kind])||1)*objMul(kind,idx,'gv')}
+  const copyN={1:{},2:{}};
+  window.__umCopyN=function(kind,idx){const m=copyN[kind];return m&&m[idx]?m[idx]:0};
   function drop(kind,idx,at,jA,jB,objScale){
-    const nCopy=copies(kind),gv=clarity(kind);
+    const d=densOf(kind,idx),nCopy=Math.max(1,Math.min(24,Math.round(SGN*d))),gv=Math.min(1.8,Math.sqrt(d));
     const a=at(0),b=at(1),D=Math.hypot(b[0]-a[0],b[1]-a[1],b[2]-a[2]);if(D<1e-4||P<=0)return 0;
     const step=Math.max(SGL*D/nCopy,SGMIN/Math.max(objScale,1e-4));let prev=at(P),acc=0,k=1,tp=P,n=0;const dt=P/SGS;
     for(let s2=1;s2<=SGS&&k<=nCopy;s2++){const t=Math.max(0,P-dt*s2),c=at(t),seg=Math.hypot(c[0]-prev[0],c[1]-prev[1],c[2]-prev[2]);
@@ -1364,15 +1369,16 @@ function buildShortGhost(){
       acc+=seg;prev=c;tp=t}
     return n;
   }
-  if(P<=0){clear();syncGhostGap(false);publishGhostMetrics();return}
+  if(P<=0){copyN[1]={};copyN[2]={};clear();syncGhostGap(false);publishGhostMetrics();return}
   let c1n=0,c2n=0;
+  copyN[1]={};copyN[2]={};
   const aggOf=(k,i)=>{try{return (window.__umAgg&&__umAgg.of)?__umAgg.of(k,i):'on'}catch(e){return 'on'}};
   const hostOn=k=>!(S.gHostK)||S.gHostK[k]!==false;
   for(let i=0;i<N1;i++){const j0=i*F+d0,j1=i*F+d1;if(!PRES[j0]||!PRES[j1])continue;const st=aggOf(1,i);if(st==='off'||(st!=='ghost'&&!(S.sghost&&hostOn(1))))continue;if(HUBW&&((TK[i]&&TK[i].bloom)||0)>BL)continue;
     if(HUBW&&TK[i]&&TK[i].floor&&window.UM_CARDINAL&&UM_CARDINAL[TK[i].floor])continue;
-    c1n+=drop(1,i,t=>sgAt(i,t),j0*10,j1*10,S.volAll||1)}
+    const n=drop(1,i,t=>sgAt(i,t),j0*10,j1*10,(S.volAll||1)*objMul(1,i,'ov'));copyN[1][i]=n;c1n+=n}
   for(let ci=0;ci<NC;ci++){const j0=ci*F+d0,j1=ci*F+d1;if(!CP[j0]||!CP[j1])continue;const st=aggOf(2,ci);if(st==='off'||(st!=='ghost'&&!(S.sghost&&hostOn(2))))continue;
-    c2n+=drop(2,ci,t=>sgCardAt(ci,t),j0*10,j1*10,(S.volAll||1)*(S.volC2||1))}
+    const n=drop(2,ci,t=>sgCardAt(ci,t),j0*10,j1*10,(S.volAll||1)*(S.volC2||1)*objMul(2,ci,'ov'));copyN[2][ci]=n;c2n+=n}
   SGREP.c1n=c1n;SGREP.c2n=c2n;
   const q=new THREE.Quaternion(),e=new THREE.Euler();
   let c1A=0,c2A=0;
@@ -1408,10 +1414,14 @@ function ghostFactor(kind,idx){
 }
 function ghostMul(i){return ghostFactor(1,i)/(S.gAll||1)}
 /* Class 2 copies are twice a Class 1 (canon 0.2 vs 0.1) and carry volC2, like the Class 2 object. */
+function objMul(kind,idx,which){
+  try{const v=window.__umAgg&&__umAgg.vol&&__umAgg.vol(kind,idx,which);if(v)return v}catch(e){}
+  return 1;
+}
 function ghostMeshAScale(kind,idx){
-  const base=S.gAll||1,g=ghostFactor(kind,idx);
-  if(kind===2)return 2*(S.volC2||1)*g/base;
-  return g/base;
+  const base=S.gAll||1,g=ghostFactor(kind,idx),ov=objMul(kind,idx,'ov');
+  if(kind===2)return 2*(S.volC2||1)*ov*g/base;
+  return ov*g/base;
 }
 function buildReplicas(){
   const rp=GHOST.rep;if(!rp||!S.ghost){REP.fill(EMPTYL);return}
@@ -1437,7 +1447,7 @@ function buildGhost(){
   const put=(ja,jb,u,d,i)=>{const A=ja*10,B=jb*10,X=zp(V,A,B,d,d+1,u,0),Y=zp(V,A,B,d,d+1,u,1),Z=zp(V,A,B,d,d+1,u,2),a=AZ(X),r=2-Z;
     gr.push(A,B,u,a);gp.push(r*Math.sin(a),Y,-r*Math.cos(a));gd.push(d+u);gt.push(i);gc.push(chain);go.push(wallAB(A,B,u,0)||wallAB(A,B,u,1)||wallAB(A,B,u,2)?1:0)};
   for(let i=0;i<N1;i++){
-    let d=T0;const gstep=1/(S.gvol*(S.gvolI[i]||1)); /* ghost volume: more ghosts per median step, same rule */
+    let d=T0;const gstep=1/(S.gvol*(S.gvolI[i]||1)*objMul(1,i,'gv')); /* ghost volume: more ghosts per median step, same rule */
     while(d<=T1){
       while(d<=T1&&!PRES[i*F+d])d++;
       if(d>T1)break;
@@ -1769,11 +1779,12 @@ function cardBloom(idx){
 function applyObj(o,d0,d1,t,dt){
   const isC=o.kind===2,P=isC?CP:PRES,VV=isC?CV:V,b=o.idx*F;
   const p0=P[b+d0],p1=P[b+d1];
-  if(!(p0||p1)||!layerOn(o)){o.root.visible=false;o.cur=null;return}
+  const forced=isC&&window.__umShowAllC2&&window.__umShowAllC2[SYS.id];
+  if(!(p0||p1)||(!forced&&!layerOn(o))){o.root.visible=false;o.cur=null;return}
   const aggSt=window.__umAgg&&__umAgg.of?__umAgg.of(o.kind,o.idx):'on';
   if(aggSt==='off'||aggSt==='ghost'){o.root.visible=false;o.cur=null;return}
   let bk=1;
-  if(SYS.id==='world'&&isC) bk=bloomK(cardBloom(o.idx));
+  if(SYS.id==='world'&&isC){ if(!forced) bk=bloomK(cardBloom(o.idx)); }
   else if(SYS.id==='world'&&TK[o.idx]&&TK[o.idx].bloom) bk=bloomK(TK[o.idx].bloom);
   if(bk<0.02){o.root.visible=false;o.cur=null;return}
   o.root.visible=true;
@@ -2077,8 +2088,8 @@ function scheduleSpacing(lazy){ /* while the knob turns, the spacing is recomput
 function applyMeshVol(){
   WORLD.scale.setScalar(1);
   const a=S.volAll,c=S.volAll*S.volC2;
-  O1.forEach(o=>{o.root.scale.setScalar(a);if(o.hit)o.hit.scale.setScalar(1)});
-  O2.forEach(o=>{o.root.scale.setScalar(c);if(o.hit)o.hit.scale.setScalar(1)});
+  O1.forEach(o=>{o.root.scale.setScalar(a*objMul(1,o.idx,'ov'));if(o.hit)o.hit.scale.setScalar(1)});
+  O2.forEach(o=>{o.root.scale.setScalar(c*objMul(2,o.idx,'ov'));if(o.hit)o.hit.scale.setScalar(1)});
   C3.forEach(g=>g.scale.setScalar(a));core.scale.setScalar(a);
   const gs=a*S.gAll;
   if(typeof REP!=='undefined'&&REP.U)REP.U.uSize.value=gs;
@@ -2086,6 +2097,8 @@ function applyMeshVol(){
   if(typeof publishGhostMetrics==='function')publishGhostMetrics();
   window.__umVol={all:+a.toFixed(4),c2:+c.toFixed(4),gAll:+S.gAll.toFixed(4),gC2:+S.gC2.toFixed(4),scope:S.volScope,gScope:S.gScope};
 }
+window.__umVolApply=function(){applyMeshVol();if(TWO)buildShortGhost();else if(S.ghost)buildGhost();dirty=true};
+window.__umObjScale=function(kind,idx){const o=(kind===1?O1:O2)[idx];return o&&o.root?+o.root.scale.x.toFixed(4):0};
 function setExp(E,fromSlider){
   E=Math.max(.05,Math.min(1000,+E||1));
   const c2=S.volScope==='c2';
@@ -2769,6 +2782,22 @@ window.__umAggregates=function(){
   };
 };
 window.__umAggRefresh=function(){dirty=true;if(TWO)buildShortGhost();};
+window.__umAggSys=function(){return SYS.id;};
+window.__umShowAllC2=window.__umShowAllC2||{};
+window.__umActivateC2=function(){
+  window.__umShowAllC2[SYS.id]=true;
+  let turned=false;
+  LAY.forEach(function(pair){
+    if(String(pair[1]).indexOf('Classe 2')!==0) return;
+    if(!S.layers[pair[0]]) turned=true;
+    S.layers[pair[0]]=true;
+    const el=$('ly-'+pair[0]); if(el) el.checked=true;
+  });
+  if(turned) rebuild();
+  dirty=true;
+  if(TWO) buildShortGhost();
+};
+if(window.__umShowAllC2[SYS.id]) window.__umActivateC2();
 window.__umGhostClass={
   get:function(){return {on:{1:S.gHostK[1]!==false,2:S.gHostK[2]!==false,4:S.gHostK[4]!==false},vol:{1:S.gvolK[1]||1,2:S.gvolK[2]||1,4:S.gvolK[4]||1},master:S.gvol};},
   setOn:function(k,v){S.gHostK[k]=!!v;if(k===4)S.layers.c4gh=!!v;buildShortGhost();syncGhostUI();dirty=true;},

@@ -62,6 +62,7 @@
     paint();
   }
   var bar = document.getElementById('um-universes');
+  var keep = { signal: new AbortController().signal };
   if (bar) bar.addEventListener('click', function (ev) {
     var b = ev.target.closest('[data-universe]');
     if (b) { openKey(b.getAttribute('data-universe')); return; }
@@ -70,7 +71,7 @@
       document.body.classList.add('um-menu');
       paint();
     }
-  });
-  addEventListener('hashchange', function () { setTimeout(paint, 0); });
+  }, keep);
+  addEventListener('hashchange', function () { setTimeout(paint, 0); }, keep);
   paint();
 })();

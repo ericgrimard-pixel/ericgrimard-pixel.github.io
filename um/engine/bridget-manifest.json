@@ -1,7 +1,7 @@
 {
   "schema": "um.bridget.engine-manifest.v2",
-  "hub_version": "v21.11",
-  "next_free": "v21.12",
+  "hub_version": "v21.12",
+  "next_free": "v21.13",
   "base_lineage": [
     "v20.99",
     "v21.00",
@@ -15,7 +15,8 @@
     "v21.08",
     "v21.09",
     "v21.10",
-    "v21.11"
+    "v21.11",
+    "v21.12"
   ],
   "engine_rev": "23.17+23.20",
   "family": "Miriamphobots",
@@ -32,7 +33,7 @@
     "grimeric13@gmail.com"
   ],
   "minimal_seed_constraints": {
-    "surface": "\u00c9ric's two phones",
+    "surface": "Éric's two phones",
     "sandbox_4gb": false,
     "agent_crystals": false,
     "note": "The 4 GB sandbox and agent crystals are not part of the minimal seed. They arrive only with extensions."
@@ -53,7 +54,7 @@
   "files": [
     {
       "path": "um/engine/engine.js",
-      "sha256": "58ddc90d218b6c680f2690cff0ab1568f00c200cc51b6c11056da5aaaf5eae9a"
+      "sha256": "632505b8af5c996da8e15594c3599a427210d9a0d7a6918abbe7a1c2b07ac99a"
     },
     {
       "path": "um/engine/manifestation-engine.html",
@@ -61,19 +62,19 @@
     },
     {
       "path": "um/engine/bridget-demo.js",
-      "sha256": "208821df75621a0f516e7ee065c82b44eee50e8b38c630606962d985724ae61c"
+      "sha256": "88d0e7f031ea36d3ff3f7c8e5305b79efe1719392a2001808ff9544316ee96fb"
     },
     {
       "path": "um/engine/rules.json",
-      "sha256": "03087581d75eb6103bf98179f5a0d23b1a80ba989da5857ecc9918bb5f0cb028"
+      "sha256": "e15b52512669e569c6f2893fd392c3d17786123654b6eb68fdfd7acf253d0fcf"
     },
     {
       "path": "um/engine/README.md",
-      "sha256": "eb53c6bca6cc4363addef833a9ca0b21cf75ca5e9483813e603d288fc2339234"
+      "sha256": "95448aec516fb68a7bacddaa29c929d7f091144da07930e641a90a8e4a5b3744"
     },
     {
       "path": "um/bridget/index.html",
-      "sha256": "fb963b0e7af786903dab510f8af4867a153ff7805e9cccff071ddd3553287ed2"
+      "sha256": "a758c2d63f35021439ef1bda09aaec51dba050b7d87c1d7a2e84850232291d54"
     },
     {
       "path": "um/bridget/bridget-hub.js",
@@ -81,7 +82,7 @@
     },
     {
       "path": "um/bridget/index.json",
-      "sha256": "c9a700bd56a690f3f5af3f4e4a40bb2c12085237751800ddca7626f302a860db"
+      "sha256": "bb101e1054b080c931edafd5768dff8d06bf69a8bab244efe621e0186cbdb95b"
     },
     {
       "path": "um/engine/sante-coupes.js",

@@ -1,6 +1,12 @@
-# MANIFESTATION ENGINE — Hub v21.11
+# MANIFESTATION ENGINE — Hub v21.12
 
-Canonical lineage: `v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06 -> v21.07 -> v21.08 -> v21.09 -> v21.10 -> v21.11`. Next free number: `v21.12`.
+Canonical lineage: `v20.99 -> v21.00 -> v21.01 -> v21.02 -> v21.03 -> v21.04 -> v21.05 -> v21.06 -> v21.07 -> v21.08 -> v21.09 -> v21.10 -> v21.11 -> v21.12`. Next free number: `v21.13`.
+
+## Ce qui est nouveau en v21.12 (à démontrer)
+
+1. Les cases à trois états et « ＋ Créer » sont en tête du panneau de droite. Sur un écran étroit, le même bloc reste à l'écran.
+2. « Activer toute la Classe 2 », dans ce bloc et dans « Classe 2 · objets », passe chaque objet de Classe 2 et chaque création ✦ à visible, et les dessine. Le fantôme de la classe ne change pas. L'état suit les cases : il reste propre à l'univers ouvert, et il ne survit pas à un rechargement.
+3. Chaque objet de Classe 1 et de Classe 2, et chaque création ✦, a son volume d'objet et son volume de fantôme, à ×1,00. Le volume d'objet multiplie la taille du maillage (Volume de la barre : Classe 1 = volAll, Classe 2 = volAll × volC2). Le volume du fantôme multiplie la densité des copies (maître #gvol × classe × objet). La liste de Classe 1 s'ouvre par ▸, toujours visible. Rien de cela ne survit à un rechargement.
 
 ## Ce qui est nouveau en v21.11 (à démontrer)
 
