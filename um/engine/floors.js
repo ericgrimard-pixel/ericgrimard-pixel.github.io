@@ -283,7 +283,10 @@
     'floor/EWF':'Les bibliothèques n’ont pas d’est ni d’ouest. Mélanger leurs calendriers inventerait une série.'
   };
   window.UM_RESOLVE=function(raw){
-    if(!raw||raw==='world') return 'world';
+    if(!raw) return '';
+    const alias={finance:'world',world:'world',art:'art',sante:'health','santé':'health',health:'health',sport:'sports',sports:'sports',menu:'',accueil:''};
+    const head=String(raw).replace(/^#/,'').replace(/^\//,'').split('?')[0].toLowerCase();
+    if(Object.prototype.hasOwnProperty.call(alias, head)) return alias[head];
     const key=String(raw).replace(/\/(year|t0t1)$/,'');
     if(Object.prototype.hasOwnProperty.call(redir, key)) return redir[key]||'';
     if(LIB.some(x=>x.id===raw&&x.data)) return raw;

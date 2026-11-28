@@ -7,7 +7,13 @@ EventTarget.prototype.addEventListener=function(t,f,o){
   return _addEL.call(this,t,f,o);
 };
 let CURSYS=null, lastTouchNav=0;
-function hubHash(id){return id==='world'?'/world':id}
+function hubHash(id){
+  if(id==='world')return '/finance';
+  if(id==='art')return '/art';
+  if(id==='health')return '/sante';
+  if(id==='sports')return '/sport';
+  return id;
+}
 /* rev. 23.18 — the entry point of the drill-down (Éric, 15 Nov. 2026): a switch keeps the entry while it goes down the
    floors under it (UM_FLOOR_BY); any other switch makes the new system its own entry. Art and Sports, beside Finance, start their
    own descent. Without floors, every system is opened alone. */
@@ -1118,34 +1124,9 @@ core.add(hitSphere(C4O.R*1.15,{kind:4}));
 C4O.rings=addRings(core, makeRings(C4O.R, false, 0xe8c872));
 /* Finance stays the opening Class 4. Art and Sports are siblings beside the
    galaxy: they are not members, so they never enter its aggregate or its drift. */
+/* v21.09 — Finance, Art, Santé and Sport are the top bar, not objects in the scene. */
 window.__umSides=[];
-const SIDEK=.55,SIDER=3.35,SIDEY=-1.12;
-if(SYS.id==='world'){
-  const fin=label('Finance','#e8c872',.26,500);
-  fin.position.set(0,C4O.R+.32,0);
-  core.add(fin);
-  function sibling(id,text,color,note,x,y,z){
-    const g=new THREE.Group();g.position.set(x,y,z);
-    const R=C4O.R*SIDEK; /* v20.80: smaller than Finance, on the lower rim */
-    const face=new THREE.MeshBasicMaterial({color:color,transparent:true,opacity:.62,depthWrite:false,side:THREE.DoubleSide});
-    const edge=new THREE.LineBasicMaterial({color:color,transparent:true,opacity:.95});
-    const geo=new THREE.DodecahedronGeometry(R);
-    g.add(new THREE.Mesh(geo,face));
-    g.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo),edge));
-    const lb=label(text,'#e6f2ff',.2,500);lb.position.set(0,R+.18,0);g.add(lb);
-    g.add(hitSphere(R*1.45,{kind:4,side:id,label:text,note:note}));
-    const rings=addRings(g, makeRings(R, true, color));
-    window.__umSides.push({id:id, name:text, R:R, group:g, rings:rings});
-    WORLD.add(g);
-  }
-  /* v20.80 (Éric, 18-19 Nov 2026): Art, Sports and Santé are three poles under the system, evenly spaced (120°) on the
-     outer lower rim, just outside the chamber wall (radius 3) and below its floor (height −1): never in the way, always
-     reachable. Santé is an empty placeholder until its data arrive. */
-  const SIDEA={art:Math.PI*5/3,sports:Math.PI/3,health:Math.PI},sideAt=id=>W3(SIDEA[id],SIDER,SIDEY);
-  {const p=sideAt('art');sibling('art','Art',0xb388ff,'Musique · Spotify 2021 · [INCOMPLET] un seul instantané',p.x,p.y,p.z);}
-  {const p=sideAt('sports');sibling('sports','Sports',0x4fa7ff,'LNH · 2024-25 → 2025-26',p.x,p.y,p.z);}
-  {const p=sideAt('health');sibling('health','Santé',0x5fd690,(window.UM_SANTE_LOADER?'Mortalité < 5 ans · UN IGME · paquet v1g (chargeur v2)':'[INCOMPLET] aucun étage ni donnée pour l\'instant'),p.x,p.y,p.z);}
-}
+window.__umUniverseObjects=0;
 function makeObj(kind,idx){
   const R=(kind===1?.1:.2)*DENS;
   const root=new THREE.Group(),orient=new THREE.Group(),spin=new THREE.Group(),body=new THREE.Group();
@@ -2757,10 +2738,14 @@ window.__umRingAt=function(kind, idx){
     if(!raw||raw==='world') return 'world';
     return LIB.some(x=>x.id===raw&&x.data)?raw:'';
   }
-  /* The hub always opens on Finance. A bookmark does not open a floor. */
+  /* v21.09 — a blank menu until a universe is chosen. #/finance, #/art, #/sante, #/sport open directly. */
   const arrived=rawHash();
-  try{history.replaceState(null,'',location.pathname+location.search+'#/world')}catch(e){}
-  switchSys('world');
-  if(arrived&&arrived!=='world'&&!resolved(arrived)) window.__umUnknown=arrived;
+  const menu=!arrived||arrived==='menu'||arrived==='accueil';
+  if(menu) document.body.classList.add('um-menu');
+  else {
+    const id=resolved(arrived);
+    if(id) switchSys(id);
+    else { document.body.classList.add('um-menu'); window.__umUnknown=arrived; }
+  }
 })();
 

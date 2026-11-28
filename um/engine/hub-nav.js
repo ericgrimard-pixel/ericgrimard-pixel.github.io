@@ -48,7 +48,7 @@
   /* v20.81: the HUB home is Finance as it opens (bloom 0, home view), reached by two clicks on the central object. */
   window.UM_HUB_HOME=function(){
     window.UM_BLOOM_HOLD=0;
-    try{ history.pushState({bloom:0},'',location.pathname+location.search+'#/world'); }catch(e){}
+    try{ history.pushState({bloom:0},'',location.pathname+location.search+'#/finance'); }catch(e){}
     switchSys('world');
   };
   window.UM_BLOOM_STEP=function(){
@@ -59,7 +59,7 @@
     const next=cur+1;
     window.UM_BLOOM=next;
     window.UM_BLOOM_HOLD=next;
-    try{ history.pushState({bloom:next},'',location.pathname+location.search+'#/world'); }catch(e){}
+    try{ history.pushState({bloom:next},'',location.pathname+location.search+'#/finance'); }catch(e){}
     applyWorldBloom(next);
     render('world');
   };
@@ -126,7 +126,7 @@
         const stated=history.state&&typeof history.state.bloom==='number';
         const b=stated?history.state.bloom:(window.UM_BLOOM_HOLD||0);
         applyWorldBloom(b);
-        if(!stated){ try{ history.replaceState({bloom:b},'',location.pathname+location.search+'#/world'); }catch(e){} }
+        if(!stated){ try{ history.replaceState({bloom:b},'',location.pathname+location.search+'#/finance'); }catch(e){} }
       }else window.UM_BLOOM=0;
       render(id);
     }
@@ -134,7 +134,11 @@
   };
   function onRoute(){
     if(navigating) return;
-    const id=resolve(rawHash())||'world';
+    const raw=rawHash();
+    if(!raw||raw==='menu'||raw==='accueil'){ document.body.classList.add('um-menu'); return; }
+    const id=resolve(raw);
+    if(!id) return;
+    document.body.classList.remove('um-menu');
     if(id!==CURSYS){ switchSys(id); return; }
     if(id==='world'){
       const b=(history.state&&typeof history.state.bloom==='number')?history.state.bloom:(window.UM_BLOOM_HOLD||0);
@@ -148,7 +152,7 @@
   const keep=new AbortController();
   addEventListener('hashchange', onRoute, {signal:keep.signal});
   addEventListener('popstate', onRoute, {signal:keep.signal});
-  try{ history.replaceState({bloom:0},'',location.pathname+location.search+'#/world'); }catch(e){}
+  /* v21.09 — do not force #/world. The blank menu stays until a universe is chosen. */
   /* v20.60 — Éric, 14 nov 2026 13h55 (Toronto): PRIORITÉ ABSOLUE.
      Le HUB s'ouvre sur la couche 0 (HUB minimal, visible, prêt à éclore).
      Trois objets Classe 4 nets : Finance au centre, Art et Sports de part et d'autre.
